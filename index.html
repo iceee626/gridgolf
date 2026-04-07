@@ -70,13 +70,16 @@ body{
 #onboardScreen.visible{opacity:1;}
 /* Wildcard drawer: constrain to max 320px and never wider than 85vw */
 .wc-drawer{
-  position:fixed;right:-340px;top:0;bottom:0;
+  position:fixed;right:-340px;
+  top:env(safe-area-inset-top);
+  /* Height: auto-fit content, no empty space */
+  height:auto;max-height:calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   width:min(300px,82vw);
-  background:#1a0e28;border-left:1px solid #4a2a6e;
+  background:#1a0e28;border-left:1px solid #4a2a6e;border-bottom:1px solid #4a2a6e;
+  border-bottom-left-radius:16px;
   z-index:120;transition:right .3s cubic-bezier(.4,0,.2,1);
   display:flex;flex-direction:column;
   box-shadow:-4px 0 24px rgba(0,0,0,.6);
-  padding-top:env(safe-area-inset-top);
   overflow:hidden;
 }
 .wc-drawer.open{right:0;}
@@ -559,12 +562,17 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:calc(e
 /* Wildcard drawer */
 .wc-drawer.open{right:0;} /* handled above */
 .wc-info-panel{
-  position:absolute;inset:0;background:#1a0e28;z-index:5;
+  position:fixed;right:-340px;top:env(safe-area-inset-top);
+  width:min(300px,82vw);
+  height:calc(100vh - env(safe-area-inset-top));
+  background:#1a0e28;border-left:1px solid #4a2a6e;
+  z-index:125;
   display:flex;flex-direction:column;overflow:hidden;
-  transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  transition:right .3s cubic-bezier(.4,0,.2,1);
 }
-.wc-info-panel.open{transform:translateX(0);}
-.wc-info-head{background:linear-gradient(135deg,#7b2f9e,#4a1a6e);padding:14px 16px;display:flex;align-items:center;gap:10px;}
+.wc-info-panel.open{right:0;}
+/* wc-info-panel.open handled above */
+.wc-info-head{background:linear-gradient(135deg,#7b2f9e,#4a1a6e);padding:calc(env(safe-area-inset-top) + 10px) 16px 14px;display:flex;align-items:center;gap:10px;}
 .wc-info-list{flex:1;overflow-y:auto;padding:10px 14px;}
 .wc-info-item{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .1s;}
 .wc-info-item:hover{background:rgba(255,255,255,.04);border-radius:6px;}
@@ -577,7 +585,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:calc(e
 .wc-drawer-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
 .wc-drawer-close{background:rgba(0,0,0,.3);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .wc-drawer-sub{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px;padding:10px 16px 0;}
-.wc-drawer-slots{display:flex;flex-direction:column;gap:8px;padding:8px 16px 16px;overflow-y:auto;}
+.wc-drawer-slots{display:flex;flex-direction:column;gap:8px;padding:8px 16px 16px;}
 .wc-slot{
   background:rgba(255,255,255,.05);border:1px solid rgba(123,47,158,.4);
   border-radius:12px;padding:10px;min-height:60px;
@@ -948,14 +956,30 @@ function setVibEnabled(v){try{localStorage.setItem('gg_vibration',v?'on':'off');
 
 function vibrate(pattern){
   if(!vibEnabled())return;
-  if(navigator.vibrate){navigator.vibrate(pattern);}
+  try{
+    if(navigator.vibrate){navigator.vibrate(pattern);}
+    // iOS Safari doesn't support vibrate - use taptic via AudioContext as fallback
+    // (already covered by shake which uses vibrate internally)
+  }catch(e){}
+}
+// iOS haptic via AudioContext click - very short transient for tactile feel
+function _iosHapticTap(vol=0.1){
+  try{
+    const ctx=getAudioCtx();if(!ctx||ctx.state!=='running')return;
+    const buf=ctx.createBuffer(1,ctx.sampleRate*0.01,ctx.sampleRate);
+    const data=buf.getChannelData(0);
+    for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*(1-i/data.length);
+    const src=ctx.createBufferSource();src.buffer=buf;
+    const g=ctx.createGain();g.gain.value=vol;
+    src.connect(g);g.connect(ctx.destination);src.start();
+  }catch(e){}
 }
 // Patterns
 function vibDiceRoll(){vibrate([40,20,40,20,40,20,40]);}  // strong rolling pulse
-function vibDiceLand(){vibrate([80]);}                    // firm landing tap
+function vibDiceLand(){vibrate([80]);_iosHapticTap(0.08);} // firm landing tap
 function vibWildcard(){vibrate([30,40,150,40,30]);}       // ka-ching: soft-pause-STRONG
 function vibHoleInOne(){vibrate([200,80,300,80,200,80,400]);}  // big celebration burst
-function vibShot(){vibrate([35]);}                        // clear shot tap
+function vibShot(){vibrate([35]);_iosHapticTap(0.05);}    // clear shot tap
 // ═══════════════════════════════════════
 // METRICS SYSTEM (yards / meters)
 // ═══════════════════════════════════════
@@ -1034,8 +1058,23 @@ function getAudioCtx(){
   if(!_audioCtx){
     try{_audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}
   }
+  // Auto-resume on iOS when returning from background
+  if(_audioCtx&&_audioCtx.state==='suspended'){
+    _audioCtx.resume().catch(()=>{});
+  }
   return _audioCtx;
 }
+
+// Resume audio context when page becomes visible again (iOS background/foreground)
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&_audioCtx&&_audioCtx.state==='suspended'){
+    _audioCtx.resume().catch(()=>{});
+  }
+});
+// Also resume on any touch (belt-and-suspenders for iOS)
+document.addEventListener('touchstart',()=>{
+  if(_audioCtx&&_audioCtx.state==='suspended') _audioCtx.resume().catch(()=>{});
+},{passive:true,once:false});
 
 function soundEnabled(){
   try{return localStorage.getItem("gg_sound")!=="off";}catch{return true;}
@@ -1806,17 +1845,7 @@ function processShot(row,col){
       };
     }
 
-    // Only show WC reroll button if relevant WC equipped
-    const hasRerollWc=WCS.equipped.some(w=>w.id==='mulligan'||w.id==='tailwind');
-    if(hasRerollWc && !S._puttWcUsed){
-      const wcPuttBtn=document.createElement('button');
-      wcPuttBtn.id='puttWcBtn';
-      wcPuttBtn.style.cssText='width:100%;background:linear-gradient(135deg,#7b2f9e,#4a1a6e);color:#fff;border:none;border-radius:10px;padding:11px;font-family:"Bebas Neue",cursive;font-size:15px;letter-spacing:2px;cursor:pointer;margin-top:6px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;';
-      wcPuttBtn.textContent='🃏 REROLL PUTT';
-      wcPuttBtn.onclick=()=>{ openWcDrawer(); };
-      const rollCol=document.querySelector('.roll-col');
-      if(rollCol) rollCol.appendChild(wcPuttBtn);
-    }
+    // No REROLL PUTT button — user opens WC drawer themselves via the FAB
 
     renderWcFab();
     S._puttWcUsed=false;
@@ -1865,7 +1894,11 @@ function processShot(row,col){
   if(resolvedOutcome==='fwy')S.fwyVisits++;
   S.prevZone=prevZone;
   advanceYrd(resolvedOutcome);
-  if(resolvedOutcome==='grn') S.yrdRemain=Math.round(3+Math.random()*22);
+  if(resolvedOutcome==='grn'){
+    S.yrdRemain=Math.round(3+Math.random()*22);
+    // Save the putting grid that will be generated next shot
+    // so if user rerolls putt via WC, same layout is preserved
+  }
   S.zone=resolvedOutcome;
   S._puttWcUsed=false;
 
@@ -1907,7 +1940,8 @@ function doNextShot(){
   }
   // Normal advance: build next grid (active WC effects apply here)
   hideNextShotBtn();
-  if(S._forceGrid){S._forceGrid=false;} // keep forced grid (e.g. after HIO fail)
+  if(S._forceGrid){S._forceGrid=false;}
+  else if(S._preserveGrid){S._preserveGrid=false;} // keep same grid for reroll (WC mulligan/tailwind on green)
   else{buildGrid();}
   updateZonePill();
 }
@@ -2553,9 +2587,21 @@ function openEditProfile(i){
     };
     grid.appendChild(btn);
   });
-  // Close profile modal first, then open edit
-  closeProfileModal();
-  setTimeout(()=>document.getElementById('editProfileModal').classList.add('show'),200);
+  // Slide edit panel into view inside profile modal (no close/reopen flash)
+  const profileCard=document.querySelector('#profileModal .profile-card');
+  if(profileCard){
+    profileCard.style.transition='transform .25s ease,opacity .25s ease';
+    profileCard.style.transform='translateX(-20px)';
+    profileCard.style.opacity='0';
+    setTimeout(()=>{
+      document.getElementById('profileModal').classList.remove('show');
+      profileCard.style.transform='';profileCard.style.opacity='';
+      document.getElementById('editProfileModal').classList.add('show');
+    },200);
+  } else {
+    closeProfileModal();
+    setTimeout(()=>document.getElementById('editProfileModal').classList.add('show'),200);
+  }
 }
 
 function focusIconPicker(){
@@ -2565,9 +2611,20 @@ function focusIconPicker(){
 }
 
 function closeEditProfile(){
-  document.getElementById('editProfileModal').classList.remove('show');
-  // Reopen profile modal
-  setTimeout(()=>openProfileModal(),150);
+  const editCard=document.querySelector('#editProfileModal .profile-card');
+  if(editCard){
+    editCard.style.transition='transform .2s ease,opacity .2s ease';
+    editCard.style.transform='translateX(20px)';
+    editCard.style.opacity='0';
+    setTimeout(()=>{
+      document.getElementById('editProfileModal').classList.remove('show');
+      editCard.style.transform='';editCard.style.opacity='';
+      openProfileModal();
+    },180);
+  } else {
+    document.getElementById('editProfileModal').classList.remove('show');
+    setTimeout(()=>openProfileModal(),150);
+  }
 }
 
 function saveEditProfile(){
@@ -2586,8 +2643,7 @@ function saveEditProfile(){
     PLAYER_NAME=name;
     updateMenuProfileDisplay();
   }
-  document.getElementById('editProfileModal').classList.remove('show');
-  setTimeout(()=>openProfileModal(),150);
+  closeEditProfile();
 }
 
 function openProfileModal(){
@@ -3109,13 +3165,15 @@ function applyRollMode(mode){
     if(rollBtn) rollBtn.textContent='⚄ ROLL';
     if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){
       if(_shakePermissionGranted){
-        // Already granted this session — start directly
+        // Permission previously granted (saved in localStorage) — start directly, NO banner, NO re-ask
         _startShakeListener();
+        const b=document.getElementById('shakePermBanner');if(b)b.remove();
       } else {
-        // Show banner — user taps ALLOW which IS a gesture and triggers requestPermission
+        // First time — show banner once. After tap → save to localStorage permanently.
         _showShakePermissionBanner();
       }
     } else {
+      // Non-iOS (Android etc.) — no permission API, start directly
       _startShakeListener();
     }
   } else {
@@ -3189,6 +3247,13 @@ function _startShakeListener(){
   window.addEventListener('devicemotion',_shakeListener,{passive:true});
 }
 
+// Re-attach shake listener when app comes back to foreground
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&getRollMode()==='haptic'&&_shakePermissionGranted&&!_shakeListener){
+    _startShakeListener();
+  }
+});
+
 // Show permission banner when entering game in haptic mode
 function maybeShowShakeBanner(){
   if(getRollMode()==='haptic'&&!_shakePermissionGranted){
@@ -3206,22 +3271,13 @@ function toggleSoundSetting(){
   const btn=document.getElementById('soundToggleBtn');
   if(btn){btn.textContent=soundEnabled()?'ON':'OFF';btn.style.background=soundEnabled()?'var(--c-fwy)':'rgba(255,255,255,.1)';}
 }
-function toggleVibSetting(){
-  setVibEnabled(!vibEnabled());
-  const btn=document.getElementById('vibToggleBtn');
-  if(btn){btn.textContent=vibEnabled()?'ON':'OFF';btn.style.background=vibEnabled()?'var(--c-fwy)':'rgba(255,255,255,.1)';}
-}
+function toggleVibSetting(){setVibEnabled(!vibEnabled());updateSettingsUI();}
+function setVibPref(on){setVibEnabled(on);updateSettingsUI();}
+function setSoundPref(on){setSoundEnabled(on);updateSettingsUI();}
+function setWcPref(on){setWcEnabled(on);updateSettingsUI();}
 
 function openSettings(){
-  const sndBtn=document.getElementById('soundToggleBtn');
-  if(sndBtn){sndBtn.textContent=soundEnabled()?'ON':'OFF';sndBtn.style.background=soundEnabled()?'var(--c-fwy)':'rgba(255,255,255,.1)';}
-  const vibBtn=document.getElementById('vibToggleBtn');
-  if(vibBtn){vibBtn.textContent=vibEnabled()?'ON':'OFF';vibBtn.style.background=vibEnabled()?'var(--c-fwy)':'rgba(255,255,255,.1)';}
-  updateMetricsUI();
-  const btn=document.getElementById('wcToggleBtn');
-  if(btn){btn.textContent=wcEnabled()?'ON':'OFF';btn.style.background=wcEnabled()?'var(--c-fwy)':'rgba(255,255,255,.1)';}
-  updateRollModeUI(getRollMode());
-  updateCellLabelUI();
+  updateSettingsUI();
   // Update theme buttons
   const theme=getThemeSetting();
   ['dark','light','system'].forEach(t=>{
@@ -3444,15 +3500,16 @@ function activateWildcard(slotIdx){
     const wcPuttBtn=document.getElementById('puttWcBtn');
     if(wcPuttBtn) wcPuttBtn.remove();
     if(S._pendingPuttResult){
-      // Undo the putt strokes so reroll is clean
       const {putts}=S._pendingPuttResult;
       S.strokes=Math.max(0,S.strokes-putts);
       S.shotNum=Math.max(1,S.shotNum-1);
       S.log.pop();renderLog();
+      // Preserve current putting grid — don't rebuild, same layout for reroll
+      S._preserveGrid=true;
       S._pendingPuttResult=null;
       S._puttWcUsed=true;
+      S._skipCelebration=false; // celebration will fire again on new result
     }
-    // Reset NEXT SHOT button and restore roll button
     const nextBtn=document.getElementById('nextShotBtn');
     if(nextBtn){nextBtn.textContent='NEXT SHOT →';nextBtn.onclick=doNextShot;nextBtn.style.display='none';}
     const rollBtn2=document.getElementById('rollBtn');
@@ -3659,8 +3716,7 @@ function mulliganReroll(){
   // Restore zone to prevZone
   if(S.prevZone) S.zone=S.prevZone;
   hideNextShotBtn();
-  // DO NOT rebuild grid — keep the same grid the player just rolled on
-  // (buildGrid() removed to preserve layout)
+  // DO NOT rebuild grid — preserve the exact same layout for the reroll
   updateFloat();updateYrd();updateZonePill();
   // Small delay then auto-roll
   setTimeout(()=>{
@@ -4009,14 +4065,20 @@ function closeConfirm(){
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🔊 SOUND</div>
           <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">Shot sound effects</div>
         </div>
-        <button id="soundToggleBtn" onclick="toggleSoundSetting()" style="background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;min-width:52px;">ON</button>
+        <div style="display:flex;gap:5px;">
+          <button id="soundBtn-on" onclick="setSoundPref(true)" style="border-radius:8px;padding:6px 16px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">ON</button>
+          <button id="soundBtn-off" onclick="setSoundPref(false)" style="border-radius:8px;padding:6px 16px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">OFF</button>
+        </div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📳 VIBRATIONS</div>
           <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">Haptic feedback on shots &amp; events</div>
         </div>
-        <button id="vibToggleBtn" onclick="toggleVibSetting()" style="background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;min-width:52px;">ON</button>
+        <div style="display:flex;gap:5px;">
+          <button id="vibBtn-on" onclick="setVibPref(true)" style="border-radius:8px;padding:6px 16px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">ON</button>
+          <button id="vibBtn-off" onclick="setVibPref(false)" style="border-radius:8px;padding:6px 16px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">OFF</button>
+        </div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
@@ -4033,7 +4095,10 @@ function closeConfirm(){
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🃏 WILDCARDS</div>
           <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">Roll doubles to earn wildcard cards</div>
         </div>
-        <button id="wcToggleBtn" onclick="toggleWcSetting()" style="background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;min-width:52px;">ON</button>
+        <div style="display:flex;gap:5px;">
+          <button id="wcBtn-on" onclick="setWcPref(true)" style="border-radius:8px;padding:6px 16px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">ON</button>
+          <button id="wcBtn-off" onclick="setWcPref(false)" style="border-radius:8px;padding:6px 16px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">OFF</button>
+        </div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
