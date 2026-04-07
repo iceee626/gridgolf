@@ -71,12 +71,13 @@ body{
 /* Wildcard drawer: constrain to max 320px and never wider than 85vw */
 .wc-drawer{
   position:fixed;right:-340px;top:0;bottom:0;
-  width:min(320px,85vw);
+  width:min(300px,82vw);
   background:#1a0e28;border-left:1px solid #4a2a6e;
   z-index:120;transition:right .3s cubic-bezier(.4,0,.2,1);
   display:flex;flex-direction:column;
   box-shadow:-4px 0 24px rgba(0,0,0,.6);
   padding-top:env(safe-area-inset-top);
+  overflow:hidden;
 }
 .wc-drawer.open{right:0;}
 body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(90deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px),repeating-linear-gradient(0deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px);pointer-events:none;z-index:0;}
@@ -212,12 +213,13 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:calc(e
 
 /* Roll button */
 .btn-roll{
-  width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;
+  width:100%;flex:1;background:var(--c-fwy);color:#fff;border:none;border-radius:12px;
   font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
   transition:background .15s;
+  min-height:52px;
 }
 .btn-roll:hover{background:var(--c-fwyl);}
 .btn-roll:disabled{opacity:.3;cursor:not-allowed;}
@@ -535,7 +537,10 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:calc(e
 
 /* Wildcard FAB button (floating, right side) */
 .wc-fab{
-  position:fixed;right:0;top:50%;transform:translateY(-50%);
+  position:fixed;right:0;
+  /* Position FAB in middle of GAME area, below safe area */
+  top:calc(env(safe-area-inset-top) + 45%);
+  transform:translateY(-50%);
   background:linear-gradient(135deg,#7b2f9e,#4a1a6e);
   color:#fff;border:none;border-radius:8px 0 0 8px;
   padding:10px 6px;cursor:pointer;z-index:60;
@@ -572,14 +577,14 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:calc(e
 .wc-drawer-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
 .wc-drawer-close{background:rgba(0,0,0,.3);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .wc-drawer-sub{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px;padding:10px 16px 0;}
-.wc-drawer-slots{display:flex;flex-direction:column;gap:10px;padding:8px 16px;flex:1;overflow-y:auto;justify-content:flex-start;}
+.wc-drawer-slots{display:flex;flex-direction:column;gap:8px;padding:8px 16px 16px;overflow-y:auto;}
 .wc-slot{
   background:rgba(255,255,255,.05);border:1px solid rgba(123,47,158,.4);
-  border-radius:12px;padding:10px;min-height:70px;
+  border-radius:12px;padding:10px;min-height:60px;
   display:flex;flex-direction:column;gap:5px;position:relative;
 }
-.wc-slot.empty{border-style:dashed;opacity:.4;align-items:center;justify-content:center;}
-.wc-slot-empty-txt{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.3);letter-spacing:1px;}
+.wc-slot.empty{border-style:dashed;opacity:.25;align-items:center;justify-content:center;padding:6px 8px;min-height:36px;}
+.wc-slot-empty-txt{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:1px;}
 .wc-slot-header{display:flex;align-items:flex-start;gap:8px;}
 .wc-slot-icon{font-size:22px;flex-shrink:0;line-height:1;}
 .wc-slot-info{flex:1;min-width:0;}
@@ -838,7 +843,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:calc(e
 <div class="dice-row">
   <div class="dc"><div class="dc-lbl">Row</div><div class="die" id="die1"><div class="die-pips" id="dp1"></div></div></div>
   <div class="dc"><div class="dc-lbl">Col</div><div class="die" id="die2"><div class="die-pips" id="dp2"></div></div></div>
-  <div class="roll-col" style="display:flex;flex-direction:column;gap:6px;">
+  <div class="roll-col" style="display:flex;flex-direction:column;gap:6px;min-height:100%;">
     <button class="btn-roll" id="rollBtn" onclick="doRoll()">⚄ ROLL</button>
     <button class="btn-roll" id="nextShotBtn" onclick="doNextShot()" style="display:none;background:var(--c-tee);">NEXT SHOT →</button>
   </div>
@@ -946,11 +951,11 @@ function vibrate(pattern){
   if(navigator.vibrate){navigator.vibrate(pattern);}
 }
 // Patterns
-function vibDiceRoll(){vibrate([20,15,20,15,20]);}   // rapid triple pulse during roll
-function vibDiceLand(){vibrate([40]);}                 // single firm tap when die lands
-function vibWildcard(){vibrate([10,30,80,30,10]);}     // "ka-ching" pattern
-function vibHoleInOne(){vibrate([100,50,200,50,100,50,300]);}  // big celebratory
-function vibShot(){vibrate([15]);}                     // subtle tap on normal shot
+function vibDiceRoll(){vibrate([40,20,40,20,40,20,40]);}  // strong rolling pulse
+function vibDiceLand(){vibrate([80]);}                    // firm landing tap
+function vibWildcard(){vibrate([30,40,150,40,30]);}       // ka-ching: soft-pause-STRONG
+function vibHoleInOne(){vibrate([200,80,300,80,200,80,400]);}  // big celebration burst
+function vibShot(){vibrate([35]);}                        // clear shot tap
 // ═══════════════════════════════════════
 // METRICS SYSTEM (yards / meters)
 // ═══════════════════════════════════════
@@ -1039,19 +1044,26 @@ function setSoundEnabled(v){
   try{localStorage.setItem("gg_sound",v?"on":"off");}catch{}
 }
 
+// Decode base64 data URI to ArrayBuffer without fetch (works in all CSP environments)
+function _b64ToArrayBuffer(dataUri){
+  const b64=dataUri.split(',')[1];
+  const binary=atob(b64);
+  const bytes=new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
+  return bytes.buffer;
+}
+
 async function playSound(name, volume=1.0){
   if(!soundEnabled())return;
   const ctx=getAudioCtx();
   if(!ctx)return;
-  // Resume context if suspended (required after user gesture on iOS)
   if(ctx.state==="suspended") await ctx.resume();
   try{
     let buf=_audioCache[name];
     if(!buf){
       const b64=SOUNDS_B64[name];
       if(!b64)return;
-      const resp=await fetch(b64);
-      const arr=await resp.arrayBuffer();
+      const arr=_b64ToArrayBuffer(b64);
       buf=await ctx.decodeAudioData(arr);
       _audioCache[name]=buf;
     }
@@ -1131,7 +1143,7 @@ function setDiff(d){
 function resetGameState(){
   // Full game state reset
   S.holeIdx=0;S.zone='tee';S.strokes=0;S.shotNum=1;
-  S.log=[];S.scorecard=Array(9).fill(null);S.history=Array(9).fill(null);
+  S.log=[];S.scorecard=Array(9).fill(null);S.history=Array(9).fill(null);S._skipCelebration=false;
   S.currentGrid=null;S.holeDone=false;S.rolling=false;
   S.yrdRemain=0;S.yrdTotal=0;S.fwyVisits=0;S.prevZone=null;S.shotCount=0;
   S._wcUsedThisRound=0;
@@ -1364,7 +1376,7 @@ function buildScorecard(){
 function loadHole(){
   const h=HOLES[S.holeIdx];
   S.zone='tee';S.strokes=0;S.shotNum=1;S.shotCount=0;
-  S.log=[];S.holeDone=false;S.rolling=false;
+  S.log=[];S.holeDone=false;S.rolling=false;S._skipCelebration=false;
   S.fwyVisits=0;S.prevZone=null;S._wcUsedThisRound=S._wcUsedThisRound||0;
   S.yrdTotal=h.yards;S.yrdRemain=h.yards;
   document.getElementById('holeName').textContent=h.name;
@@ -1760,50 +1772,56 @@ function processShot(row,col){
       showWcToast('🥇 Golden Putter! 1-putt guaranteed!');
     }
 
-    // If result is 2 or 3 putts, pause and give player a chance to use a reroll WC
-    if(WCS.equipped.length>0 && !S._puttWcUsed){
-      playShotSound('grn', finalPutts===1?'p1':'p2');
-      S._pendingPuttResult={putts:finalPutts, row, col, snapGrid, prevZone};
-      S.strokes+=finalPutts;S.yrdRemain=0;
-      addLog(S.shotNum,`Green → ${finalPutts} putt${finalPutts>1?'s':''}`,outcome,`+${finalPutts}`,false,row,col,snapGrid);
-      showResult(Z[outcome],`${finalPutts} putt${finalPutts>1?'s':''}`,finalPutts===1?'good':'ok',`Row ${row+1} · Col ${col+1}`);
-      S.shotNum++;
-      updateYrd();
-      S._puttWcUsed=false;
-      S.holeDone=false;
-      renderWcFab();
+    // Always pause after any putt to allow WC use before finalising
+    playShotSound('grn', outcome);
+    S.strokes+=finalPutts;S.yrdRemain=0;
+    S._pendingPuttResult={putts:finalPutts, row, col, snapGrid, prevZone};
+    addLog(S.shotNum,`Green → ${finalPutts} putt${finalPutts>1?'s':''}`,outcome,`+${finalPutts}`,false,row,col,snapGrid);
+    showResult(Z[outcome],`${finalPutts} putt${finalPutts>1?'s':''}`,finalPutts===1?'good':'ok',`Row ${row+1} · Col ${col+1}`);
+    S.shotNum++;
+    updateYrd();
+    S.holeDone=false; // keep open until FINISH HOLE tapped
+
+    // Show celebration badge immediately (the big BIRDIE! that normally shows before overlay)
+    {
+      const h_putt=HOLES[S.holeIdx];
+      const d_putt=S.strokes-h_putt.par;
+      const isHio_putt=(h_putt.par===3&&S.strokes===1);
+      showCelebration(isHio_putt?-99:d_putt, ()=>{}); // fire with no callback — hole stays open
+    }
+
+    // Show FINISH HOLE button (always)
+    showNextShotBtn();
+    const nextBtn=document.getElementById('nextShotBtn');
+    if(nextBtn){
+      nextBtn.textContent='FINISH HOLE →';
+      nextBtn.style.background='var(--c-tee)';
+      nextBtn.onclick=()=>{
+        const b=document.getElementById('puttWcBtn');if(b)b.remove();
+        nextBtn.textContent='NEXT SHOT →';nextBtn.onclick=doNextShot;
+        S._pendingPuttResult=null;
+        S.holeDone=true;
+        updateTVBanner();
+        setTimeout(()=>completeHole(),200);
+      };
+    }
+
+    // Only show WC reroll button if relevant WC equipped
+    const hasRerollWc=WCS.equipped.some(w=>w.id==='mulligan'||w.id==='tailwind');
+    if(hasRerollWc && !S._puttWcUsed){
       const wcPuttBtn=document.createElement('button');
       wcPuttBtn.id='puttWcBtn';
-      wcPuttBtn.style.cssText='width:100%;background:linear-gradient(135deg,#7b2f9e,#4a1a6e);color:#fff;border:none;border-radius:10px;padding:11px;font-family:"Bebas Neue",cursive;font-size:15px;letter-spacing:2px;cursor:pointer;margin-top:6px;';
-      wcPuttBtn.textContent='🃏 USE REROLL WILDCARD';
+      wcPuttBtn.style.cssText='width:100%;background:linear-gradient(135deg,#7b2f9e,#4a1a6e);color:#fff;border:none;border-radius:10px;padding:11px;font-family:"Bebas Neue",cursive;font-size:15px;letter-spacing:2px;cursor:pointer;margin-top:6px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;';
+      wcPuttBtn.textContent='🃏 REROLL PUTT';
       wcPuttBtn.onclick=()=>{ openWcDrawer(); };
       const rollCol=document.querySelector('.roll-col');
       if(rollCol) rollCol.appendChild(wcPuttBtn);
-      showNextShotBtn();
-      const nextBtn=document.getElementById('nextShotBtn');
-      if(nextBtn){
-        nextBtn.textContent='FINISH HOLE →';
-        nextBtn.style.background='var(--c-tee)';
-        nextBtn.onclick=()=>{
-          const b=document.getElementById('puttWcBtn');if(b)b.remove();
-          nextBtn.textContent='NEXT SHOT →';nextBtn.onclick=doNextShot;
-          S._pendingPuttResult=null;
-          S.holeDone=true;
-          updateTVBanner();
-          setTimeout(()=>completeHole(),400);
-        };
-      }
-      S.rolling=false;
-      return;
     }
 
-    playShotSound('grn', outcome);
-    S.strokes+=finalPutts;S.yrdRemain=0;
-    addLog(S.shotNum,`Green → ${finalPutts} putt${finalPutts>1?'s':''}`,outcome,`+${finalPutts}`,false,row,col,snapGrid);
-    showResult(Z[outcome],`${finalPutts} putt${finalPutts>1?'s':''}`,finalPutts===1?'good':'ok',`Row ${row+1} · Col ${col+1}`);
-    S.shotNum++;S.holeDone=true;
-    updateYrd();
-    setTimeout(()=>completeHole(),950);return;
+    renderWcFab();
+    S._puttWcUsed=false;
+    S.rolling=false;
+    return;
   }
   if(outcome==='h2o'||outcome==='ob'){
     playShotSound(prevZone, outcome);
@@ -2023,14 +2041,15 @@ function updateFloat(){updateTVBanner();}
 // HOLE COMPLETE
 // ═══════════════════════════════════════
 function showCelebration(d, onDone){
-  // d = score vs par
+  // d = score vs par. -99 = special HIO flag
   let txt, cls;
-  if(d<=-3)     {txt='ALBATROSS 🪶'; cls='celeb-eagle';}
-  else if(d<=-2){txt='EAGLE 🦅🦅'; cls='celeb-eagle';}
+  if(d===-99)    {txt='HOLE IN ONE! ⛳'; cls='celeb-eagle';}
+  else if(d<=-3) {txt='ALBATROSS 🪶'; cls='celeb-eagle';}
+  else if(d<=-2) {txt='EAGLE 🦅🦅'; cls='celeb-eagle';}
   else if(d===-1){txt='BIRDIE 🦅';  cls='celeb-birdie';}
   else if(d===0) {txt='PAR ⛳';     cls='celeb-par';}
   else if(d===1) {txt='BOGEY 😤';   cls='celeb-bogey';}
-  else if(d===2) {txt='DOUBLE 😬';  cls='celeb-double';}
+  else if(d===2) {txt='DOUBLE BOGEY 😬';  cls='celeb-double';}
   else if(d===3) {txt='TRIPLE BOGEY 😤'; cls='celeb-double';}
   else           {txt=`+${d}`; cls='celeb-double';}
 
@@ -2098,10 +2117,15 @@ function completeHole(){
   document.getElementById('ovSummaryBtn').style.display='none';
   document.getElementById('ovPlayAgainBtn').style.display='none';
   buildScorecard();
-  // Show celebration first, then overlay
-  showCelebration(d, ()=>{
+  // Show celebration first (unless already shown on green), then overlay
+  if(S._skipCelebration){
+    S._skipCelebration=false;
     document.getElementById('overlay').classList.add('show');
-  });
+  } else {
+    showCelebration(d, ()=>{
+      document.getElementById('overlay').classList.add('show');
+    });
+  }
 }
 
 function nextHole(){
@@ -2776,7 +2800,20 @@ function showAchievementPopup(a){
   el.style.cssText='position:fixed;top:calc(env(safe-area-inset-top) + 60px);right:16px;background:linear-gradient(135deg,#2a1a40,#1a3020);border:1px solid var(--gold);border-radius:14px;padding:12px 16px;z-index:999;display:flex;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,.6);max-width:260px;animation:achIn .4s cubic-bezier(.34,1.56,.64,1) forwards;';
   el.innerHTML=`<div style="font-size:28px;flex-shrink:0;">${a.icon}</div><div><div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--gold);margin-bottom:2px;">ACHIEVEMENT UNLOCKED</div><div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:#fff;line-height:1;">${a.name}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);margin-top:2px;">${a.desc}</div></div>`;
   document.body.appendChild(el);
-  setTimeout(()=>{el.style.animation='achOut .5s ease forwards';setTimeout(()=>el.remove(),520);},3500);
+  // Swipe-right to dismiss
+  let _achStartX=0,_achDismissed=false;
+  el.addEventListener('touchstart',e=>{_achStartX=e.touches[0].clientX;},{passive:true});
+  el.addEventListener('touchmove',e=>{
+    const dx=e.touches[0].clientX-_achStartX;
+    if(dx>0)el.style.transform=`translateX(${dx}px)`;
+  },{passive:true});
+  el.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-_achStartX;
+    if(dx>60&&!_achDismissed){_achDismissed=true;el.style.animation='achOut .3s ease forwards';setTimeout(()=>el.remove(),320);}
+    else{el.style.transform='';}
+  },{passive:true});
+  el.addEventListener('click',()=>{if(!_achDismissed){_achDismissed=true;el.style.animation='achOut .3s ease forwards';setTimeout(()=>el.remove(),320);}});
+  const _achTimer=setTimeout(()=>{if(!_achDismissed){_achDismissed=true;el.style.animation='achOut .5s ease forwards';setTimeout(()=>el.remove(),520);}},3500);
 }
 
 function updateProfileStatsAfterRound(score,par,wcUsedThisRound){
@@ -3057,6 +3094,7 @@ function _loadShakePermission(){
   try{ if(localStorage.getItem('gg_shakeperm')==='granted') _shakePermissionGranted=true; }catch{}
 }
 function _saveShakePermission(){
+  // Save globally (not per-profile) — permission is device-level
   try{ localStorage.setItem('gg_shakeperm','granted'); }catch{}
 }
 
@@ -3070,23 +3108,13 @@ function applyRollMode(mode){
   if(mode==='haptic'){
     if(rollBtn) rollBtn.textContent='⚄ ROLL';
     if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){
-      // iOS: always call requestPermission — if previously granted it returns instantly
-      // This handles the case where user restarts the app (permission needs re-confirmation per session)
-      DeviceMotionEvent.requestPermission().then(r=>{
-        if(r==='granted'){
-          _shakePermissionGranted=true;
-          _saveShakePermission();
-          _startShakeListener();
-          const b=document.getElementById('shakePermBanner');if(b)b.remove();
-        } else {
-          // Not granted — show banner for manual tap
-          if(!_shakePermissionGranted) _showShakePermissionBanner();
-        }
-      }).catch(()=>{
-        // requestPermission can only be called from user gesture
-        // If called on init without gesture, show banner to get the gesture
+      if(_shakePermissionGranted){
+        // Already granted this session — start directly
+        _startShakeListener();
+      } else {
+        // Show banner — user taps ALLOW which IS a gesture and triggers requestPermission
         _showShakePermissionBanner();
-      });
+      }
     } else {
       _startShakeListener();
     }
@@ -3302,11 +3330,14 @@ function wcResetHole(){
 function renderWcFab(){
   const fab=document.getElementById('wcFab');
   if(!fab)return;
-  // Show FAB during pending putt state (even though holeDone may be false)
-  const puttPending=!!S._pendingPuttResult||!!document.getElementById('puttAcceptBtn');
-  if(!wcEnabled()||(S.holeDone&&!puttPending)){fab.classList.remove('visible');return;}
+  const puttPending=!!S._pendingPuttResult;
+  // Show if WC enabled AND (not holeDone OR putt pending) AND has equipped cards
+  if(!wcEnabled()||(S.holeDone&&!puttPending)||WCS.equipped.length===0){
+    fab.classList.remove('visible');return;
+  }
   fab.classList.add('visible');
-  document.getElementById('wcFabCount').textContent=`${WCS.equipped.length}/3`;
+  const countEl=document.getElementById('wcFabCount');
+  if(countEl)countEl.textContent=`${WCS.equipped.length}/3`;
   [0,1,2].forEach(i=>{
     const dot=document.getElementById('wcDot'+i);
     if(dot)dot.classList.toggle('filled',i<WCS.equipped.length);
@@ -3411,24 +3442,21 @@ function activateWildcard(slotIdx){
   if(rerollWcs.includes(wc.id)){
     // If there's a pending putt result being held for WC use, cancel the WC button
     const wcPuttBtn=document.getElementById('puttWcBtn');
-    if(wcPuttBtn){
-      wcPuttBtn.remove();
-      // Undo the putt strokes that were already added
-      if(S._pendingPuttResult){
-        const {putts}=S._pendingPuttResult;
-        S.strokes=Math.max(0,S.strokes-putts);
-        S.shotNum=Math.max(1,S.shotNum-1);
-        S.log.pop();renderLog();
-        S._pendingPuttResult=null;
-        S._puttWcUsed=true;
-      }
-      // Reset NEXT SHOT button back to normal
-      const nextBtn=document.getElementById('nextShotBtn');
-      if(nextBtn){nextBtn.textContent='NEXT SHOT →';nextBtn.onclick=doNextShot;nextBtn.style.display='none';}
-      // Show roll button again
-      const rollBtn=document.getElementById('rollBtn');
-      if(rollBtn){rollBtn.style.display='block';rollBtn.disabled=false;}
+    if(wcPuttBtn) wcPuttBtn.remove();
+    if(S._pendingPuttResult){
+      // Undo the putt strokes so reroll is clean
+      const {putts}=S._pendingPuttResult;
+      S.strokes=Math.max(0,S.strokes-putts);
+      S.shotNum=Math.max(1,S.shotNum-1);
+      S.log.pop();renderLog();
+      S._pendingPuttResult=null;
+      S._puttWcUsed=true;
     }
+    // Reset NEXT SHOT button and restore roll button
+    const nextBtn=document.getElementById('nextShotBtn');
+    if(nextBtn){nextBtn.textContent='NEXT SHOT →';nextBtn.onclick=doNextShot;nextBtn.style.display='none';}
+    const rollBtn2=document.getElementById('rollBtn');
+    if(rollBtn2){rollBtn2.style.display='block';rollBtn2.disabled=false;}
     // Don't rebuild grid — mulligan/tailwind keep current state
   } else if(wc.id==='shortcut'||wc.id==='phantom_stroke'){
     buildGrid();
