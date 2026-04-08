@@ -1460,7 +1460,7 @@ function startGame(){
   const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };
   HOLES.forEach(h=>{ h.diff=diffMap[h.baseDiff][GAME_DIFF-1]; });
   hideScreen('diffScreen');
-  hideScreen('courseScreen'); // added for custom mode
+  hideScreen('courseScreen');
   document.getElementById('mainApp').style.display='block';
   init();
   maybeShowShakeBanner();
@@ -2547,18 +2547,6 @@ function openSummary(viewRound = S.currentRound){
   
   body.appendChild(btnRow);
   document.getElementById('summaryModal').classList.add('show');
-}
-
-function startNextRound() {
-  S.currentRound++;
-  S.scorecards.push(Array(18).fill(null));
-  S.histories.push(Array(18).fill(null));
-  S.holeIdx = S.startIdx;
-  S._wcUsedThisRound = 0;
-  saveGameState();
-  closeSummary();
-  loadHole();
-  showWcToast(`⛳ ROUND ${S.currentRound} STARTED!`);
 }
 
 function closeSummary(){
@@ -4082,7 +4070,7 @@ function continueGame(){
     PLAYER_NAME=save.playerName||PLAYER_NAME;
     GAME_DIFF=save.gameDiff||1;
     const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };
-    HOLES.forEach(h=>{ h.diff=diffMap2[h.baseDiff][GAME_DIFF-1]; });
+    HOLES.forEach(h=>{ h.diff=diffMap[h.baseDiff][GAME_DIFF-1]; });
     
     S.mode=save.mode||'single'; S.totalRounds=save.totalRounds||1; S.currentRound=save.currentRound||1;
     S.holesConfig=save.holesConfig||'18'; S.startIdx=save.startIdx||0; S.endIdx=save.endIdx||17;
