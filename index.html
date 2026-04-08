@@ -1121,14 +1121,11 @@ function getAudioCtx(){
 }
 
 // Resume AudioContext on visibility + interaction (iOS screen lock recovery)
-function _resumeAudio(){
-  if(!_audioCtx) return;
-  // iOS: state can be 'suspended' or 'interrupted' after screen lock
+async function _resumeAudio(){
+  if(!_audioCtx)return;
   if(_audioCtx.state==='suspended'||_audioCtx.state==='interrupted'){
-    _audioCtx.resume().catch(()=>{
-      // If resume fails, recreate the context on next playSound call
-      _audioCtx=null;_audioCache={};
-    });
+    await _audioCtx.resume().catch(()=>{});
+    if(_audioCtx.state!=='running')return;
   }
 }
 document.addEventListener('visibilitychange',()=>{
