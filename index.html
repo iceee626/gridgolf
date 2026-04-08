@@ -1073,20 +1073,19 @@ function setMetricsPref(m){
 // ═══════════════════════════════════════
 function showScreen(id, flexOrBlock='flex'){
   const el=document.getElementById(id);
-  if(!el)return;
+  if(!el){console.warn('showScreen: element not found:',id);return;}
   el.style.display=flexOrBlock;
   // Force reflow then add visible class for CSS transition
   void el.offsetWidth;
-  el.classList.add('visible');
+  requestAnimationFrame(()=>{el.classList.add('visible');});
 }
 function hideScreen(id){
   const el=document.getElementById(id);
   if(!el)return;
   el.classList.remove('visible');
-  // Wait for transition then hide
   setTimeout(()=>{
     if(!el.classList.contains('visible')) el.style.display='none';
-  },300);
+  },350);
 }
 
 // ═══════════════════════════════════════
@@ -1288,30 +1287,37 @@ function startGame(){
 // Onboard enter key
 // All DOM-dependent initialization deferred to DOMContentLoaded
 window.addEventListener('DOMContentLoaded', function(){
-  // Initialize theme first
-  initTheme();
-  // Load persisted shake permission
-  _loadShakePermission();
-  // Initialize roll mode
-  applyRollMode(getRollMode());
-  // Input key handlers
-  const oi=document.getElementById('onboardInput');
-  if(oi) oi.addEventListener('keydown',e=>{if(e.key==='Enter')createFirstProfile();});
-  const pni=document.getElementById('profileNewInput');
-  if(pni) pni.addEventListener('keydown',e=>{if(e.key==='Enter')saveNewProfile();});
-  // Modal backdrop click handlers
-  const hm=document.getElementById('histModal');
-  if(hm) hm.addEventListener('click',function(e){if(e.target===this)closeHist();});
-  const pm=document.getElementById('profileModal');
-  if(pm) pm.addEventListener('click',function(e){if(e.target===this)closeProfileModal();});
-  const sm=document.getElementById('summaryModal');
-  if(sm) sm.addEventListener('click',function(e){if(e.target===this)closeSummary();});
-  const stm=document.getElementById('settingsModal');
-  if(stm) stm.addEventListener('click',function(e){if(e.target===this)closeSettings();});
-  const epm=document.getElementById('editProfileModal');
-  if(epm) epm.addEventListener('click',function(e){if(e.target===this)closeEditProfile();});
-  // Auto-load profile (decides which screen to show)
-  autoLoadProfile();
+  try{
+    // Initialize theme first
+    initTheme();
+    // Load persisted shake permission
+    _loadShakePermission();
+    // Initialize roll mode
+    applyRollMode(getRollMode());
+    // Input key handlers
+    const oi=document.getElementById('onboardInput');
+    if(oi) oi.addEventListener('keydown',e=>{if(e.key==='Enter')createFirstProfile();});
+    const pni=document.getElementById('profileNewInput');
+    if(pni) pni.addEventListener('keydown',e=>{if(e.key==='Enter')saveNewProfile();});
+    // Modal backdrop click handlers
+    const hm=document.getElementById('histModal');
+    if(hm) hm.addEventListener('click',function(e){if(e.target===this)closeHist();});
+    const pm=document.getElementById('profileModal');
+    if(pm) pm.addEventListener('click',function(e){if(e.target===this)closeProfileModal();});
+    const sm=document.getElementById('summaryModal');
+    if(sm) sm.addEventListener('click',function(e){if(e.target===this)closeSummary();});
+    const stm=document.getElementById('settingsModal');
+    if(stm) stm.addEventListener('click',function(e){if(e.target===this)closeSettings();});
+    const epm=document.getElementById('editProfileModal');
+    if(epm) epm.addEventListener('click',function(e){if(e.target===this)closeEditProfile();});
+    // Auto-load profile (decides which screen to show)
+    autoLoadProfile();
+  }catch(e){
+    console.error('DOMContentLoaded initialization error:',e);
+    // Emergency fallback: show menu screen
+    const menu=document.getElementById('menuScreen');
+    if(menu){menu.style.display='flex';menu.classList.add('visible');}
+  }
 });
 
 
@@ -2723,18 +2729,31 @@ function closeProfileModal(){
 
 // Auto-load active profile on page ready
 function autoLoadProfile(){
-  const profiles=loadProfiles();
-  if(!profiles.length){
-    const obs=document.getElementById('onboardScreen');
-    if(obs){obs.style.display='flex';void obs.offsetWidth;obs.classList.add('visible');}
-    document.getElementById('menuScreen').style.display='none';
-  } else {
-    const p=getActiveProfile();
-    if(p) PLAYER_NAME=p.name.toUpperCase();
-    document.getElementById('onboardScreen').style.display='none';
-    showScreen('menuScreen','flex');
-    updateMenuProfileDisplay();
-    updateMenuContinueBtn();
+  try{
+    const profiles=loadProfiles();
+    if(!profiles.length){
+      const obs=document.getElementById('onboardScreen');
+      const menu=document.getElementById('menuScreen');
+      if(obs){
+        obs.style.display='flex';
+        void obs.offsetWidth;
+        obs.classList.add('visible');
+      }
+      if(menu) menu.style.display='none';
+    } else {
+      const p=getActiveProfile();
+      if(p) PLAYER_NAME=p.name.toUpperCase();
+      const obs=document.getElementById('onboardScreen');
+      if(obs) obs.style.display='none';
+      showScreen('menuScreen','flex');
+      updateMenuProfileDisplay();
+      updateMenuContinueBtn();
+    }
+  }catch(e){
+    console.error('autoLoadProfile error:',e);
+    // Fallback: show menu screen directly
+    const menu=document.getElementById('menuScreen');
+    if(menu){menu.style.display='flex';menu.classList.add('visible');}
   }
 }
 
