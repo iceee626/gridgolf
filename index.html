@@ -2032,7 +2032,6 @@ function completeHole(){
       if(d===-1) p.birdies=(p.birdies||0)+1;
       if(h.par===3&&score===1) p.holeInOnes=(p.holeInOnes||0)+1;
       if(d>=3) p.tripleTroubles=(p.tripleTroubles||0)+1;
-      if((p.wildcardsUsed||0)+(S._wcUsedThisRound||0)>0) p.wildcardsUsed=(p.wildcardsUsed||0)+(S._wcUsedThisRound||0);
       const prevStreak=p._curUnderParStreak||0;
       const newStreak=d<0?prevStreak+1:0;
       p._curUnderParStreak=newStreak;
@@ -2363,7 +2362,6 @@ function updateProfileAfterRound(score, par){
     else if(d===-1) p.birdies=(p.birdies||0)+1;
     if(h.par===3&&hist.strokes===1) p.holeInOnes=(p.holeInOnes||0)+1;
   });
-  p.wildcardsUsed=(p.wildcardsUsed||0)+(S._wcUsedThisRound||0);
   const diff=score-par;
   if(p.bestDiff===undefined||diff<p.bestDiff) p.bestDiff=diff;
   saveProfiles(profiles);
@@ -2693,7 +2691,7 @@ const ACHIEVEMENTS=[
   {id:'hole_in_one',    icon:'🕳️', name:'Ace!',             desc:'Hole-in-one on a par 3',                    check:p=>(p.holeInOnes||0)>=1},
   {id:'eagle',          icon:'🦅', name:'Eagle Eye',        desc:'Score an Eagle on any hole',                check:p=>(p.eagles||0)>=1},
   {id:'first_birdie',   icon:'🐦', name:'First Birdie',     desc:'Score your first Birdie',                   check:p=>(p.birdies||0)>=1},
-  {id:'birdie_streak',  icon:'🔥', name:'Birdie Streak',    desc:'3 Birdies in a single round',               check:p=>(p.bestBirdieStreak||0)>=3},
+  {id:'birdie_streak',  icon:'🔥', name:'Birdie Jockey',    desc:'5 Birdies in a single round',               check:p=>(S.scorecard.filter((sc,i)=>sc!==null&&(sc-HOLES[i].par===-1)).length>=5)},
   {id:'on_a_roll',      icon:'📈', name:'On A Roll',        desc:'Go under par for 3 consecutive holes',      check:p=>(p.bestUnderParStreak||0)>=3},
   {id:'bogey_free',     icon:'🚫', name:'Bogey Free',       desc:'Complete a round with zero bogeys',         check:p=>(p.bogeyFreeRounds||0)>=1},
   {id:'under_par',      icon:'📉', name:'Under Par',        desc:'Finish any round under par',                check:p=>p.bestDiff!==undefined&&p.bestDiff<0},
@@ -2703,7 +2701,7 @@ const ACHIEVEMENTS=[
   {id:'ten_rounds',     icon:'🎯', name:'Veteran',          desc:'Play 10 complete rounds',                   check:p=>(p.gamesPlayed||0)>=10},
   {id:'fifty_rounds',   icon:'🏌️', name:'Tour Pro',         desc:'Play 50 complete rounds',                   check:p=>(p.gamesPlayed||0)>=50},
   {id:'first_wc',       icon:'🃏', name:'Card Shark',       desc:'Use your first Wildcard',                   check:p=>(p.wildcardsUsed||0)>=1},
-  {id:'high_roller',    icon:'🎰', name:'High Roller',      desc:'Use 3 Wildcards in a single round',         check:p=>(p.maxWcOneRound||0)>=3},
+  {id:'high_roller',    icon:'🎰', name:'High Roller',      desc:'Use 5 Wildcards in a single round',         check:p=>(S._wcUsedThisRound||0)>=5},
   {id:'hard_finish',    icon:'💪', name:'Hard Mode',        desc:'Complete a full round on Hard difficulty',  check:p=>(p.hardRounds||0)>=1},
   {id:'tour_winner',    icon:'👑', name:'Tour Winner',      desc:'Finish under par on Hard difficulty',       check:p=>(p.hardUnderPar||0)>=1},
   {id:'grand_slam',     icon:'🏆', name:'Grand Slam',       desc:'Under par on all 3 difficulties',           check:p=>(p.easyUnderPar||0)>=1&&(p.medUnderPar||0)>=1&&(p.hardUnderPar||0)>=1},
@@ -3386,6 +3384,15 @@ function activateWildcard(slotIdx){
   playSound('wc_use', 0.9);
   S._wcUsedThisRound=(S._wcUsedThisRound||0)+1;
   WCS.equipped.splice(slotIdx,1);
+
+  // Update profile and check achievements immediately upon use
+  const profiles = loadProfiles();
+  const pIdx = Math.min(getActiveProfileIdx(), profiles.length-1);
+  if(profiles[pIdx]) {
+    profiles[pIdx].wildcardsUsed = (profiles[pIdx].wildcardsUsed || 0) + 1;
+    saveProfiles(profiles);
+    setTimeout(() => checkAndAwardAchievements(), 300);
+  }
 
   const rerollWcs=['mulligan','tailwind'];
   if(rerollWcs.includes(wc.id)){
