@@ -1399,6 +1399,12 @@ let S={
   currentGrid:null, holeDone:false, rolling:false,
   yrdRemain:0, yrdTotal:0,
   fwyVisits:0, prevZone:null, shotCount:0,
+  _wcUsedThisRound:0,
+  _skipCelebration:false,
+  _preserveGrid:false,
+  _forceGrid:false,
+  _mulliganJustFired:false,
+  _puttWcUsed:false,
 };
 
 // ═══════════════════════════════════════
@@ -3517,7 +3523,7 @@ function renderWcDrawer(){
       const isActive=WCS.active===wc.id;
       // Allow use: normally block if rolling/holeDone/reroll pending
       // BUT allow reroll WCs during pending putt state
-      const puttPending=!!document.getElementById('puttAcceptBtn');
+      const puttPending=!!document.getElementById('puttWcBtn');
       const rerollPending=WCS.active==='mulligan'||WCS.active==='tailwind';
       const canUse=!S.rolling&&!rerollPending&&!isActive&&(!S.holeDone||puttPending);
       slot.innerHTML=`
@@ -3545,7 +3551,7 @@ function activateWildcard(slotIdx){
   S._wcUsedThisRound=(S._wcUsedThisRound||0)+1;
   const wc=WCS.equipped[slotIdx];
   if(!wc)return;
-  playSound('wc_use', 0.9); // sound when effect activates
+  playSound('wildcard', 0.9); // sound when effect activates
   WCS.active=wc.id;
   applyWildcardEffect(wc);
   // Remove from equipped
