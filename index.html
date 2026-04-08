@@ -9,7 +9,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0d1117">
 <title>Grid Golf</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sen:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cabin+Condensed:wght@400;500;600;700&family=Sen:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --c-tee:#2c5f8a;--c-fwy:#3a7a30;--c-fwyl:#4e9e42;
@@ -105,7 +105,7 @@ body::before{content:'';position:fixed;inset:0;background-image:repeating-linear
 /* HEADER */
 header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 16px 0;position:sticky;top:0;z-index:100;}
 .logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.logo{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:4px;line-height:1;}
+.logo{font-family:'Cabin Condensed', sans-serif;font-size:28px;letter-spacing:4px;line-height:1;}
 .logo span{color:var(--c-fwyl);}
 .hole-badge{background:var(--c-tee);color:#fff;font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;padding:4px 12px;border-radius:20px;}
 /* Sc-wrap allows scrolling */
@@ -128,19 +128,19 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 
 /* HOLE INFO */
 .hole-info{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;}
-.hole-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;line-height:1.1;}
+.hole-title{font-family:'Cabin Condensed', sans-serif;font-size:20px;letter-spacing:2px;line-height:1.1;}
 .hole-meta{display:flex;align-items:center;gap:8px;margin-top:3px;}
 .hole-yards{font-size:11px;color:var(--muted);font-family:'Sen', sans-serif;}
 .stars{font-size:13px;letter-spacing:1px;}
 .par-block{text-align:right;}
-.par-num{font-family:'Bebas Neue',cursive;font-size:36px;color:var(--c-fwyl);line-height:1;}
+.par-num{font-family:'Cabin Condensed', sans-serif;font-size:36px;color:var(--c-fwyl);line-height:1;}
 .par-lbl{font-size:10px;color:var(--muted);letter-spacing:2px;font-family:'Sen', sans-serif;}
 
 /* YARDAGE BAR */
 .yrd-bar{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;}
 .yrd-track{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
 .yrd-fill{height:100%;background:linear-gradient(90deg,var(--c-fwyl),var(--c-grn));border-radius:3px;transition:width .55s ease;}
-.yrd-num{font-family:'Bebas Neue',cursive;font-size:18px;color:var(--text);line-height:1;white-space:nowrap;min-width:72px;}
+.yrd-num{font-family:'Cabin Condensed', sans-serif;font-size:18px;color:var(--text);line-height:1;white-space:nowrap;min-width:72px;}
 .yrd-lbl{font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);white-space:nowrap;}
 
 /* ZONE PILL */
@@ -231,7 +231,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 
 .btn-roll{
   width:100%;flex:1;background:var(--c-fwy);color:#fff;border:none;border-radius:12px;
-  font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;
+  font-family:'Cabin Condensed', sans-serif;font-size:20px;letter-spacing:2px;
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
@@ -247,9 +247,9 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .result-panel{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 15px;min-height:66px;display:flex;align-items:center;gap:12px;}
 .res-chip{width:44px;height:44px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;transition:background .3s;}
 .res-info{flex:1;}
-.res-title{font-family:'Bebas Neue',cursive;font-size:19px;letter-spacing:2px;line-height:1;}
+.res-title{font-family:'Cabin Condensed', sans-serif;font-size:19px;letter-spacing:2px;line-height:1;}
 .res-sub{font-size:11px;font-family:'Sen', sans-serif;color:var(--muted);margin-top:2px;}
-.res-badge{font-family:'Bebas Neue',cursive;font-size:28px;line-height:1;}
+.res-badge{font-family:'Cabin Condensed', sans-serif;font-size:28px;line-height:1;}
 .b-pen{color:#e05252;}.b-ok{color:var(--c-fwyl);}.b-good{color:var(--gold);}
 
 /* LOG */
@@ -284,22 +284,22 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 }
 .menu-profile-icon:hover{background:rgba(255,255,255,.2);}
 
-.menu-logo{font-family:'Bebas Neue',cursive;font-size:52px;letter-spacing:6px;color:var(--text);line-height:1;margin-bottom:4px;}
+.menu-logo{font-family:'Cabin Condensed', sans-serif;font-size:52px;letter-spacing:6px;color:var(--text);line-height:1;margin-bottom:4px;}
 .menu-logo span{color:var(--c-fwyl);}
 .menu-tagline{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:20px;}
 .menu-btns{display:flex;flex-direction:column;gap:10px;}
-.menu-btn-play{background:var(--c-fwy);color:#fff;border:none;border-radius:14px;padding:16px;font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;cursor:pointer;transition:transform .1s;box-shadow:0 4px 20px rgba(58,122,48,.4);}
+.menu-btn-play{background:var(--c-fwy);color:#fff;border:none;border-radius:14px;padding:16px;font-family:'Cabin Condensed', sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;transition:transform .1s;box-shadow:0 4px 20px rgba(58,122,48,.4);}
 .menu-btn-play:active{transform:scale(0.98);}
-.menu-btn-sec{background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:14px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;}
+.menu-btn-sec{background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:14px;font-family:'Cabin Condensed', sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;}
 .menu-btn-sec:disabled{opacity:0.4;cursor:not-allowed;}
 
-.onboard-input{width:100%;background:rgba(255,255,255,.08);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;color:var(--text);outline:none;text-transform:uppercase;transition:border-color .2s;text-align:center;}
+.onboard-input{width:100%;background:rgba(255,255,255,.08);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'Cabin Condensed', sans-serif;font-size:24px;letter-spacing:3px;color:var(--text);outline:none;text-transform:uppercase;transition:border-color .2s;text-align:center;}
 .onboard-input:focus{border-color:var(--c-fwyl);}
 .onboard-input::placeholder{color:rgba(255,255,255,.2);}
 
 .setup-card{max-width:360px;width:100%;text-align:center;position:relative;z-index:10;}
 .setup-back-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 14px;font-family:'Sen', sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;margin-bottom:20px;display:inline-block;}
-.setup-title{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;margin-bottom:20px;color:var(--c-fwyl);}
+.setup-title{font-family:'Cabin Condensed', sans-serif;font-size:28px;letter-spacing:3px;margin-bottom:20px;color:var(--c-fwyl);}
 .setup-group{margin-bottom:20px;text-align:left;}
 .setup-lbl{font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;display:block;}
 
@@ -309,27 +309,27 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 
 /* diff-btn used for custom options & difficulty */
 .diff-row{display:flex;gap:6px;margin-bottom:10px;}
-.diff-btn{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:12px 6px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:var(--text);cursor:pointer;transition:all .15s;text-align:center;}
+.diff-btn{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:12px 6px;font-family:'Cabin Condensed', sans-serif;font-size:16px;letter-spacing:2px;color:var(--text);cursor:pointer;transition:all .15s;text-align:center;}
 .diff-btn.active{border-color:var(--c-fwyl);background:rgba(78,158,66,.2);color:var(--c-fwyl);}
 .diff-btn:disabled{opacity:0.3;cursor:not-allowed;}
-.tee-off-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:12px;padding:16px;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;cursor:pointer;transition:background .15s;}
+.tee-off-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:12px;padding:16px;font-family:'Cabin Condensed', sans-serif;font-size:20px;letter-spacing:3px;cursor:pointer;transition:background .15s;}
 .tee-off-btn:hover{background:var(--c-fwyl);}
 
 /* Summary tabs */
 .sum-tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--border);}
-.sum-tab{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;cursor:pointer;white-space:nowrap;}
+.sum-tab{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;font-family:'Cabin Condensed', sans-serif;font-size:14px;letter-spacing:1px;cursor:pointer;white-space:nowrap;}
 .sum-tab.active{background:var(--c-fwy);color:#fff;border-color:var(--c-fwyl);}
 
 /* CELL FLIP ANIMATION */
 .cell{transform-style:preserve-3d;transition:transform .0s;}
 .cell-inner-front,.cell-inner-back{position:absolute;inset:0;border-radius:4px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
-.cell-inner-back{transform:rotateY(180deg);background:rgba(0,0,0,.85);font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:1px;color:#fff;padding:2px;}
+.cell-inner-back{transform:rotateY(180deg);background:rgba(0,0,0,.85);font-family:'Cabin Condensed', sans-serif;font-size:9px;letter-spacing:1px;color:#fff;padding:2px;}
 .cell.flipped{transform:rotateY(180deg);}
 @keyframes flip-in{0%{transform:rotateY(0)}50%{transform:rotateY(90deg)}100%{transform:rotateY(180deg)}}
 @keyframes flip-out{0%{transform:rotateY(180deg)}50%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
 
 /* HOLE RESULT CELEBRATION */
-.celebration-badge{font-family:'Bebas Neue',cursive;font-size:48px;letter-spacing:4px;text-align:center;padding:18px 32px;border-radius:16px;animation:celebIn .5s cubic-bezier(.34,1.56,.64,1) forwards, celebOut .3s ease .9s forwards;}
+.celebration-badge{font-family:'Cabin Condensed', sans-serif;font-size:48px;letter-spacing:4px;text-align:center;padding:18px 32px;border-radius:16px;animation:celebIn .5s cubic-bezier(.34,1.56,.64,1) forwards, celebOut .3s ease .9s forwards;}
 @keyframes celebIn{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 @keyframes celebOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(1.1)}}
 .celeb-eagle{background:rgba(240,192,64,.95);color:#3a2800;}
@@ -345,10 +345,10 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .ov{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 32px;text-align:center;max-width:300px;width:90%;animation:popin .38s cubic-bezier(.34,1.56,.64,1);}
 @keyframes popin{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
 .ov-emoji{font-size:50px;margin-bottom:8px;}
-.ov-title{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:4px;color:var(--c-fwyl);margin-bottom:2px;}
-.ov-namerow{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;}
+.ov-title{font-family:'Cabin Condensed', sans-serif;font-size:32px;letter-spacing:4px;color:var(--c-fwyl);margin-bottom:2px;}
+.ov-namerow{font-family:'Cabin Condensed', sans-serif;font-size:18px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;}
 .ov-statsrow{font-size:13px;color:var(--muted);font-family:'Sen', sans-serif;letter-spacing:1px;margin-bottom:18px;}
-.ov-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:3px;cursor:pointer;transition:background .15s;}
+.ov-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Cabin Condensed', sans-serif;font-size:17px;letter-spacing:3px;cursor:pointer;transition:background .15s;}
 .ov-btn:hover{background:var(--c-fwyl);}
 
 /* HISTORY MODAL */
@@ -356,12 +356,12 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .hist-modal.show{display:block;}
 .hist-card{background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:440px;margin:0 auto;overflow:hidden;animation:popin .3s cubic-bezier(.34,1.56,.64,1);}
 .hist-head{background:var(--c-fwy);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;}
-.hist-htitle{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
+.hist-htitle{font-family:'Cabin Condensed', sans-serif;font-size:20px;letter-spacing:3px;color:#fff;}
 .hist-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .hist-body{padding:14px;}
 .hist-stats{display:flex;gap:8px;margin-bottom:12px;}
 .hstat{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center;}
-.hstat-n{font-family:'Bebas Neue',cursive;font-size:26px;line-height:1;}
+.hstat-n{font-family:'Cabin Condensed', sans-serif;font-size:26px;line-height:1;}
 .hstat-l{font-family:'Sen', sans-serif;font-size:9px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-top:1px;}
 .hsec{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin:10px 0 6px;display:flex;align-items:center;gap:7px;}
 .hsec::after{content:'';flex:1;height:1px;background:var(--border);}
@@ -386,21 +386,21 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .name-screen{position:fixed;inset:0;background:var(--dark);z-index:500;display:flex;align-items:center;justify-content:center;padding:24px;}
 .name-screen.hidden{display:none;}
 .name-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px 28px;max-width:340px;width:100%;text-align:center;}
-.name-logo{font-family:'Bebas Neue',cursive;font-size:40px;letter-spacing:6px;margin-bottom:4px;}
+.name-logo{font-family:'Cabin Condensed', sans-serif;font-size:40px;letter-spacing:6px;margin-bottom:4px;}
 .name-logo span{color:var(--c-fwyl);}
 .name-sub{font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:28px;}
 .name-label{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;text-align:left;margin-bottom:7px;}
-.name-input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:var(--text);outline:none;text-transform:uppercase;margin-bottom:16px;transition:border-color .2s;}
+.name-input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'Cabin Condensed', sans-serif;font-size:22px;letter-spacing:3px;color:var(--text);outline:none;text-transform:uppercase;margin-bottom:16px;transition:border-color .2s;}
 .name-input:focus{border-color:var(--c-fwyl);}
 .name-input::placeholder{color:var(--muted);letter-spacing:2px;}
-.name-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;cursor:pointer;transition:background .15s;}
+.name-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:14px;font-family:'Cabin Condensed', sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;transition:background .15s;}
 .name-btn:hover{background:var(--c-fwyl);}
 .diff-row{display:flex;gap:6px;margin-bottom:14px;}
 .diff-btn{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:10px 6px;cursor:pointer;transition:all .15s;text-align:center;}
 .diff-btn:hover{border-color:var(--c-fwyl);background:rgba(78,158,66,.1);}
 .diff-btn.active{border-color:var(--c-fwyl);background:rgba(78,158,66,.2);}
 .diff-icon{font-size:20px;margin-bottom:3px;}
-.diff-title{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;color:var(--text);line-height:1;}
+.diff-title{font-family:'Cabin Condensed', sans-serif;font-size:13px;letter-spacing:2px;color:var(--text);line-height:1;}
 .diff-desc{font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);margin-top:3px;line-height:1.3;}
 
 /* TV SCORECARD BAR — fixed bottom, replaces float bar */
@@ -419,14 +419,14 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   font-size:18px;flex-shrink:0;margin-right:8px;
 }
 .tv-nameblock{display:flex;flex-direction:column;justify-content:center;margin-right:10px;min-width:0;}
-.tv-playername{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tv-playername{font-family:'Cabin Condensed', sans-serif;font-size:18px;letter-spacing:2px;color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .tv-holeinfo{font-family:'Sen', sans-serif;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:1px;line-height:1.3;}
 /* Shot number track */
 .tv-shots{display:flex;gap:5px;align-items:center;flex:1;justify-content:center;padding:0 4px;}
 .tv-sn{
   width:22px;height:22px;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Bebas Neue',cursive;font-size:13px;
+  font-family:'Cabin Condensed', sans-serif;font-size:13px;
   color:rgba(255,255,255,.45);
   position:relative;flex-shrink:0;
 }
@@ -460,7 +460,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:0 8px;flex-shrink:0;margin-left:8px;
 }
-.tv-total-num{font-family:'Bebas Neue',cursive;font-size:20px;color:#1a1a1a;line-height:1;}
+.tv-total-num{font-family:'Cabin Condensed', sans-serif;font-size:20px;color:#1a1a1a;line-height:1;}
 .tv-total-lbl{font-family:'Sen', sans-serif;font-size:7px;color:rgba(0,0,0,.5);letter-spacing:1px;text-transform:uppercase;line-height:1;}
 /* Bottom strip — "For Birdie" only shown on green */
 .tv-row2{
@@ -470,7 +470,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   display:none;
 }
 .tv-row2.show{display:block;}
-.tv-putt-status{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;color:#fff;}
+.tv-putt-status{font-family:'Cabin Condensed', sans-serif;font-size:13px;letter-spacing:3px;color:#fff;}
 .tv-putt-status.eagle-c{color:var(--gold);}
 .tv-putt-status.birdie-c{color:#c8ffd4;}
 .tv-putt-status.bogey-c{color:#ffe0a0;}
@@ -486,14 +486,14 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   display:flex;justify-content:space-between;align-items:center;
   position:sticky;top:0;z-index:10;
 }
-.sum-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#fff;}
+.sum-title{font-family:'Cabin Condensed', sans-serif;font-size:22px;letter-spacing:3px;color:#fff;}
 .sum-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .sum-body{padding:16px 16px 20px;}
 .sum-total{display:flex;align-items:center;justify-content:center;gap:16px;padding:14px 0 18px;border-bottom:1px solid var(--border);margin-bottom:14px;}
-.sum-total-score{font-family:'Bebas Neue',cursive;font-size:64px;line-height:1;}
+.sum-total-score{font-family:'Cabin Condensed', sans-serif;font-size:64px;line-height:1;}
 .sum-total-info{display:flex;flex-direction:column;gap:2px;}
-.sum-total-name{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--muted);}
-.sum-total-diff{font-family:'Bebas Neue',cursive;font-size:28px;line-height:1;}
+.sum-total-name{font-family:'Cabin Condensed', sans-serif;font-size:18px;letter-spacing:2px;color:var(--muted);}
+.sum-total-diff{font-family:'Cabin Condensed', sans-serif;font-size:28px;line-height:1;}
 .sum-total-par{font-family:'Sen', sans-serif;font-size:11px;color:var(--muted);}
 .sum-sc-table td{font-size:11px;}
 
@@ -511,7 +511,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .profile-modal.show{display:flex;}
 .profile-card{background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:420px;width:100%;overflow:hidden;animation:popin .3s cubic-bezier(.34,1.56,.64,1);}
 .profile-head{background:var(--c-fwy);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;}
-.profile-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
+.profile-head-title{font-family:'Cabin Condensed', sans-serif;font-size:20px;letter-spacing:3px;color:#fff;}
 .profile-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;}
 .profile-body{padding:14px;}
 .profile-slots{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
@@ -521,7 +521,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .profile-slot.empty{border-style:dashed;cursor:default;}
 .profile-avatar{width:40px;height:40px;border-radius:50%;background:var(--c-tee);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
 .profile-info{flex:1;min-width:0;}
-.profile-name{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);line-height:1;}
+.profile-name{font-family:'Cabin Condensed', sans-serif;font-size:16px;letter-spacing:1px;color:var(--text);line-height:1;}
 .profile-stats{font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:2px;}
 .profile-actions{display:flex;gap:4px;flex-shrink:0;}
 .profile-action-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:5px 8px;font-family:'Sen', sans-serif;font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .15s;white-space:nowrap;}
@@ -529,10 +529,10 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .profile-action-btn.del:hover{border-color:#e05252;color:#e05252;}
 .profile-new-form{display:none;border-top:1px solid var(--border);padding-top:12px;}
 .profile-new-form.show{display:block;}
-.profile-new-input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--text);outline:none;text-transform:uppercase;margin-bottom:8px;transition:border-color .2s;}
+.profile-new-input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Cabin Condensed', sans-serif;font-size:18px;letter-spacing:2px;color:var(--text);outline:none;text-transform:uppercase;margin-bottom:8px;transition:border-color .2s;}
 .profile-new-input:focus{border-color:var(--c-fwyl);}
 .profile-new-row{display:flex;gap:8px;}
-.profile-save-btn{flex:1;background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:10px;font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;cursor:pointer;}
+.profile-save-btn{flex:1;background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:10px;font-family:'Cabin Condensed', sans-serif;font-size:15px;letter-spacing:2px;cursor:pointer;}
 .profile-cancel-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 14px;font-family:'Sen', sans-serif;font-size:11px;cursor:pointer;}
 
 /* ═══ WILDCARD SYSTEM ═══════════════════════════════════ */
@@ -553,7 +553,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .wc-fab.visible{display:flex;}
 .wc-fab:hover{background:linear-gradient(135deg,#9b3fbe,#6a2a8e);}
 .wc-fab-icon{font-size:18px;line-height:1;}
-.wc-fab-count{font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:1px;}
+.wc-fab-count{font-family:'Cabin Condensed', sans-serif;font-size:12px;letter-spacing:1px;}
 .wc-fab-slots{display:flex;flex-direction:column;gap:3px;margin-top:2px;}
 .wc-fab-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);transition:background .2s;}
 .wc-fab-dot.filled{background:#f0c040;}
@@ -582,7 +582,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   background:linear-gradient(135deg,#7b2f9e,#4a1a6e);
   padding:16px;display:flex;align-items:center;justify-content:space-between;
 }
-.wc-drawer-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
+.wc-drawer-title{font-family:'Cabin Condensed', sans-serif;font-size:20px;letter-spacing:3px;color:#fff;}
 .wc-drawer-close{background:rgba(0,0,0,.3);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .wc-drawer-sub{font-family:'Sen', sans-serif;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px;padding:10px 16px 0;}
 .wc-drawer-slots{display:flex;flex-direction:column;gap:8px;padding:8px 16px 16px;}
@@ -596,13 +596,13 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .wc-slot-header{display:flex;align-items:flex-start;gap:8px;}
 .wc-slot-icon{font-size:22px;flex-shrink:0;line-height:1;}
 .wc-slot-info{flex:1;min-width:0;}
-.wc-slot-name{font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;color:#e0c0ff;line-height:1;}
+.wc-slot-name{font-family:'Cabin Condensed', sans-serif;font-size:14px;letter-spacing:1px;color:#e0c0ff;line-height:1;}
 .wc-slot-desc{font-family:'Sen', sans-serif;font-size:9px;color:rgba(255,255,255,.5);line-height:1.3;margin-top:2px;}
 .wc-slot-type{display:inline-block;font-family:'Sen', sans-serif;font-size:8px;letter-spacing:1px;padding:2px 6px;border-radius:20px;background:rgba(240,192,64,.15);color:var(--gold);border:1px solid rgba(240,192,64,.3);margin-top:2px;}
 .wc-slot-actions{display:flex;gap:6px;margin-top:4px;}
 .wc-use-btn{
   flex:1;background:linear-gradient(135deg,#7b2f9e,#4a1a6e);color:#fff;border:none;
-  border-radius:7px;padding:7px;font-family:'Bebas Neue',cursive;font-size:13px;
+  border-radius:7px;padding:7px;font-family:'Cabin Condensed', sans-serif;font-size:13px;
   letter-spacing:1px;cursor:pointer;transition:opacity .15s;
 }
 .wc-use-btn:hover{opacity:.85;}
@@ -617,7 +617,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .wc-active-badge{
   position:absolute;top:8px;right:8px;
   background:var(--gold);color:#1a1000;
-  font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:1px;
+  font-family:'Cabin Condensed', sans-serif;font-size:10px;letter-spacing:1px;
   padding:2px 7px;border-radius:20px;
 }
 
@@ -637,7 +637,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 }
 .wc-reveal.show{display:flex;}
 .wc-reveal-title{
-  font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:6px;
+  font-family:'Cabin Condensed', sans-serif;font-size:32px;letter-spacing:6px;
   color:#f0c040;text-shadow:0 0 20px rgba(240,192,64,.5);
   margin-bottom:20px;animation:wc-pulse 1s ease infinite alternate;
   margin-top:8px;
@@ -674,7 +674,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   background:linear-gradient(160deg,#2a0a4e,#1a0a2e);
 }
 .wc-front-icon{font-size:42px;line-height:1;}
-.wc-front-name{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#f0c040;text-align:center;line-height:1.1;}
+.wc-front-name{font-family:'Cabin Condensed', sans-serif;font-size:22px;letter-spacing:3px;color:#f0c040;text-align:center;line-height:1.1;}
 .wc-front-type{display:none;}
 .wc-front-desc{font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.75);text-align:center;line-height:1.4;}
 .wc-reveal-hint{font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);animation:wc-blink 1.2s ease infinite;}
@@ -682,13 +682,13 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .wc-reveal-actions{display:flex;gap:10px;width:220px;flex-wrap:wrap;}
 .wc-equip-btn{
   flex:1;background:linear-gradient(135deg,#7b2f9e,#4a1a6e);color:#fff;border:none;
-  border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:18px;
+  border-radius:10px;padding:14px;font-family:'Cabin Condensed', sans-serif;font-size:18px;
   letter-spacing:2px;cursor:pointer;transition:opacity .15s;
 }
 .wc-equip-btn:hover{opacity:.85;}
 .wc-discard-all-btn{
   background:rgba(255,82,82,.15);color:#ff8080;border:1px solid rgba(255,82,82,.3);
-  border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:14px;
+  border-radius:10px;padding:14px;font-family:'Cabin Condensed', sans-serif;font-size:14px;
   letter-spacing:1px;cursor:pointer;transition:all .15s;
 }
 /* Active wildcard indicator ring on roll button */
@@ -714,7 +714,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .hio-overlay.show{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
 .hio-ball{font-size:56px;animation:hio-spin 1s linear infinite;}
 @keyframes hio-spin{from{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.3)}to{transform:rotate(360deg) scale(1)}}
-.hio-title{font-family:'Bebas Neue',cursive;font-size:clamp(28px,8vw,38px);letter-spacing:4px;color:#f0c040;text-align:center;text-shadow:0 0 30px rgba(240,192,64,.8);line-height:1.1;}
+.hio-title{font-family:'Cabin Condensed', sans-serif;font-size:clamp(28px,8vw,38px);letter-spacing:4px;color:#f0c040;text-align:center;text-shadow:0 0 30px rgba(240,192,64,.8);line-height:1.1;}
 .hio-sub{font-family:'Sen', sans-serif;font-size:12px;letter-spacing:2px;color:rgba(255,255,255,.6);text-align:center;}
 .hio-dice-row{display:flex;gap:20px;justify-content:center;}
 .hio-die{
@@ -722,18 +722,18 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   background:linear-gradient(145deg,#fefefe,#e2e2e2);
   border:2px solid var(--gold);border-radius:12px;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Bebas Neue',cursive;font-size:32px;color:#111;
+  font-family:'Cabin Condensed', sans-serif;font-size:32px;color:#111;
   box-shadow:0 4px 0 #aaa,0 6px 12px rgba(0,0,0,.5);
 }
 .hio-roll-btn{
   background:var(--gold);color:#1a1000;border:none;border-radius:12px;
-  padding:16px 40px;font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;
+  padding:16px 40px;font-family:'Cabin Condensed', sans-serif;font-size:24px;letter-spacing:3px;
   cursor:pointer;animation:hio-pulse 1s ease infinite alternate;
   -webkit-tap-highlight-color:transparent;touch-action:manipulation;
   width:100%;max-width:300px;
 }
 @keyframes hio-pulse{from{transform:scale(1);box-shadow:0 0 10px rgba(240,192,64,.3)}to{transform:scale(1.04);box-shadow:0 0 24px rgba(240,192,64,.7)}}
-.hio-result{font-family:'Bebas Neue',cursive;font-size:clamp(36px,10vw,52px);letter-spacing:4px;text-align:center;animation:popin .5s cubic-bezier(.34,1.56,.64,1);}
+.hio-result{font-family:'Cabin Condensed', sans-serif;font-size:clamp(36px,10vw,52px);letter-spacing:4px;text-align:center;animation:popin .5s cubic-bezier(.34,1.56,.64,1);}
 .hio-result.success{color:#f0c040;text-shadow:0 0 40px rgba(240,192,64,1);}
 .hio-result.fail{color:var(--muted);}
 </style>
@@ -834,7 +834,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
     
     <button class="course-btn" onclick="navToDiff()">
       <div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;">LITTLE PINES GC</div>
+        <div style="font-family:'Cabin Condensed', sans-serif;font-size:22px;letter-spacing:2px;color:#fff;">LITTLE PINES GC</div>
         <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 72 · WOODLAND</div>
       </div>
       <div style="font-size:24px;">🌲</div>
@@ -842,7 +842,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
     
     <button class="course-btn locked">
       <div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:var(--muted);">OCEAN BREEZE LINKS</div>
+        <div style="font-family:'Cabin Condensed', sans-serif;font-size:22px;letter-spacing:2px;color:var(--muted);">OCEAN BREEZE LINKS</div>
         <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">UNLOCK SOON</div>
       </div>
       <div style="font-size:24px;">🌊</div>
@@ -1507,7 +1507,7 @@ function buildScorecard(){
     sr.appendChild(sc);
   });
   
-  const hText = S.holesConfig==='18' ? `HOLE ${S.holeIdx+1} / 18` : `HOLE ${S.holeIdx+1} (OF 9)`;
+  const hText = S.holesConfig==='18' ? `HOLE ${S.holeIdx+1} / 18` : `HOLE ${S.holeIdx - S.startIdx + 1} (OF 9)`;
   const rText = S.totalRounds > 1 ? `R${S.currentRound} · ` : '';
   document.getElementById('holeBadge').textContent=`${rText}${hText}`;
 
@@ -2303,7 +2303,7 @@ function showRoundEnd(){
     
     document.getElementById('ovNameRow').textContent=finalTotalStr;
     document.getElementById('ovNameRow').style.fontSize='48px';
-    document.getElementById('ovNameRow').style.fontFamily="'Bebas Neue',cursive";
+    document.getElementById('ovNameRow').style.fontFamily="'Cabin Condensed', sans-serif";
     document.getElementById('ovNameRow').style.letterSpacing='4px';
     document.getElementById('ovNameRow').style.color='var(--c-fwyl)';
     
@@ -2314,7 +2314,7 @@ function showRoundEnd(){
     if (isNewPB) {
         const pbRow = document.createElement('div'); pbRow.id = 'ovPbRow';
         pbRow.textContent = 'NEW PERSONAL BEST!';
-        pbRow.style.cssText = "font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--gold);margin-top:-10px;margin-bottom:14px;animation:pulse 1s infinite alternate;";
+        pbRow.style.cssText = "font-family:'Cabin Condensed', sans-serif;font-size:20px;letter-spacing:2px;color:var(--gold);margin-top:-10px;margin-bottom:14px;animation:pulse 1s infinite alternate;";
         if(!document.getElementById('pbStyle')){
             const s = document.createElement('style'); s.id = 'pbStyle';
             s.textContent = '@keyframes pulse { from { opacity: 0.7; transform: scale(0.98); } to { opacity: 1; transform: scale(1.05); } }';
@@ -2384,7 +2384,7 @@ function openSummary(viewRound = S.currentRound){
     gBox.style.cssText = 'background:rgba(240,192,64,.15);border:1px solid rgba(240,192,64,.3);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;';
     gBox.innerHTML = `
       <div><div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--gold);letter-spacing:1px;">TOURNAMENT TOTAL</div><div style="font-size:12px;color:var(--text);">${globalTotal} strokes</div></div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);">${gDiffStr}</div>
+      <div style="font-family:'Cabin Condensed',sans-serif;font-size:28px;color:var(--gold);">${gDiffStr}</div>
     `;
     body.appendChild(gBox);
   }
@@ -2422,7 +2422,7 @@ function openSummary(viewRound = S.currentRound){
     cell.style.cssText='padding:4px 2px;text-align:center;border:1px solid var(--border);font-size:12px;font-weight:700;'+(i===activeHoles.length+1?'background:rgba(0,0,0,.2);':'');
     if(i===0){
       cell.textContent=v;
-      cell.style.cssText+='text-align:left;padding-left:8px;font-family:Bebas Neue,cursive;font-size:13px;letter-spacing:1px;';
+      cell.style.cssText+='text-align:left;padding-left:8px;font-family:"Cabin Condensed",sans-serif;font-size:13px;letter-spacing:1px;';
     } else if(i===activeHoles.length+1){
       cell.textContent=v; cell.style.color=roundDiff<0?'var(--gold)':roundDiff>0?'#e05252':'var(--c-fwyl)';
     } else {
@@ -2494,9 +2494,9 @@ function openSummary(viewRound = S.currentRound){
     const zoneDots=hist.log.map(e=>`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${(Z[e.zk]||Z.fwy).color};flex-shrink:0;"></span>`).join('');
 
     row.innerHTML=`
-      <span style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:1px;color:var(--muted);min-width:54px;">${h.name}</span>
+      <span style="font-family:'Cabin Condensed',sans-serif;font-size:15px;letter-spacing:1px;color:var(--muted);min-width:54px;">${h.name}</span>
       <span style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);">par ${h.par}</span>
-      <span style="font-family:'Bebas Neue',cursive;font-size:16px;color:${scoreColor};margin-left:auto;">${hist.strokes}</span>
+      <span style="font-family:'Cabin Condensed',sans-serif;font-size:18px;color:${scoreColor};margin-left:auto;">${hist.strokes}</span>
       <span style="font-family:'Sen',sans-serif;font-size:10px;color:${scoreColor};min-width:40px;">${resultLabel}</span>
       <span style="display:flex;gap:3px;align-items:center;">${zoneDots}</span>
     `;
@@ -2510,12 +2510,12 @@ function openSummary(viewRound = S.currentRound){
   
   if (S.currentRound < S.totalRounds && viewRound === S.currentRound && S.holeDone) {
     const nextRndBtn=document.createElement('button');
-    nextRndBtn.style.cssText='width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:16px;letter-spacing:3px;cursor:pointer;';
+    nextRndBtn.style.cssText='width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:13px;font-family:"Cabin Condensed",sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;';
     nextRndBtn.textContent=`START ROUND ${S.currentRound + 1} →`;
     nextRndBtn.onclick=startNextRound;
     
     const returnBtn=document.createElement('button');
-    returnBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:16px;letter-spacing:3px;cursor:pointer;';
+    returnBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Cabin Condensed",sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;';
     returnBtn.textContent='SAVE & MENU';
     returnBtn.onclick=()=>{closeSummary(); returnToMenuSave();};
     
@@ -2523,20 +2523,20 @@ function openSummary(viewRound = S.currentRound){
     btnRow.appendChild(returnBtn);
   } else {
     const returnBtn=document.createElement('button');
-    returnBtn.style.cssText='width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:16px;letter-spacing:3px;cursor:pointer;';
+    returnBtn.style.cssText='width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:13px;font-family:"Cabin Condensed",sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;';
     returnBtn.textContent='RETURN TO MAIN MENU';
     returnBtn.onclick=()=>{closeSummary();returnToMenu();};
     btnRow.appendChild(returnBtn);
     
     if (viewRound === S.currentRound && S.currentRound === S.totalRounds && S.holeDone) {
       const playAgainBtn=document.createElement('button');
-      playAgainBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:16px;letter-spacing:3px;cursor:pointer;';
+      playAgainBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Cabin Condensed",sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;';
       playAgainBtn.textContent='PLAY SETUP AGAIN';
       playAgainBtn.onclick=()=>{
         document.getElementById('summaryModal').classList.remove('show');
         document.getElementById('overlay').classList.remove('show');
         document.getElementById('mainApp').style.display='none';
-        startGame(); // Re-uses SETUP and selected diff
+        startGame(); 
         document.querySelector('.tv-bar').classList.add('show');
       };
       btnRow.appendChild(playAgainBtn);
@@ -2547,6 +2547,18 @@ function openSummary(viewRound = S.currentRound){
   document.getElementById('summaryModal').classList.add('show');
 }
 
+function startNextRound() {
+  S.currentRound++;
+  S.scorecards.push(Array(18).fill(null));
+  S.histories.push(Array(18).fill(null));
+  S.holeIdx = S.startIdx;
+  S._wcUsedThisRound = 0;
+  saveGameState();
+  closeSummary();
+  loadHole();
+  showWcToast(`⛳ ROUND ${S.currentRound} STARTED!`);
+}
+
 function closeSummary(){
   document.getElementById('summaryModal').classList.remove('show');
   if(S.holeIdx >= S.endIdx && S.holeDone && S.currentRound === S.totalRounds){
@@ -2554,46 +2566,6 @@ function closeSummary(){
   } else {
     document.getElementById('mainApp').style.display='block';
   }
-}
-
-function openHist(absoluteIdx){
-  let targetRound = S.currentRound;
-  for(let r=1; r<=S.currentRound; r++) {
-    if(S.histories[r-1] && S.histories[r-1][absoluteIdx]) { targetRound = r; }
-  }
-  const hist = S.histories[targetRound-1][absoluteIdx];
-  if(!hist) return;
-
-  const d=hist.strokes-hist.par;
-  document.getElementById('histTitle').textContent=`${hist.name} RECAP`;
-  const diffStr=d===0?'E':d>0?`+${d}`:`${d}`;
-  let rLabel,rColor;
-  if(d<=-2){rLabel='EAGLE';rColor='var(--gold)';}
-  else if(d===-1){rLabel='BIRDIE';rColor='#ff6b9d';}
-  else if(d===0){rLabel='PAR';rColor='var(--c-fwyl)';}
-  else if(d===1){rLabel='BOGEY';rColor='#ff8c5a';}
-  else{rLabel=`+${d}`;rColor='#e05252';}
-  
-  const body=document.getElementById('histBody');body.innerHTML='';
-  const stats=document.createElement('div');stats.className='hist-stats';
-  stats.innerHTML=`<div class="hstat"><div class="hstat-n">${hist.strokes}</div><div class="hstat-l">Strokes</div></div><div class="hstat"><div class="hstat-n">${hist.par}</div><div class="hstat-l">Par</div></div><div class="hstat"><div class="hstat-n" style="color:${rColor}">${diffStr}</div><div class="hstat-l">${rLabel}</div></div><div class="hstat"><div class="hstat-n">${starsHTML(hist.diff)}</div><div class="hstat-l">Difficulty</div></div>`;
-  body.appendChild(stats);
-
-  const logSec=document.createElement('div');logSec.className='hsec';logSec.textContent='Shot Log — tap to review';body.appendChild(logSec);
-  hist.log.forEach((e,i)=>{
-    const zd=Z[e.zk]||Z.fwy;
-    const el=document.createElement('div');el.className='hlog-entry';el.id=`hlog-${i}`;
-    el.innerHTML=`<div class="hlog-n">${e.num}</div><div class="hlog-dot" style="background:${zd.color}"></div><span style="color:var(--text);flex:1">${e.desc}</span><span class="hlog-r" style="color:${e.pen?'#e05252':'var(--muted)'}">${e.note}</span>`;
-    el.onclick=()=>selectHistShot(i,hist.log,body);
-    body.appendChild(el);
-  });
-
-  const gridSec=document.createElement('div');gridSec.className='hsec';gridSec.textContent='Grid';body.appendChild(gridSec);
-  const gridWrap=document.createElement('div');gridWrap.className='hgrid-wrap';gridWrap.id='histGridWrap';body.appendChild(gridWrap);
-  const lastIdx=hist.log.length-1;
-  renderHistGrid(gridWrap,hist.log[lastIdx]?.gridSnap,hist.log,lastIdx);
-  if(lastIdx>=0){ const lastEl=document.getElementById(`hlog-${lastIdx}`); if(lastEl)lastEl.classList.add('active-shot'); }
-  document.getElementById('histModal').classList.add('show');
 }
 
 function openHistInline(absoluteIdx, summaryBody, roundIdx){
@@ -2620,7 +2592,7 @@ function openHistInline(absoluteIdx, summaryBody, roundIdx){
   hist.log.forEach((e,i)=>{
     const zd=Z[e.zk]||Z.fwy;
     const entry=document.createElement('div');
-    entry.style.cssText='display:flex;align-items:center;gap:7px;padding:5px 8px;background:rgba(255,255,255,.03);border-radius:6px;font-family:"DM Mono",monospace;font-size:10px;color:var(--muted);cursor:pointer;';
+    entry.style.cssText='display:flex;align-items:center;gap:7px;padding:5px 8px;background:rgba(255,255,255,.03);border-radius:6px;font-family:"Sen",sans-serif;font-size:10px;color:var(--muted);cursor:pointer;';
     entry.id='ihl-entry-'+i;
     entry.innerHTML=`<span style="width:15px;height:15px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--text);flex-shrink:0;">${e.num}</span><span style="width:7px;height:7px;border-radius:50%;background:${zd.color};flex-shrink:0;"></span><span style="flex:1;color:var(--text);">${e.desc}</span><span style="color:${e.pen?'#e05252':'var(--muted)'};">${e.note}</span>`;
     entry.onclick=()=>highlightInlineGrid(i, hist.log, detail);
@@ -2635,7 +2607,7 @@ function openHistInline(absoluteIdx, summaryBody, roundIdx){
   }
 
   const closeBtn=document.createElement('button');
-  closeBtn.style.cssText='width:100%;margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:1px;cursor:pointer;';
+  closeBtn.style.cssText='width:100%;margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px;font-family:"Sen",sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;';
   closeBtn.textContent='CLOSE ↑';
   closeBtn.onclick=()=>{ detail.remove(); rows.forEach(r=>r.style.borderColor='var(--border)'); };
   detail.appendChild(closeBtn);
@@ -2954,7 +2926,7 @@ function showProfileStats(i){
     const yes=earned.includes(a.id);
     return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);opacity:${yes?1:.35};">
       <span style="font-size:16px;flex-shrink:0;">${a.icon}</span>
-      <div style="flex:1;min-width:0;"><div style="font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:1px;color:${yes?'var(--gold)':'var(--muted)'};">${a.name}</div><div style="font-family:'Sen', sans-serif;font-size:8px;color:var(--muted);">${a.desc}</div></div>
+      <div style="flex:1;min-width:0;"><div style="font-family:'Cabin Condensed', sans-serif;font-size:12px;letter-spacing:1px;color:${yes?'var(--gold)':'var(--muted)'};">${a.name}</div><div style="font-family:'Sen', sans-serif;font-size:8px;color:var(--muted);">${a.desc}</div></div>
       <span style="font-size:11px;">${yes?'✅':'🔒'}</span>
     </div>`;
   }).join('');
@@ -2967,7 +2939,7 @@ function showProfileStats(i){
       const open=l.style.display!=='none';
       l.style.display=open?'none':'block';
       document.getElementById('achToggleArrow').textContent=open?'▸':'▾';
-    })()" style="width:100%;background:transparent;border:none;border-top:1px solid var(--border);color:var(--c-fwyl);font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;cursor:pointer;text-align:left;padding:8px 0 4px;display:flex;justify-content:space-between;align-items:center;">
+    })()" style="width:100%;background:transparent;border:none;border-top:1px solid var(--border);color:var(--c-fwyl);font-family:'Cabin Condensed', sans-serif;font-size:13px;letter-spacing:2px;cursor:pointer;text-align:left;padding:8px 0 4px;display:flex;justify-content:space-between;align-items:center;">
       <span>ACHIEVEMENTS — ${count}/${total} (${Math.round(count/total*100)}%)</span><span id="achToggleArrow">▾</span>
     </button>`+
     `<div id="achList" style="display:block;">${achListHTML}</div>`+
@@ -3072,7 +3044,7 @@ function showAchievementPopup(a){
   }
   const el=document.createElement('div');
   el.style.cssText='position:fixed;top:calc(env(safe-area-inset-top) + 60px);right:16px;background:linear-gradient(135deg,#2a1a40,#1a3020);border:1px solid var(--gold);border-radius:14px;padding:12px 16px;z-index:999;display:flex;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,.6);max-width:260px;animation:achIn .4s cubic-bezier(.34,1.56,.64,1) forwards;';
-  el.innerHTML=`<div style="font-size:28px;flex-shrink:0;">${a.icon}</div><div><div style="font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;color:var(--gold);margin-bottom:2px;">ACHIEVEMENT UNLOCKED</div><div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:#fff;line-height:1;">${a.name}</div><div style="font-family:'Sen', sans-serif;font-size:9px;color:rgba(255,255,255,.6);margin-top:2px;">${a.desc}</div></div>`;
+  el.innerHTML=`<div style="font-size:28px;flex-shrink:0;">${a.icon}</div><div><div style="font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;color:var(--gold);margin-bottom:2px;">ACHIEVEMENT UNLOCKED</div><div style="font-family:'Cabin Condensed', sans-serif;font-size:16px;letter-spacing:2px;color:#fff;line-height:1;">${a.name}</div><div style="font-family:'Sen', sans-serif;font-size:9px;color:rgba(255,255,255,.6);margin-top:2px;">${a.desc}</div></div>`;
   document.body.appendChild(el);
   let _achStartX=0,_achDismissed=false;
   el.addEventListener('touchstart',e=>{_achStartX=e.touches[0].clientX;},{passive:true});
@@ -3255,9 +3227,9 @@ function openSummary(){
     }).join('');
 
     row.innerHTML=`
-      <span style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:1px;color:var(--muted);min-width:54px;">${h.name}</span>
+      <span style="font-family:'Cabin Condensed', sans-serif;font-size:13px;letter-spacing:1px;color:var(--muted);min-width:54px;">${h.name}</span>
       <span style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">par ${h.par}</span>
-      <span style="font-family:'Bebas Neue',cursive;font-size:16px;color:${scoreColor};margin-left:auto;">${hist.strokes}</span>
+      <span style="font-family:'Cabin Condensed', sans-serif;font-size:16px;color:${scoreColor};margin-left:auto;">${hist.strokes}</span>
       <span style="font-family:'Sen', sans-serif;font-size:10px;color:${scoreColor};min-width:40px;">${resultLabel}</span>
       <span style="display:flex;gap:3px;align-items:center;">${zoneDots}</span>
     `;
@@ -3411,7 +3383,7 @@ function _showShakePermissionBanner(){
   banner.innerHTML=`
     <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;">📳 SHAKE MODE</div>
     <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-bottom:10px;">Tap to allow motion access</div>
-    <button onclick="requestShakePermission()" style="background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;cursor:pointer;width:100%;">ALLOW MOTION</button>
+    <button onclick="requestShakePermission()" style="background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:'Cabin Condensed', sans-serif;font-size:15px;letter-spacing:2px;cursor:pointer;width:100%;">ALLOW MOTION</button>
   `;
   document.body.appendChild(banner);
 }
@@ -3652,7 +3624,7 @@ function openWcInfo(){
   WILDCARDS.forEach(wc=>{
     const item=document.createElement('div');
     item.className='wc-info-item';
-    item.innerHTML=`<span style="font-size:24px;flex-shrink:0;margin-right:8px;">${wc.icon}</span><div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;color:#e0c0ff;margin-top:4px;">${wc.name}</div>`;
+    item.innerHTML=`<span style="font-size:24px;flex-shrink:0;margin-right:8px;">${wc.icon}</span><div style="font-family:'Cabin Condensed', sans-serif;font-size:18px;letter-spacing:1px;color:#e0c0ff;margin-top:4px;">${wc.name}</div>`;
     item.onclick=()=>showWcInfoDetail(wc);
     list.appendChild(item);
   });
@@ -3665,7 +3637,7 @@ function showWcInfoDetail(wc){
   list.innerHTML=`
     <button onclick="openWcInfo()" style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);border-radius:6px;padding:6px 12px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;margin-bottom:14px;">← BACK</button>
     <div style="font-size:40px;text-align:center;margin:10px 0;">${wc.icon}</div>
-    <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#f0c040;text-align:center;margin-bottom:8px;">${wc.name}</div>
+    <div style="font-family:'Cabin Condensed', sans-serif;font-size:22px;letter-spacing:2px;color:#f0c040;text-align:center;margin-bottom:8px;">${wc.name}</div>
     <div style="font-family:'Sen', sans-serif;font-size:11px;color:rgba(255,255,255,.7);text-align:center;line-height:1.5;padding:0 8px;">${wc.desc}</div>
   `;
 }
@@ -4294,35 +4266,35 @@ function closeConfirm(){
       <div style="font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">GAME OPTIONS</div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🔊 SOUND</div>
+          <div style="font-family:'Cabin Condensed', sans-serif;font-size:16px;letter-spacing:1px;color:var(--text);">🔊 SOUND</div>
           <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Shot sound effects</div>
         </div>
         <div class="toggle-switch" id="soundToggle" onclick="setSoundPref(!soundEnabled())"><div class="toggle-knob"></div></div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📳 VIBRATIONS</div>
+          <div style="font-family:'Cabin Condensed', sans-serif;font-size:16px;letter-spacing:1px;color:var(--text);">📳 VIBRATIONS</div>
           <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Haptic feedback on shots &amp; events</div>
         </div>
         <div class="toggle-switch" id="vibToggle" onclick="setVibPref(!vibEnabled())"><div class="toggle-knob"></div></div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📳 SHAKE TO ROLL</div>
+          <div style="font-family:'Cabin Condensed', sans-serif;font-size:16px;letter-spacing:1px;color:var(--text);">📳 SHAKE TO ROLL</div>
           <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Shake your phone to roll the dice</div>
         </div>
         <div class="toggle-switch" id="shakeToggle" onclick="setRollMode(getRollMode()==='haptic'?'classic':'haptic')"><div class="toggle-knob"></div></div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🃏 WILDCARDS</div>
+          <div style="font-family:'Cabin Condensed', sans-serif;font-size:16px;letter-spacing:1px;color:var(--text);">🃏 WILDCARDS</div>
           <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Roll doubles to earn wildcard cards</div>
         </div>
         <div class="toggle-switch" id="wcToggle" onclick="setWcPref(!wcEnabled())"><div class="toggle-knob"></div></div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📏 DISTANCE</div>
+          <div style="font-family:'Cabin Condensed', sans-serif;font-size:16px;letter-spacing:1px;color:var(--text);">📏 DISTANCE</div>
           <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Unit of measurement</div>
         </div>
         <div style="display:flex;gap:5px;">
@@ -4332,7 +4304,7 @@ function closeConfirm(){
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🏷️ CELL LABELS</div>
+          <div style="font-family:'Cabin Condensed', sans-serif;font-size:16px;letter-spacing:1px;color:var(--text);">🏷️ CELL LABELS</div>
           <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Show zone name on tap</div>
         </div>
         <button id="cellLabelBtn" onclick="toggleCellLabels()" style="background:rgba(255,255,255,.1);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-family:'Sen', sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;min-width:52px;">TAP</button>
@@ -4411,7 +4383,7 @@ function closeConfirm(){
   <div class="wc-info-panel" id="wcInfoPanel">
     <div class="wc-info-head">
       <button onclick="closeWcInfo()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;flex-shrink:0;">←</button>
-      <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;" id="wcInfoTitle">ABOUT WILDCARDS</div>
+      <div style="font-family:'Cabin Condensed', sans-serif;font-size:18px;letter-spacing:2px;color:#fff;" id="wcInfoTitle">ABOUT WILDCARDS</div>
     </div>
     <div class="wc-info-list" id="wcInfoList"></div>
   </div>
@@ -4469,10 +4441,10 @@ function closeConfirm(){
 <div class="profile-modal" id="confirmModal" style="z-index:700;">
   <div class="profile-card" style="max-width:300px;">
     <div class="profile-body" style="padding:20px;">
-      <div id="confirmMsg" style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--text);text-align:center;margin-bottom:20px;"></div>
+      <div id="confirmMsg" style="font-family:'Cabin Condensed', sans-serif;font-size:18px;letter-spacing:2px;color:var(--text);text-align:center;margin-bottom:20px;"></div>
       <div style="display:flex;gap:10px;">
-        <button id="confirmYes" style="flex:1;background:#e05252;color:#fff;border:none;border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">YES</button>
-        <button onclick="closeConfirm()" style="flex:1;background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">CANCEL</button>
+        <button id="confirmYes" style="flex:1;background:#e05252;color:#fff;border:none;border-radius:8px;padding:12px;font-family:'Cabin Condensed', sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;">YES</button>
+        <button onclick="closeConfirm()" style="flex:1;background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'Cabin Condensed', sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;">CANCEL</button>
       </div>
     </div>
   </div>
