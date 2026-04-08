@@ -1885,13 +1885,14 @@ function processShot(row,col){
       nextBtn.textContent='FINISH HOLE →';
       nextBtn.style.background='var(--c-tee)';
       nextBtn.onclick=()=>{
-        const b=document.getElementById('puttWcBtn');if(b)b.remove();
-        nextBtn.textContent='NEXT SHOT →';nextBtn.onclick=doNextShot;
-        S._pendingPuttResult=null;
-        S.holeDone=true;
-        updateTVBanner();
-        setTimeout(()=>completeHole(),200);
-      };
+    const b=document.getElementById('puttWcBtn');if(b)b.remove();
+    hideNextShotBtn();
+    S._pendingPuttResult=null;
+    S.holeDone=true;
+    updateTVBanner();
+    setTimeout(()=>completeHole(),200);
+};
+
     }
 
     // No REROLL PUTT button — user opens WC drawer themselves via the FAB
@@ -4073,7 +4074,7 @@ function resolveHio(r1, r2){
   } else {
     resultEl.textContent='SO CLOSE...';
     resultEl.className='hio-result fail';
-    document.getElementById('hioSub').textContent='1 YD TO THE HOLE — TAP TO PUTT';
+    const _hioDist=fmtYds(1);document.getElementById('hioSub').textContent=`${_hioDist.toUpperCase()} TO THE HOLE — TAP TO PUTT`;
     document.getElementById('hioBall').textContent='⛳';
     setTimeout(()=>{
       document.getElementById('hioOverlay').classList.remove('show');
@@ -4084,7 +4085,7 @@ function resolveHio(r1, r2){
       advanceYrd('grn'); S.yrdRemain=1;
       S.shotCount++;
       addLog(S.shotNum,`${Z[prevZone].name} → Green · ${fmtYds(1)}`,'grn','+1',false,_hioRow,_hioCol,snapGrid);
-      showResult(Z.grn,'Ball stopped 1 yd from hole','ok','1 yd to hole');
+      const _hioDist2=fmtYds(1);showResult(Z.grn,`Ball stopped ${_hioDist2} from hole`,'ok',`${_hioDist2} to hole`);
       S.shotNum++;updateFloat();updateYrd();updateZonePill();updateTVBanner();
       // Force all-1-putt grid — set flag so doNextShot won't rebuild
       S.currentGrid=Array(6).fill(null).map(()=>Array(6).fill('p1'));
