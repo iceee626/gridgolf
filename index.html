@@ -1888,13 +1888,14 @@ function processShot(row,col){
       nextBtn.textContent='FINISH HOLE →';
       nextBtn.style.background='var(--c-tee)';
       nextBtn.onclick=()=>{
+        hideNextShotBtn(); // Hide immediately to prevent "NEXT SHOT" flicker
         const b=document.getElementById('puttWcBtn');if(b)b.remove();
-        nextBtn.textContent='NEXT SHOT →';nextBtn.onclick=doNextShot;
         S._pendingPuttResult=null;
         S.holeDone=true;
         updateTVBanner();
         setTimeout(()=>completeHole(),200);
-      };
+    };
+
     }
 
     // No REROLL PUTT button — user opens WC drawer themselves via the FAB
@@ -2030,7 +2031,9 @@ function showTailwindChoice(){
       S.strokes=Math.max(0,S.strokes-1);
       S.shotNum=Math.max(1,S.shotNum-1);
       S.log.pop();renderLog();
-      S.zone=S.prevZone||S.zone;
+      S.zone = S.prevZone || S.zone;
+      S.shotCount = Math.max(0, S.shotCount - 1);
+      if(S.zone === 'grn') S._preserveGrid = true;
       buildGrid();updateZonePill();
       setTimeout(()=>processShot(newR1-1,newR2-1),200);
       renderWcFab();
@@ -3121,7 +3124,13 @@ function openSummary(){
   const playAgainBtn=document.createElement('button');
   playAgainBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:16px;letter-spacing:3px;cursor:pointer;';
   playAgainBtn.textContent='PLAY COURSE AGAIN';
-  playAgainBtn.onclick=()=>{closeSummary();document.getElementById('overlay').classList.remove('show');resetGameState();document.getElementById('mainApp').style.display='block';init();};
+  playAgainBtn.onclick=()=>{     
+    resetGameState(); // Reset state FIRST so closeSummary() doesn't trigger returnToMenu()     
+    closeSummary();     
+    document.getElementById('overlay').classList.remove('show');     
+    document.getElementById('mainApp').style.display='block';     
+    init();   
+  };
   btnRow.appendChild(returnBtn);
   btnRow.appendChild(playAgainBtn);
   body.appendChild(btnRow);
@@ -3616,7 +3625,7 @@ function applyWildcardEffect(wc){
   WCS.activeCarryOver=false;
   const h=HOLES[S.holeIdx];
   switch(wc.id){
-    case 'shortcut':
+        case 'shortcut':
       if(S.zone==='tee'||S.shotCount===0){
         WCS.active=null;
         showWcToast('⚡ Shortcut: Cannot use on tee shot.');
@@ -3625,6 +3634,7 @@ function applyWildcardEffect(wc){
       WCS.active=null;
       S.zone='chip';
       updateZonePill();
+      buildGrid(); // Force grid to refresh to Chip zone immediately
       showWcToast('⚡ Shortcut applied!');
       break;
     case 'phantom_stroke':
@@ -3783,7 +3793,7 @@ function mulliganReroll(){
   S.strokes=Math.max(0,S.strokes-1);
   S.shotNum=Math.max(1,S.shotNum-1);
   S.log.pop();renderLog();
-  if(S.prevZone) S.zone=S.prevZone;
+  S.zone = S.prevZone || S.zone;   S.shotCount = Math.max(0, S.shotCount - 1);   if(S.zone === 'grn') S._preserveGrid = true; 
   hideNextShotBtn();
   updateFloat();updateYrd();updateZonePill();
   // Auto-roll on same grid — after this roll completes, NEXT SHOT works normally
@@ -3849,9 +3859,15 @@ function revealWcCard(){
 
 function equipWildcard(){
   if(!_pendingWc)return;
+  if(WCS.equipped.some(w => w.id === _pendingWc.id)){
+  showWcToast('Already equipped this wildcard!');
+  closeWcReveal();
+  return;
+}
   if(WCS.equipped.length<3){
-    WCS.equipped.push(_pendingWc);
-  }
+  WCS.equipped.push(_pendingWc);
+}
+
   closeWcReveal();
 }
 
