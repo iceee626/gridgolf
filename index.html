@@ -1374,25 +1374,28 @@ let S={
 // ── Menu Navigation ──
 let _lastMenuScreen = 'menuScreen';
 
+function forceHideGame() {
+  const app = document.getElementById('mainApp');
+  if (app) app.style.display = 'none';
+}
+
 function navBack(to) {
-  // Translate the 'mode' keyword back into the actual screen ID
+  forceHideGame();
   const target = to === 'mode' ? (SETUP.mode === 'custom' ? 'customScreen' : 'playModeScreen') : to;
-  
   const screens = ['menuScreen','playModeScreen','customScreen','courseScreen','diffScreen'];
-  screens.forEach(id => { 
-    if (id !== target) hideScreen(id); 
-  });
-  
+  screens.forEach(id => { if (id !== target) hideScreen(id); });
   showScreen(target, 'flex');
 }
 
 function navToPlayMode() {
+  forceHideGame();
   _lastMenuScreen = 'playModeScreen';
   hideScreen('menuScreen');
   showScreen('playModeScreen', 'flex');
 }
 
 function navToCustom() { 
+  forceHideGame();
   _lastMenuScreen = 'customScreen'; 
   SETUP.mode = 'custom';
   hideScreen('playModeScreen'); 
@@ -1400,6 +1403,7 @@ function navToCustom() {
 }
 
 function navToCourse(mode) {
+  forceHideGame();
   if (mode === 'single') { SETUP.mode = 'single'; SETUP.rounds = 1; SETUP.holesConfig = '18'; _lastMenuScreen = 'playModeScreen'; }
   if (mode === 'tournament') { SETUP.mode = 'tournament'; SETUP.rounds = 4; SETUP.holesConfig = '18'; _lastMenuScreen = 'playModeScreen'; }
   if (mode === 'custom') { _lastMenuScreen = 'customScreen'; }
@@ -1408,6 +1412,7 @@ function navToCourse(mode) {
 }
 
 function navToDiff() { 
+  forceHideGame();
   hideScreen('courseScreen'); 
   if (SETUP.mode === 'custom') {
     startGame();
@@ -1440,7 +1445,7 @@ function resetGameState(){
   S.currentGrid=null; S.holeDone=false; S.rolling=false;
   S.yrdRemain=0; S.yrdTotal=0; S.fwyVisits=0; S.prevZone=null; S.shotCount=0;
   S._wcUsedThisRound=0;
-  S._wcDiscardedThisRound=0; // <-- Here is the new line!
+  S._wcDiscardedThisRound=0;
   if(typeof wcReset==='function')wcReset();
 }
 
@@ -1465,6 +1470,24 @@ function startGame(){
   document.getElementById('mainApp').style.display='block';
   init();
   maybeShowShakeBanner();
+}
+
+function showNextShotBtn(){
+  const roll=document.getElementById('rollBtn');
+  const next=document.getElementById('nextShotBtn');
+  if(roll)roll.style.display='none';
+  if(next)next.style.display='block';
+}
+
+function hideNextShotBtn(){
+  const roll=document.getElementById('rollBtn');
+  const next=document.getElementById('nextShotBtn');
+  if(roll){
+    roll.style.display='block';
+    roll.disabled=true;
+    setTimeout(() => { if(!S.rolling) roll.disabled = false; }, 400); // Prevent double tap roll!
+  }
+  if(next)next.style.display='none';
 }
 
 // ═══════════════════════════════════════
@@ -3295,12 +3318,12 @@ function openSummary(viewRound = S.currentRound){
     const nextRndBtn=document.createElement('button');
     nextRndBtn.style.cssText='width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
     nextRndBtn.textContent=`START ROUND ${S.currentRound + 1} →`;
-    nextRndBtn.onclick=startNextRound;
+    nextRndBtn.onclick = () => { document.getElementById('summaryModal').classList.remove('show'); startNextRound(); };
     
     const returnBtn=document.createElement('button');
     returnBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
     returnBtn.textContent='SAVE & MENU';
-    returnBtn.onclick=()=>{closeSummary(); returnToMenuSave();};
+    returnBtn.onclick = () => { document.getElementById('summaryModal').classList.remove('show'); returnToMenuSave(); };
     
     btnRow.appendChild(nextRndBtn);
     btnRow.appendChild(returnBtn);
@@ -3308,7 +3331,7 @@ function openSummary(viewRound = S.currentRound){
     const returnBtn=document.createElement('button');
     returnBtn.style.cssText='width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
     returnBtn.textContent='RETURN TO MAIN MENU';
-    returnBtn.onclick=()=>{closeSummary();returnToMenu();};
+    returnBtn.onclick = () => { document.getElementById('summaryModal').classList.remove('show'); returnToMenu(); };
     btnRow.appendChild(returnBtn);
     
     if (viewRound === S.currentRound && S.currentRound === S.totalRounds && S.holeDone) {
@@ -3715,10 +3738,19 @@ function renderWcDrawer(){
     if(!wc){
       slot.innerHTML='<div class="wc-slot-empty-txt">EMPTY SLOT</div>';
     } else {
-      const isActive=WCS.active===wc.id;
+      const isActive=WCS.active===wc.id || WCS.goldenPutterActive || WCS.eagleEyeActive || WCS.sandWedgeProActive || WCS.birdieBoostActive || WCS.holeWallActive || WCS.hioActive;
       const puttPending=!!document.getElementById('puttWcBtn');
       const rerollPending=WCS.active==='mulligan'||WCS.active==='tailwind';
-      const canUse=!S.rolling&&!rerollPending&&!isActive&&(!S.holeDone||puttPending);
+      const isRerollCard=wc.id==='mulligan'||wc.id==='tailwind';
+      
+      let canUse=!S.rolling&&!rerollPending&&!isActive&&(!S.holeDone||puttPending);
+      
+      // Ensure rerolls can only be used when looking at the shot outcome
+      if(isRerollCard) {
+         const nextBtnVisible = document.getElementById('nextShotBtn')?.style.display === 'block';
+         if (!nextBtnVisible && !puttPending) canUse = false;
+      }
+
       slot.innerHTML=`
         ${isActive?'<div class="wc-active-badge">ACTIVE</div>':''}
         <div class="wc-slot-header">
@@ -3785,16 +3817,16 @@ function activateWildcard(slotIdx){
     const rollBtn2=document.getElementById('rollBtn');
     if(rollBtn2){rollBtn2.style.display='block';rollBtn2.disabled=false;}
 
+    closeWcDrawer(); // Reroll wildcards MUST close the drawer to trigger their mechanics safely
+    
     if(wc.id==='tailwind'){
       WCS.active=null;
-      closeWcDrawer();
       renderWcFab();
       setTimeout(()=>_showTailwindDieChoice(),100);
       return; 
     }
     if(wc.id==='mulligan'){
       WCS.active=null;
-      closeWcDrawer();
       renderWcFab();
       setTimeout(()=>{
         S.rolling=false;
@@ -3803,7 +3835,9 @@ function activateWildcard(slotIdx){
       return;
     }
   }
-  closeWcDrawer();
+  
+  // If it's a standard wildcard (not a reroll), leave the drawer open!
+  renderWcDrawer();
   renderWcFab();
 }
 
@@ -3831,7 +3865,7 @@ function trackWcDiscard() {
      if(p) {
        p.wcDiscardedRound = Math.max(p.wcDiscardedRound||0, S._wcDiscardedThisRound);
        saveProfiles(profiles);
-       checkAndAwardAchievements();
+       setTimeout(() => checkAndAwardAchievements(), 300);
      }
   }
 }
