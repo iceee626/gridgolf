@@ -345,8 +345,8 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:calc(e
 @keyframes popin{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
 .ov-emoji{font-size:50px;margin-bottom:8px;}
 .ov-title{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:4px;color:var(--c-fwyl);margin-bottom:2px;}
-.ov-score{font-family:'Bebas Neue',cursive;font-size:60px;line-height:1;margin-bottom:2px;}
-.ov-sub{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:18px;}
+.ov-namerow{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;}
+.ov-statsrow{font-size:13px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:18px;}
 .ov-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:3px;cursor:pointer;transition:background .15s;}
 .ov-btn:hover{background:var(--c-fwyl);}
 
@@ -507,7 +507,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:calc(e
 }
 .profile-btn:hover{border-color:var(--c-fwyl);color:var(--c-fwyl);}
 .profile-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:600;align-items:center;justify-content:center;padding:20px;}
-.profile-modal.show{display:flex;animation:fadeInModal .2s ease;}
+.profile-modal.show{display:flex;}
 @keyframes fadeInModal{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
 .profile-modal.show{display:flex;}
 .profile-card{background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:420px;width:100%;overflow:hidden;animation:popin .3s cubic-bezier(.34,1.56,.64,1);}
@@ -572,7 +572,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:calc(e
 }
 .wc-info-panel.open{right:0;}
 /* wc-info-panel.open handled above */
-.wc-info-head{background:linear-gradient(135deg,#7b2f9e,#4a1a6e);padding:calc(env(safe-area-inset-top) + 10px) 16px 14px;display:flex;align-items:center;gap:10px;}
+.wc-info-head{background:linear-gradient(135deg,#7b2f9e,#4a1a6e);padding:calc(env(safe-area-inset-top) + 14px) 16px 14px;display:flex;align-items:center;gap:10px;min-height:calc(env(safe-area-inset-top) + 60px);}
 .wc-info-list{flex:1;overflow-y:auto;padding:10px 14px;}
 .wc-info-item{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .1s;}
 .wc-info-item:hover{background:rgba(255,255,255,.04);border-radius:6px;}
@@ -672,7 +672,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:calc(e
 }
 .wc-front-icon{font-size:42px;line-height:1;}
 .wc-front-name{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#f0c040;text-align:center;line-height:1.1;}
-.wc-front-type{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(240,192,64,.6);text-transform:uppercase;}
+.wc-front-type{display:none;}
 .wc-front-desc{font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.75);text-align:center;line-height:1.4;}
 .wc-reveal-hint{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);margin-bottom:16px;animation:wc-blink 1.2s ease infinite;}
 @keyframes wc-blink{0%,100%{opacity:.4}50%{opacity:.9}}
@@ -894,8 +894,8 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:calc(e
   <div class="ov">
     <div class="ov-emoji" id="ovEmoji">⛳</div>
     <div class="ov-title" id="ovTitle">HOLE COMPLETE</div>
-    <div class="ov-score" id="ovScore">—</div>
-    <div class="ov-sub" id="ovSub">—</div>
+    <div class="ov-namerow" id="ovNameRow">—</div>
+    <div class="ov-statsrow" id="ovStatsRow">—</div>
     <button class="ov-btn" id="ovBtn" onclick="nextHole()">NEXT HOLE →</button>
     <button class="ov-btn" id="ovSummaryBtn" onclick="openSummary()" style="display:none;margin-top:8px;background:transparent;border:1px solid var(--c-fwyl);color:var(--c-fwyl);">📋 VIEW SUMMARY</button>
     <button class="ov-btn" id="ovPlayAgainBtn" onclick="returnToMenu()" style="display:none;margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--muted);">↩ PLAY AGAIN</button>
@@ -976,10 +976,10 @@ function _iosHapticTap(vol=0.1){
 }
 // Patterns
 function vibDiceRoll(){vibrate([40,20,40,20,40,20,40]);}  // strong rolling pulse
-function vibDiceLand(){vibrate([80]);_iosHapticTap(0.08);} // firm landing tap
+function vibDiceLand(){vibrate([80]);} // firm landing tap
 function vibWildcard(){vibrate([30,40,150,40,30]);}       // ka-ching: soft-pause-STRONG
 function vibHoleInOne(){vibrate([200,80,300,80,200,80,400]);}  // big celebration burst
-function vibShot(){vibrate([35]);_iosHapticTap(0.05);}    // clear shot tap
+function vibShot(){vibrate([35]);} // clear shot tap
 // ═══════════════════════════════════════
 // METRICS SYSTEM (yards / meters)
 // ═══════════════════════════════════════
@@ -1065,16 +1065,26 @@ function getAudioCtx(){
   return _audioCtx;
 }
 
-// Resume audio context when page becomes visible again (iOS background/foreground)
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'&&_audioCtx&&_audioCtx.state==='suspended'){
-    _audioCtx.resume().catch(()=>{});
+// Resume AudioContext on visibility + interaction (iOS screen lock recovery)
+function _resumeAudio(){
+  if(_audioCtx&&_audioCtx.state==='suspended'){
+    _audioCtx.resume().then(()=>{
+      // Re-decode any cached buffers to ensure they're valid after resume
+    }).catch(()=>{
+      // Context may need to be recreated
+      _audioCtx=null;_audioCache={};
+    });
   }
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible') _resumeAudio();
 });
-// Also resume on any touch (belt-and-suspenders for iOS)
-document.addEventListener('touchstart',()=>{
-  if(_audioCtx&&_audioCtx.state==='suspended') _audioCtx.resume().catch(()=>{});
-},{passive:true,once:false});
+document.addEventListener('touchstart',_resumeAudio,{passive:true});
+document.addEventListener('click',_resumeAudio,{passive:true});
+// pageshow fires when returning from bfcache (iOS safari)
+window.addEventListener('pageshow',(e)=>{
+  if(e.persisted) _resumeAudio();
+});
 
 function soundEnabled(){
   try{return localStorage.getItem("gg_sound")!=="off";}catch{return true;}
@@ -1425,20 +1435,8 @@ function loadHole(){
   document.getElementById('holePar').textContent=h.par;
   setDie('dp1',0);
   setDie('dp2',0);
-  // Show idle pulsing dice on tee box with cycling pips
-  if(window._diceIdleTimer) clearInterval(window._diceIdleTimer);
-  let _idleTick=0;
-  window._diceIdleTimer=setInterval(()=>{
-    if(S.rolling||S.holeDone){clearInterval(window._diceIdleTimer);return;}
-    _idleTick++;
-    const faces=[1,2,3,4,5,6];
-    setDie('dp1',faces[_idleTick%6]);
-    setDie('dp2',faces[(_idleTick+3)%6]);
-    const d1=document.getElementById('die1');
-    const d2=document.getElementById('die2');
-    if(d1)d1.classList.add('idle');
-    if(d2)d2.classList.add('idle');
-  },500);
+  // Start idle pulse (shared with Next Shot)
+  startDiceIdle();
   hideNextShotBtn();
   buildScorecard();buildGrid();updateZonePill();updateYrd();resetResult();renderLog();updateFloat();
   updateTVBanner();
@@ -1744,6 +1742,21 @@ function advanceYrd(zk){
 // ═══════════════════════════════════════
 // ROLL
 // ═══════════════════════════════════════
+function startDiceIdle(){
+  if(window._diceIdleTimer) clearInterval(window._diceIdleTimer);
+  let _idleTick=0;
+  window._diceIdleTimer=setInterval(()=>{
+    if(S.rolling||S.holeDone){clearInterval(window._diceIdleTimer);window._diceIdleTimer=null;return;}
+    _idleTick++;
+    const faces=[1,2,3,4,5,6];
+    setDie('dp1',faces[_idleTick%6]);
+    setDie('dp2',faces[(_idleTick+3)%6]);
+    const d1=document.getElementById('die1'),d2=document.getElementById('die2');
+    if(d1)d1.classList.add('idle');
+    if(d2)d2.classList.add('idle');
+  },500);
+}
+
 function doRoll(){
   if(S.rolling||S.holeDone)return;
   S.rolling=true;
@@ -1757,7 +1770,6 @@ function doRoll(){
   d2.classList.remove('idle');
   void d1.offsetWidth;
   d1.classList.add('rolling');
-  vibDiceRoll(); // haptic during roll
 
   setTimeout(()=>{
     d2.classList.remove('rolling','landed');
@@ -1793,6 +1805,7 @@ function doRoll(){
 // SHOT PROCESSING
 // ═══════════════════════════════════════
 function processShot(row,col){
+  S._preserveGrid=false; // clear after any actual shot is processed
   const outcome=S.currentGrid[row][col];
   litCell(row,col);
   const prevZone=S.zone;
@@ -1821,12 +1834,13 @@ function processShot(row,col){
     updateYrd();
     S.holeDone=false; // keep open until FINISH HOLE tapped
 
-    // Show celebration badge immediately (the big BIRDIE! that normally shows before overlay)
+    // Show celebration badge immediately — hole stays open (no callback)
     {
       const h_putt=HOLES[S.holeIdx];
       const d_putt=S.strokes-h_putt.par;
       const isHio_putt=(h_putt.par===3&&S.strokes===1);
-      showCelebration(isHio_putt?-99:d_putt, ()=>{}); // fire with no callback — hole stays open
+      showCelebration(isHio_putt?-99:d_putt, ()=>{});
+      S._skipCelebration=true; // mark so completeHole skips it
     }
 
     // Show FINISH HOLE button (always)
@@ -1930,10 +1944,11 @@ function hideNextShotBtn(){
 function doNextShot(){
   if(S.holeDone)return;
   // Post-shot wildcard intercepts
-  if(WCS.active==='mulligan'){
+  if(WCS.active==='mulligan'&&!S._mulliganJustFired){
     mulliganReroll();
-    return; // mulligan hides btn itself after reroll
+    return;
   }
+  S._mulliganJustFired=false; // clear after normal next shot
   if(WCS.active==='tailwind'){
     showTailwindChoice();
     return; // tailwind hides btn itself after choice
@@ -1941,9 +1956,11 @@ function doNextShot(){
   // Normal advance: build next grid (active WC effects apply here)
   hideNextShotBtn();
   if(S._forceGrid){S._forceGrid=false;}
-  else if(S._preserveGrid){S._preserveGrid=false;} // keep same grid for reroll (WC mulligan/tailwind on green)
+  else if(S._preserveGrid){S._preserveGrid=false;}
   else{buildGrid();}
   updateZonePill();
+  // Start dice idle pulse after every Next Shot
+  setTimeout(()=>startDiceIdle(),100);
 }
 
 function showTailwindChoice(){
@@ -2138,25 +2155,32 @@ function completeHole(){
   else if(d<=-2){emoji='🦅🦅';title='EAGLE!';}
   else if(d===-1){emoji='🦅';title='BIRDIE!';}
   else if(d===0){emoji='⛳';title='PAR!';}
-  else if(d===1){emoji='😤';title='BOGEY';}
-  else if(d===2){emoji='😬';title='DOUBLE BOGEY';}
-  else if(d===3){emoji='😤';title='TRIPLE BOGEY';}
-  else{emoji='😤';title=`+${d}`;}
+  else if(d===1){emoji='';title='BOGEY';}
+  else if(d===2){emoji='';title='DOUBLE BOGEY';}
+  else if(d===3){emoji='';title='TRIPLE BOGEY';}
+  else{emoji='';title=`+${d}`;}
+  // Running total score for this profile
+  const completedPar=HOLES.slice(0,S.holeIdx+1).reduce((a,x)=>a+x.par,0);
+  const completedStr=S.scorecard.slice(0,S.holeIdx+1).reduce((a,b)=>a+(b||0),0);
+  const totalDiff=completedStr-completedPar;
+  const totalStr=totalDiff===0?'E':totalDiff>0?`+${totalDiff}`:`${totalDiff}`;
   document.getElementById('ovEmoji').textContent=emoji;
+  document.getElementById('ovEmoji').style.display=emoji?'block':'none';
   document.getElementById('ovTitle').textContent=title;
-  document.getElementById('ovScore').textContent=score;
-  document.getElementById('ovSub').textContent=`${score} strokes · par ${h.par} · ${d>0?'+':''}${d}`;
+  document.getElementById('ovNameRow').textContent=`${PLAYER_NAME}: ${totalStr}`;
+  document.getElementById('ovStatsRow').textContent=`${score} strokes · par ${h.par}`;
   document.getElementById('ovBtn').style.display='block';
   document.getElementById('ovBtn').textContent=S.holeIdx>=8?'FINAL SCORECARD →':`HOLE ${S.holeIdx+2} →`;
   document.getElementById('ovSummaryBtn').style.display='none';
   document.getElementById('ovPlayAgainBtn').style.display='none';
   buildScorecard();
   // Show celebration first (unless already shown on green), then overlay
+  // Always skip celebration when coming from FINISH HOLE (putt already showed badge)
   if(S._skipCelebration){
     S._skipCelebration=false;
     document.getElementById('overlay').classList.add('show');
   } else {
-    showCelebration(d, ()=>{
+    showCelebration(isHoleInOne?-99:d, ()=>{
       document.getElementById('overlay').classList.add('show');
     });
   }
@@ -2587,21 +2611,12 @@ function openEditProfile(i){
     };
     grid.appendChild(btn);
   });
-  // Slide edit panel into view inside profile modal (no close/reopen flash)
-  const profileCard=document.querySelector('#profileModal .profile-card');
-  if(profileCard){
-    profileCard.style.transition='transform .25s ease,opacity .25s ease';
-    profileCard.style.transform='translateX(-20px)';
-    profileCard.style.opacity='0';
-    setTimeout(()=>{
-      document.getElementById('profileModal').classList.remove('show');
-      profileCard.style.transform='';profileCard.style.opacity='';
-      document.getElementById('editProfileModal').classList.add('show');
-    },200);
-  } else {
-    closeProfileModal();
-    setTimeout(()=>document.getElementById('editProfileModal').classList.add('show'),200);
-  }
+  // Seamless transition: keep same backdrop, slide cards
+  const backdrop=document.getElementById('profileModal');
+  const editModal=document.getElementById('editProfileModal');
+  // Show edit on top of existing modal without closing backdrop
+  backdrop.classList.remove('show');
+  editModal.classList.add('show');
 }
 
 function focusIconPicker(){
@@ -2611,20 +2626,8 @@ function focusIconPicker(){
 }
 
 function closeEditProfile(){
-  const editCard=document.querySelector('#editProfileModal .profile-card');
-  if(editCard){
-    editCard.style.transition='transform .2s ease,opacity .2s ease';
-    editCard.style.transform='translateX(20px)';
-    editCard.style.opacity='0';
-    setTimeout(()=>{
-      document.getElementById('editProfileModal').classList.remove('show');
-      editCard.style.transform='';editCard.style.opacity='';
-      openProfileModal();
-    },180);
-  } else {
-    document.getElementById('editProfileModal').classList.remove('show');
-    setTimeout(()=>openProfileModal(),150);
-  }
+  document.getElementById('editProfileModal').classList.remove('show');
+  openProfileModal();
 }
 
 function saveEditProfile(){
@@ -3266,15 +3269,24 @@ function maybeShowShakeBanner(){
 // ═══════════════════════════════════════
 // SETTINGS
 // ═══════════════════════════════════════
-function toggleSoundSetting(){
-  setSoundEnabled(!soundEnabled());
-  const btn=document.getElementById('soundToggleBtn');
-  if(btn){btn.textContent=soundEnabled()?'ON':'OFF';btn.style.background=soundEnabled()?'var(--c-fwy)':'rgba(255,255,255,.1)';}
-}
 function toggleVibSetting(){setVibEnabled(!vibEnabled());updateSettingsUI();}
 function setVibPref(on){setVibEnabled(on);updateSettingsUI();}
 function setSoundPref(on){setSoundEnabled(on);updateSettingsUI();}
 function setWcPref(on){setWcEnabled(on);updateSettingsUI();}
+
+function _setPills(onId,offId,isOn){
+  const on=document.getElementById(onId),off=document.getElementById(offId);
+  if(on){on.style.background=isOn?'var(--c-fwy)':'rgba(255,255,255,.08)';on.style.borderColor=isOn?'var(--c-fwyl)':'var(--border)';on.style.color=isOn?'#fff':'var(--muted)';}
+  if(off){off.style.background=!isOn?'#b03020':'rgba(255,255,255,.08)';off.style.borderColor=!isOn?'#e05252':'var(--border)';off.style.color=!isOn?'#fff':'var(--muted)';}
+}
+function updateSettingsUI(){
+  _setPills('soundBtn-on','soundBtn-off',soundEnabled());
+  _setPills('vibBtn-on','vibBtn-off',vibEnabled());
+  _setPills('wcBtn-on','wcBtn-off',wcEnabled());
+  updateMetricsUI();
+  updateRollModeUI(getRollMode());
+  updateCellLabelUI();
+}
 
 function openSettings(){
   updateSettingsUI();
@@ -3707,21 +3719,20 @@ function applyWcGridMods(grid){
 function mulliganReroll(){
   if(WCS.active!=='mulligan')return;
   WCS.active=null;WCS.activeCarryOver=false;
+  WCS.pendingRow=null;WCS.pendingCol=null;
   renderWcFab();
   showWcToast('↩ Mulligan! Rolling again...');
-  // Undo last shot
   S.strokes=Math.max(0,S.strokes-1);
   S.shotNum=Math.max(1,S.shotNum-1);
   S.log.pop();renderLog();
-  // Restore zone to prevZone
   if(S.prevZone) S.zone=S.prevZone;
   hideNextShotBtn();
-  // DO NOT rebuild grid — preserve the exact same layout for the reroll
   updateFloat();updateYrd();updateZonePill();
-  // Small delay then auto-roll
+  // Auto-roll on same grid — after this roll completes, NEXT SHOT works normally
   setTimeout(()=>{
     S.rolling=false;
-    doRoll(); // rolls fresh dice for second chance
+    S._mulliganJustFired=true; // flag so doNextShot doesn't re-trigger
+    doRoll();
   },500);
 }
 
@@ -3734,7 +3745,7 @@ function triggerWcReveal(row, col){
   WCS.pendingCol=col;
   document.getElementById('wcFrontIcon').textContent=_pendingWc.icon;
   document.getElementById('wcFrontName').textContent=_pendingWc.name;
-  document.getElementById('wcFrontType').textContent=_pendingWc.type==='post'?'POST-SHOT':'PRE-SHOT';
+  // wcFrontType removed
   document.getElementById('wcFrontDesc').textContent=_pendingWc.desc;
   document.getElementById('wcCard').classList.remove('revealed');
   document.getElementById('wcRevealHint').style.display='block';
@@ -4215,7 +4226,7 @@ function closeConfirm(){
       <div class="wc-card-face wc-card-front">
         <div class="wc-front-icon" id="wcFrontIcon">⭐</div>
         <div class="wc-front-name" id="wcFrontName">WILDCARD</div>
-        <div class="wc-front-type" id="wcFrontType">PRE-SHOT</div>
+        <!-- wc-front-type removed -->
         <div class="wc-front-desc" id="wcFrontDesc">Description</div>
       </div>
     </div>
