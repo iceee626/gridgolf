@@ -110,7 +110,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .hole-badge{background:var(--c-tee);color:#fff;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;padding:4px 12px;border-radius:20px;}
 /* Sc-wrap allows scrolling */
 .sc-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow-x:auto;margin-bottom:12px;}
-.sc-inner{display:flex;flex-direction:column;min-width:100%;}
+.sc-inner{display:flex;flex-direction:column;min-width:100%;width:max-content;}
 .sc-row{display:grid;font-family:'DM Mono',monospace;font-size:10px;}
 .sc-head{background:var(--c-fwy);}
 .sc-head div,.sc-row div{padding:5px 2px;text-align:center;border-right:1px solid rgba(255,255,255,.07);}
@@ -775,7 +775,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
     <button class="setup-back-btn" onclick="navBack('menuScreen')">← BACK</button>
     <div class="setup-title">SELECT MODE</div>
     <div class="menu-btns">
-      <button class="menu-btn-sec" onclick="navToCourse('single')" style="background:var(--c-fwy);color:#fff;border:none;">⛳ SINGLE DAY</button>
+      <button class="menu-btn-sec" onclick="navToCourse('single')">⛳ SINGLE DAY</button>
       <button class="menu-btn-sec" onclick="navToCourse('tournament')">🏆 TOURNAMENT</button>
       <button class="menu-btn-sec" disabled>🌎 PRO TOUR</button>
       <button class="menu-btn-sec" onclick="navToCustom()">⚙️ CUSTOM GAME</button>
@@ -785,7 +785,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 
 <div class="setup-screen" id="customScreen" style="display:none">
   <div class="setup-card">
-    <button class="setup-back-btn" onclick="navBack('mode')">← BACK</button>
+    <button class="setup-back-btn" onclick="navBack('playModeScreen')">← BACK</button>
     <div class="setup-title">CUSTOM GAME</div>
     
     <div class="setup-group">
@@ -1070,9 +1070,7 @@ function hideScreen(id){
   const el=document.getElementById(id);
   if(!el)return;
   el.classList.remove('visible');
-  setTimeout(()=>{
-    if(!el.classList.contains('visible')) el.style.display='none';
-  },300);
+  el.style.display='none'; // Hiding instantly prevents the overlapping crossfade flash
 }
 
 // ═══════════════════════════════════════
@@ -1356,12 +1354,9 @@ let S={
 let _lastMenuScreen = 'menuScreen';
 
 function navBack(to) {
-  const target = to === 'mode' ? (SETUP.mode === 'custom' ? 'customScreen' : 'playModeScreen') : to;
   const screens = ['menuScreen','playModeScreen','customScreen','courseScreen','diffScreen'];
-  screens.forEach(id => {
-    if (id !== target) hideScreen(id);
-  });
-  showScreen(target, 'flex');
+  screens.forEach(id => { if (id !== to) hideScreen(id); });
+  showScreen(to, 'flex');
 }
 
 function navToPlayMode() {
@@ -1468,9 +1463,12 @@ function buildScorecard(){
   const activeHoles = HOLES.slice(S.startIdx, S.endIdx + 1);
   const currentSc = S.scorecards[S.currentRound - 1];
   
-  headRow.style.gridTemplateColumns = `40px repeat(${activeHoles.length},30px)`;
-  pr.style.gridTemplateColumns = `40px repeat(${activeHoles.length},30px)`;
-  sr.style.gridTemplateColumns = `40px repeat(${activeHoles.length},30px)`;
+  // Use stretching columns for 9 holes, fixed 34px columns for 18 holes
+  const colWidth = activeHoles.length === 9 ? '1fr' : '34px';
+  
+  headRow.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colWidth})`;
+  pr.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colWidth})`;
+  sr.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colWidth})`;
   
   headRow.innerHTML = '<div class="sc-lbl"></div>';
   activeHoles.forEach((_, i) => {
@@ -1507,7 +1505,6 @@ function buildScorecard(){
   const rText = S.totalRounds > 1 ? `R${S.currentRound} · ` : '';
   document.getElementById('holeBadge').textContent=`${rText}${hText}`;
 
-  // Scroll to active hole
   setTimeout(()=>{
     const activeCell = sr.querySelector('.sc-active');
     if(activeCell) activeCell.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
@@ -3660,7 +3657,7 @@ function openWcInfo(){
   WILDCARDS.forEach(wc=>{
     const item=document.createElement('div');
     item.className='wc-info-item';
-    item.innerHTML=`<span style="font-size:20px;flex-shrink:0;">${wc.icon}</span><div><div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;color:#e0c0ff;">${wc.name}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.4);">${wc.desc}</div></div>`;
+    item.innerHTML=`<span style="font-size:24px;flex-shrink:0;margin-right:8px;">${wc.icon}</span><div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;color:#e0c0ff;margin-top:4px;">${wc.name}</div>`;
     item.onclick=()=>showWcInfoDetail(wc);
     list.appendChild(item);
   });
