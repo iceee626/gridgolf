@@ -996,7 +996,7 @@ function _androidVib(pattern){
 
 // Named vibration events
 function vibDiceRoll(){} // no vibration during roll — only on land
-function vibDiceLand(){_hapticClick(0.18,10);_androidVib([60]);}
+function vibDiceLand(){_androidVib([60]);} // iOS: no audio click, pure haptic only
 function vibWildcard(){
   // ka-ching: two clicks with pause
   _hapticClick(0.22,12);
@@ -1318,8 +1318,8 @@ const T_TEE_P3E   = ()=>cells(['grn',27],['chip',5],['sand',3],['hole',1]);
 const T_TEE_P3H   = ()=>cells(['grn',10],['chip',8],['sand',10],['rgh',7],['hole',1]);
 
 // ── FAIRWAY FAR (>200 yds) — includes green cells so par 4 birdie is possible ──
-const T_FWY_FAR   = ()=>cells(['fwy',18],['rgh',12],['grn',6]);          // par4: long approach, green reachable
-const T_FWY_FAR_H2O = ()=>cells(['fwy',16],['rgh',10],['grn',4],['h2o',4],['sand',2]);
+const T_FWY_FAR   = ()=>cells(['fwy',22],['rgh',14]);                    // long range: no green, advance toward hole
+const T_FWY_FAR_H2O = ()=>cells(['fwy',16],['rgh',10],['h2o',6],['sand',4]);
 
 // ── FAIRWAY MID (80-200 yds) ────────────────────────
 const T_FWY_MID_E = ()=>cells(['grn',34],['sand',2]);                     // easy: almost all green
@@ -1399,6 +1399,13 @@ let S={
   currentGrid:null, holeDone:false, rolling:false,
   yrdRemain:0, yrdTotal:0,
   fwyVisits:0, prevZone:null, shotCount:0,
+  // Flags — initialized explicitly to avoid undefined vs false bugs
+  _wcUsedThisRound:0,
+  _skipCelebration:false,
+  _preserveGrid:false,
+  _forceGrid:false,
+  _mulliganJustFired:false,
+  _puttWcUsed:false,
 };
 
 // ═══════════════════════════════════════
@@ -1454,6 +1461,8 @@ function buildScorecard(){
 function loadHole(){
   const h=HOLES[S.holeIdx];
   S.zone='tee';S.strokes=0;S.shotNum=1;S.shotCount=0;
+  S._skipCelebration=false;S._preserveGrid=false;S._forceGrid=false;
+  S._mulliganJustFired=false;S._puttWcUsed=false;S._pendingPuttResult=null;
   S.log=[];S.holeDone=false;S.rolling=false;S._skipCelebration=false;
   S.fwyVisits=0;S.prevZone=null;S._wcUsedThisRound=S._wcUsedThisRound||0;
   S.yrdTotal=h.yards;S.yrdRemain=h.yards;
@@ -3207,17 +3216,19 @@ function applyRollMode(mode){
     if(rollBtn) rollBtn.textContent='⚄ ROLL';
     if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){
       if(_shakePermissionGranted){
-        // Permission previously granted (saved in localStorage) — start directly, NO banner, NO re-ask
+        // Already granted in a previous session — start listener immediately
         _startShakeListener();
         const b=document.getElementById('shakePermBanner');if(b)b.remove();
       } else {
-        // First time — show banner once. After tap → save to localStorage permanently.
+        // iOS requires a gesture — show the permission banner
+        // The banner button calls requestShakePermission() which has the actual requestPermission()
         _showShakePermissionBanner();
       }
-    } else {
-      // Non-iOS (Android etc.) — no permission API, start directly
+    } else if(typeof DeviceMotionEvent!=='undefined'){
+      // Android / non-permission iOS — start directly without asking
       _startShakeListener();
     }
+    // No DeviceMotionEvent = desktop or unsupported — silently do nothing
   } else {
     if(rollBtn) rollBtn.textContent='⚄ ROLL';
     const b=document.getElementById('shakePermBanner');if(b)b.remove();
@@ -3225,7 +3236,9 @@ function applyRollMode(mode){
 }
 
 function _showShakePermissionBanner(){
-  if(document.getElementById('shakePermBanner'))return;
+  // Remove any existing banner first to avoid duplicates
+  const existing=document.getElementById('shakePermBanner');
+  if(existing)existing.remove();
   const banner=document.createElement('div');
   banner.id='shakePermBanner';
   banner.style.cssText='position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1a1a2e;border:1px solid var(--gold);border-radius:12px;padding:12px 18px;z-index:90;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.5);max-width:280px;';
@@ -3517,7 +3530,7 @@ function renderWcDrawer(){
       const isActive=WCS.active===wc.id;
       // Allow use: normally block if rolling/holeDone/reroll pending
       // BUT allow reroll WCs during pending putt state
-      const puttPending=!!document.getElementById('puttAcceptBtn');
+      const puttPending=!!document.getElementById('puttWcBtn');
       const rerollPending=WCS.active==='mulligan'||WCS.active==='tailwind';
       const canUse=!S.rolling&&!rerollPending&&!isActive&&(!S.holeDone||puttPending);
       slot.innerHTML=`
@@ -3545,7 +3558,7 @@ function activateWildcard(slotIdx){
   S._wcUsedThisRound=(S._wcUsedThisRound||0)+1;
   const wc=WCS.equipped[slotIdx];
   if(!wc)return;
-  playSound('wc_use', 0.9); // sound when effect activates
+  playSound('wildcard', 0.9); // sound when effect activates
   WCS.active=wc.id;
   applyWildcardEffect(wc);
   // Remove from equipped
