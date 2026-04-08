@@ -9,7 +9,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0d1117">
 <title>Grid Golf</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sen:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --c-tee:#2c5f8a;--c-fwy:#3a7a30;--c-fwyl:#4e9e42;
@@ -107,11 +107,11 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .logo{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:4px;line-height:1;}
 .logo span{color:var(--c-fwyl);}
-.hole-badge{background:var(--c-tee);color:#fff;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;padding:4px 12px;border-radius:20px;}
+.hole-badge{background:var(--c-tee);color:#fff;font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;padding:4px 12px;border-radius:20px;}
 /* Sc-wrap allows scrolling */
 .sc-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow-x:auto;margin-bottom:12px;}
 .sc-inner{display:flex;flex-direction:column;min-width:100%;width:max-content;}
-.sc-row{display:grid;font-family:'DM Mono',monospace;font-size:10px;}
+.sc-row{display:grid;font-family:'Sen', sans-serif;font-size:10px;}
 .sc-head{background:var(--c-fwy);}
 .sc-head div,.sc-row div{padding:5px 2px;text-align:center;border-right:1px solid rgba(255,255,255,.07);}
 .sc-body{border-top:1px solid var(--border);}
@@ -130,33 +130,33 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .hole-info{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;}
 .hole-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;line-height:1.1;}
 .hole-meta{display:flex;align-items:center;gap:8px;margin-top:3px;}
-.hole-yards{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;}
+.hole-yards{font-size:11px;color:var(--muted);font-family:'Sen', sans-serif;}
 .stars{font-size:13px;letter-spacing:1px;}
 .par-block{text-align:right;}
 .par-num{font-family:'Bebas Neue',cursive;font-size:36px;color:var(--c-fwyl);line-height:1;}
-.par-lbl{font-size:10px;color:var(--muted);letter-spacing:2px;font-family:'DM Mono',monospace;}
+.par-lbl{font-size:10px;color:var(--muted);letter-spacing:2px;font-family:'Sen', sans-serif;}
 
 /* YARDAGE BAR */
 .yrd-bar{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;}
 .yrd-track{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
 .yrd-fill{height:100%;background:linear-gradient(90deg,var(--c-fwyl),var(--c-grn));border-radius:3px;transition:width .55s ease;}
 .yrd-num{font-family:'Bebas Neue',cursive;font-size:18px;color:var(--text);line-height:1;white-space:nowrap;min-width:72px;}
-.yrd-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap;}
+.yrd-lbl{font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);white-space:nowrap;}
 
 /* ZONE PILL */
 .zone-bar{margin:0 16px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.zone-pill{display:flex;align-items:center;gap:7px;padding:6px 14px;border-radius:20px;font-family:'DM Mono',monospace;font-size:11px;border:1px solid var(--border);transition:border-color .3s;}
+.zone-pill{display:flex;align-items:center;gap:7px;padding:6px 14px;border-radius:20px;font-family:'Sen', sans-serif;font-size:11px;border:1px solid var(--border);transition:border-color .3s;}
 .zdot{width:10px;height:10px;border-radius:50%;}
-.shot-ctr{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
+.shot-ctr{margin-left:auto;font-family:'Sen', sans-serif;font-size:11px;color:var(--muted);}
 
 /* GRID */
 .grid-section{margin:0 16px 10px;}
-.sec-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:8px;}
+.sec-title{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:8px;}
 .sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
 .grid-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;}
 .grid-axes{display:grid;grid-template-columns:20px repeat(6,1fr);grid-template-rows:20px repeat(6,1fr);gap:2px;aspect-ratio:1;}
-.ax{display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);background:rgba(255,255,255,.03);border-radius:3px;}
-.cell{border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:8px;font-weight:600;color:rgba(255,255,255,.85);position:relative;}
+.ax{display:flex;align-items:center;justify-content:center;font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);background:rgba(255,255,255,.03);border-radius:3px;}
+.cell{border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Sen', sans-serif;font-size:8px;font-weight:600;color:rgba(255,255,255,.85);position:relative;}
 .cell.lit{outline:2px solid #fff;outline-offset:1px;z-index:10;animation:cellpop .45s ease;}
 @keyframes cellpop{0%{transform:scale(1.25)}100%{transform:scale(1)}}
 .z-tee{background:var(--c-tee);}.z-fwy{background:var(--c-fwy);}
@@ -169,7 +169,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 /* DICE */
 .dice-row{margin:0 16px 10px;display:flex;gap:10px;align-items:stretch;}
 .dc{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;}
-.dc-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.dc-lbl{font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
 .die{
   width:58px;height:58px;
   background:linear-gradient(145deg,#fefefe 0%,#e2e2e2 100%);
@@ -248,14 +248,14 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .res-chip{width:44px;height:44px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;transition:background .3s;}
 .res-info{flex:1;}
 .res-title{font-family:'Bebas Neue',cursive;font-size:19px;letter-spacing:2px;line-height:1;}
-.res-sub{font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);margin-top:2px;}
+.res-sub{font-size:11px;font-family:'Sen', sans-serif;color:var(--muted);margin-top:2px;}
 .res-badge{font-family:'Bebas Neue',cursive;font-size:28px;line-height:1;}
 .b-pen{color:#e05252;}.b-ok{color:var(--c-fwyl);}.b-good{color:var(--gold);}
 
 /* LOG */
 .log-section{margin:0 16px 10px;}
 .log-list{display:flex;flex-direction:column;gap:3px;}
-.log-entry{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:7px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);animation:fadein .28s ease;}
+.log-entry{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:7px;font-family:'Sen', sans-serif;font-size:11px;color:var(--muted);animation:fadein .28s ease;}
 @keyframes fadein{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:none}}
 .log-n{width:17px;height:17px;background:var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text);flex-shrink:0;}
 .log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
@@ -263,7 +263,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 
 /* LEGEND */
 .legend{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px;display:grid;grid-template-columns:1fr 1fr;gap:5px;}
-.leg{display:flex;align-items:center;gap:7px;font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);}
+.leg{display:flex;align-items:center;gap:7px;font-size:11px;font-family:'Sen', sans-serif;color:var(--muted);}
 .leg-sw{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
 
 /* MAIN MENU & SCREENS */
@@ -286,7 +286,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 
 .menu-logo{font-family:'Bebas Neue',cursive;font-size:52px;letter-spacing:6px;color:var(--text);line-height:1;margin-bottom:4px;}
 .menu-logo span{color:var(--c-fwyl);}
-.menu-tagline{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:20px;}
+.menu-tagline{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:20px;}
 .menu-btns{display:flex;flex-direction:column;gap:10px;}
 .menu-btn-play{background:var(--c-fwy);color:#fff;border:none;border-radius:14px;padding:16px;font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;cursor:pointer;transition:transform .1s;box-shadow:0 4px 20px rgba(58,122,48,.4);}
 .menu-btn-play:active{transform:scale(0.98);}
@@ -298,10 +298,10 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .onboard-input::placeholder{color:rgba(255,255,255,.2);}
 
 .setup-card{max-width:360px;width:100%;text-align:center;position:relative;z-index:10;}
-.setup-back-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 14px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;margin-bottom:20px;display:inline-block;}
+.setup-back-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 14px;font-family:'Sen', sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;margin-bottom:20px;display:inline-block;}
 .setup-title{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;margin-bottom:20px;color:var(--c-fwyl);}
 .setup-group{margin-bottom:20px;text-align:left;}
-.setup-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;display:block;}
+.setup-lbl{font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;display:block;}
 
 .course-btn{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;width:100%;margin-bottom:10px;text-align:left;}
 .course-btn:hover{border-color:var(--c-fwyl);}
@@ -347,7 +347,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .ov-emoji{font-size:50px;margin-bottom:8px;}
 .ov-title{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:4px;color:var(--c-fwyl);margin-bottom:2px;}
 .ov-namerow{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;}
-.ov-statsrow{font-size:13px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:18px;}
+.ov-statsrow{font-size:13px;color:var(--muted);font-family:'Sen', sans-serif;letter-spacing:1px;margin-bottom:18px;}
 .ov-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:3px;cursor:pointer;transition:background .15s;}
 .ov-btn:hover{background:var(--c-fwyl);}
 
@@ -362,10 +362,10 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .hist-stats{display:flex;gap:8px;margin-bottom:12px;}
 .hstat{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center;}
 .hstat-n{font-family:'Bebas Neue',cursive;font-size:26px;line-height:1;}
-.hstat-l{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-top:1px;}
-.hsec{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin:10px 0 6px;display:flex;align-items:center;gap:7px;}
+.hstat-l{font-family:'Sen', sans-serif;font-size:9px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-top:1px;}
+.hsec{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin:10px 0 6px;display:flex;align-items:center;gap:7px;}
 .hsec::after{content:'';flex:1;height:1px;background:var(--border);}
-.hlog-entry{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:3px;cursor:pointer;transition:border-color .15s,background .15s;}
+.hlog-entry{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-family:'Sen', sans-serif;font-size:11px;color:var(--muted);margin-bottom:3px;cursor:pointer;transition:border-color .15s,background .15s;}
 .hlog-entry:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.04);}
 .hlog-entry.active-shot{border-color:var(--c-fwyl);background:rgba(58,122,48,.1);}
 .hlog-n{width:17px;height:17px;background:var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text);flex-shrink:0;}
@@ -373,11 +373,11 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .hlog-r{margin-left:auto;font-size:10px;}
 .hgrid-wrap{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:8px;}
 .hgrid{display:grid;grid-template-columns:16px repeat(6,1fr);grid-template-rows:16px repeat(6,1fr);gap:2px;aspect-ratio:1;}
-.hax{display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
-.hcell{border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:7px;font-weight:600;color:rgba(255,255,255,.8);position:relative;}
+.hax{display:flex;align-items:center;justify-content:center;font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);}
+.hcell{border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'Sen', sans-serif;font-size:7px;font-weight:600;color:rgba(255,255,255,.8);position:relative;}
 .hcell.hlit{outline:2px solid #fff;outline-offset:1px;}
 .shot-marker{position:absolute;top:1px;right:2px;font-size:6px;color:rgba(255,255,255,.9);font-weight:700;line-height:1;}
-.hlog-hint{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;margin:2px 0 8px 2px;}
+.hlog-hint{font-size:9px;color:var(--muted);font-family:'Sen', sans-serif;letter-spacing:1px;margin:2px 0 8px 2px;}
 
 @keyframes pflash{0%,100%{background:var(--card)}50%{background:rgba(176,48,32,.22)}}
 .pflash{animation:pflash .55s ease;}
@@ -388,8 +388,8 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .name-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px 28px;max-width:340px;width:100%;text-align:center;}
 .name-logo{font-family:'Bebas Neue',cursive;font-size:40px;letter-spacing:6px;margin-bottom:4px;}
 .name-logo span{color:var(--c-fwyl);}
-.name-sub{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:28px;}
-.name-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;text-align:left;margin-bottom:7px;}
+.name-sub{font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:28px;}
+.name-label{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;text-align:left;margin-bottom:7px;}
 .name-input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:var(--text);outline:none;text-transform:uppercase;margin-bottom:16px;transition:border-color .2s;}
 .name-input:focus{border-color:var(--c-fwyl);}
 .name-input::placeholder{color:var(--muted);letter-spacing:2px;}
@@ -401,7 +401,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .diff-btn.active{border-color:var(--c-fwyl);background:rgba(78,158,66,.2);}
 .diff-icon{font-size:20px;margin-bottom:3px;}
 .diff-title{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;color:var(--text);line-height:1;}
-.diff-desc{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;line-height:1.3;}
+.diff-desc{font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);margin-top:3px;line-height:1.3;}
 
 /* TV SCORECARD BAR — fixed bottom, replaces float bar */
 .tv-bar.show{display:block;}
@@ -420,7 +420,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 }
 .tv-nameblock{display:flex;flex-direction:column;justify-content:center;margin-right:10px;min-width:0;}
 .tv-playername{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.tv-holeinfo{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:1px;line-height:1.3;}
+.tv-holeinfo{font-family:'Sen', sans-serif;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:1px;line-height:1.3;}
 /* Shot number track */
 .tv-shots{display:flex;gap:5px;align-items:center;flex:1;justify-content:center;padding:0 4px;}
 .tv-sn{
@@ -461,7 +461,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   padding:0 8px;flex-shrink:0;margin-left:8px;
 }
 .tv-total-num{font-family:'Bebas Neue',cursive;font-size:20px;color:#1a1a1a;line-height:1;}
-.tv-total-lbl{font-family:'DM Mono',monospace;font-size:7px;color:rgba(0,0,0,.5);letter-spacing:1px;text-transform:uppercase;line-height:1;}
+.tv-total-lbl{font-family:'Sen', sans-serif;font-size:7px;color:rgba(0,0,0,.5);letter-spacing:1px;text-transform:uppercase;line-height:1;}
 /* Bottom strip — "For Birdie" only shown on green */
 .tv-row2{
   background:#2a8a3e;
@@ -494,14 +494,14 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .sum-total-info{display:flex;flex-direction:column;gap:2px;}
 .sum-total-name{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--muted);}
 .sum-total-diff{font-family:'Bebas Neue',cursive;font-size:28px;line-height:1;}
-.sum-total-par{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
+.sum-total-par{font-family:'Sen', sans-serif;font-size:11px;color:var(--muted);}
 .sum-sc-table td{font-size:11px;}
 
 /* PROFILE SYSTEM */
 .profile-btn{
   background:rgba(255,255,255,.08);border:1px solid var(--border);
   color:var(--muted);border-radius:8px;padding:4px 10px;
-  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;
+  font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;
   cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;
 }
 .profile-btn:hover{border-color:var(--c-fwyl);color:var(--c-fwyl);}
@@ -522,9 +522,9 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .profile-avatar{width:40px;height:40px;border-radius:50%;background:var(--c-tee);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
 .profile-info{flex:1;min-width:0;}
 .profile-name{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);line-height:1;}
-.profile-stats{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:2px;}
+.profile-stats{font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:2px;}
 .profile-actions{display:flex;gap:4px;flex-shrink:0;}
-.profile-action-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:5px 8px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.profile-action-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:5px 8px;font-family:'Sen', sans-serif;font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .15s;white-space:nowrap;}
 .profile-action-btn:hover{border-color:var(--text);color:var(--text);}
 .profile-action-btn.del:hover{border-color:#e05252;color:#e05252;}
 .profile-new-form{display:none;border-top:1px solid var(--border);padding-top:12px;}
@@ -533,7 +533,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .profile-new-input:focus{border-color:var(--c-fwyl);}
 .profile-new-row{display:flex;gap:8px;}
 .profile-save-btn{flex:1;background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:10px;font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;cursor:pointer;}
-.profile-cancel-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;}
+.profile-cancel-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 14px;font-family:'Sen', sans-serif;font-size:11px;cursor:pointer;}
 
 /* ═══ WILDCARD SYSTEM ═══════════════════════════════════ */
 
@@ -584,7 +584,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 }
 .wc-drawer-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
 .wc-drawer-close{background:rgba(0,0,0,.3);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.wc-drawer-sub{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px;padding:10px 16px 0;}
+.wc-drawer-sub{font-family:'Sen', sans-serif;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px;padding:10px 16px 0;}
 .wc-drawer-slots{display:flex;flex-direction:column;gap:8px;padding:8px 16px 16px;}
 .wc-slot{
   background:rgba(255,255,255,.05);border:1px solid rgba(123,47,158,.4);
@@ -592,13 +592,13 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   display:flex;flex-direction:column;gap:5px;position:relative;
 }
 .wc-slot.empty{border-style:dashed;opacity:.25;align-items:center;justify-content:center;padding:6px 8px;min-height:36px;}
-.wc-slot-empty-txt{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:1px;}
+.wc-slot-empty-txt{font-family:'Sen', sans-serif;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:1px;}
 .wc-slot-header{display:flex;align-items:flex-start;gap:8px;}
 .wc-slot-icon{font-size:22px;flex-shrink:0;line-height:1;}
 .wc-slot-info{flex:1;min-width:0;}
 .wc-slot-name{font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;color:#e0c0ff;line-height:1;}
-.wc-slot-desc{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.5);line-height:1.3;margin-top:2px;}
-.wc-slot-type{display:inline-block;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;padding:2px 6px;border-radius:20px;background:rgba(240,192,64,.15);color:var(--gold);border:1px solid rgba(240,192,64,.3);margin-top:2px;}
+.wc-slot-desc{font-family:'Sen', sans-serif;font-size:9px;color:rgba(255,255,255,.5);line-height:1.3;margin-top:2px;}
+.wc-slot-type{display:inline-block;font-family:'Sen', sans-serif;font-size:8px;letter-spacing:1px;padding:2px 6px;border-radius:20px;background:rgba(240,192,64,.15);color:var(--gold);border:1px solid rgba(240,192,64,.3);margin-top:2px;}
 .wc-slot-actions{display:flex;gap:6px;margin-top:4px;}
 .wc-use-btn{
   flex:1;background:linear-gradient(135deg,#7b2f9e,#4a1a6e);color:#fff;border:none;
@@ -610,7 +610,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .wc-use-btn.post{background:linear-gradient(135deg,#2f6a9e,#1a3a6e);}
 .wc-discard-btn{
   background:rgba(255,82,82,.15);color:#ff8080;border:1px solid rgba(255,82,82,.3);
-  border-radius:7px;padding:7px 10px;font-family:'DM Mono',monospace;font-size:10px;
+  border-radius:7px;padding:7px 10px;font-family:'Sen', sans-serif;font-size:10px;
   cursor:pointer;transition:all .15s;
 }
 .wc-discard-btn:hover{background:rgba(255,82,82,.25);}
@@ -677,7 +677,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .wc-front-name{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#f0c040;text-align:center;line-height:1.1;}
 .wc-front-type{display:none;}
 .wc-front-desc{font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.75);text-align:center;line-height:1.4;}
-.wc-reveal-hint{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);animation:wc-blink 1.2s ease infinite;}
+.wc-reveal-hint{font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);animation:wc-blink 1.2s ease infinite;}
 @keyframes wc-blink{0%,100%{opacity:.4}50%{opacity:.9}}
 .wc-reveal-actions{display:flex;gap:10px;width:220px;flex-wrap:wrap;}
 .wc-equip-btn{
@@ -715,7 +715,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .hio-ball{font-size:56px;animation:hio-spin 1s linear infinite;}
 @keyframes hio-spin{from{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.3)}to{transform:rotate(360deg) scale(1)}}
 .hio-title{font-family:'Bebas Neue',cursive;font-size:clamp(28px,8vw,38px);letter-spacing:4px;color:#f0c040;text-align:center;text-shadow:0 0 30px rgba(240,192,64,.8);line-height:1.1;}
-.hio-sub{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px;color:rgba(255,255,255,.6);text-align:center;}
+.hio-sub{font-family:'Sen', sans-serif;font-size:12px;letter-spacing:2px;color:rgba(255,255,255,.6);text-align:center;}
 .hio-dice-row{display:flex;gap:20px;justify-content:center;}
 .hio-die{
   width:64px;height:64px;
@@ -744,7 +744,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   <div class="menu-content">
     <div class="menu-logo">GRID<span>GOLF</span></div>
     <div class="menu-tagline">A DICE GOLF EXPERIENCE</div>
-    <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:20px;">CREATE YOUR PROFILE</div>
+    <div style="font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:20px;">CREATE YOUR PROFILE</div>
     <input class="onboard-input" id="onboardInput" placeholder="ENTER YOUR NAME" maxlength="12" autocomplete="off" spellcheck="false">
     <button class="menu-btn-play" onclick="createFirstProfile()" style="margin-top:12px;">START PLAYING →</button>
   </div>
@@ -753,7 +753,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 <div class="menu-screen" id="menuScreen" style="display:none;">
   <div class="menu-bg-grass"></div>
   <div style="position:absolute;top:calc(env(safe-area-inset-top) + 10px);right:16px;display:flex;align-items:center;gap:6px;z-index:20;">
-    <span id="menuProfileName" style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:rgba(255,255,255,.6);"></span>
+    <span id="menuProfileName" style="font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;color:rgba(255,255,255,.6);"></span>
     <button class="menu-profile-icon" id="menuProfileIconBtn" onclick="openProfileModal()" title="Profiles" style="position:static;top:auto;right:auto;">👤</button>
   </div>
   <div class="menu-content">
@@ -762,11 +762,11 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   <div id="menuActiveProfile" style="display:none;"></div>
   
   <div class="menu-btns" id="menuBtns">
-    <button class="menu-btn-play" id="menuContinueBtn" onclick="continueGame()" style="display:none;background:#1a5f8a;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;padding:12px;">
+  <button class="menu-btn-play" id="menuContinueBtn" onclick="continueGame()" style="display:none;background:#1a5f8a;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;padding:12px;">
       </button>
-    <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()">⛳ PLAY</button>
-    <button class="menu-btn-sec" onclick="openSettings()" style="margin-top:10px;">⚙️ SETTINGS</button>
-  </div>
+  <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()">⛳ PLAY</button>
+  <button class="menu-btn-sec" onclick="openSettings()" style="margin-top:10px; font-size:22px; letter-spacing:3px;">⚙️ SETTINGS</button>
+</div>
 </div>
 </div>
 
@@ -835,7 +835,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
     <button class="course-btn" onclick="navToDiff()">
       <div>
         <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;">LITTLE PINES GC</div>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);">PAR 72 · WOODLAND</div>
+        <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 72 · WOODLAND</div>
       </div>
       <div style="font-size:24px;">🌲</div>
     </button>
@@ -843,7 +843,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
     <button class="course-btn locked">
       <div>
         <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:var(--muted);">OCEAN BREEZE LINKS</div>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);">UNLOCK SOON</div>
+        <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">UNLOCK SOON</div>
       </div>
       <div style="font-size:24px;">🌊</div>
     </button>
@@ -869,7 +869,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 <header>
   <div class="logo-row">
     <div style="display:flex;align-items:center;gap:6px;">
-      <button onclick="returnToMenuSave()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:0 10px;height:26px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:4px;">← MENU</button>
+      <button onclick="returnToMenuSave()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:0 10px;height:26px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:4px;">← MENU</button>
       <button onclick="openSettings()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;width:26px;height:26px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;" title="Settings">⚙️</button>
     </div>
     <div class="logo" style="margin:0 auto;">GRID<span>GOLF</span></div>
@@ -892,7 +892,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
     <div class="hole-meta">
           <span class="hole-yards" id="holeYards">387 yds</span>
           <span class="hole-yards" style="color:var(--muted);margin:0 3px;">•</span>
-          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);">Difficulty</span>
+          <span style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">Difficulty</span>
           <span class="stars" id="holeStars">⭐⭐☆</span>
         </div>
   </div>
@@ -945,7 +945,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 </div>
 
 <div style="margin:0 16px 7px;">
-  <button onclick="toggleLegend()" id="legendToggleBtn" style="background:none;border:none;color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;padding:0;display:flex;align-items:center;gap:5px;text-transform:uppercase;">
+  <button onclick="toggleLegend()" id="legendToggleBtn" style="background:none;border:none;color:var(--muted);font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;cursor:pointer;padding:0;display:flex;align-items:center;gap:5px;text-transform:uppercase;">
     ZONE LEGEND <span id="legendArrow">▾</span>
   </button>
 </div>
@@ -1507,7 +1507,7 @@ function buildScorecard(){
     sr.appendChild(sc);
   });
   
-  const hText = S.holesConfig==='18' ? `HOLE ${S.holeIdx+1} / 18` : `HOLE ${S.holeIdx - S.startIdx + 1} / 9`;
+  const hText = S.holesConfig==='18' ? `HOLE ${S.holeIdx+1} / 18` : `HOLE ${S.holeIdx+1} (OF 9)`;
   const rText = S.totalRounds > 1 ? `R${S.currentRound} · ` : '';
   document.getElementById('holeBadge').textContent=`${rText}${hText}`;
 
@@ -2251,7 +2251,7 @@ function completeHole(){
       ovBtn.textContent = 'FINAL SCORECARD →';
     }
   } else {
-    ovBtn.textContent = `HOLE ${S.holeIdx - S.startIdx + 2} →`;
+    ovBtn.textContent = `HOLE ${S.holeIdx + 2} →`;
   }
   
   buildScorecard();
@@ -2383,7 +2383,7 @@ function openSummary(viewRound = S.currentRound){
     const gBox = document.createElement('div');
     gBox.style.cssText = 'background:rgba(240,192,64,.15);border:1px solid rgba(240,192,64,.3);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;';
     gBox.innerHTML = `
-      <div><div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:1px;">TOURNAMENT TOTAL</div><div style="font-size:12px;color:var(--text);">${globalTotal} strokes</div></div>
+      <div><div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--gold);letter-spacing:1px;">TOURNAMENT TOTAL</div><div style="font-size:12px;color:var(--text);">${globalTotal} strokes</div></div>
       <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);">${gDiffStr}</div>
     `;
     body.appendChild(gBox);
@@ -2392,7 +2392,7 @@ function openSummary(viewRound = S.currentRound){
   const sc=document.createElement('div');
   sc.style.cssText='overflow-x:auto;margin-bottom:14px;';
   const table=document.createElement('table');
-  table.style.cssText='width:100%;border-collapse:collapse;font-family:"DM Mono",monospace;font-size:11px;';
+  table.style.cssText='width:100%;border-collapse:collapse;font-family:"Sen",sans-serif;font-size:11px;';
 
   const td=(txt,styles='',cls='')=>{
     const c=document.createElement('td'); c.textContent=txt;
@@ -2454,7 +2454,7 @@ function openSummary(viewRound = S.currentRound){
     runningDiff+=score-h.par; return runningDiff;
   }),roundDiff].forEach((v,i)=>{
     const cell=document.createElement('td');
-    cell.style.cssText='padding:5px 2px;text-align:center;border:1px solid var(--border);font-family:"DM Mono",monospace;font-size:10px;'+(i===activeHoles.length+1?'background:rgba(0,0,0,.2);font-weight:700;':'')+(i===0?'text-align:left;padding-left:8px;':'');
+    cell.style.cssText='padding:5px 2px;text-align:center;border:1px solid var(--border);font-family:"Sen",sans-serif;font-size:10px;'+(i===activeHoles.length+1?'background:rgba(0,0,0,.2);font-weight:700;':'')+(i===0?'text-align:left;padding-left:8px;':'');
     if(i===0 || v===null){cell.textContent=v===null?'–':'±';cell.style.color='var(--muted)';diffRow.appendChild(cell);return;}
     const txt=v===0?'E':v>0?`+${v}`:`${v}`;
     cell.textContent=txt;
@@ -2466,7 +2466,7 @@ function openSummary(viewRound = S.currentRound){
   body.appendChild(sc);
 
   const detailSec=document.createElement('div');
-  detailSec.style.cssText='font-family:"DM Mono",monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;';
+  detailSec.style.cssText='font-family:"Sen",sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;';
   detailSec.textContent='Tap a hole for details';
   body.appendChild(detailSec);
 
@@ -2495,9 +2495,9 @@ function openSummary(viewRound = S.currentRound){
 
     row.innerHTML=`
       <span style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:1px;color:var(--muted);min-width:54px;">${h.name}</span>
-      <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);">par ${h.par}</span>
+      <span style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);">par ${h.par}</span>
       <span style="font-family:'Bebas Neue',cursive;font-size:16px;color:${scoreColor};margin-left:auto;">${hist.strokes}</span>
-      <span style="font-family:'DM Mono',monospace;font-size:10px;color:${scoreColor};min-width:40px;">${resultLabel}</span>
+      <span style="font-family:'Sen',sans-serif;font-size:10px;color:${scoreColor};min-width:40px;">${resultLabel}</span>
       <span style="display:flex;gap:3px;align-items:center;">${zoneDots}</span>
     `;
     row.onclick=()=>openHistInline(absoluteIdx, body, viewRound);
@@ -2536,7 +2536,7 @@ function openSummary(viewRound = S.currentRound){
         document.getElementById('summaryModal').classList.remove('show');
         document.getElementById('overlay').classList.remove('show');
         document.getElementById('mainApp').style.display='none';
-        startGame(); 
+        startGame(); // Re-uses SETUP and selected diff
         document.querySelector('.tv-bar').classList.add('show');
       };
       btnRow.appendChild(playAgainBtn);
@@ -2545,18 +2545,6 @@ function openSummary(viewRound = S.currentRound){
   
   body.appendChild(btnRow);
   document.getElementById('summaryModal').classList.add('show');
-}
-
-function startNextRound() {
-  S.currentRound++;
-  S.scorecards.push(Array(18).fill(null));
-  S.histories.push(Array(18).fill(null));
-  S.holeIdx = S.startIdx;
-  S._wcUsedThisRound = 0;
-  saveGameState();
-  closeSummary();
-  loadHole();
-  showWcToast(`⛳ ROUND ${S.currentRound} STARTED!`);
 }
 
 function closeSummary(){
@@ -2745,7 +2733,7 @@ function renderProfileSlots(){
     const add=document.createElement('div');
     add.className='profile-slot empty';
     add.style.cssText='cursor:pointer;border-style:dashed;justify-content:center;color:var(--muted);gap:6px;';
-    add.innerHTML=`<span style="font-size:18px;">+</span><span style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;">NEW PROFILE</span><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-left:4px;">(max. 3)</span>`;
+    add.innerHTML=`<span style="font-size:18px;">+</span><span style="font-family:'Sen', sans-serif;font-size:11px;letter-spacing:1px;">NEW PROFILE</span><span style="font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);margin-left:4px;">(max. 3)</span>`;
     add.onclick=()=>showNewProfileForm();
     add.style.cursor='pointer';
     el.appendChild(add);
@@ -2966,7 +2954,7 @@ function showProfileStats(i){
     const yes=earned.includes(a.id);
     return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);opacity:${yes?1:.35};">
       <span style="font-size:16px;flex-shrink:0;">${a.icon}</span>
-      <div style="flex:1;min-width:0;"><div style="font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:1px;color:${yes?'var(--gold)':'var(--muted)'};">${a.name}</div><div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);">${a.desc}</div></div>
+      <div style="flex:1;min-width:0;"><div style="font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:1px;color:${yes?'var(--gold)':'var(--muted)'};">${a.name}</div><div style="font-family:'Sen', sans-serif;font-size:8px;color:var(--muted);">${a.desc}</div></div>
       <span style="font-size:11px;">${yes?'✅':'🔒'}</span>
     </div>`;
   }).join('');
@@ -3084,7 +3072,7 @@ function showAchievementPopup(a){
   }
   const el=document.createElement('div');
   el.style.cssText='position:fixed;top:calc(env(safe-area-inset-top) + 60px);right:16px;background:linear-gradient(135deg,#2a1a40,#1a3020);border:1px solid var(--gold);border-radius:14px;padding:12px 16px;z-index:999;display:flex;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,.6);max-width:260px;animation:achIn .4s cubic-bezier(.34,1.56,.64,1) forwards;';
-  el.innerHTML=`<div style="font-size:28px;flex-shrink:0;">${a.icon}</div><div><div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--gold);margin-bottom:2px;">ACHIEVEMENT UNLOCKED</div><div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:#fff;line-height:1;">${a.name}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);margin-top:2px;">${a.desc}</div></div>`;
+  el.innerHTML=`<div style="font-size:28px;flex-shrink:0;">${a.icon}</div><div><div style="font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;color:var(--gold);margin-bottom:2px;">ACHIEVEMENT UNLOCKED</div><div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:#fff;line-height:1;">${a.name}</div><div style="font-family:'Sen', sans-serif;font-size:9px;color:rgba(255,255,255,.6);margin-top:2px;">${a.desc}</div></div>`;
   document.body.appendChild(el);
   let _achStartX=0,_achDismissed=false;
   el.addEventListener('touchstart',e=>{_achStartX=e.touches[0].clientX;},{passive:true});
@@ -3268,9 +3256,9 @@ function openSummary(){
 
     row.innerHTML=`
       <span style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:1px;color:var(--muted);min-width:54px;">${h.name}</span>
-      <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);">par ${h.par}</span>
+      <span style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">par ${h.par}</span>
       <span style="font-family:'Bebas Neue',cursive;font-size:16px;color:${scoreColor};margin-left:auto;">${hist.strokes}</span>
-      <span style="font-family:'DM Mono',monospace;font-size:10px;color:${scoreColor};min-width:40px;">${resultLabel}</span>
+      <span style="font-family:'Sen', sans-serif;font-size:10px;color:${scoreColor};min-width:40px;">${resultLabel}</span>
       <span style="display:flex;gap:3px;align-items:center;">${zoneDots}</span>
     `;
     row.onclick=(()=>{const _i=i;return ()=>openHistInline(_i,body);})(i);
@@ -3421,8 +3409,8 @@ function _showShakePermissionBanner(){
   banner.id='shakePermBanner';
   banner.style.cssText='position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1a1a2e;border:1px solid var(--gold);border-radius:12px;padding:12px 18px;z-index:90;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.5);max-width:280px;';
   banner.innerHTML=`
-    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;">📳 SHAKE MODE</div>
-    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:10px;">Tap to allow motion access</div>
+    <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;">📳 SHAKE MODE</div>
+    <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-bottom:10px;">Tap to allow motion access</div>
     <button onclick="requestShakePermission()" style="background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;cursor:pointer;width:100%;">ALLOW MOTION</button>
   `;
   document.body.appendChild(banner);
@@ -3675,10 +3663,10 @@ function showWcInfoDetail(wc){
   const title=document.getElementById('wcInfoTitle');
   title.textContent=wc.name;
   list.innerHTML=`
-    <button onclick="openWcInfo()" style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);border-radius:6px;padding:6px 12px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;margin-bottom:14px;">← BACK</button>
+    <button onclick="openWcInfo()" style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);border-radius:6px;padding:6px 12px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;margin-bottom:14px;">← BACK</button>
     <div style="font-size:40px;text-align:center;margin:10px 0;">${wc.icon}</div>
     <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#f0c040;text-align:center;margin-bottom:8px;">${wc.name}</div>
-    <div style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.7);text-align:center;line-height:1.5;padding:0 8px;">${wc.desc}</div>
+    <div style="font-family:'Sen', sans-serif;font-size:11px;color:rgba(255,255,255,.7);text-align:center;line-height:1.5;padding:0 8px;">${wc.desc}</div>
   `;
 }
 function closeWcInfo(){
@@ -4184,9 +4172,9 @@ function updateMenuContinueBtn(){
     const rnd = save.currentRound || 1;
     const cName = 'LITTLE PINES';
     const startIdx = save.startIdx || 0;
-    const holeDisplay = save.holeIdx - startIdx + 1;
+    const holeDisplay = save.holeIdx + 1;
     
-    btn.innerHTML=`<div>▶ CONTINUE</div><div style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:1px;font-weight:normal;margin-top:4px;">${cName} · R${rnd} · H${holeDisplay} · ${diffStr}</div>`;
+    btn.innerHTML=`<div>▶ CONTINUE</div><div style="font-family:'Sen', sans-serif;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:1px;font-weight:normal;margin-top:4px;">${cName} · R${rnd} · H${holeDisplay} · ${diffStr}</div>`;
     btn.style.display='flex';
   } else {
     btn.style.display='none';
@@ -4297,57 +4285,57 @@ function closeConfirm(){
       <button class="profile-close" onclick="closeSettings()">✕</button>
     </div>
     <div class="profile-body">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">APPEARANCE</div>
+      <div style="font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">APPEARANCE</div>
       <div style="display:flex;gap:6px;margin-bottom:16px;">
-        <button id="themeBtn-dark" onclick="setTheme('dark')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">🌙 DARK</button>
-        <button id="themeBtn-light" onclick="setTheme('light')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">☀️ LIGHT</button>
-        <button id="themeBtn-system" onclick="setTheme('system')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">🔄 AUTO</button>
+        <button id="themeBtn-dark" onclick="setTheme('dark')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">🌙 DARK</button>
+        <button id="themeBtn-light" onclick="setTheme('light')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">☀️ LIGHT</button>
+        <button id="themeBtn-system" onclick="setTheme('system')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">🔄 AUTO</button>
       </div>
-      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">GAME OPTIONS</div>
+      <div style="font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">GAME OPTIONS</div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🔊 SOUND</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">Shot sound effects</div>
+          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Shot sound effects</div>
         </div>
         <div class="toggle-switch" id="soundToggle" onclick="setSoundPref(!soundEnabled())"><div class="toggle-knob"></div></div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📳 VIBRATIONS</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">Haptic feedback on shots &amp; events</div>
+          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Haptic feedback on shots &amp; events</div>
         </div>
         <div class="toggle-switch" id="vibToggle" onclick="setVibPref(!vibEnabled())"><div class="toggle-knob"></div></div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📳 SHAKE TO ROLL</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">Shake your phone to roll the dice</div>
+          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Shake your phone to roll the dice</div>
         </div>
         <div class="toggle-switch" id="shakeToggle" onclick="setRollMode(getRollMode()==='haptic'?'classic':'haptic')"><div class="toggle-knob"></div></div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🃏 WILDCARDS</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">Roll doubles to earn wildcard cards</div>
+          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Roll doubles to earn wildcard cards</div>
         </div>
         <div class="toggle-switch" id="wcToggle" onclick="setWcPref(!wcEnabled())"><div class="toggle-knob"></div></div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📏 DISTANCE</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">Unit of measurement</div>
+          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Unit of measurement</div>
         </div>
         <div style="display:flex;gap:5px;">
-          <button id="metricsBtn-yards" onclick="setMetricsPref('yards')" style="border-radius:8px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">YDS</button>
-          <button id="metricsBtn-meters" onclick="setMetricsPref('meters')" style="border-radius:8px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">M</button>
+          <button id="metricsBtn-yards" onclick="setMetricsPref('yards')" style="border-radius:8px;padding:6px 10px;font-family:'Sen', sans-serif;font-size:9px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">YDS</button>
+          <button id="metricsBtn-meters" onclick="setMetricsPref('meters')" style="border-radius:8px;padding:6px 10px;font-family:'Sen', sans-serif;font-size:9px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">M</button>
         </div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🏷️ CELL LABELS</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;">Show zone name on tap</div>
+          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Show zone name on tap</div>
         </div>
-        <button id="cellLabelBtn" onclick="toggleCellLabels()" style="background:rgba(255,255,255,.1);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;min-width:52px;">TAP</button>
+        <button id="cellLabelBtn" onclick="toggleCellLabels()" style="background:rgba(255,255,255,.1);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-family:'Sen', sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;min-width:52px;">TAP</button>
       </div>
       
     </div>
@@ -4364,12 +4352,12 @@ function closeConfirm(){
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
         <div id="editProfileIconPreview" style="width:52px;height:52px;border-radius:50%;background:var(--c-tee);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;cursor:pointer;border:2px solid var(--border);" onclick="focusIconPicker()">🏌️</div>
         <div style="flex:1;">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:5px;">DISPLAY NAME</div>
+          <div style="font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:5px;">DISPLAY NAME</div>
           <input class="profile-new-input" id="editProfileName" placeholder="YOUR NAME" maxlength="12" autocomplete="off" spellcheck="false" style="margin-bottom:4px;" oninput="document.getElementById('editNameCount').textContent=this.value.length+'/12'">
-          <div id="editNameCount" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-align:right;margin-bottom:6px;">0/12</div>
+          <div id="editNameCount" style="font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);text-align:right;margin-bottom:6px;">0/12</div>
         </div>
       </div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:8px;">CHOOSE ICON</div>
+      <div style="font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:8px;">CHOOSE ICON</div>
       <div id="editProfileEmojiGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:14px;padding:2px;"></div>
       <div class="profile-new-row">
         <button class="profile-save-btn" onclick="saveEditProfile()">SAVE →</button>
