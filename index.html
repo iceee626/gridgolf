@@ -1354,9 +1354,15 @@ let S={
 let _lastMenuScreen = 'menuScreen';
 
 function navBack(to) {
+  // Translate the 'mode' keyword back into the actual screen ID
+  const target = to === 'mode' ? (SETUP.mode === 'custom' ? 'customScreen' : 'playModeScreen') : to;
+  
   const screens = ['menuScreen','playModeScreen','customScreen','courseScreen','diffScreen'];
-  screens.forEach(id => { if (id !== to) hideScreen(id); });
-  showScreen(to, 'flex');
+  screens.forEach(id => { 
+    if (id !== target) hideScreen(id); 
+  });
+  
+  showScreen(target, 'flex');
 }
 
 function navToPlayMode() {
