@@ -108,13 +108,16 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .logo{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:4px;line-height:1;}
 .logo span{color:var(--c-fwyl);}
 .hole-badge{background:var(--c-tee);color:#fff;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;padding:4px 12px;border-radius:20px;}
-.sc-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px;}
-.sc-row{display:grid;grid-template-columns:40px repeat(9,1fr);font-family:'DM Mono',monospace;font-size:10px;}
+/* Sc-wrap allows scrolling */
+.sc-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow-x:auto;margin-bottom:12px;}
+.sc-inner{display:flex;flex-direction:column;min-width:max-content;}
+.sc-row{display:grid;grid-template-columns:40px repeat(18,30px);font-family:'DM Mono',monospace;font-size:10px;}
 .sc-head{background:var(--c-fwy);}
 .sc-head div,.sc-row div{padding:5px 2px;text-align:center;border-right:1px solid rgba(255,255,255,.07);}
 .sc-body{border-top:1px solid var(--border);}
 .sc-body div{border-right:1px solid var(--border);}
-.sc-lbl{font-size:9px;color:var(--muted);display:flex;align-items:center;justify-content:center;}
+.sc-lbl{font-size:9px;color:var(--muted);display:flex;align-items:center;justify-content:center;position:sticky;left:0;background:var(--card);z-index:2;}
+.sc-head .sc-lbl{background:var(--c-fwy);color:#fff;}
 .sc-active{background:rgba(58,122,48,.2);color:var(--c-fwyl)!important;}
 .sc-eagle{color:var(--gold)!important;font-weight:700;}
 .sc-birdie{color:#ff6b9d!important;font-weight:700;}
@@ -145,8 +148,6 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .zone-pill{display:flex;align-items:center;gap:7px;padding:6px 14px;border-radius:20px;font-family:'DM Mono',monospace;font-size:11px;border:1px solid var(--border);transition:border-color .3s;}
 .zdot{width:10px;height:10px;border-radius:50%;}
 .shot-ctr{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
-.p5tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--gold);background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.3);border-radius:20px;padding:3px 9px;display:none;}
-.gate-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 9px;border-radius:20px;border:1px solid var(--border);color:var(--muted);}
 
 /* GRID */
 .grid-section{margin:0 16px 10px;}
@@ -169,7 +170,6 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .dice-row{margin:0 16px 10px;display:flex;gap:10px;align-items:stretch;}
 .dc{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;}
 .dc-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
-/* DICE — classic casino pip style */
 .die{
   width:58px;height:58px;
   background:linear-gradient(145deg,#fefefe 0%,#e2e2e2 100%);
@@ -203,7 +203,6 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 }
 .pip.hidden{visibility:hidden;}
 
-/* Roll animation — multi-stage realistic tumble */
 .die.idle{animation:dieIdle 1.8s ease-in-out infinite;}
 @keyframes dieIdle{
   0%,100%{transform:scale(1);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 -1px 0 rgba(0,0,0,.15) inset,1px 0 0 rgba(255,255,255,.8) inset,-1px 0 0 rgba(0,0,0,.1) inset,0 5px 0 #aaa,0 6px 14px rgba(0,0,0,.55);}
@@ -224,14 +223,12 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   100% {transform:rotateX(0deg)   rotateZ(0deg)   scale(1)    translateY(0);}
 }
 
-/* "Landing" flash — white highlight on the die face when result appears */
 @keyframes dieLand{
   0%  {box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 -1px 0 rgba(0,0,0,.15) inset,1px 0 0 rgba(255,255,255,.8) inset,-1px 0 0 rgba(0,0,0,.1) inset,0 5px 0 #aaa,0 6px 14px rgba(0,0,0,.55),0 0 0 3px rgba(255,255,255,.9);}
   100%{box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 -1px 0 rgba(0,0,0,.15) inset,1px 0 0 rgba(255,255,255,.8) inset,-1px 0 0 rgba(0,0,0,.1) inset,0 5px 0 #aaa,0 6px 14px rgba(0,0,0,.55);}
 }
 .die.landed{animation:dieLand .35s ease-out forwards;}
 
-/* Roll button */
 .btn-roll{
   width:100%;flex:1;background:var(--c-fwy);color:#fff;border:none;border-radius:12px;
   font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;
@@ -342,7 +339,9 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .celeb-double{background:rgba(224,82,82,.95);color:#fff;}
 
 /* OVERLAYS */
-.overlay.show{display:flex;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;align-items:center;justify-content:center;padding-top:env(safe-area-inset-top);}
+.overlay.show{display:flex;animation:fadeInOverlay .2s ease;}
+@keyframes fadeInOverlay{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
 .ov{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 32px;text-align:center;max-width:300px;width:90%;animation:popin .38s cubic-bezier(.34,1.56,.64,1);}
 @keyframes popin{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
 .ov-emoji{font-size:50px;margin-bottom:8px;}
@@ -396,13 +395,6 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .name-input::placeholder{color:var(--muted);letter-spacing:2px;}
 .name-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;cursor:pointer;transition:background .15s;}
 .name-btn:hover{background:var(--c-fwyl);}
-.diff-row{display:flex;gap:6px;margin-bottom:14px;}
-.diff-btn{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:10px 6px;cursor:pointer;transition:all .15s;text-align:center;}
-.diff-btn:hover{border-color:var(--c-fwyl);background:rgba(78,158,66,.1);}
-.diff-btn.active{border-color:var(--c-fwyl);background:rgba(78,158,66,.2);}
-.diff-icon{font-size:20px;margin-bottom:3px;}
-.diff-title{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;color:var(--text);line-height:1;}
-.diff-desc{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;line-height:1.3;}
 
 /* TV SCORECARD BAR */
 .tv-bar.show{display:block;}
@@ -749,7 +741,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
     <div class="menu-btns" id="menuBtns">
       <button class="menu-btn-sec" onclick="navToCourse('single')" style="background:var(--c-fwy);color:#fff;border:none;">⛳ SINGLE DAY</button>
       <button class="menu-btn-sec" onclick="navToCourse('tournament')">🏆 TOURNAMENT</button>
-      <button class="menu-btn-sec" disabled>🌎 PRO TOUR (Soon)</button>
+      <button class="menu-btn-sec" disabled>🌎 PRO TOUR</button>
       <button class="menu-btn-sec" onclick="navToCustom()">⚙️ CUSTOM GAME</button>
       <button class="menu-btn-sec" onclick="openSettings()" style="margin-top:10px;background:transparent;border-color:transparent;">SETTINGS</button>
     </div>
@@ -784,6 +776,15 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
       <div class="diff-row">
         <button class="diff-btn active">SOLO</button>
         <button class="diff-btn" disabled>VS CPU</button>
+      </div>
+    </div>
+    
+    <div class="setup-group">
+      <span class="setup-lbl">DIFFICULTY</span>
+      <div class="diff-row">
+        <button class="diff-btn active" id="cdiff-btn-1" onclick="setCustomDiff(1)">EASY</button>
+        <button class="diff-btn" id="cdiff-btn-2" onclick="setCustomDiff(2)">MEDIUM</button>
+        <button class="diff-btn" id="cdiff-btn-3" onclick="setCustomDiff(3)">HARD</button>
       </div>
     </div>
 
@@ -840,11 +841,13 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
     <div class="hole-badge" id="holeBadge">HOLE 1 / 9</div>
   </div>
   <div class="sc-wrap">
-    <div class="sc-row sc-head">
-      <div></div><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div>
+    <div class="sc-inner">
+      <div class="sc-row sc-head" id="scHeadRow">
+        <div></div>
+      </div>
+      <div class="sc-row sc-body" id="parRow"><div class="sc-lbl">PAR</div></div>
+      <div class="sc-row sc-body" id="scoreRow"><div class="sc-lbl">YOU</div></div>
     </div>
-    <div class="sc-row sc-body" id="parRow"><div class="sc-lbl">PAR</div></div>
-    <div class="sc-row sc-body" id="scoreRow"><div class="sc-lbl">YOU</div></div>
   </div>
 </header>
 
@@ -1161,8 +1164,6 @@ const Z={
 
 // ═══════════════════════════════════════
 // YARDAGE GATES
-// These determine which zones are POSSIBLE
-// regardless of current zone
 // ═══════════════════════════════════════
 function getGate(yds, isPar3){
   if(yds<=0)   return 'green';
@@ -1186,48 +1187,12 @@ function setDiff(d){
   });
 }
 
-function resetGameState(){
-  S.holeIdx=0;S.zone='tee';S.strokes=0;S.shotNum=1;
-  S.log=[];S.scorecard=Array(9).fill(null);S.history=Array(9).fill(null);S._skipCelebration=false;
-  S.currentGrid=null;S.holeDone=false;S.rolling=false;
-  S.yrdRemain=0;S.yrdTotal=0;S.fwyVisits=0;S.prevZone=null;S.shotCount=0;
-  S._wcUsedThisRound=0;
-  if(typeof wcReset==='function')wcReset();
-}
-
-function returnToMenu(){
-  document.getElementById('overlay').classList.remove('show');
-  document.getElementById('summaryModal').classList.remove('show');
-  document.getElementById('mainApp').style.display='none';
-  const pbRow = document.getElementById('ovPbRow');
-  if(pbRow) pbRow.remove();
-  resetGameState();
-  autoLoadProfile();
-}
-
-function goToPlay(){
-  hideScreen('menuScreen');
-  setTimeout(()=>showScreen('diffScreen','flex'),150);
-}
-
-function backToMenu(){
-  hideScreen('diffScreen');
-  setTimeout(()=>showScreen('menuScreen','flex'),150);
-}
-
-function startGame(){
-  clearSavedGame();
-  resetGameState();
-  const p=getActiveProfile();
-  PLAYER_NAME=p?p.name.toUpperCase():'PLAYER';
-  const diffMap={1:[1,1,1], 2:[1,2,3], 3:[1,2,3]}; 
-  HOLES.forEach(h=>{
-    h.diff=diffMap[h.baseDiff][GAME_DIFF-1];
+function setCustomDiff(d){
+  GAME_DIFF=d;
+  [1,2,3].forEach(i=>{
+    const b=document.getElementById('cdiff-btn-'+i);
+    if(b)b.classList.toggle('active', i===d);
   });
-  hideScreen('diffScreen');
-  document.getElementById('mainApp').style.display='block';
-  init();
-  maybeShowShakeBanner();
 }
 
 window.addEventListener('DOMContentLoaded', function(){
@@ -1314,7 +1279,7 @@ function randYds(zk){
 }
 
 // ═══════════════════════════════════════
-// HOLES
+// HOLES (Expanded to 18)
 // ═══════════════════════════════════════
 const HOLES=[
   {name:'HOLE 1',yards:387,par:4,baseDiff:1,diff:1,hasWater:false},
@@ -1358,16 +1323,35 @@ let _lastMenuScreen = 'menuScreen';
 function navBack(to) {
   const screens = ['menuScreen','customScreen','courseScreen','diffScreen'];
   screens.forEach(id => hideScreen(id));
-  setTimeout(()=>showScreen(to==='mode'?_lastMenuScreen:to, 'flex'), 150);
+  
+  if (to === 'mode') {
+    if (SETUP.mode === 'custom') showScreen('customScreen', 'flex');
+    else showScreen('menuScreen', 'flex');
+  } else {
+    setTimeout(()=>showScreen(to, 'flex'), 150);
+  }
 }
-function navToCustom() { _lastMenuScreen='customScreen'; hideScreen('menuScreen'); setTimeout(()=>showScreen('customScreen','flex'),150); }
+function navToCustom() { 
+  _lastMenuScreen='customScreen'; 
+  SETUP.mode = 'custom';
+  hideScreen('menuScreen'); 
+  setTimeout(()=>showScreen('customScreen','flex'),150); 
+}
 function navToCourse(mode) {
   if(mode==='single') { SETUP.mode='single'; SETUP.rounds=1; SETUP.holesConfig='18'; _lastMenuScreen='menuScreen'; }
   if(mode==='tournament') { SETUP.mode='tournament'; SETUP.rounds=4; SETUP.holesConfig='18'; _lastMenuScreen='menuScreen'; }
-  if(mode==='custom') { SETUP.mode='custom'; } // rounds/holes set by buttons
+  if(mode==='custom') { _lastMenuScreen='customScreen'; }
   hideScreen(_lastMenuScreen); setTimeout(()=>showScreen('courseScreen','flex'),150);
 }
-function navToDiff() { hideScreen('courseScreen'); setTimeout(()=>showScreen('diffScreen','flex'),150); }
+function navToDiff() { 
+  hideScreen('courseScreen'); 
+  if(SETUP.mode === 'custom') {
+    // Custom skips diff screen and goes straight to game since diff is on custom page
+    startGame();
+  } else {
+    setTimeout(()=>showScreen('diffScreen','flex'),150); 
+  }
+}
 
 function setCustomRounds(r) {
   SETUP.rounds=r;
@@ -1413,6 +1397,7 @@ function startGame(){
   const diffMap={1:[1,1,1], 2:[1,2,3], 3:[1,2,3]}; 
   HOLES.forEach(h=>{ h.diff=diffMap[h.baseDiff][GAME_DIFF-1]; });
   hideScreen('diffScreen');
+  hideScreen('courseScreen'); // added for custom mode
   document.getElementById('mainApp').style.display='block';
   init();
   maybeShowShakeBanner();
@@ -1436,20 +1421,19 @@ function starsHTML(d){return'⭐'.repeat(d)+'☆'.repeat(3-d);}
 function buildScorecard(){
   const pr=document.getElementById('parRow');
   const sr=document.getElementById('scoreRow');
-  if(!pr||!sr)return;
-  // Only display the active holes for this config (e.g. 9 or 18)
+  const headRow = document.getElementById('scHeadRow');
+  if(!pr||!sr||!headRow)return;
+  
   const activeHoles = HOLES.slice(S.startIdx, S.endIdx + 1);
   const currentSc = S.scorecards[S.currentRound - 1];
   
-  // Rebuild table header
-  const head = pr.parentElement.querySelector('.sc-head');
-  head.style.gridTemplateColumns = `40px repeat(${activeHoles.length},1fr)`;
-  pr.style.gridTemplateColumns = `40px repeat(${activeHoles.length},1fr)`;
-  sr.style.gridTemplateColumns = `40px repeat(${activeHoles.length},1fr)`;
+  headRow.style.gridTemplateColumns = `40px repeat(${activeHoles.length},30px)`;
+  pr.style.gridTemplateColumns = `40px repeat(${activeHoles.length},30px)`;
+  sr.style.gridTemplateColumns = `40px repeat(${activeHoles.length},30px)`;
   
-  head.innerHTML = '<div></div>';
+  headRow.innerHTML = '<div class="sc-lbl"></div>';
   activeHoles.forEach((_, i) => {
-    const d=document.createElement('div'); d.textContent = S.startIdx + i + 1; head.appendChild(d);
+    const d=document.createElement('div'); d.textContent = S.startIdx + i + 1; headRow.appendChild(d);
   });
 
   pr.innerHTML = '<div class="sc-lbl">PAR</div>';
@@ -1481,6 +1465,12 @@ function buildScorecard(){
   const hText = S.holesConfig==='18' ? `HOLE ${S.holeIdx+1} / 18` : `HOLE ${S.holeIdx - S.startIdx + 1} / 9`;
   const rText = S.totalRounds > 1 ? `R${S.currentRound} · ` : '';
   document.getElementById('holeBadge').textContent=`${rText}${hText}`;
+
+  // Scroll to active hole
+  setTimeout(()=>{
+    const activeCell = sr.querySelector('.sc-active');
+    if(activeCell) activeCell.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
+  }, 100);
 }
 
 function loadHole(){
@@ -1523,7 +1513,6 @@ function updateTVBanner(){
   const rText = S.totalRounds > 1 ? `R${S.currentRound} · ` : '';
   document.getElementById('tvHoleInfo').textContent=`${rText}${ordinal(S.holeIdx+1)} HOLE · PAR ${h.par}`;
 
-  // Global total score across ALL rounds
   let totalScore = 0; let totalPar = 0;
   S.scorecards.forEach(sc => {
      sc.forEach((s, i) => {
@@ -1843,7 +1832,6 @@ function processShot(row,col){
     if(WCS.active==='golden_putter'){
       finalPutts=1;
       WCS.active=null;WCS.activeCarryOver=false;
-      showWcToast('🥇 Golden Putter applied!');
     }
 
     playShotSound('grn', outcome);
@@ -2196,7 +2184,6 @@ function completeHole(){
   else if(d===3){emoji='⛳';title='TRIPLE BOGEY';}
   else{emoji='⛳';title=`+${d}`;}
 
-  // Global total score
   let totalScore = 0; let totalPar = 0;
   S.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ totalScore+=s; totalPar+=HOLES[i].par; } }));
   const totalDiff=totalScore-totalPar;
@@ -2247,7 +2234,6 @@ function nextHole(){
 function showRoundEnd(){
   clearSavedGame();
   
-  // Total for THIS round
   const curSc = S.scorecards[S.currentRound - 1];
   const activeHoles = HOLES.slice(S.startIdx, S.endIdx + 1);
   const roundTotal = curSc.reduce((a,b)=>a+(b||0),0);
@@ -2255,10 +2241,9 @@ function showRoundEnd(){
   const roundDiff = roundTotal - roundPar;
   
   if (S.currentRound === S.totalRounds) {
-    // Final Tournament / Single Day End
     const profiles = loadProfiles();
     const p = profiles[getActiveProfileIdx()];
-    const isNewPB = p && (p.bestDiff === undefined || roundDiff < p.bestDiff); // Using 18-hole normalized diff for PB
+    const isNewPB = p && (p.bestDiff === undefined || roundDiff < p.bestDiff); 
 
     updateProfileAfterRound(roundTotal, roundPar);
     updateProfileStatsAfterRound(roundTotal, roundPar, S._wcUsedThisRound||0);
@@ -2267,7 +2252,6 @@ function showRoundEnd(){
     document.getElementById('ovEmoji').style.display='block';
     document.getElementById('ovTitle').textContent='FINAL SCORE';
     
-    // Overall Tournament Diff for big display
     let globalTotal = 0, globalPar = 0;
     S.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ globalTotal+=s; globalPar+=HOLES[i].par; } }));
     const globalDiff = globalTotal - globalPar;
@@ -2299,8 +2283,7 @@ function showRoundEnd(){
     document.getElementById('ovSummaryBtn').textContent='VIEW SUMMARY';
     document.getElementById('ovSummaryBtn').style.display='block';
   } else {
-    // End of a mid-tournament round
-    saveGameState(); // Auto-save at round end
+    saveGameState(); 
     document.getElementById('ovEmoji').textContent='🏁';
     document.getElementById('ovTitle').textContent=`ROUND ${S.currentRound} COMPLETE`;
     
@@ -2325,7 +2308,6 @@ function openSummary(viewRound = S.currentRound){
   
   document.getElementById('sumTitle').textContent=`${PLAYER_NAME}'S SCORECARD`;
 
-  // Render Tabs if tournament
   if (S.totalRounds > 1) {
     const tabs = document.createElement('div');
     tabs.className = 'sum-tabs';
@@ -2348,7 +2330,6 @@ function openSummary(viewRound = S.currentRound){
   const roundPar = activeHoles.reduce((a,h)=>a+h.par,0);
   const roundDiff = roundTotal - roundPar;
 
-  // Tournament Info Box (Global)
   let globalTotal = 0, globalPar = 0;
   S.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ globalTotal+=s; globalPar+=HOLES[i].par; } }));
   const globalDiff = globalTotal - globalPar;
@@ -2364,7 +2345,6 @@ function openSummary(viewRound = S.currentRound){
     body.appendChild(gBox);
   }
 
-  // ── SCORECARD GRID ──────────────────────────
   const sc=document.createElement('div');
   sc.style.cssText='overflow-x:auto;margin-bottom:14px;';
   const table=document.createElement('table');
@@ -2441,7 +2421,6 @@ function openSummary(viewRound = S.currentRound){
   sc.appendChild(table);
   body.appendChild(sc);
 
-  // ── HOLE DETAIL ROWS ──────────
   const detailSec=document.createElement('div');
   detailSec.style.cssText='font-family:"DM Mono",monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;';
   detailSec.textContent='Tap a hole for details';
@@ -2513,7 +2492,7 @@ function openSummary(viewRound = S.currentRound){
         document.getElementById('summaryModal').classList.remove('show');
         document.getElementById('overlay').classList.remove('show');
         document.getElementById('mainApp').style.display='none';
-        startGame(); // Re-uses SETUP and selected diff
+        startGame(); 
         document.querySelector('.tv-bar').classList.add('show');
       };
       btnRow.appendChild(playAgainBtn);
@@ -2546,7 +2525,6 @@ function closeSummary(){
 }
 
 function openHist(absoluteIdx){
-  // Find which round this hole belongs to based on data existence
   let targetRound = S.currentRound;
   for(let r=1; r<=S.currentRound; r++) {
     if(S.histories[r-1] && S.histories[r-1][absoluteIdx]) { targetRound = r; }
