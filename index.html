@@ -757,17 +757,17 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
     <button class="menu-profile-icon" id="menuProfileIconBtn" onclick="openProfileModal()" title="Profiles" style="position:static;top:auto;right:auto;">👤</button>
   </div>
   <div class="menu-content">
-    <div class="menu-logo">GRID<span>GOLF</span></div>
-    <div class="menu-tagline">A DICE GOLF EXPERIENCE</div>
-    <div id="menuActiveProfile" style="display:none;"></div>
-    
-    <button class="menu-btn-play" id="menuContinueBtn" onclick="continueGame()" style="display:none;background:#1a5f8a;margin-bottom:14px;width:100%;font-size:16px;">▶ CONTINUE</button>
-    
-    <div class="menu-btns" id="menuBtns">
-  <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()">⛳ PLAY</button>
-  <button class="menu-btn-sec" onclick="openSettings()" style="margin-top:10px;">⚙️ SETTINGS</button>
-</div>
+  <div class="menu-logo">GRID<span>GOLF</span></div>
+  <div class="menu-tagline">A DICE GOLF EXPERIENCE</div>
+  <div id="menuActiveProfile" style="display:none;"></div>
+  
+  <div class="menu-btns" id="menuBtns">
+    <button class="menu-btn-play" id="menuContinueBtn" onclick="continueGame()" style="display:none;background:#1a5f8a;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;padding:12px;">
+      </button>
+    <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()">⛳ PLAY</button>
+    <button class="menu-btn-sec" onclick="openSettings()" style="margin-top:10px;">⚙️ SETTINGS</button>
   </div>
+</div>
 </div>
 
 <div class="setup-screen" id="playModeScreen" style="display:none">
@@ -1882,8 +1882,7 @@ function processShot(row,col){
     S.strokes+=finalPutts;S.yrdRemain=0;
     S._pendingPuttResult={putts:finalPutts, row, col, snapGrid, prevZone};
     addLog(S.shotNum,`Green → ${finalPutts} putt${finalPutts>1?'s':''}`,outcome,`+${finalPutts}`,false,row,col,snapGrid);
-    showResult(Z[outcome],`${finalPutts} putt${finalPutts>1?'s':''}`,finalPutts===1?'good':'ok',`Row ${row+1} · Col ${col+1}`);
-    S.shotNum++;
+    S.shotNum += finalPutts; // Fix: Jump shot count by the number of putts taken
     updateYrd();
     S.holeDone=false;
 
@@ -1941,7 +1940,8 @@ function processShot(row,col){
     S.strokes+=2;
     addLog(S.shotNum,`→ ${Z[resolvedOutcome].name} — penalty`,resolvedOutcome,'+2 (pen)',true,row,col,snapGrid);
     showResult(Z[resolvedOutcome],'Penalty — no advance','pen',`Back in ${Z[prevZone].name} · ${fmtYds(S.yrdRemain)} left`);
-    S.shotNum++;updateFloat();updateTVBanner();
+    S.shotNum += 2; // Fix: Jump shot count by 2 for the penalty
+    updateFloat();updateTVBanner();
     document.getElementById('resultPanel').classList.add('pflash');
     setTimeout(()=>document.getElementById('resultPanel').classList.remove('pflash'),600);
     setTimeout(()=>{S.rolling=false;showNextShotBtn();updateTVBanner();},1100);
@@ -2704,7 +2704,7 @@ function updateProfileAfterRound(score, par){
   if(!p)return;
   p.gamesPlayed=(p.gamesPlayed||0)+1;
   HOLES.forEach((h,i)=>{
-    const hist=S.history[i];
+    const hist=S.histories[S.currentRound-1][i]; // FIXED
     if(!hist)return;
     p.holesPlayed=(p.holesPlayed||0)+1;
     const d=hist.strokes-hist.par;
@@ -3038,7 +3038,7 @@ const ACHIEVEMENTS=[
   {id:'hole_in_one',    icon:'🕳️', name:'Ace!',             desc:'Hole-in-one on a par 3',                    check:p=>(p.holeInOnes||0)>=1},
   {id:'eagle',          icon:'🦅', name:'Eagle Eye',        desc:'Score an Eagle on any hole',                check:p=>(p.eagles||0)>=1},
   {id:'first_birdie',   icon:'🐦', name:'First Birdie',     desc:'Score your first Birdie',                   check:p=>(p.birdies||0)>=1},
-  {id:'birdie_streak',  icon:'🔥', name:'Birdie Jockey',    desc:'5 Birdies in a single round',               check:p=>(S.scorecard.filter((sc,i)=>sc!==null&&(sc-HOLES[i].par===-1)).length>=5)},
+  {id:'birdie_streak',  icon:'🔥', name:'Birdie Jockey',    desc:'5 Birdies in a single round',               check:p=>(S.scorecards[S.currentRound-1].filter((sc,i)=>sc!==null&&(sc-HOLES[i].par===-1)).length>=5)},
   {id:'on_a_roll',      icon:'📈', name:'On A Roll',        desc:'Go under par for 3 consecutive holes',      check:p=>(p.bestUnderParStreak||0)>=3},
   {id:'bogey_free',     icon:'🚫', name:'Bogey Free',       desc:'Complete a round with zero bogeys',         check:p=>(p.bogeyFreeRounds||0)>=1},
   {id:'under_par',      icon:'📉', name:'Under Par',        desc:'Finish any round under par',                check:p=>p.bestDiff!==undefined&&p.bestDiff<0},
@@ -3107,7 +3107,8 @@ function updateProfileStatsAfterRound(score,par,wcUsedThisRound){
   const p=profiles[idx];if(!p)return;
   let maxStreak=0,curStreak=0,bogeyFree=true,allParOrBetter=true,underParStreak=0,maxUnderParStreak=0;
   HOLES.forEach((h,i)=>{
-    const hist=S.history[i];if(!hist)return;
+    const hist=S.histories[S.currentRound-1][i]; 
+    if(!hist)return;
     const d=hist.strokes-hist.par;
     if(d===-1){curStreak++;}else{maxStreak=Math.max(maxStreak,curStreak);curStreak=0;}
     if(d>=1)bogeyFree=false;
@@ -3950,7 +3951,7 @@ function applyWcGridMods(grid){
     case 'eagle_eye':
       if(h.par===3&&S.zone==='tee'){
         WCS.active=null;WCS.activeCarryOver=false;
-        return grid.map(r=>r.map(c=>Math.random()<.5?'grn':c));
+        return grid.map(r=>r.map(c=>(c!=='hole' && Math.random()<.5)?'grn':c));
       }
       break;
     case 'sand_wedge_pro':
@@ -4182,12 +4183,11 @@ function updateMenuContinueBtn(){
     const diffStr = diff > 0 ? `+${diff}` : diff === 0 ? 'E' : `${diff}`;
     const rnd = save.currentRound || 1;
     const cName = 'LITTLE PINES';
-    // Use relative hole number if it's the back 9 only
     const startIdx = save.startIdx || 0;
     const holeDisplay = save.holeIdx - startIdx + 1;
     
-    btn.textContent=`▶ CONTINUE (${cName} | R${rnd} | H${holeDisplay} | ${diffStr})`;
-    btn.style.display='block';
+    btn.innerHTML=`<div>▶ CONTINUE</div><div style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:1px;font-weight:normal;margin-top:4px;">${cName} · R${rnd} · H${holeDisplay} · ${diffStr}</div>`;
+    btn.style.display='flex';
   } else {
     btn.style.display='none';
   }
