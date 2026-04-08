@@ -110,8 +110,8 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .hole-badge{background:var(--c-tee);color:#fff;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;padding:4px 12px;border-radius:20px;}
 /* Sc-wrap allows scrolling */
 .sc-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow-x:auto;margin-bottom:12px;}
-.sc-inner{display:flex;flex-direction:column;min-width:max-content;}
-.sc-row{display:grid;grid-template-columns:40px repeat(18,30px);font-family:'DM Mono',monospace;font-size:10px;}
+.sc-inner{display:flex;flex-direction:column;min-width:100%;}
+.sc-row{display:grid;font-family:'DM Mono',monospace;font-size:10px;}
 .sc-head{background:var(--c-fwy);}
 .sc-head div,.sc-row div{padding:5px 2px;text-align:center;border-right:1px solid rgba(255,255,255,.07);}
 .sc-body{border-top:1px solid var(--border);}
@@ -395,9 +395,17 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .name-input::placeholder{color:var(--muted);letter-spacing:2px;}
 .name-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;cursor:pointer;transition:background .15s;}
 .name-btn:hover{background:var(--c-fwyl);}
+.diff-row{display:flex;gap:6px;margin-bottom:14px;}
+.diff-btn{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:10px 6px;cursor:pointer;transition:all .15s;text-align:center;}
+.diff-btn:hover{border-color:var(--c-fwyl);background:rgba(78,158,66,.1);}
+.diff-btn.active{border-color:var(--c-fwyl);background:rgba(78,158,66,.2);}
+.diff-icon{font-size:20px;margin-bottom:3px;}
+.diff-title{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;color:var(--text);line-height:1;}
+.diff-desc{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;line-height:1.3;}
 
-/* TV SCORECARD BAR */
+/* TV SCORECARD BAR — fixed bottom, replaces float bar */
 .tv-bar.show{display:block;}
+/* Top row: icon + hole info + shot numbers + total score */
 .tv-row1{
   display:flex;align-items:center;
   background:#1e3a5f;
@@ -413,6 +421,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .tv-nameblock{display:flex;flex-direction:column;justify-content:center;margin-right:10px;min-width:0;}
 .tv-playername{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .tv-holeinfo{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:1px;line-height:1.3;}
+/* Shot number track */
 .tv-shots{display:flex;gap:5px;align-items:center;flex:1;justify-content:center;padding:0 4px;}
 .tv-sn{
   width:22px;height:22px;
@@ -421,13 +430,17 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   color:rgba(255,255,255,.45);
   position:relative;flex-shrink:0;
 }
+/* Past shots — plain number slightly brighter */
 .tv-sn.past{color:rgba(255,255,255,.7);}
+/* Current shot — circled */
 .tv-sn.current{color:#fff;}
 .tv-sn.current::before{
   content:'';position:absolute;inset:-1px;
   border:2px solid #fff;border-radius:50%;
 }
+/* Future shots — dim */
 .tv-sn.future{color:rgba(255,255,255,.25);}
+/* On green: symbol replaces the circle style */
 .tv-sn.putt-eagle{color:var(--gold);}
 .tv-sn.putt-eagle::before{border-color:var(--gold);border-radius:50%;}
 .tv-sn.putt-eagle::after{content:'';position:absolute;inset:4px;border:1.5px solid var(--gold);border-radius:50%;}
@@ -439,6 +452,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .tv-sn.putt-double{color:#ff6060;}
 .tv-sn.putt-double::before{border-color:#ff6060;border-radius:0;inset:1px;}
 .tv-sn.putt-double::after{content:'';position:absolute;inset:4px;border:1.5px solid #ff6060;border-radius:0;}
+/* Total score box — tan/gold like TV */
 .tv-totalbox{
   background:#c8a96e;
   border-radius:4px;
@@ -448,6 +462,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 }
 .tv-total-num{font-family:'Bebas Neue',cursive;font-size:20px;color:#1a1a1a;line-height:1;}
 .tv-total-lbl{font-family:'DM Mono',monospace;font-size:7px;color:rgba(0,0,0,.5);letter-spacing:1px;text-transform:uppercase;line-height:1;}
+/* Bottom strip — "For Birdie" only shown on green */
 .tv-row2{
   background:#2a8a3e;
   padding:4px 12px;
@@ -461,7 +476,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .tv-putt-status.bogey-c{color:#ffe0a0;}
 .tv-putt-status.double-c{color:#ffb0b0;}
 
-/* FINAL SUMMARY SCREEN */
+/* FINAL SUMMARY SCREEN — full page, no popup */
 .summary-modal{display:none;position:fixed;inset:0;background:var(--dark);z-index:400;overflow-y:auto;padding:0 0 50px;}
 .summary-modal.show{display:block;}
 .summary-card{background:transparent;max-width:460px;margin:0 auto;}
@@ -521,8 +536,11 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .profile-cancel-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;}
 
 /* ═══ WILDCARD SYSTEM ═══════════════════════════════════ */
+
+/* Wildcard FAB button (floating, right side) */
 .wc-fab{
   position:fixed;right:0;
+  /* Position FAB in middle of GAME area, below safe area */
   top:calc(env(safe-area-inset-top) + 45%);
   transform:translateY(-50%);
   background:linear-gradient(135deg,#7b2f9e,#4a1a6e);
@@ -540,6 +558,8 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .wc-fab-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);transition:background .2s;}
 .wc-fab-dot.filled{background:#f0c040;}
 
+/* Wildcard drawer */
+.wc-drawer.open{right:0;} /* handled above */
 .wc-info-panel{
   position:fixed;right:-340px;top:0;
   width:min(300px,82vw);
@@ -551,6 +571,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   transition:right .3s cubic-bezier(.4,0,.2,1);
 }
 .wc-info-panel.open{right:0;}
+/* wc-info-panel.open handled above */
 .wc-info-head{background:linear-gradient(135deg,#7b2f9e,#4a1a6e);padding:16px;display:flex;align-items:center;gap:10px;min-height:56px;}
 .wc-info-list{flex:1;overflow-y:auto;padding:10px 14px;}
 .wc-info-item{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .1s;}
@@ -600,11 +621,13 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   padding:2px 7px;border-radius:20px;
 }
 
+/* Drawer backdrop */
 .wc-backdrop{
   display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:110;
 }
 .wc-backdrop.show{display:block;}
 
+/* Wildcard reveal screen (fullscreen modal) */
 .wc-reveal{
   display:none;position:fixed;inset:0;
   background:rgba(10,4,20,.95);z-index:300;
@@ -668,6 +691,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:14px;
   letter-spacing:1px;cursor:pointer;transition:all .15s;
 }
+/* Active wildcard indicator ring on roll button */
 .btn-roll.wc-active{
   box-shadow:0 0 0 3px #f0c040, 0 0 16px rgba(240,192,64,.5);
   background:#5a6a20;
@@ -735,22 +759,33 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   <div class="menu-content">
     <div class="menu-logo">GRID<span>GOLF</span></div>
     <div class="menu-tagline">A DICE GOLF EXPERIENCE</div>
+    <div id="menuActiveProfile" style="display:none;"></div>
     
     <button class="menu-btn-play" id="menuContinueBtn" onclick="continueGame()" style="display:none;background:#1a5f8a;margin-bottom:14px;width:100%;font-size:16px;">▶ CONTINUE</button>
     
     <div class="menu-btns" id="menuBtns">
+      <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()">⛳ PLAY</button>
+      <button class="menu-btn-sec" onclick="openSettings()" style="margin-top:10px;background:transparent;border-color:transparent;">SETTINGS</button>
+    </div>
+  </div>
+</div>
+
+<div class="setup-screen" id="playModeScreen" style="display:none">
+  <div class="setup-card">
+    <button class="setup-back-btn" onclick="navBack('menuScreen')">← BACK</button>
+    <div class="setup-title">SELECT MODE</div>
+    <div class="menu-btns">
       <button class="menu-btn-sec" onclick="navToCourse('single')" style="background:var(--c-fwy);color:#fff;border:none;">⛳ SINGLE DAY</button>
       <button class="menu-btn-sec" onclick="navToCourse('tournament')">🏆 TOURNAMENT</button>
       <button class="menu-btn-sec" disabled>🌎 PRO TOUR</button>
       <button class="menu-btn-sec" onclick="navToCustom()">⚙️ CUSTOM GAME</button>
-      <button class="menu-btn-sec" onclick="openSettings()" style="margin-top:10px;background:transparent;border-color:transparent;">SETTINGS</button>
     </div>
   </div>
 </div>
 
 <div class="setup-screen" id="customScreen" style="display:none">
   <div class="setup-card">
-    <button class="setup-back-btn" onclick="navBack('menuScreen')">← BACK</button>
+    <button class="setup-back-btn" onclick="navBack('mode')">← BACK</button>
     <div class="setup-title">CUSTOM GAME</div>
     
     <div class="setup-group">
@@ -945,7 +980,6 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
     <div class="hist-body" id="histBody"></div>
   </div>
 </div>
-
 
 
 <script>
@@ -1174,111 +1208,6 @@ function getGate(yds, isPar3){
 }
 
 // ═══════════════════════════════════════
-// PLAYER NAME + GAME START
-// ═══════════════════════════════════════
-let PLAYER_NAME='PLAYER';
-let GAME_DIFF=1;
-
-function setDiff(d){
-  GAME_DIFF=d;
-  [1,2,3].forEach(i=>{
-    const b=document.getElementById('diff-btn-'+i);
-    if(b)b.classList.toggle('active', i===d);
-  });
-}
-
-function setCustomDiff(d){
-  GAME_DIFF=d;
-  [1,2,3].forEach(i=>{
-    const b=document.getElementById('cdiff-btn-'+i);
-    if(b)b.classList.toggle('active', i===d);
-  });
-}
-
-window.addEventListener('DOMContentLoaded', function(){
-  initTheme();
-  _loadShakePermission();
-  applyRollMode(getRollMode());
-  const oi=document.getElementById('onboardInput');
-  if(oi) oi.addEventListener('keydown',e=>{if(e.key==='Enter')createFirstProfile();});
-  const pni=document.getElementById('profileNewInput');
-  if(pni) pni.addEventListener('keydown',e=>{if(e.key==='Enter')saveNewProfile();});
-  const hm=document.getElementById('histModal');
-  if(hm) hm.addEventListener('click',function(e){if(e.target===this)closeHist();});
-  const pm=document.getElementById('profileModal');
-  if(pm) pm.addEventListener('click',function(e){if(e.target===this)closeProfileModal();});
-  const sm=document.getElementById('summaryModal');
-  if(sm) sm.addEventListener('click',function(e){if(e.target===this)closeSummary();});
-  const stm=document.getElementById('settingsModal');
-  if(stm) stm.addEventListener('click',function(e){if(e.target===this)closeSettings();});
-  const epm=document.getElementById('editProfileModal');
-  if(epm) epm.addEventListener('click',function(e){if(e.target===this)closeEditProfile();});
-  autoLoadProfile();
-});
-
-function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;}
-function makeGrid(t){const s=shuffle([...t]);const g=[];for(let r=0;r<6;r++)g.push(s.slice(r*6,r*6+6));return g;}
-function rep(k,n){return Array(n).fill(k);}
-function cells(...pairs){const c=[];pairs.forEach(([k,n])=>c.push(...rep(k,n)));while(c.length<36)c.push(c[0]);return makeGrid(c.slice(0,36));}
-
-// ═══════════════════════════════════════
-// GRID TEMPLATES
-// ═══════════════════════════════════════
-const T_TEE_EASY  = ()=>cells(['fwy',35],['rgh',1]);
-const T_TEE_MED   = ()=>cells(['fwy',24],['rgh',11],['ob',1]);
-const T_TEE_HARD  = ()=>cells(['fwy',17],['rgh',18],['ob',1]);
-const T_TEE_H2O_E = ()=>cells(['fwy',28],['rgh',6],['h2o',2]);
-const T_TEE_H2O_M = ()=>cells(['fwy',22],['rgh',9],['h2o',4],['ob',1]);
-const T_TEE_H2O_H = ()=>cells(['fwy',16],['rgh',11],['h2o',6],['ob',1],['sand',2]);
-
-const T_TEE_P3E   = ()=>cells(['grn',27],['chip',5],['sand',3],['hole',1]);
-const T_TEE_P3H   = ()=>cells(['grn',10],['chip',8],['sand',10],['rgh',7],['hole',1]);
-
-const T_FWY_FAR   = ()=>cells(['fwy',22],['rgh',14]);
-const T_FWY_FAR_H2O = ()=>cells(['fwy',16],['rgh',10],['h2o',6],['sand',4]);
-
-const T_FWY_MID_E = ()=>cells(['grn',34],['sand',2]);
-const T_FWY_MID_M = ()=>cells(['grn',24],['rgh',6],['sand',6]);
-const T_FWY_MID_H = ()=>cells(['grn',16],['rgh',12],['sand',8]);
-
-const T_RGH_FAR   = ()=>cells(['fwy',22],['rgh',10],['chip',4]);
-
-const T_RGH_MID_E = ()=>cells(['fwy',18],['rgh',4],['chip',6],['grn',8]);
-const T_RGH_MID_M = ()=>cells(['fwy',14],['rgh',10],['chip',8],['grn',4]);
-const T_RGH_MID_H = ()=>cells(['fwy',14],['rgh',12],['chip',8],['grn',2]);
-
-const T_RGH_SHORT = ()=>cells(['chip',16],['grn',10],['sand',8],['rgh',2]);
-
-const T_CHIP_NORM = ()=>cells(['grn',30],['sand',5],['hole',1]);
-const T_CHIP_FRMS = ()=>cells(['grn',34],['hole',1],['chip',1]);
-
-const T_SAND_NORM = ()=>cells(['grn',26],['sand',6],['chip',4]);
-const T_SAND_FRMC = ()=>cells(['grn',30],['sand',6]);
-
-const T_PUTTING_1 = ()=>cells(['p1',34],['p2',2]);
-const T_PUTTING_2 = ()=>cells(['p1',20],['p2',13],['p3',3]);
-const T_PUTTING_3 = ()=>cells(['p1',16],['p2',14],['p3',6]);
-
-// ═══════════════════════════════════════
-// YARDAGE
-// ═══════════════════════════════════════
-const YDS_RANGE={
-  tee: {min:220,max:280},
-  fwy: {min:170,max:240},
-  rgh: {min:110,max:170},
-  chip:{min:0,  max:0},
-  sand:{min:0,  max:0},
-  grn: {min:0,  max:0},
-  h2o: {min:0,  max:0},
-  ob:  {min:0,  max:0},
-};
-function randYds(zk){
-  const r=YDS_RANGE[zk]||{min:100,max:160};
-  if(r.min===0)return 0;
-  return Math.round(r.min+Math.random()*(r.max-r.min));
-}
-
-// ═══════════════════════════════════════
 // HOLES (Expanded to 18)
 // ═══════════════════════════════════════
 const HOLES=[
@@ -1321,32 +1250,36 @@ let S={
 // ── Menu Navigation ──
 let _lastMenuScreen = 'menuScreen';
 function navBack(to) {
-  const screens = ['menuScreen','customScreen','courseScreen','diffScreen'];
+  const screens = ['menuScreen','playModeScreen','customScreen','courseScreen','diffScreen'];
   screens.forEach(id => hideScreen(id));
   
   if (to === 'mode') {
     if (SETUP.mode === 'custom') showScreen('customScreen', 'flex');
-    else showScreen('menuScreen', 'flex');
+    else showScreen('playModeScreen', 'flex');
   } else {
     setTimeout(()=>showScreen(to, 'flex'), 150);
   }
 }
+function navToPlayMode() {
+  _lastMenuScreen = 'playModeScreen';
+  hideScreen('menuScreen');
+  setTimeout(()=>showScreen('playModeScreen','flex'), 150);
+}
 function navToCustom() { 
   _lastMenuScreen='customScreen'; 
   SETUP.mode = 'custom';
-  hideScreen('menuScreen'); 
+  hideScreen('playModeScreen'); 
   setTimeout(()=>showScreen('customScreen','flex'),150); 
 }
 function navToCourse(mode) {
-  if(mode==='single') { SETUP.mode='single'; SETUP.rounds=1; SETUP.holesConfig='18'; _lastMenuScreen='menuScreen'; }
-  if(mode==='tournament') { SETUP.mode='tournament'; SETUP.rounds=4; SETUP.holesConfig='18'; _lastMenuScreen='menuScreen'; }
+  if(mode==='single') { SETUP.mode='single'; SETUP.rounds=1; SETUP.holesConfig='18'; _lastMenuScreen='playModeScreen'; }
+  if(mode==='tournament') { SETUP.mode='tournament'; SETUP.rounds=4; SETUP.holesConfig='18'; _lastMenuScreen='playModeScreen'; }
   if(mode==='custom') { _lastMenuScreen='customScreen'; }
   hideScreen(_lastMenuScreen); setTimeout(()=>showScreen('courseScreen','flex'),150);
 }
 function navToDiff() { 
   hideScreen('courseScreen'); 
   if(SETUP.mode === 'custom') {
-    // Custom skips diff screen and goes straight to game since diff is on custom page
     startGame();
   } else {
     setTimeout(()=>showScreen('diffScreen','flex'),150); 
@@ -1384,6 +1317,8 @@ function returnToMenu(){
   document.getElementById('overlay').classList.remove('show');
   document.getElementById('summaryModal').classList.remove('show');
   document.getElementById('mainApp').style.display='none';
+  const tb = document.getElementById('tvBar'); if(tb) tb.classList.remove('show');
+  const fb = document.getElementById('wcFab'); if(fb) fb.classList.remove('visible');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
   navBack('menuScreen');
   autoLoadProfile();
@@ -1397,7 +1332,7 @@ function startGame(){
   const diffMap={1:[1,1,1], 2:[1,2,3], 3:[1,2,3]}; 
   HOLES.forEach(h=>{ h.diff=diffMap[h.baseDiff][GAME_DIFF-1]; });
   hideScreen('diffScreen');
-  hideScreen('courseScreen'); // added for custom mode
+  hideScreen('courseScreen');
   document.getElementById('mainApp').style.display='block';
   init();
   maybeShowShakeBanner();
@@ -1427,9 +1362,11 @@ function buildScorecard(){
   const activeHoles = HOLES.slice(S.startIdx, S.endIdx + 1);
   const currentSc = S.scorecards[S.currentRound - 1];
   
-  headRow.style.gridTemplateColumns = `40px repeat(${activeHoles.length},30px)`;
-  pr.style.gridTemplateColumns = `40px repeat(${activeHoles.length},30px)`;
-  sr.style.gridTemplateColumns = `40px repeat(${activeHoles.length},30px)`;
+  const colWidth = activeHoles.length === 9 ? '1fr' : '30px';
+  
+  headRow.style.gridTemplateColumns = `40px repeat(${activeHoles.length},${colWidth})`;
+  pr.style.gridTemplateColumns = `40px repeat(${activeHoles.length},${colWidth})`;
+  sr.style.gridTemplateColumns = `40px repeat(${activeHoles.length},${colWidth})`;
   
   headRow.innerHTML = '<div class="sc-lbl"></div>';
   activeHoles.forEach((_, i) => {
@@ -1466,7 +1403,6 @@ function buildScorecard(){
   const rText = S.totalRounds > 1 ? `R${S.currentRound} · ` : '';
   document.getElementById('holeBadge').textContent=`${rText}${hText}`;
 
-  // Scroll to active hole
   setTimeout(()=>{
     const activeCell = sr.querySelector('.sc-active');
     if(activeCell) activeCell.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
@@ -2184,6 +2120,7 @@ function completeHole(){
   else if(d===3){emoji='⛳';title='TRIPLE BOGEY';}
   else{emoji='⛳';title=`+${d}`;}
 
+  // Global total score
   let totalScore = 0; let totalPar = 0;
   S.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ totalScore+=s; totalPar+=HOLES[i].par; } }));
   const totalDiff=totalScore-totalPar;
@@ -2234,6 +2171,7 @@ function nextHole(){
 function showRoundEnd(){
   clearSavedGame();
   
+  // Total for THIS round
   const curSc = S.scorecards[S.currentRound - 1];
   const activeHoles = HOLES.slice(S.startIdx, S.endIdx + 1);
   const roundTotal = curSc.reduce((a,b)=>a+(b||0),0);
@@ -2241,9 +2179,10 @@ function showRoundEnd(){
   const roundDiff = roundTotal - roundPar;
   
   if (S.currentRound === S.totalRounds) {
+    // Final Tournament / Single Day End
     const profiles = loadProfiles();
     const p = profiles[getActiveProfileIdx()];
-    const isNewPB = p && (p.bestDiff === undefined || roundDiff < p.bestDiff); 
+    const isNewPB = p && (p.bestDiff === undefined || roundDiff < p.bestDiff); // Using 18-hole normalized diff for PB
 
     updateProfileAfterRound(roundTotal, roundPar);
     updateProfileStatsAfterRound(roundTotal, roundPar, S._wcUsedThisRound||0);
@@ -2252,6 +2191,7 @@ function showRoundEnd(){
     document.getElementById('ovEmoji').style.display='block';
     document.getElementById('ovTitle').textContent='FINAL SCORE';
     
+    // Overall Tournament Diff for big display
     let globalTotal = 0, globalPar = 0;
     S.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ globalTotal+=s; globalPar+=HOLES[i].par; } }));
     const globalDiff = globalTotal - globalPar;
@@ -2283,7 +2223,8 @@ function showRoundEnd(){
     document.getElementById('ovSummaryBtn').textContent='VIEW SUMMARY';
     document.getElementById('ovSummaryBtn').style.display='block';
   } else {
-    saveGameState(); 
+    // End of a mid-tournament round
+    saveGameState(); // Auto-save at round end
     document.getElementById('ovEmoji').textContent='🏁';
     document.getElementById('ovTitle').textContent=`ROUND ${S.currentRound} COMPLETE`;
     
@@ -2308,6 +2249,7 @@ function openSummary(viewRound = S.currentRound){
   
   document.getElementById('sumTitle').textContent=`${PLAYER_NAME}'S SCORECARD`;
 
+  // Render Tabs if tournament
   if (S.totalRounds > 1) {
     const tabs = document.createElement('div');
     tabs.className = 'sum-tabs';
@@ -2330,6 +2272,7 @@ function openSummary(viewRound = S.currentRound){
   const roundPar = activeHoles.reduce((a,h)=>a+h.par,0);
   const roundDiff = roundTotal - roundPar;
 
+  // Tournament Info Box (Global)
   let globalTotal = 0, globalPar = 0;
   S.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ globalTotal+=s; globalPar+=HOLES[i].par; } }));
   const globalDiff = globalTotal - globalPar;
@@ -2345,6 +2288,7 @@ function openSummary(viewRound = S.currentRound){
     body.appendChild(gBox);
   }
 
+  // ── SCORECARD GRID ──────────────────────────
   const sc=document.createElement('div');
   sc.style.cssText='overflow-x:auto;margin-bottom:14px;';
   const table=document.createElement('table');
@@ -2421,6 +2365,7 @@ function openSummary(viewRound = S.currentRound){
   sc.appendChild(table);
   body.appendChild(sc);
 
+  // ── HOLE DETAIL ROWS ──────────
   const detailSec=document.createElement('div');
   detailSec.style.cssText='font-family:"DM Mono",monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;';
   detailSec.textContent='Tap a hole for details';
@@ -2492,7 +2437,7 @@ function openSummary(viewRound = S.currentRound){
         document.getElementById('summaryModal').classList.remove('show');
         document.getElementById('overlay').classList.remove('show');
         document.getElementById('mainApp').style.display='none';
-        startGame(); 
+        startGame(); // Re-uses SETUP and selected diff
         document.querySelector('.tv-bar').classList.add('show');
       };
       btnRow.appendChild(playAgainBtn);
@@ -2525,6 +2470,7 @@ function closeSummary(){
 }
 
 function openHist(absoluteIdx){
+  // Find which round this hole belongs to based on data existence
   let targetRound = S.currentRound;
   for(let r=1; r<=S.currentRound; r++) {
     if(S.histories[r-1] && S.histories[r-1][absoluteIdx]) { targetRound = r; }
@@ -2659,17 +2605,17 @@ function updateProfileAfterRound(score, par){
   const p=profiles[idx];
   if(!p)return;
   p.gamesPlayed=(p.gamesPlayed||0)+1;
-  HOLES.forEach((h,i)=>{
-    const hist=S.history[i];
-    if(!hist)return;
-    p.holesPlayed=(p.holesPlayed||0)+1;
-    const d=hist.strokes-hist.par;
-    if(d<=-2) p.eagles=(p.eagles||0)+1;
-    else if(d===-1) p.birdies=(p.birdies||0)+1;
-    if(h.par===3&&hist.strokes===1) p.holeInOnes=(p.holeInOnes||0)+1;
-  });
-  const diff=score-par;
-  if(p.bestDiff===undefined||diff<p.bestDiff) p.bestDiff=diff;
+  
+  // Note: eagles, birdies, holeInOnes, and wildcardsUsed are now updated live during the round
+  
+  // Calculate normalized 18-hole difference for PB
+  let activeHolesCount = S.endIdx - S.startIdx + 1;
+  let projected18Diff = score - par;
+  if(activeHolesCount === 9) {
+      projected18Diff = (score - par) * 2;
+  }
+  
+  if(p.bestDiff===undefined||projected18Diff<p.bestDiff) p.bestDiff=projected18Diff;
   saveProfiles(profiles);
 }
 
@@ -2689,6 +2635,7 @@ function renderProfileSlots(){
       <div class="profile-avatar">${getProfileIcon(p,i)}</div>
       <div class="profile-info">
         <div class="profile-name">${p.name}</div>
+        <div class="profile-stats">${stats}</div>
       </div>
       <div class="profile-actions">
         <button class="profile-action-btn" onclick="openEditProfile(${i});event.stopPropagation();">EDIT</button>
@@ -2900,6 +2847,7 @@ function resetProfileStats(i){
     showProfileStats(i);
   });
 }
+
 function showProfileStats(i){
   const profiles=loadProfiles();
   const p=profiles[i];
@@ -2911,10 +2859,13 @@ function showProfileStats(i){
   panel.id='profileStatsPanel';
   panel.style.cssText='background:rgba(255,255,255,.04);border:1px solid var(--c-fwyl);border-radius:10px;padding:12px;margin-top:6px;animation:fadein .2s ease;max-height:60vh;overflow-y:auto;';
   const bestStr=p.bestDiff===undefined?'—':p.bestDiff===0?'E':p.bestDiff>0?`+${p.bestDiff}`:`${p.bestDiff}`;
+  
+  let totalHolesPlayed = p.holesPlayed || 0;
+
   const rows=[
-    ['Games Played', p.gamesPlayed||0],['Holes Played', p.holesPlayed||0],
+    ['Games Played', p.gamesPlayed||0],['Holes Played', totalHolesPlayed],
     ['Birdies', p.birdies||0],['Eagles', p.eagles||0],
-    ['Hole-in-Ones', p.holeInOnes||0],['Wildcards Used', p.wildcardsUsed||0],['Best Score', bestStr],
+    ['Hole-in-Ones', p.holeInOnes||0],['Wildcards Used', p.wildcardsUsed||0],['Best Score (18H)', bestStr],
   ];
   const earned=p.achievements||[];
   const total=ACHIEVEMENTS.length;
@@ -2945,6 +2896,7 @@ function showProfileStats(i){
     `<div style="margin-top:10px;"><button onclick="resetProfileStats(${i})" style="width:100%;background:rgba(255,82,82,.12);color:#ff8080;border:1px solid rgba(255,82,82,.3);border-radius:7px;padding:7px;font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;cursor:pointer;">RESET STATS</button></div>`;
   slots.parentNode.insertBefore(panel, slots.nextSibling);
 }
+
 function updateMenuProfileDisplay(){
   const p=getActiveProfile();
   const el=document.getElementById('menuActiveProfile');
