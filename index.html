@@ -764,9 +764,9 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
     <button class="menu-btn-play" id="menuContinueBtn" onclick="continueGame()" style="display:none;background:#1a5f8a;margin-bottom:14px;width:100%;font-size:16px;">▶ CONTINUE</button>
     
     <div class="menu-btns" id="menuBtns">
-      <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()">⛳ PLAY</button>
-      <button class="menu-btn-sec" onclick="openSettings()" style="margin-top:10px;background:transparent;border-color:transparent;">SETTINGS</button>
-    </div>
+  <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()">⛳ PLAY</button>
+  <button class="menu-btn-sec" onclick="openSettings()" style="margin-top:10px;">⚙️ SETTINGS</button>
+</div>
   </div>
 </div>
 
@@ -1247,42 +1247,57 @@ let S={
   _mulliganJustFired:false, _puttWcUsed:false, _pendingPuttResult:null
 };
 
+let GAME_DIFF = 1;
+
+function setDiff(d) {
+  GAME_DIFF = d;
+  [1, 2, 3].forEach(i => document.getElementById(`diff-btn-${i}`)?.classList.toggle('active', i === d));
+}
+
+function setCustomDiff(d) {
+  GAME_DIFF = d;
+  [1, 2, 3].forEach(i => document.getElementById(`cdiff-btn-${i}`)?.classList.toggle('active', i === d));
+}
+
 // ── Menu Navigation ──
 let _lastMenuScreen = 'menuScreen';
+
 function navBack(to) {
+  const target = to === 'mode' ? (SETUP.mode === 'custom' ? 'customScreen' : 'playModeScreen') : to;
   const screens = ['menuScreen','playModeScreen','customScreen','courseScreen','diffScreen'];
-  screens.forEach(id => hideScreen(id));
-  
-  if (to === 'mode') {
-    if (SETUP.mode === 'custom') showScreen('customScreen', 'flex');
-    else showScreen('playModeScreen', 'flex');
-  } else {
-    setTimeout(()=>showScreen(to, 'flex'), 150);
-  }
+  screens.forEach(id => {
+    if (id !== target) hideScreen(id);
+  });
+  showScreen(target, 'flex');
 }
+
 function navToPlayMode() {
   _lastMenuScreen = 'playModeScreen';
   hideScreen('menuScreen');
-  setTimeout(()=>showScreen('playModeScreen','flex'), 150);
+  showScreen('playModeScreen', 'flex');
 }
+
 function navToCustom() { 
-  _lastMenuScreen='customScreen'; 
+  _lastMenuScreen = 'customScreen'; 
   SETUP.mode = 'custom';
   hideScreen('playModeScreen'); 
-  setTimeout(()=>showScreen('customScreen','flex'),150); 
+  showScreen('customScreen', 'flex'); 
 }
+
 function navToCourse(mode) {
-  if(mode==='single') { SETUP.mode='single'; SETUP.rounds=1; SETUP.holesConfig='18'; _lastMenuScreen='playModeScreen'; }
-  if(mode==='tournament') { SETUP.mode='tournament'; SETUP.rounds=4; SETUP.holesConfig='18'; _lastMenuScreen='playModeScreen'; }
-  if(mode==='custom') { _lastMenuScreen='customScreen'; }
-  hideScreen(_lastMenuScreen); setTimeout(()=>showScreen('courseScreen','flex'),150);
+  if (mode === 'single') { SETUP.mode = 'single'; SETUP.rounds = 1; SETUP.holesConfig = '18'; _lastMenuScreen = 'playModeScreen'; }
+  if (mode === 'tournament') { SETUP.mode = 'tournament'; SETUP.rounds = 4; SETUP.holesConfig = '18'; _lastMenuScreen = 'playModeScreen'; }
+  if (mode === 'custom') { _lastMenuScreen = 'customScreen'; }
+  hideScreen(_lastMenuScreen); 
+  showScreen('courseScreen', 'flex');
 }
+
 function navToDiff() { 
   hideScreen('courseScreen'); 
-  if(SETUP.mode === 'custom') {
+  if (SETUP.mode === 'custom') {
     startGame();
   } else {
-    setTimeout(()=>showScreen('diffScreen','flex'),150); 
+    showScreen('diffScreen', 'flex'); 
   }
 }
 
@@ -2628,14 +2643,10 @@ function renderProfileSlots(){
   profiles.forEach((p,i)=>{
     const slot=document.createElement('div');
     slot.className='profile-slot'+(i===activeIdx?' active-profile':'');
-    const bestStr=p.bestDiff===undefined?'No games yet':
-      p.bestDiff===0?'Best: E':p.bestDiff>0?`Best: +${p.bestDiff}`:`Best: ${p.bestDiff}`;
-    const stats=`${p.gamesPlayed||0} games · ${bestStr}`;
     slot.innerHTML=`
       <div class="profile-avatar">${getProfileIcon(p,i)}</div>
       <div class="profile-info">
         <div class="profile-name">${p.name}</div>
-        <div class="profile-stats">${stats}</div>
       </div>
       <div class="profile-actions">
         <button class="profile-action-btn" onclick="openEditProfile(${i});event.stopPropagation();">EDIT</button>
