@@ -4273,114 +4273,123 @@ function closeConfirm(){
       <div class="profile-new-form" id="profileNewForm">
         <input class="profile-new-input" id="profileNewInput" placeholder="YOUR NAME" maxlength="12" autocomplete="off" spellcheck="false">
         <div class="profile-new-row">
-          <button class="profile-save-btn" onclick="saveNewProfile()">CREATE →</button>
-          <button class="profile-cancel-btn" onclick="cancelNewProfile()">CANCEL</button>
+          <button class="profile-save-btn" onclick="saveEditProfile()">SAVE →</button>
+          <button class="profile-cancel-btn" onclick="closeEditProfile()">CANCEL</button>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-
-<!-- WILDCARD FAB -->
-<button class="wc-fab" id="wcFab" onclick="openWcDrawer()">
-  <div class="wc-fab-icon">🃏</div>
-  <div class="wc-fab-count" id="wcFabCount">0/3</div>
-  <div class="wc-fab-slots">
-    <div class="wc-fab-dot" id="wcDot0"></div>
-    <div class="wc-fab-dot" id="wcDot1"></div>
-    <div class="wc-fab-dot" id="wcDot2"></div>
-  </div>
-</button>
-
-<!-- WILDCARD DRAWER BACKDROP -->
-<div class="wc-backdrop" id="wcBackdrop" onclick="closeWcDrawer()"></div>
-
-<!-- WILDCARD DRAWER -->
-<div class="wc-drawer" id="wcDrawer">
-  <div class="wc-drawer-head">
-    <div class="wc-drawer-title">🃏 WILDCARDS</div>
-    <div style="display:flex;gap:6px;">
-      <button onclick="openWcInfo()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;" title="About Wildcards">ℹ</button>
-      <button class="wc-drawer-close" onclick="closeWcDrawer()">✕</button>
-    </div>
-  </div>
-  <div class="wc-drawer-slots" id="wcDrawerSlots"></div>
-  <!-- WC Info Panel -->
-  <div class="wc-info-panel" id="wcInfoPanel">
-    <div class="wc-info-head">
-      <button onclick="closeWcInfo()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;flex-shrink:0;">←</button>
-      <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;" id="wcInfoTitle">ABOUT WILDCARDS</div>
-    </div>
-    <div class="wc-info-list" id="wcInfoList"></div>
-  </div>
-</div>
-
-<!-- WILDCARD REVEAL SCREEN -->
-<div class="wc-reveal" id="wcReveal">
-  <div class="wc-reveal-title">⚡ WILDCARD!</div>
-  <div class="wc-card-wrap" id="wcCardWrap" onclick="revealWcCard()">
-    <div class="wc-card" id="wcCard">
-      <div class="wc-card-face wc-card-back">🃏</div>
-      <div class="wc-card-face wc-card-front">
-        <div class="wc-front-icon" id="wcFrontIcon">⭐</div>
-        <div class="wc-front-name" id="wcFrontName">WILDCARD</div>
-        <div class="wc-front-desc" id="wcFrontDesc">Description</div>
+  <div class="profile-modal" id="profileModal">
+    <div class="profile-card">
+      <div class="profile-head">
+        <div class="profile-head-title">PROFILES</div>
+        <button class="profile-close" onclick="closeProfileModal()">✕</button>
+      </div>
+      <div class="profile-body">
+        <div class="profile-slots" id="profileSlots"></div>
+        <div class="profile-new-form" id="profileNewForm">
+          <input class="profile-new-input" id="profileNewInput" placeholder="YOUR NAME" maxlength="12" autocomplete="off" spellcheck="false">
+          <div class="profile-new-row">
+            <button class="profile-save-btn" onclick="saveNewProfile()">CREATE →</button>
+            <button class="profile-cancel-btn" onclick="cancelNewProfile()">CANCEL</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <!-- Fixed-height zone below card: exactly 80px. Hint and buttons swap within it. -->
-  <div style="height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;margin-top:16px;">
-    <div class="wc-reveal-hint" id="wcRevealHint">TAP CARD TO REVEAL</div>
-    <div class="wc-reveal-actions" id="wcRevealActions" style="display:none;">
-      <button class="wc-equip-btn" id="wcEquipBtn" onclick="equipWildcard()">EQUIP</button>
-    </div>
-  </div>
-</div>
-<!-- TV SCORECARD BAR (fixed bottom) -->
-<div class="tv-bar" id="tvBar">
-  <div class="tv-row1">
-    <div class="tv-icon-box">🏌️</div>
-    <div class="tv-nameblock">
-      <div class="tv-playername" id="tvName">PLAYER</div>
-      <div class="tv-holeinfo" id="tvHoleInfo">HOLE 1 · PAR 4</div>
-    </div>
-    <div class="tv-shots" id="tvShots"></div>
-    <div class="tv-totalbox">
-      <div class="tv-total-num" id="tvTotal">E</div>
-      <div class="tv-total-lbl">Total</div>
-    </div>
-  </div>
-  <div class="tv-row2" id="tvRow2">
-    <div class="tv-putt-status" id="tvPuttStatus">For Par</div>
-  </div>
-</div>
 
-<!-- HOLE IN ONE CONFIRMATION OVERLAY -->
-<div class="hio-overlay" id="hioOverlay">
-  <div class="hio-ball" id="hioBall">⛳</div>
-  <div class="hio-title">THE BALL IS ON THE EDGE!</div>
-  <div class="hio-sub" id="hioSub">ROLL DOUBLES TO HOLE IT</div>
-  <div class="hio-dice-row">
-    <div class="hio-die" id="hioDie1">?</div>
-    <div class="hio-die" id="hioDie2">?</div>
-  </div>
-  <button class="hio-roll-btn" id="hioRollBtn" onclick="doHioRoll()">🎲 ROLL FOR IT</button>
-  <div class="hio-result" id="hioResult" style="display:none;"></div>
-</div>
+  <button class="wc-fab" id="wcFab" onclick="openWcDrawer()">
+    <div class="wc-fab-icon">🃏</div>
+    <div class="wc-fab-count" id="wcFabCount">0/3</div>
+    <div class="wc-fab-slots">
+      <div class="wc-fab-dot" id="wcDot0"></div>
+      <div class="wc-fab-dot" id="wcDot1"></div>
+      <div class="wc-fab-dot" id="wcDot2"></div>
+    </div>
+  </button>
 
-<!-- CONFIRM MODAL (iOS-safe replacement for confirm()) -->
-<div class="profile-modal" id="confirmModal" style="z-index:700;">
-  <div class="profile-card" style="max-width:300px;">
-    <div class="profile-body" style="padding:20px;">
-      <div id="confirmMsg" style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--text);text-align:center;margin-bottom:20px;"></div>
-      <div style="display:flex;gap:10px;">
-        <button id="confirmYes" style="flex:1;background:#e05252;color:#fff;border:none;border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">YES</button>
-        <button onclick="closeConfirm()" style="flex:1;background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">CANCEL</button>
+  <div class="wc-backdrop" id="wcBackdrop" onclick="closeWcDrawer()"></div>
+
+  <div class="wc-drawer" id="wcDrawer">
+    <div class="wc-drawer-head">
+      <div class="wc-drawer-title">🃏 WILDCARDS</div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="openWcInfo()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;" title="About Wildcards">ℹ</button>
+        <button class="wc-drawer-close" onclick="closeWcDrawer()">✕</button>
+      </div>
+    </div>
+    <div class="wc-drawer-slots" id="wcDrawerSlots"></div>
+    <div class="wc-info-panel" id="wcInfoPanel">
+      <div class="wc-info-head">
+        <button onclick="closeWcInfo()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;flex-shrink:0;">←</button>
+        <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;" id="wcInfoTitle">ABOUT WILDCARDS</div>
+      </div>
+      <div class="wc-info-list" id="wcInfoList"></div>
+    </div>
+  </div>
+
+  <div class="wc-reveal" id="wcReveal">
+    <div class="wc-reveal-title">⚡ WILDCARD!</div>
+    <div class="wc-card-wrap" id="wcCardWrap" onclick="revealWcCard()">
+      <div class="wc-card" id="wcCard">
+        <div class="wc-card-face wc-card-back">🃏</div>
+        <div class="wc-card-face wc-card-front">
+          <div class="wc-front-icon" id="wcFrontIcon">⭐</div>
+          <div class="wc-front-name" id="wcFrontName">WILDCARD</div>
+          <div class="wc-front-desc" id="wcFrontDesc">Description</div>
+        </div>
+      </div>
+    </div>
+    <div style="height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;margin-top:16px;">
+      <div class="wc-reveal-hint" id="wcRevealHint">TAP CARD TO REVEAL</div>
+      <div class="wc-reveal-actions" id="wcRevealActions" style="display:none;">
+        <button class="wc-equip-btn" id="wcEquipBtn" onclick="equipWildcard()">EQUIP</button>
       </div>
     </div>
   </div>
-</div>
+  
+  <div class="tv-bar" id="tvBar">
+    <div class="tv-row1">
+      <div class="tv-icon-box">🏌️</div>
+      <div class="tv-nameblock">
+        <div class="tv-playername" id="tvName">PLAYER</div>
+        <div class="tv-holeinfo" id="tvHoleInfo">HOLE 1 · PAR 4</div>
+      </div>
+      <div class="tv-shots" id="tvShots"></div>
+      <div class="tv-totalbox">
+        <div class="tv-total-num" id="tvTotal">E</div>
+        <div class="tv-total-lbl">Total</div>
+      </div>
+    </div>
+    <div class="tv-row2" id="tvRow2">
+      <div class="tv-putt-status" id="tvPuttStatus">For Par</div>
+    </div>
+  </div>
+
+  <div class="hio-overlay" id="hioOverlay">
+    <div class="hio-ball" id="hioBall">⛳</div>
+    <div class="hio-title">THE BALL IS ON THE EDGE!</div>
+    <div class="hio-sub" id="hioSub">ROLL DOUBLES TO HOLE IT</div>
+    <div class="hio-dice-row">
+      <div class="hio-die" id="hioDie1">?</div>
+      <div class="hio-die" id="hioDie2">?</div>
+    </div>
+    <button class="hio-roll-btn" id="hioRollBtn" onclick="doHioRoll()">🎲 ROLL FOR IT</button>
+    <div class="hio-result" id="hioResult" style="display:none;"></div>
+  </div>
+
+  <div class="profile-modal" id="confirmModal" style="z-index:700;">
+    <div class="profile-card" style="max-width:300px;">
+      <div class="profile-body" style="padding:20px;">
+        <div id="confirmMsg" style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--text);text-align:center;margin-bottom:20px;"></div>
+        <div style="display:flex;gap:10px;">
+          <button id="confirmYes" style="flex:1;background:#e05252;color:#fff;border:none;border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">YES</button>
+          <button onclick="closeConfirm()" style="flex:1;background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">CANCEL</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
