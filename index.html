@@ -9,7 +9,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0d1117">
 <title>Grid Golf</title>
-<link href="https://fonts.googleapis.com/css2?family=Cabin+Condensed:wght@400;500;600;700&family=Sen:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sen:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --c-tee:#2c5f8a;--c-fwy:#3a7a30;--c-fwyl:#4e9e42;
@@ -1256,29 +1256,30 @@ function cells(...pairs){const c=[];pairs.forEach(([k,n])=>c.push(...rep(k,n)));
 // ═══════════════════════════════════════
 // GRID TEMPLATES
 // ═══════════════════════════════════════
-const T_TEE_EASY  = ()=>cells(['fwy',35],['rgh',1]);
-const T_TEE_MED   = ()=>cells(['fwy',24],['rgh',11],['ob',1]);
-const T_TEE_HARD  = ()=>cells(['fwy',17],['rgh',18],['ob',1]);
+const T_TEE_EASY  = ()=>cells(['fwy',30],['rgh',6]);
+const T_TEE_MED   = ()=>cells(['fwy',24],['rgh',10],['sand',2]);
+const T_TEE_HARD  = ()=>cells(['fwy',16],['rgh',14],['sand',4],['ob',2]);
 const T_TEE_H2O_E = ()=>cells(['fwy',28],['rgh',6],['h2o',2]);
-const T_TEE_H2O_M = ()=>cells(['fwy',22],['rgh',9],['h2o',4],['ob',1]);
-const T_TEE_H2O_H = ()=>cells(['fwy',16],['rgh',11],['h2o',6],['ob',1],['sand',2]);
+const T_TEE_H2O_M = ()=>cells(['fwy',20],['rgh',8],['h2o',4],['sand',4]);
+const T_TEE_H2O_H = ()=>cells(['fwy',14],['rgh',10],['h2o',6],['sand',4],['ob',2]);
 
-const T_TEE_P3E   = ()=>cells(['grn',27],['chip',5],['sand',3],['hole',1]);
-const T_TEE_P3H   = ()=>cells(['grn',10],['chip',8],['sand',10],['rgh',7],['hole',1]);
+const T_TEE_P3E   = ()=>cells(['grn',25],['chip',8],['sand',2],['hole',1]);
+const T_TEE_P3M   = ()=>cells(['grn',18],['chip',10],['sand',5],['rgh',2],['hole',1]);
+const T_TEE_P3H   = ()=>cells(['grn',12],['chip',10],['sand',8],['rgh',5],['hole',1]);
+const T_TEE_P3_H2O= ()=>cells(['grn',14],['chip',8],['sand',6],['h2o',7],['hole',1]);
 
-const T_FWY_FAR   = ()=>cells(['fwy',22],['rgh',14]);
+const T_FWY_FAR   = ()=>cells(['fwy',22],['rgh',10],['sand',4]);
 const T_FWY_FAR_H2O = ()=>cells(['fwy',16],['rgh',10],['h2o',6],['sand',4]);
 
-const T_FWY_MID_E = ()=>cells(['grn',34],['sand',2]);
-const T_FWY_MID_M = ()=>cells(['grn',24],['rgh',6],['sand',6]);
-const T_FWY_MID_H = ()=>cells(['grn',16],['rgh',12],['sand',8]);
+const T_FWY_MID_E = ()=>cells(['grn',30],['chip',4],['sand',2]);
+const T_FWY_MID_M = ()=>cells(['grn',22],['chip',6],['rgh',4],['sand',4]);
+const T_FWY_MID_H = ()=>cells(['grn',14],['chip',8],['rgh',8],['sand',6]);
+const T_FWY_MID_H2O = ()=>cells(['grn',14],['chip',6],['rgh',6],['sand',4],['h2o',6]);
 
 const T_RGH_FAR   = ()=>cells(['fwy',22],['rgh',10],['chip',4]);
-
 const T_RGH_MID_E = ()=>cells(['fwy',18],['rgh',4],['chip',6],['grn',8]);
 const T_RGH_MID_M = ()=>cells(['fwy',14],['rgh',10],['chip',8],['grn',4]);
 const T_RGH_MID_H = ()=>cells(['fwy',14],['rgh',12],['chip',8],['grn',2]);
-
 const T_RGH_SHORT = ()=>cells(['chip',16],['grn',10],['sand',8],['rgh',2]);
 
 const T_CHIP_NORM = ()=>cells(['grn',30],['sand',5],['hole',1]);
@@ -1624,11 +1625,9 @@ function buildGrid(){
   let tmpl;
 
   if(S.zone==='grn'||gate==='green'){
-    const diff=HOLES[S.holeIdx].diff;
-    tmpl=diff===1?T_PUTTING_1():diff===3?T_PUTTING_3():T_PUTTING_2();
+    tmpl=h.diff===1?T_PUTTING_1():h.diff===3?T_PUTTING_3():T_PUTTING_2();
     document.getElementById('gridTitle').textContent='Putting Grid';
     if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    if(S.zone!=='tee')tmpl=tmpl.map(r=>r.map(c=>c==='ob'?'rgh':c));
     S.currentGrid=tmpl;renderGrid();return;
   }
 
@@ -1651,7 +1650,11 @@ function buildGrid(){
   }
 
   if(S.zone==='tee'&&isPar3){
-    tmpl=h.diff===3?T_TEE_P3H():T_TEE_P3E();
+    if(h.hasWater && h.diff >= 2) tmpl = T_TEE_P3_H2O();
+    else if(h.diff===3) tmpl = T_TEE_P3H();
+    else if(h.diff===2) tmpl = T_TEE_P3M();
+    else tmpl = T_TEE_P3E();
+    
     if(S.shotCount>=1) tmpl=tmpl.map(r=>r.map(c=>c==='ob'?'rgh':c));
     document.getElementById('gridTitle').textContent='Tee Shot Grid';
     if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
@@ -1661,13 +1664,9 @@ function buildGrid(){
 
   if(S.zone==='tee'){
     if(h.hasWater){
-      if(h.diff===1)      tmpl=T_TEE_H2O_E();
-      else if(h.diff===2) tmpl=T_TEE_H2O_M();
-      else                tmpl=T_TEE_H2O_H();
+      tmpl = h.diff===1 ? T_TEE_H2O_E() : h.diff===2 ? T_TEE_H2O_M() : T_TEE_H2O_H();
     } else {
-      if(h.diff===1)      tmpl=T_TEE_EASY();
-      else if(h.diff===2) tmpl=T_TEE_MED();
-      else                tmpl=T_TEE_HARD();
+      tmpl = h.diff===1 ? T_TEE_EASY() : h.diff===2 ? T_TEE_MED() : T_TEE_HARD();
     }
     if(S.shotCount>=2) tmpl=tmpl.map(r=>r.map(c=>c==='ob'?'rgh':c));
     document.getElementById('gridTitle').textContent='Tee Shot Grid';
@@ -1678,21 +1677,15 @@ function buildGrid(){
 
   if(S.zone==='fwy'){
     if(gate==='short'||gate==='nearpin'){
-      if(h.diff===1)      tmpl=T_FWY_MID_E();
-      else if(h.diff===2) tmpl=T_FWY_MID_M();
-      else                tmpl=T_FWY_MID_H();
+      tmpl = h.diff===1 ? T_FWY_MID_E() : h.diff===2 ? T_FWY_MID_M() : (h.hasWater ? T_FWY_MID_H2O() : T_FWY_MID_H());
       tmpl=tmpl.map(r=>r.map(c=>(c==='fwy'||c==='rgh')?'chip':c));
     } else if(gate==='mid'){
-      if(h.diff===1)      tmpl=T_FWY_MID_E();
-      else if(h.diff===2) tmpl=T_FWY_MID_M();
-      else                tmpl=T_FWY_MID_H();
+      tmpl = h.diff===1 ? T_FWY_MID_E() : h.diff===2 ? T_FWY_MID_M() : (h.hasWater ? T_FWY_MID_H2O() : T_FWY_MID_H());
     } else {
       if(h.par===5&&S.fwyVisits>=2){
-        if(h.diff===1)      tmpl=T_FWY_MID_E();
-        else if(h.diff===2) tmpl=T_FWY_MID_M();
-        else                tmpl=T_FWY_MID_H();
+        tmpl = h.diff===1 ? T_FWY_MID_E() : h.diff===2 ? T_FWY_MID_M() : (h.hasWater ? T_FWY_MID_H2O() : T_FWY_MID_H());
       } else {
-        tmpl=(h.hasWater&&h.diff>=2)?T_FWY_FAR_H2O():T_FWY_FAR();
+        tmpl = (h.hasWater&&h.diff>=2) ? T_FWY_FAR_H2O() : T_FWY_FAR();
       }
     }
     document.getElementById('gridTitle').textContent='Fairway Shot Grid';
@@ -1708,9 +1701,7 @@ function buildGrid(){
     } else if(gate==='far'){
       tmpl=T_RGH_FAR();
     } else {
-      if(h.diff===1)      tmpl=T_RGH_MID_E();
-      else if(h.diff===2) tmpl=T_RGH_MID_M();
-      else                tmpl=T_RGH_MID_H();
+      tmpl = h.diff===1 ? T_RGH_MID_E() : h.diff===2 ? T_RGH_MID_M() : T_RGH_MID_H();
     }
     document.getElementById('gridTitle').textContent='Rough Shot Grid';
     if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
@@ -2384,7 +2375,7 @@ function openSummary(viewRound = S.currentRound){
     gBox.style.cssText = 'background:rgba(240,192,64,.15);border:1px solid rgba(240,192,64,.3);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;';
     gBox.innerHTML = `
       <div><div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--gold);letter-spacing:1px;">TOURNAMENT TOTAL</div><div style="font-size:12px;color:var(--text);">${globalTotal} strokes</div></div>
-      <div style="font-family:'Cabin Condensed',sans-serif;font-size:28px;color:var(--gold);">${gDiffStr}</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);">${gDiffStr}</div>
     `;
     body.appendChild(gBox);
   }
@@ -2422,7 +2413,7 @@ function openSummary(viewRound = S.currentRound){
     cell.style.cssText='padding:4px 2px;text-align:center;border:1px solid var(--border);font-size:12px;font-weight:700;'+(i===activeHoles.length+1?'background:rgba(0,0,0,.2);':'');
     if(i===0){
       cell.textContent=v;
-      cell.style.cssText+='text-align:left;padding-left:8px;font-family:"Cabin Condensed",sans-serif;font-size:13px;letter-spacing:1px;';
+      cell.style.cssText+='text-align:left;padding-left:8px;font-family:"Bebas Neue",cursive;font-size:13px;letter-spacing:1px;';
     } else if(i===activeHoles.length+1){
       cell.textContent=v; cell.style.color=roundDiff<0?'var(--gold)':roundDiff>0?'#e05252':'var(--c-fwyl)';
     } else {
@@ -2475,7 +2466,8 @@ function openSummary(viewRound = S.currentRound){
   activeHoles.forEach((h,i)=>{
     const absoluteIdx = S.startIdx + i;
     const hist=histData[absoluteIdx];
-    if(!hist)return;
+    if(!hist)return; // This line was throwing the error previously!
+    
     const d=hist.strokes-hist.par;
     let scoreColor='var(--text)'; let resultLabel='';
     if(d<=-2){scoreColor='var(--gold)';resultLabel='Eagle';}
@@ -2494,9 +2486,9 @@ function openSummary(viewRound = S.currentRound){
     const zoneDots=hist.log.map(e=>`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${(Z[e.zk]||Z.fwy).color};flex-shrink:0;"></span>`).join('');
 
     row.innerHTML=`
-      <span style="font-family:'Cabin Condensed',sans-serif;font-size:15px;letter-spacing:1px;color:var(--muted);min-width:54px;">${h.name}</span>
+      <span style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;color:var(--muted);min-width:54px;">${h.name}</span>
       <span style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);">par ${h.par}</span>
-      <span style="font-family:'Cabin Condensed',sans-serif;font-size:18px;color:${scoreColor};margin-left:auto;">${hist.strokes}</span>
+      <span style="font-family:'Bebas Neue',cursive;font-size:18px;color:${scoreColor};margin-left:auto;">${hist.strokes}</span>
       <span style="font-family:'Sen',sans-serif;font-size:10px;color:${scoreColor};min-width:40px;">${resultLabel}</span>
       <span style="display:flex;gap:3px;align-items:center;">${zoneDots}</span>
     `;
@@ -2510,12 +2502,12 @@ function openSummary(viewRound = S.currentRound){
   
   if (S.currentRound < S.totalRounds && viewRound === S.currentRound && S.holeDone) {
     const nextRndBtn=document.createElement('button');
-    nextRndBtn.style.cssText='width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:13px;font-family:"Cabin Condensed",sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;';
+    nextRndBtn.style.cssText='width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
     nextRndBtn.textContent=`START ROUND ${S.currentRound + 1} →`;
     nextRndBtn.onclick=startNextRound;
     
     const returnBtn=document.createElement('button');
-    returnBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Cabin Condensed",sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;';
+    returnBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
     returnBtn.textContent='SAVE & MENU';
     returnBtn.onclick=()=>{closeSummary(); returnToMenuSave();};
     
@@ -2523,14 +2515,14 @@ function openSummary(viewRound = S.currentRound){
     btnRow.appendChild(returnBtn);
   } else {
     const returnBtn=document.createElement('button');
-    returnBtn.style.cssText='width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:13px;font-family:"Cabin Condensed",sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;';
+    returnBtn.style.cssText='width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
     returnBtn.textContent='RETURN TO MAIN MENU';
     returnBtn.onclick=()=>{closeSummary();returnToMenu();};
     btnRow.appendChild(returnBtn);
     
     if (viewRound === S.currentRound && S.currentRound === S.totalRounds && S.holeDone) {
       const playAgainBtn=document.createElement('button');
-      playAgainBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Cabin Condensed",sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;';
+      playAgainBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
       playAgainBtn.textContent='PLAY SETUP AGAIN';
       playAgainBtn.onclick=()=>{
         document.getElementById('summaryModal').classList.remove('show');
@@ -3259,7 +3251,7 @@ function openSummary(){
     resetGameState();
     const p=getActiveProfile();
     PLAYER_NAME=p?p.name.toUpperCase():'PLAYER';
-    const diffMap={1:[1,1,1], 2:[1,2,3], 3:[1,2,3]};
+    const diffMap = { 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };
     HOLES.forEach(h=>{h.diff=diffMap[h.baseDiff][GAME_DIFF-1];});
     document.getElementById('mainApp').style.display='block';
     init();
@@ -4079,7 +4071,7 @@ function continueGame(){
     if(!save)return;
     PLAYER_NAME=save.playerName||PLAYER_NAME;
     GAME_DIFF=save.gameDiff||1;
-    const diffMap2={1:[1,1,1],2:[1,2,3],3:[1,2,3]};
+    const diffMap = { 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };
     HOLES.forEach(h=>{ h.diff=diffMap2[h.baseDiff][GAME_DIFF-1]; });
     
     S.mode=save.mode||'single'; S.totalRounds=save.totalRounds||1; S.currentRound=save.currentRound||1;
