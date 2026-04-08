@@ -1256,60 +1256,60 @@ function cells(...pairs){const c=[];pairs.forEach(([k,n])=>c.push(...rep(k,n)));
 // ═══════════════════════════════════════
 // GRID TEMPLATES
 // ═══════════════════════════════════════
-const T_TEE_EASY  = ()=>cells(['fwy',36]);
-const T_TEE_MED   = ()=>cells(['fwy',28],['rgh',6],['sand',2]);
+const T_TEE_EASY  = ()=>cells(['fwy',30],['rgh',6]);
+const T_TEE_MED   = ()=>cells(['fwy',24],['rgh',10],['sand',2]);
 const T_TEE_HARD  = ()=>cells(['fwy',16],['rgh',14],['sand',4],['ob',2]);
 
-const T_TEE_H2O_E = ()=>cells(['fwy',34],['h2o',2]);
-const T_TEE_H2O_M = ()=>cells(['fwy',24],['rgh',6],['h2o',4],['sand',2]);
-const T_TEE_H2O_H = ()=>cells(['fwy',14],['rgh',10],['h2o',8],['sand',4]);
+const T_TEE_H2O_E = ()=>cells(['fwy',28],['rgh',6],['h2o',2]);
+const T_TEE_H2O_M = ()=>cells(['fwy',20],['rgh',8],['h2o',4],['sand',4]);
+const T_TEE_H2O_H = ()=>cells(['fwy',14],['rgh',10],['h2o',8],['sand',2],['ob',2]);
 
-const T_TEE_P3E   = ()=>cells(['grn',30],['chip',5],['hole',1]);
+const T_TEE_P3E   = ()=>cells(['grn',28],['chip',6],['sand',1],['hole',1]);
 const T_TEE_P3M   = ()=>cells(['grn',20],['chip',10],['sand',5],['hole',1]);
 const T_TEE_P3H   = ()=>cells(['grn',12],['chip',10],['sand',8],['rgh',5],['hole',1]);
 
-const T_TEE_P3_H2O_E = ()=>cells(['grn',28],['chip',6],['h2o',1],['hole',1]);
+const T_TEE_P3_H2O_E = ()=>cells(['grn',26],['chip',6],['h2o',2],['sand',1],['hole',1]);
 const T_TEE_P3_H2O_M = ()=>cells(['grn',16],['chip',10],['sand',4],['h2o',5],['hole',1]);
 const T_TEE_P3_H2O_H = ()=>cells(['grn',10],['chip',8],['sand',6],['h2o',9],['rgh',2],['hole',1]);
 
-const T_FWY_FAR_E = ()=>cells(['fwy',32],['rgh',4]);
-const T_FWY_FAR_M = ()=>cells(['fwy',24],['rgh',10],['sand',2]);
-const T_FWY_FAR_H = ()=>cells(['fwy',18],['rgh',12],['sand',6]);
+const T_FWY_FAR_E = ()=>cells(['fwy',28],['rgh',6],['chip',2]);
+const T_FWY_FAR_M = ()=>cells(['fwy',22],['rgh',10],['sand',4]);
+const T_FWY_FAR_H = ()=>cells(['fwy',16],['rgh',12],['sand',8]);
 
-const T_FWY_FAR_H2O_E = ()=>cells(['fwy',30],['rgh',4],['h2o',2]);
-const T_FWY_FAR_H2O_M = ()=>cells(['fwy',20],['rgh',10],['sand',4],['h2o',2]);
-const T_FWY_FAR_H2O_H = ()=>cells(['fwy',14],['rgh',10],['sand',6],['h2o',6]);
+const T_FWY_FAR_H2O_E = ()=>cells(['fwy',26],['rgh',6],['h2o',2],['sand',2]);
+const T_FWY_FAR_H2O_M = ()=>cells(['fwy',18],['rgh',10],['sand',4],['h2o',4]);
+const T_FWY_FAR_H2O_H = ()=>cells(['fwy',12],['rgh',10],['sand',6],['h2o',8]);
 
-const T_FWY_MID_E = ()=>cells(['grn',32],['chip',4]);
+const T_FWY_MID_E = ()=>cells(['grn',28],['chip',6],['sand',2]);
 const T_FWY_MID_M = ()=>cells(['grn',20],['chip',10],['rgh',4],['sand',2]);
 const T_FWY_MID_H = ()=>cells(['grn',12],['chip',10],['rgh',8],['sand',6]);
 
-const T_FWY_MID_H2O_E = ()=>cells(['grn',30],['chip',4],['h2o',2]);
+const T_FWY_MID_H2O_E = ()=>cells(['grn',26],['chip',6],['h2o',2],['sand',2]);
 const T_FWY_MID_H2O_M = ()=>cells(['grn',18],['chip',8],['sand',4],['h2o',6]);
 const T_FWY_MID_H2O_H = ()=>cells(['grn',10],['chip',8],['sand',6],['h2o',8],['rgh',4]);
 
-const T_RGH_FAR_E   = ()=>cells(['fwy',28],['rgh',8]);
-const T_RGH_FAR_M   = ()=>cells(['fwy',20],['rgh',12],['sand',4]);
-const T_RGH_FAR_H   = ()=>cells(['fwy',14],['rgh',14],['sand',6],['ob',2]);
+const T_RGH_FAR_E   = ()=>cells(['fwy',26],['rgh',8],['chip',2]);
+const T_RGH_FAR_M   = ()=>cells(['fwy',18],['rgh',12],['sand',6]);
+const T_RGH_FAR_H   = ()=>cells(['fwy',12],['rgh',14],['sand',8],['ob',2]);
 
-const T_RGH_MID_E   = ()=>cells(['grn',20],['chip',10],['rgh',6]);
+const T_RGH_MID_E   = ()=>cells(['grn',18],['chip',10],['rgh',6],['sand',2]);
 const T_RGH_MID_M   = ()=>cells(['grn',12],['chip',12],['rgh',8],['sand',4]);
 const T_RGH_MID_H   = ()=>cells(['grn',6],['chip',10],['rgh',12],['sand',8]);
 
-const T_RGH_SHORT_E = ()=>cells(['chip',20],['grn',16]);
+const T_RGH_SHORT_E = ()=>cells(['chip',18],['grn',14],['sand',4]);
 const T_RGH_SHORT_M = ()=>cells(['chip',16],['grn',10],['sand',10]);
 const T_RGH_SHORT_H = ()=>cells(['chip',10],['grn',6],['sand',14],['rgh',6]);
 
-const T_CHIP_NORM_E = ()=>cells(['grn',34],['hole',2]);
+const T_CHIP_NORM_E = ()=>cells(['grn',32],['hole',2],['sand',2]);
 const T_CHIP_NORM_M = ()=>cells(['grn',28],['sand',7],['hole',1]);
 const T_CHIP_NORM_H = ()=>cells(['grn',20],['sand',10],['rgh',6]);
 
-const T_SAND_NORM_E = ()=>cells(['grn',30],['chip',6]);
+const T_SAND_NORM_E = ()=>cells(['grn',28],['chip',8]);
 const T_SAND_NORM_M = ()=>cells(['grn',24],['sand',8],['chip',4]);
 const T_SAND_NORM_H = ()=>cells(['grn',14],['sand',14],['rgh',8]);
 
-const T_PUTTING_1 = ()=>cells(['p1',36]); 
-const T_PUTTING_2 = ()=>cells(['p1',20],['p2',16]);
+const T_PUTTING_1 = ()=>cells(['p1',32],['p2',4]); 
+const T_PUTTING_2 = ()=>cells(['p1',20],['p2',14],['p3',2]);
 const T_PUTTING_3 = ()=>cells(['p1',10],['p2',18],['p3',8]);
 
 // ═══════════════════════════════════════
@@ -1457,7 +1457,7 @@ function startGame(){
   resetGameState();
   const p=getActiveProfile();
   PLAYER_NAME=p?p.name.toUpperCase():'PLAYER';
-  const diffMap={1:[1,1,1], 2:[1,2,3], 3:[1,2,3]}; 
+  const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };)
   HOLES.forEach(h=>{ h.diff=diffMap[h.baseDiff][GAME_DIFF-1]; });
   hideScreen('diffScreen');
   hideScreen('courseScreen'); // added for custom mode
@@ -2052,7 +2052,12 @@ function _showTailwindDieChoice(){
         d.classList.add('landed');
         vibDiceLand();
         showWcToast(`💨 Tailwind applied!`);
-        setTimeout(()=>processShot(newR1-1,newR2-1),300);
+        
+        // Flash the new cell on the grid so you see the change before processing
+        litCell(newR1-1, newR2-1);
+        
+        // Wait 900ms before taking the shot so the player can read the grid
+        setTimeout(()=>processShot(newR1-1,newR2-1), 900); 
       }, 550);
       
       renderWcFab();
@@ -2379,7 +2384,7 @@ function openSummary(viewRound = S.currentRound){
     const gBox = document.createElement('div');
     gBox.style.cssText = 'background:rgba(240,192,64,.15);border:1px solid rgba(240,192,64,.3);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;';
     gBox.innerHTML = `
-      <div><div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:1px;">TOURNAMENT TOTAL</div><div style="font-size:12px;color:var(--text);">${globalTotal} strokes</div></div>
+      <div><div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--gold);letter-spacing:1px;">TOURNAMENT TOTAL</div><div style="font-size:12px;color:var(--text);">${globalTotal} strokes</div></div>
       <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);">${gDiffStr}</div>
     `;
     body.appendChild(gBox);
@@ -2388,7 +2393,7 @@ function openSummary(viewRound = S.currentRound){
   const sc=document.createElement('div');
   sc.style.cssText='overflow-x:auto;margin-bottom:14px;';
   const table=document.createElement('table');
-  table.style.cssText='width:100%;border-collapse:collapse;font-family:"DM Mono",monospace;font-size:11px;';
+  table.style.cssText='width:100%;border-collapse:collapse;font-family:"Sen",sans-serif;font-size:11px;';
 
   const td=(txt,styles='',cls='')=>{
     const c=document.createElement('td'); c.textContent=txt;
@@ -2450,7 +2455,7 @@ function openSummary(viewRound = S.currentRound){
     runningDiff+=score-h.par; return runningDiff;
   }),roundDiff].forEach((v,i)=>{
     const cell=document.createElement('td');
-    cell.style.cssText='padding:5px 2px;text-align:center;border:1px solid var(--border);font-family:"DM Mono",monospace;font-size:10px;'+(i===activeHoles.length+1?'background:rgba(0,0,0,.2);font-weight:700;':'')+(i===0?'text-align:left;padding-left:8px;':'');
+    cell.style.cssText='padding:5px 2px;text-align:center;border:1px solid var(--border);font-family:"Sen",sans-serif;font-size:10px;'+(i===activeHoles.length+1?'background:rgba(0,0,0,.2);font-weight:700;':'')+(i===0?'text-align:left;padding-left:8px;':'');
     if(i===0 || v===null){cell.textContent=v===null?'–':'±';cell.style.color='var(--muted)';diffRow.appendChild(cell);return;}
     const txt=v===0?'E':v>0?`+${v}`:`${v}`;
     cell.textContent=txt;
@@ -2462,7 +2467,7 @@ function openSummary(viewRound = S.currentRound){
   body.appendChild(sc);
 
   const detailSec=document.createElement('div');
-  detailSec.style.cssText='font-family:"DM Mono",monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;';
+  detailSec.style.cssText='font-family:"Sen",sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;';
   detailSec.textContent='Tap a hole for details';
   body.appendChild(detailSec);
 
@@ -2492,9 +2497,9 @@ function openSummary(viewRound = S.currentRound){
 
     row.innerHTML=`
       <span style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;color:var(--muted);min-width:54px;">${h.name}</span>
-      <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);">par ${h.par}</span>
+      <span style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);">par ${h.par}</span>
       <span style="font-family:'Bebas Neue',cursive;font-size:18px;color:${scoreColor};margin-left:auto;">${hist.strokes}</span>
-      <span style="font-family:'DM Mono',monospace;font-size:10px;color:${scoreColor};min-width:40px;">${resultLabel}</span>
+      <span style="font-family:'Sen',sans-serif;font-size:10px;color:${scoreColor};min-width:40px;">${resultLabel}</span>
       <span style="display:flex;gap:3px;align-items:center;">${zoneDots}</span>
     `;
     row.onclick=()=>openHistInline(absoluteIdx, body, viewRound);
@@ -2589,7 +2594,7 @@ function openHistInline(absoluteIdx, summaryBody, roundIdx){
   hist.log.forEach((e,i)=>{
     const zd=Z[e.zk]||Z.fwy;
     const entry=document.createElement('div');
-    entry.style.cssText='display:flex;align-items:center;gap:7px;padding:5px 8px;background:rgba(255,255,255,.03);border-radius:6px;font-family:"DM Mono",monospace;font-size:10px;color:var(--muted);cursor:pointer;';
+    entry.style.cssText='display:flex;align-items:center;gap:7px;padding:5px 8px;background:rgba(255,255,255,.03);border-radius:6px;font-family:"Sen",sans-serif;font-size:10px;color:var(--muted);cursor:pointer;';
     entry.id='ihl-entry-'+i;
     entry.innerHTML=`<span style="width:15px;height:15px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--text);flex-shrink:0;">${e.num}</span><span style="width:7px;height:7px;border-radius:50%;background:${zd.color};flex-shrink:0;"></span><span style="flex:1;color:var(--text);">${e.desc}</span><span style="color:${e.pen?'#e05252':'var(--muted)'};">${e.note}</span>`;
     entry.onclick=()=>highlightInlineGrid(i, hist.log, detail);
@@ -2604,7 +2609,7 @@ function openHistInline(absoluteIdx, summaryBody, roundIdx){
   }
 
   const closeBtn=document.createElement('button');
-  closeBtn.style.cssText='width:100%;margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:1px;cursor:pointer;';
+  closeBtn.style.cssText='width:100%;margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px;font-family:"Sen",sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;';
   closeBtn.textContent='CLOSE ↑';
   closeBtn.onclick=()=>{ detail.remove(); rows.forEach(r=>r.style.borderColor='var(--border)'); };
   detail.appendChild(closeBtn);
@@ -3256,7 +3261,7 @@ function openSummary(){
     resetGameState();
     const p=getActiveProfile();
     PLAYER_NAME=p?p.name.toUpperCase():'PLAYER';
-    const diffMap = { 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };
+    const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };)
     HOLES.forEach(h=>{h.diff=diffMap[h.baseDiff][GAME_DIFF-1];});
     document.getElementById('mainApp').style.display='block';
     init();
@@ -4076,7 +4081,7 @@ function continueGame(){
     if(!save)return;
     PLAYER_NAME=save.playerName||PLAYER_NAME;
     GAME_DIFF=save.gameDiff||1;
-    const diffMap2 = { 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };
+    const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };)
     HOLES.forEach(h=>{ h.diff=diffMap2[h.baseDiff][GAME_DIFF-1]; });
     
     S.mode=save.mode||'single'; S.totalRounds=save.totalRounds||1; S.currentRound=save.currentRound||1;
