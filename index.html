@@ -1457,7 +1457,7 @@ function startGame(){
   resetGameState();
   const p=getActiveProfile();
   PLAYER_NAME=p?p.name.toUpperCase():'PLAYER';
-  const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };)
+  const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };
   HOLES.forEach(h=>{ h.diff=diffMap[h.baseDiff][GAME_DIFF-1]; });
   hideScreen('diffScreen');
   hideScreen('courseScreen'); // added for custom mode
@@ -3261,7 +3261,7 @@ function openSummary(){
     resetGameState();
     const p=getActiveProfile();
     PLAYER_NAME=p?p.name.toUpperCase():'PLAYER';
-    const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };)
+    const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };
     HOLES.forEach(h=>{h.diff=diffMap[h.baseDiff][GAME_DIFF-1];});
     document.getElementById('mainApp').style.display='block';
     init();
@@ -4081,7 +4081,7 @@ function continueGame(){
     if(!save)return;
     PLAYER_NAME=save.playerName||PLAYER_NAME;
     GAME_DIFF=save.gameDiff||1;
-    const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };)
+    const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };
     HOLES.forEach(h=>{ h.diff=diffMap2[h.baseDiff][GAME_DIFF-1]; });
     
     S.mode=save.mode||'single'; S.totalRounds=save.totalRounds||1; S.currentRound=save.currentRound||1;
