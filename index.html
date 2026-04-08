@@ -1399,12 +1399,6 @@ let S={
   currentGrid:null, holeDone:false, rolling:false,
   yrdRemain:0, yrdTotal:0,
   fwyVisits:0, prevZone:null, shotCount:0,
-  _wcUsedThisRound:0,
-  _skipCelebration:false,
-  _preserveGrid:false,
-  _forceGrid:false,
-  _mulliganJustFired:false,
-  _puttWcUsed:false,
 };
 
 // ═══════════════════════════════════════
@@ -1885,14 +1879,13 @@ function processShot(row,col){
       nextBtn.textContent='FINISH HOLE →';
       nextBtn.style.background='var(--c-tee)';
       nextBtn.onclick=()=>{
-    const b=document.getElementById('puttWcBtn');if(b)b.remove();
-    hideNextShotBtn();
-    S._pendingPuttResult=null;
-    S.holeDone=true;
-    updateTVBanner();
-    setTimeout(()=>completeHole(),200);
-};
-
+        const b=document.getElementById('puttWcBtn');if(b)b.remove();
+        nextBtn.textContent='NEXT SHOT →';nextBtn.onclick=doNextShot;
+        S._pendingPuttResult=null;
+        S.holeDone=true;
+        updateTVBanner();
+        setTimeout(()=>completeHole(),200);
+      };
     }
 
     // No REROLL PUTT button — user opens WC drawer themselves via the FAB
@@ -2133,7 +2126,7 @@ function showCelebration(d, onDone){
   if(d===-99)    {txt='HOLE IN ONE! ⛳'; cls='celeb-eagle';}
   else if(d<=-3) {txt='ALBATROSS 🪶'; cls='celeb-eagle';}
   else if(d<=-2) {txt='EAGLE 🦅'; cls='celeb-eagle';}
-  else if(d===-1){txt='BIRDIE 🦅';  cls='celeb-birdie';}
+  else if(d===-1){txt='BIRDIE 🐤';  cls='celeb-birdie';}
   else if(d===0) {txt='PAR ⛳';     cls='celeb-par';}
   else if(d===1) {txt='BOGEY';      cls='celeb-bogey';}
   else if(d===2) {txt='DOUBLE BOGEY'; cls='celeb-double';}
@@ -2189,7 +2182,7 @@ function completeHole(){
   if(isHoleInOne){emoji='⛳';title='HOLE IN ONE!';}
   else if(d<=-3){emoji='🪶';title='ALBATROSS!';}
   else if(d<=-2){emoji='🦅';title='EAGLE!';}
-  else if(d===-1){emoji='🦅';title='BIRDIE!';}
+  else if(d===-1){emoji='🐤';title='BIRDIE!';}
   else if(d===0){emoji='⛳';title='PAR!';}
   else if(d===1){emoji='⛳';title='BOGEY';}
   else if(d===2){emoji='⛳';title='DOUBLE BOGEY';}
@@ -2463,7 +2456,7 @@ const PROFILE_EMOJIS=[
   '🦅','🐯','🦁','🐺','🦊','🐻','🦝','🐸',
   '🎲','🃏','🏅','🥇','🎖️','👑','💎','🍀',
   '⚽','🏀','🎾','🏈','⚾','🥊','🎿','🏄',
-  '🌊','🌈','❄️','☀️','🌙','🌴','🌵','🍁',
+  '🌊','🌈','🐤','☀️','🌙','🌴','🌵','🍁',
   '😎','🤠','🧢','🕶️','🥸','😤','😈','🤩',
 ];
 const AVATARS=['🏌️','⛳','🏆']; // fallback for old profiles without icon
@@ -3524,7 +3517,7 @@ function renderWcDrawer(){
       const isActive=WCS.active===wc.id;
       // Allow use: normally block if rolling/holeDone/reroll pending
       // BUT allow reroll WCs during pending putt state
-      const puttPending=!!document.getElementById('puttWcBtn');
+      const puttPending=!!document.getElementById('puttAcceptBtn');
       const rerollPending=WCS.active==='mulligan'||WCS.active==='tailwind';
       const canUse=!S.rolling&&!rerollPending&&!isActive&&(!S.holeDone||puttPending);
       slot.innerHTML=`
@@ -3552,7 +3545,7 @@ function activateWildcard(slotIdx){
   S._wcUsedThisRound=(S._wcUsedThisRound||0)+1;
   const wc=WCS.equipped[slotIdx];
   if(!wc)return;
-  playSound('wildcard', 0.9); // sound when effect activates
+  playSound('wc_use', 0.9); // sound when effect activates
   WCS.active=wc.id;
   applyWildcardEffect(wc);
   // Remove from equipped
@@ -4074,7 +4067,7 @@ function resolveHio(r1, r2){
   } else {
     resultEl.textContent='SO CLOSE...';
     resultEl.className='hio-result fail';
-    const _hioDist=fmtYds(1);document.getElementById('hioSub').textContent=`${_hioDist.toUpperCase()} TO THE HOLE — TAP TO PUTT`;
+    document.getElementById('hioSub').textContent='1 YD TO THE HOLE — TAP TO PUTT';
     document.getElementById('hioBall').textContent='⛳';
     setTimeout(()=>{
       document.getElementById('hioOverlay').classList.remove('show');
@@ -4085,7 +4078,7 @@ function resolveHio(r1, r2){
       advanceYrd('grn'); S.yrdRemain=1;
       S.shotCount++;
       addLog(S.shotNum,`${Z[prevZone].name} → Green · ${fmtYds(1)}`,'grn','+1',false,_hioRow,_hioCol,snapGrid);
-      const _hioDist2=fmtYds(1);showResult(Z.grn,`Ball stopped ${_hioDist2} from hole`,'ok',`${_hioDist2} to hole`);
+      showResult(Z.grn,'Ball stopped 1 yd from hole','ok','1 yd to hole');
       S.shotNum++;updateFloat();updateYrd();updateZonePill();updateTVBanner();
       // Force all-1-putt grid — set flag so doNextShot won't rebuild
       S.currentGrid=Array(6).fill(null).map(()=>Array(6).fill('p1'));
