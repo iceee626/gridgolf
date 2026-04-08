@@ -484,7 +484,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .summary-card{background:transparent;max-width:460px;margin:0 auto;}
 .sum-head{
   background:linear-gradient(180deg,var(--c-fwy) 0%,rgba(58,122,48,.7) 100%);
-  padding:14px 18px;
+  padding:calc(env(safe-area-inset-top) + 12px) 18px 14px;
   display:flex;justify-content:space-between;align-items:center;
   position:sticky;top:0;z-index:10;
 }
@@ -633,8 +633,9 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .wc-reveal{
   display:none;position:fixed;inset:0;
   background:rgba(10,4,20,.95);z-index:300;
-  align-items:center;justify-content:center;flex-direction:column;gap:0;
+  align-items:center;justify-content:center;flex-direction:column;
   padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
 }
 .wc-reveal.show{display:flex;}
 .wc-reveal-title{
@@ -644,7 +645,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   margin-top:8px;
 }
 @keyframes wc-pulse{from{opacity:.7;text-shadow:0 0 10px rgba(240,192,64,.3)}to{opacity:1;text-shadow:0 0 30px rgba(240,192,64,.7)}}
-.wc-card-wrap{perspective:800px;cursor:pointer;margin-bottom:24px;}
+.wc-card-wrap{perspective:800px;cursor:pointer;margin-bottom:0;}
 .wc-card{
   width:220px;height:300px;
   transform-style:preserve-3d;
@@ -678,9 +679,9 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .wc-front-name{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#f0c040;text-align:center;line-height:1.1;}
 .wc-front-type{display:none;}
 .wc-front-desc{font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.75);text-align:center;line-height:1.4;}
-.wc-reveal-hint{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);margin-bottom:16px;animation:wc-blink 1.2s ease infinite;min-height:20px;}
+.wc-reveal-hint{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);animation:wc-blink 1.2s ease infinite;}
 @keyframes wc-blink{0%,100%{opacity:.4}50%{opacity:.9}}
-.wc-reveal-actions{display:flex;gap:10px;width:220px;}
+.wc-reveal-actions{display:flex;gap:10px;width:220px;flex-wrap:wrap;}
 .wc-equip-btn{
   flex:1;background:linear-gradient(135deg,#7b2f9e,#4a1a6e);color:#fff;border:none;
   border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:18px;
@@ -960,20 +961,24 @@ function getDieVal(dieId){
 function vibEnabled(){try{return localStorage.getItem('gg_vibration')!=='off';}catch{return true;}}
 function setVibEnabled(v){try{localStorage.setItem('gg_vibration',v?'on':'off');}catch{}}
 
-// Generate a short haptic click via AudioContext (works on iOS Safari)
-function _hapticClick(volume=0.15, durationMs=8){
+// Generate haptic click via AudioContext (iOS Safari — no navigator.vibrate support)
+async function _hapticClick(volume=0.15, durationMs=8){
   if(!vibEnabled())return;
   try{
-    const ctx=getAudioCtx();
-    if(!ctx||ctx.state!=='running')return;
+    let ctx=getAudioCtx();
+    if(!ctx)return;
+    // Ensure context is running — resume if suspended/interrupted
+    if(ctx.state!=='running'){
+      await ctx.resume().catch(()=>{});
+      if(ctx.state!=='running')return; // still not running, give up
+    }
     const sr=ctx.sampleRate;
-    const len=Math.ceil(sr*(durationMs/1000));
+    const len=Math.max(1,Math.ceil(sr*(durationMs/1000)));
     const buf=ctx.createBuffer(1,len,sr);
     const data=buf.getChannelData(0);
     for(let i=0;i<len;i++){
-      // Exponential decay white noise — creates a tactile "click" sensation
       const t=i/len;
-      data[i]=(Math.random()*2-1)*Math.pow(1-t,3);
+      data[i]=(Math.random()*2-1)*Math.pow(1-t,2.5);
     }
     const src=ctx.createBufferSource();
     src.buffer=buf;
@@ -1091,11 +1096,11 @@ function getAudioCtx(){
 
 // Resume AudioContext on visibility + interaction (iOS screen lock recovery)
 function _resumeAudio(){
-  if(_audioCtx&&_audioCtx.state==='suspended'){
-    _audioCtx.resume().then(()=>{
-      // Re-decode any cached buffers to ensure they're valid after resume
-    }).catch(()=>{
-      // Context may need to be recreated
+  if(!_audioCtx) return;
+  // iOS: state can be 'suspended' or 'interrupted' after screen lock
+  if(_audioCtx.state==='suspended'||_audioCtx.state==='interrupted'){
+    _audioCtx.resume().catch(()=>{
+      // If resume fails, recreate the context on next playSound call
       _audioCtx=null;_audioCache={};
     });
   }
@@ -1845,7 +1850,7 @@ function processShot(row,col){
     if(WCS.active==='golden_putter'){
       finalPutts=1;
       WCS.active=null;WCS.activeCarryOver=false;
-      showWcToast('🥇 Golden Putter! 1-putt guaranteed!');
+      showWcToast('🥇 Golden Putter applied!');
     }
 
     // Always pause after any putt to allow WC use before finalising
@@ -2179,19 +2184,19 @@ function completeHole(){
   else if(d<=-2){emoji='🦅';title='EAGLE!';}
   else if(d===-1){emoji='🦅';title='BIRDIE!';}
   else if(d===0){emoji='⛳';title='PAR!';}
-  else if(d===1){emoji='';title='BOGEY';}
-  else if(d===2){emoji='';title='DOUBLE BOGEY';}
-  else if(d===3){emoji='';title='TRIPLE BOGEY';}
-  else{emoji='';title=`+${d}`;}
-  // Running total score for this profile
+  else if(d===1){emoji='⛳';title='BOGEY';}
+  else if(d===2){emoji='⛳';title='DOUBLE BOGEY';}
+  else if(d===3){emoji='⛳';title='TRIPLE BOGEY';}
+  else{emoji='⛳';title=`+${d}`;}
+  // Running total score
   const completedPar=HOLES.slice(0,S.holeIdx+1).reduce((a,x)=>a+x.par,0);
   const completedStr=S.scorecard.slice(0,S.holeIdx+1).reduce((a,b)=>a+(b||0),0);
   const totalDiff=completedStr-completedPar;
   const totalStr=totalDiff===0?'E':totalDiff>0?`+${totalDiff}`:`${totalDiff}`;
   document.getElementById('ovEmoji').textContent=emoji;
-  document.getElementById('ovEmoji').style.display=emoji?'block':'none';
+  document.getElementById('ovEmoji').style.display='block';
   document.getElementById('ovTitle').textContent=title;
-  document.getElementById('ovNameRow').textContent=`${PLAYER_NAME}: ${totalStr}`;
+  document.getElementById('ovNameRow').textContent=`TOTAL SCORE: ${totalStr}`;
   document.getElementById('ovStatsRow').textContent=`${score} strokes · par ${h.par}`;
   document.getElementById('ovBtn').style.display='block';
   document.getElementById('ovBtn').textContent=S.holeIdx>=8?'FINAL SCORECARD →':`HOLE ${S.holeIdx+2} →`;
@@ -2211,6 +2216,9 @@ function completeHole(){
 }
 
 function nextHole(){
+  // Reset any FINAL SCORE styling on nameRow
+  const nr=document.getElementById('ovNameRow');
+  if(nr){nr.style.fontSize='';nr.style.fontFamily='';nr.style.letterSpacing='';nr.style.color='';}
   document.getElementById('overlay').classList.remove('show');
   if(S.holeIdx>=8){showFinal();return;}
   S.holeIdx++;loadHole();
@@ -2227,7 +2235,12 @@ function showFinal(){
   document.getElementById('ovEmoji').style.display='block';
   document.getElementById('ovTitle').textContent='FINAL SCORE';
   const finalTotalStr=d===0?'E':d>0?`+${d}`:`${d}`;
-  document.getElementById('ovNameRow').textContent=`${PLAYER_NAME}: ${finalTotalStr}`;
+  // Big total score only — no username
+  document.getElementById('ovNameRow').textContent=finalTotalStr;
+  document.getElementById('ovNameRow').style.fontSize='48px';
+  document.getElementById('ovNameRow').style.fontFamily="'Bebas Neue',cursive";
+  document.getElementById('ovNameRow').style.letterSpacing='4px';
+  document.getElementById('ovNameRow').style.color='var(--c-fwyl)';
   document.getElementById('ovStatsRow').textContent=`${total} strokes · par ${par}`;
   // Hide next hole, show summary + play again
   document.getElementById('ovBtn').style.display='none';
@@ -3243,7 +3256,7 @@ function requestShakePermission(){
 }
 
 function _startShakeListener(){
-  const SHAKE_THRESHOLD=25;
+  const SHAKE_THRESHOLD=15; // lower threshold for iOS 26 (more sensitive)
   const SHAKE_COOLDOWN=600;
   _shakeListener=function(e){
     const now=Date.now();
@@ -3274,6 +3287,12 @@ function _startShakeListener(){
     }
   };
   window.addEventListener('devicemotion',_shakeListener,{passive:true});
+  // Verify motion events are actually firing (iOS debug)
+  let _motionVerified=false;
+  const _motionCheck=window.addEventListener('devicemotion',()=>{
+    _motionVerified=true;
+    window.removeEventListener('devicemotion',_motionCheck);
+  },{once:true,passive:true});
 }
 
 // Re-attach shake listener when app comes back to foreground
@@ -3561,7 +3580,7 @@ function activateWildcard(slotIdx){
     S.zone='grn';
     S.yrdRemain=Math.round(3+Math.random()*22);
     updateZonePill();updateYrd();
-    showWcToast('🏖️ Sand Wedge Pro! You\'re on the green!');
+    showWcToast('🏖️ Sand Wedge Pro applied!');
     buildGrid();
   } else if(wc.id==='golden_putter'&&S.zone==='grn'){
     // On green right now — apply to current putting grid
@@ -3593,51 +3612,51 @@ function applyWildcardEffect(wc){
       WCS.active=null;
       S.zone='chip';
       updateZonePill();
-      showWcToast('⚡ Shortcut! Chip distance.');
+      showWcToast('⚡ Shortcut applied!');
       break;
     case 'phantom_stroke':
       WCS.active=null;
       if(S.strokes>0)S.strokes=Math.max(0,S.strokes-1);
       updateFloat();updateTVBanner();
-      showWcToast('👻 Phantom Stroke! -1 stroke removed.');
+      showWcToast('👻 Phantom Stroke applied!');
       break;
     case 'sand_castle':
       // Fires on current and all remaining sand this hole
       WCS.sandCastleActive=true;
-      showWcToast('🏰 Sand Castle! Sand → Green this hole.');
+      showWcToast('🏰 Sand Castle applied!');
       break;
     case 'green_light':
       WCS.greenLightShots=2;
-      showWcToast('🟢 Green Light! Next 2 rough shots → Fairway.');
+      showWcToast('🟢 Green Light applied!');
       break;
     case 'mulligan':
       // Post-shot: NEXT SHOT btn will re-roll
-      showWcToast('↩ Mulligan! Tap NEXT SHOT to re-roll this shot.');
+      showWcToast('↩ Mulligan applied!');
       break;
     case 'tailwind':
-      showWcToast('💨 Tailwind! Tap NEXT SHOT to re-roll a die.');
+      showWcToast('💨 Tailwind applied!');
       break;
     case 'golden_putter':
       // Fires on current grid if on green, else next putt
-      showWcToast('🥇 Golden Putter! Next putt → 1-putt.');
+      showWcToast('🥇 Golden Putter applied!');
       break;
     case 'eagle_eye':
       // "next par 3" — carry over if not on par3 tee now
       if(h.par===3&&S.zone==='tee'){
-        showWcToast('🦅 Eagle Eye! This tee: 50% → Green.');
+        showWcToast('🦅 Eagle Eye applied!');
       } else {
         WCS.activeCarryOver=true;
-        showWcToast('🦅 Eagle Eye! Next par 3 tee: 50% → Green.');
+        showWcToast('🦅 Eagle Eye applied!');
       }
       break;
     case 'lucky_bounce':
-      showWcToast('🍀 Lucky Bounce! OOB/Water → Fairway.');
+      showWcToast('🍀 Lucky Bounce applied!');
       break;
     case 'iron_will':
-      showWcToast('🔩 Iron Will! Rough → Fairway.');
+      showWcToast('🔩 Iron Will applied!');
       break;
     case 'sand_wedge_pro':
-      showWcToast('🏖️ Sand Wedge Pro! Sand → Green.');
+      showWcToast('🏖️ Sand Wedge Pro applied!');
       break;
     case 'birdie_boost':
       showWcToast('🚀 Birdie Boost! +8 Green cells on approach.');
@@ -4058,7 +4077,7 @@ function resolveHio(r1, r2){
       const prevZone=S.zone; S.zone='grn';
       advanceYrd('grn'); S.yrdRemain=1;
       S.shotCount++;
-      addLog(S.shotNum,`${Z[prevZone].name} → Green · 1 yd`,'grn','+1',false,_hioRow,_hioCol,snapGrid);
+      addLog(S.shotNum,`${Z[prevZone].name} → Green · ${fmtYds(1)}`,'grn','+1',false,_hioRow,_hioCol,snapGrid);
       showResult(Z.grn,'Ball stopped 1 yd from hole','ok','1 yd to hole');
       S.shotNum++;updateFloat();updateYrd();updateZonePill();updateTVBanner();
       // Force all-1-putt grid — set flag so doNextShot won't rebuild
@@ -4252,14 +4271,16 @@ function closeConfirm(){
       <div class="wc-card-face wc-card-front">
         <div class="wc-front-icon" id="wcFrontIcon">⭐</div>
         <div class="wc-front-name" id="wcFrontName">WILDCARD</div>
-        <!-- wc-front-type removed -->
         <div class="wc-front-desc" id="wcFrontDesc">Description</div>
       </div>
     </div>
   </div>
-  <div class="wc-reveal-hint" id="wcRevealHint">TAP CARD TO REVEAL</div>
-  <div class="wc-reveal-actions" id="wcRevealActions" style="display:none;">
-    <button class="wc-equip-btn" id="wcEquipBtn" onclick="equipWildcard()">EQUIP</button>
+  <!-- Fixed-height zone below card: exactly 80px. Hint and buttons swap within it. -->
+  <div style="height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;margin-top:16px;">
+    <div class="wc-reveal-hint" id="wcRevealHint">TAP CARD TO REVEAL</div>
+    <div class="wc-reveal-actions" id="wcRevealActions" style="display:none;">
+      <button class="wc-equip-btn" id="wcEquipBtn" onclick="equipWildcard()">EQUIP</button>
+    </div>
   </div>
 </div>
 <!-- TV SCORECARD BAR (fixed bottom) -->
