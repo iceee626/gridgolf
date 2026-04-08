@@ -1440,6 +1440,7 @@ function resetGameState(){
   S.currentGrid=null; S.holeDone=false; S.rolling=false;
   S.yrdRemain=0; S.yrdTotal=0; S.fwyVisits=0; S.prevZone=null; S.shotCount=0;
   S._wcUsedThisRound=0;
+  S._wcDiscardedThisRound=0; // <-- Here is the new line!
   if(typeof wcReset==='function')wcReset();
 }
 
@@ -2533,7 +2534,7 @@ function openSummary(viewRound = S.currentRound){
     if (viewRound === S.currentRound && S.currentRound === S.totalRounds && S.holeDone) {
       const playAgainBtn=document.createElement('button');
       playAgainBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
-      playAgainBtn.textContent='PLAY SETUP AGAIN';
+      playAgainBtn.textContent='PLAY AGAIN';
       playAgainBtn.onclick=()=>{
         document.getElementById('summaryModal').classList.remove('show');
         document.getElementById('overlay').classList.remove('show');
@@ -2557,6 +2558,48 @@ function closeSummary(){
     document.getElementById('mainApp').style.display='block';
   }
 }
+
+function renderHistGrid(wrap, snapGrid, log, logIdx) {
+  if (!snapGrid) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.className = 'hgrid';
+  
+  const corner = document.createElement('div');
+  grid.appendChild(corner);
+  for(let c=1; c<=6; c++){ const ax = document.createElement('div'); ax.className='hax'; ax.textContent=c; grid.appendChild(ax); }
+  
+  for(let r=0; r<6; r++){
+    const rAx = document.createElement('div'); rAx.className='hax'; rAx.textContent=r+1; grid.appendChild(rAx);
+    for(let c=0; c<6; c++){
+      const zk = snapGrid[r][c];
+      const zd = Z[zk] || Z.fwy;
+      const cell = document.createElement('div');
+      cell.className = `hcell ${zd.cls}`;
+      
+      let shotNum = null;
+      for(let i=0; i<=logIdx; i++){
+        if(log[i].row === r && log[i].col === c) {
+          shotNum = log[i].num;
+          if (i === logIdx) cell.classList.add('hlit');
+        }
+      }
+      if (shotNum !== null) {
+        cell.innerHTML = `<span class="shot-marker">${shotNum}</span>`;
+      }
+      grid.appendChild(cell);
+    }
+  }
+  wrap.appendChild(grid);
+}
+
+function highlightInlineGrid(idx, log, container) {
+  container.querySelectorAll('.hlog-entry').forEach(e => e.style.borderColor='transparent');
+  const entry = container.querySelector(`#ihl-entry-${idx}`);
+  if(entry) entry.style.borderColor='var(--c-fwyl)';
+  const wrap = container.querySelector('#inlineHistGrid');
+  if(wrap) renderHistGrid(wrap, log[idx].gridSnap, log, idx);
+}  
 
 function openHistInline(absoluteIdx, summaryBody, roundIdx){
   const hist=S.histories[roundIdx-1][absoluteIdx];
@@ -2999,6 +3042,7 @@ const ACHIEVEMENTS=[
   {id:'fifty_rounds',   icon:'🏌️', name:'Tour Pro',         desc:'Play 50 complete rounds',                   check:p=>(p.gamesPlayed||0)>=50},
   {id:'first_wc',       icon:'🃏', name:'Card Shark',       desc:'Use your first Wildcard',                   check:p=>(p.wildcardsUsed||0)>=1},
   {id:'high_roller',    icon:'🎰', name:'High Roller',      desc:'Use 5 Wildcards in a single round',         check:p=>(S._wcUsedThisRound||0)>=5},
+  {id:'not_hungry',     icon:'🙅‍♂️', name:'MOM, I\'M NOT HUNGRY', desc:'Discarded 5 wildcards during a single round', check:p=>(p.wcDiscardedRound||0)>=5},
   {id:'hard_finish',    icon:'💪', name:'Hard Mode',        desc:'Complete a full round on Hard difficulty',  check:p=>(p.hardRounds||0)>=1},
   {id:'tour_winner',    icon:'👑', name:'Tour Winner',      desc:'Finish under par on Hard difficulty',       check:p=>(p.hardUnderPar||0)>=1},
   {id:'grand_slam',     icon:'🏆', name:'Grand Slam',       desc:'Under par on all 3 difficulties',           check:p=>(p.easyUnderPar||0)>=1&&(p.medUnderPar||0)>=1&&(p.hardUnderPar||0)>=1},
@@ -3270,7 +3314,7 @@ function openSummary(viewRound = S.currentRound){
     if (viewRound === S.currentRound && S.currentRound === S.totalRounds && S.holeDone) {
       const playAgainBtn=document.createElement('button');
       playAgainBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
-      playAgainBtn.textContent='PLAY SETUP AGAIN';
+      playAgainBtn.textContent='PLAY AGAIN';
       playAgainBtn.onclick=()=>{
         document.getElementById('summaryModal').classList.remove('show');
         document.getElementById('overlay').classList.remove('show');
@@ -3292,6 +3336,7 @@ function startNextRound() {
   S.histories.push(Array(18).fill(null));
   S.holeIdx = S.startIdx;
   S._wcUsedThisRound = 0;
+  S._wcDiscardedThisRound = 0; 
   saveGameState();
   closeSummary();
   loadHole();
@@ -3766,6 +3811,29 @@ function discardEquipped(i){
   WCS.equipped.splice(i,1);
   renderWcDrawer();
   renderWcFab();
+  trackWcDiscard();
+}
+
+function discardAndProceed(){
+  _pendingWc=null;
+  closeWcReveal();
+  trackWcDiscard();
+}
+
+function trackWcDiscard() {
+  S._wcDiscardedThisRound = (S._wcDiscardedThisRound || 0) + 1;
+  saveGameState();
+  
+  if(S._wcDiscardedThisRound === 5) {
+     const profiles=loadProfiles();
+     const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
+     const p=profiles[idx];
+     if(p) {
+       p.wcDiscardedRound = Math.max(p.wcDiscardedRound||0, S._wcDiscardedThisRound);
+       saveProfiles(profiles);
+       checkAndAwardAchievements();
+     }
+  }
 }
 
 // ── APPLY EFFECTS ─────────────────────────────────────
@@ -4013,6 +4081,7 @@ function saveGameState(){
     scorecards:S.scorecards, histories:S.histories,
     holeDone:S.holeDone, yrdRemain:S.yrdRemain, yrdTotal:S.yrdTotal, fwyVisits:S.fwyVisits, prevZone:S.prevZone, shotCount:S.shotCount,
     _wcUsedThisRound:S._wcUsedThisRound||0,
+    _wcDiscardedThisRound:S._wcDiscardedThisRound||0, // <-- Added here to save it
     wcsEquipped:WCS.equipped, wcsActive:WCS.active, 
     wcsGreenLightShots:WCS.greenLightShots, wcsSandCastle:WCS.sandCastleActive, wcsLuckyBounce:WCS.luckyBounceActive,
     wcsIronWill:WCS.ironWillActive, wcsFerrett:WCS.ferrettActive,
@@ -4055,7 +4124,10 @@ function continueGame(){
     }
     
     S.holeDone=save.holeDone||false; S.yrdRemain=save.yrdRemain; S.yrdTotal=save.yrdTotal; S.fwyVisits=save.fwyVisits||0;
-    S.prevZone=save.prevZone; S.shotCount=save.shotCount||0; S._wcUsedThisRound=save._wcUsedThisRound||0;
+    S.prevZone=save.prevZone; S.shotCount=save.shotCount||0; 
+    S._wcUsedThisRound=save._wcUsedThisRound||0;
+    S._wcDiscardedThisRound=save._wcDiscardedThisRound||0; // <-- Added here to load it
+    
     WCS.equipped=save.wcsEquipped||[]; WCS.active=save.wcsActive||null; 
     WCS.greenLightShots=save.wcsGreenLightShots||0; WCS.sandCastleActive=save.wcsSandCastle||false;
     WCS.luckyBounceActive=save.wcsLuckyBounce||false; WCS.ironWillActive=save.wcsIronWill||false; WCS.ferrettActive=save.wcsFerrett||false;
