@@ -107,7 +107,11 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:4px;}
 .logo{font-family:'Bebas Neue',cursive;font-size:clamp(20px, 6vw, 28px);letter-spacing:2px;line-height:1;text-align:center;margin:0;}
 .logo span{color:var(--c-fwyl);}
-.hole-badge{background:var(--c-tee);color:#fff;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;padding:4px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;}/* Sc-wrap allows scrolling */
+.hole-badge{background:var(--c-tee);color:#fff;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;padding:4px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+/* Hide Scrollbars */
+.sc-wrap::-webkit-scrollbar, .sum-tabs::-webkit-scrollbar, .sc-table-wrapper::-webkit-scrollbar { display: none; }
+.sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; scrollbar-width: none; }
+/* Sc-wrap allows scrolling */
 .sc-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow-x:auto;margin-bottom:12px;}
 .sc-inner{display:flex;flex-direction:column;min-width:100%;width:max-content;}
 .sc-row{display:grid;font-family:'Sen', sans-serif;font-size:10px;}
@@ -1943,17 +1947,21 @@ function processShot(row,col){
   }
 
   let resolvedOutcome=outcome;
+  let wcAppliedNote='';
   if (WCS.luckyBounceActive && (resolvedOutcome === 'ob' || resolvedOutcome === 'h2o')) {
       resolvedOutcome = 'fwy';
       WCS.luckyBounceActive = false; 
+      wcAppliedNote = ' (🍀 Lucky Bounce)';
   }
   if (WCS.ironWillActive && resolvedOutcome === 'rgh') {
       resolvedOutcome = 'fwy';
       WCS.ironWillActive = false; 
+      wcAppliedNote = ' (🔩 Iron Will)';
   }
   if (WCS.greenLightShots > 0) {
       if (resolvedOutcome === 'rgh') {
           resolvedOutcome = 'fwy';
+          wcAppliedNote = ' (🟢 Green Light)';
       }
       WCS.greenLightShots--;
   }
@@ -2006,9 +2014,9 @@ function processShot(row,col){
   S._puttWcUsed=false;
 
   const yrdStr=S.yrdRemain>0?` · ${fmtYds(S.yrdRemain)} left`:' · on green';
-  addLog(S.shotNum,`${Z[prevZone].name} → ${Z[resolvedOutcome].name}${yrdStr}`,resolvedOutcome,'+1',false,row,col,snapGrid);
+  addLog(S.shotNum,`${Z[prevZone].name} → ${Z[resolvedOutcome].name}${yrdStr}${wcAppliedNote}`,resolvedOutcome,'+1',false,row,col,snapGrid);
   showResult(Z[resolvedOutcome],`${Z[prevZone].name} → ${Z[resolvedOutcome].name}`,'ok',
-    S.yrdRemain>0?fmtYds(S.yrdRemain)+' to hole':'Reached the green');
+    S.yrdRemain>0?fmtYds(S.yrdRemain)+' to hole'+wcAppliedNote:'Reached the green'+wcAppliedNote);
   S.shotNum++;updateFloat();updateYrd();updateTVBanner();
 
   setTimeout(()=>{
@@ -2356,7 +2364,7 @@ function showRoundEnd(){
     document.getElementById('ovSummaryBtn').style.display='block';
   } else {
     saveGameState(); 
-    document.getElementById('ovEmoji').textContent='🏁';
+    document.getElementById('ovEmoji').textContent=roundDiff<0?'🏆':roundDiff===0?'⛳':'🏌️';
     document.getElementById('ovTitle').textContent=`ROUND ${S.currentRound} COMPLETE`;
     
     const rDiffStr = roundDiff===0?'E':roundDiff>0?`+${roundDiff}`:`${roundDiff}`;
@@ -2418,6 +2426,7 @@ function openSummary(viewRound = S.currentRound){
   }
 
   const sc=document.createElement('div');
+  sc.className = 'sc-table-wrapper';
   sc.style.cssText='overflow-x:auto;margin-bottom:14px;';
   const table=document.createElement('table');
   table.style.cssText='width:100%;border-collapse:collapse;font-family:"Sen",sans-serif;font-size:11px;';
@@ -2667,7 +2676,7 @@ function openHistInline(absoluteIdx, summaryBody, roundIdx){
 
   const closeBtn=document.createElement('button');
   closeBtn.style.cssText='width:100%;margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px;font-family:"Sen",sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;';
-  closeBtn.textContent='CLOSE ↑';
+  closeBtn.textContent='CLOSE';
   closeBtn.onclick=()=>{ detail.remove(); rows.forEach(r=>r.style.borderColor='var(--border)'); };
   detail.appendChild(closeBtn);
 
@@ -3798,19 +3807,24 @@ function activateWildcard(slotIdx){
   if(rerollWcs.includes(wc.id)){
     const wcPuttBtn=document.getElementById('puttWcBtn');
     if(wcPuttBtn) wcPuttBtn.remove();
+    
+    const popped = S.log.pop();
+    if (popped) {
+        let deduction = 1;
+        if (popped.pen) deduction = 2; // Subtracts both shots accumulated by the penalty
+        else if (S._pendingPuttResult) deduction = S._pendingPuttResult.putts;
+        
+        S.strokes = Math.max(0, S.strokes - deduction);
+        S.shotNum = Math.max(1, S.shotNum - deduction);
+    }
+    renderLog();
+
     if(S._pendingPuttResult){
-      const {putts}=S._pendingPuttResult;
-      S.strokes=Math.max(0,S.strokes-putts);
-      S.shotNum=Math.max(1,S.shotNum-1);
-      S.log.pop();renderLog();
       S._preserveGrid=true;
       S._pendingPuttResult=null;
       S._puttWcUsed=true;
       S._skipCelebration=false; 
     } else {
-      S.strokes=Math.max(0,S.strokes-1);
-      S.shotNum=Math.max(1,S.shotNum-1);
-      S.log.pop();renderLog();
       if(S.prevZone) S.zone=S.prevZone;
       S._preserveGrid=true; 
       updateFloat();updateYrd();updateZonePill();
