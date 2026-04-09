@@ -752,7 +752,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 540;
   display: none; opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
 }
-.tut-backdrop.show { display: block; opacity: 1; }
+.tut-backdrop.show { display: block; opacity: 1; pointer-events: auto; }
 
 .tut-overlay{
   position:fixed;bottom:100px;left:50%;
@@ -768,7 +768,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .tut-overlay-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:10px;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;cursor:pointer;}
 .tut-overlay-btn:hover{background:var(--c-fwyl);}
 @keyframes tutPulse{0%,100%{box-shadow:0 0 0 0 rgba(78,158,66,.8);}50%{box-shadow:0 0 0 10px rgba(78,158,66,0);}}
-.tut-pulse{animation:tutPulse 1.2s ease infinite!important;position:relative;z-index:545!important;background-color:var(--card);}
+.tut-pulse{animation:tutPulse 1.2s ease infinite!important;position:relative !important;z-index:545 !important;background-color:var(--card) !important;border-radius:8px;}
 
 /* VERSUS MODE */
 .vs-turn-screen{position:fixed;inset:0;background:var(--dark);z-index:180;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;}
@@ -838,7 +838,6 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 </div>
 
 <!-- TUTORIAL OVERLAY (tips during tutorial) -->
-<div class="tut-backdrop" id="tutBackdrop"></div>
 <div class="tut-overlay" id="tutOverlay">
   <div class="tut-overlay-title" id="tutOverlayTitle"></div>
   <div class="tut-overlay-text" id="tutOverlayText"></div>
@@ -2067,14 +2066,8 @@ function doRoll(){
     d2.classList.add('landed');
     vibDiceLand();
     setTimeout(()=>{
-      if(r1===r2&&wcEnabled()&&!S.holeDone&&!VS.active){
-        if(TUT.active){
-          // In tutorial, give phantom stroke on doubles
-          tutGivePhantom();
-          processShot(r1-1,r2-1);
-        } else {
-          triggerWcReveal(r1-1,r2-1);
-        }
+      if(r1===r2 && (wcEnabled() || TUT.active) && !S.holeDone && !VS.active){
+        triggerWcReveal(r1-1,r2-1);
       } else {
         processShot(r1-1,r2-1);
       }
@@ -4617,7 +4610,7 @@ const TUT_GRIDS = {
   h1_fwy_mid: [['grn','grn','grn','chip','grn','grn'],['grn','grn','grn','grn','grn','grn'],['chip','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','chip'],['grn','grn','grn','grn','grn','grn'],['grn','chip','grn','grn','grn','grn']],
   h1_putt: [['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1']],
   h2_tee: [['fwy','fwy','h2o','fwy','fwy','ob'],['fwy','fwy','fwy','h2o','fwy','fwy'],['h2o','fwy','fwy','fwy','fwy','h2o'],['fwy','h2o','fwy','fwy','fwy','ob'],['fwy','fwy','fwy','fwy','h2o','fwy'],['fwy','ob','fwy','fwy','fwy','fwy']],
-  h2_after: [['grn','grn','chip','grn','grn','grn'],['grn','grn','grn','grn','grn','chip'],['grn','grn','grn','grn','grn','grn'],['chip','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','chip','grn']],
+  h2_after: [['grn','grn','chip','grn','grn','grn'],['grn','grn','grn','grn','grn','chip'],['h2o','grn','grn','grn','grn','grn'],['chip','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','chip','grn']],
   h2_putt: [['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1']],
   h3_tee: [['grn','grn','hole','grn','chip','grn'],['grn','grn','grn','grn','grn','grn'],['chip','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','chip'],['grn','grn','grn','grn','grn','grn']],
 };
@@ -4685,9 +4678,16 @@ function _tutShowTip(title, text, btnLabel, highlight){
   document.getElementById('tutOverlayBtn').textContent = btnLabel || 'GOT IT →';
   ov.classList.add('show');
   
-  const bd = document.getElementById('tutBackdrop');
-  if (highlight && bd) bd.classList.add('show');
-  else if (bd) bd.classList.remove('show');
+  let bd = document.getElementById('tutBackdrop');
+  if (!bd) {
+      bd = document.createElement('div');
+      bd.id = 'tutBackdrop';
+      bd.className = 'tut-backdrop';
+      document.getElementById('mainApp').appendChild(bd);
+  }
+  
+  if (highlight) bd.classList.add('show');
+  else bd.classList.remove('show');
 }
 
 function _tutHideTip(){
@@ -4712,7 +4712,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('THE GRID', 'Each colored square is a zone. Green = Fairway (good!), Brown = Rough (harder), Blue = Water (penalty!). The "Row" die picks the row, the "Col" die picks the column.', 'GOT IT →', '.grid-wrap');
+      _tutShowTip('THE GRID', 'Each colored square is a zone. Green = Fairway (good, easy next shot), Brown = Rough (harder), Blue = Water (penalty!). The "Row" die picks the row, the "Col" die picks the column.', 'GOT IT →', '.grid-wrap');
       return;
     }
     if(_tutStep === 2){
@@ -4727,6 +4727,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 4){
+      S.yrdRemain = 150; updateYrd(); // Force distance to ensure mid grid is generated
       _tutShowTip('GREAT TEE SHOT!', 'You landed on the Fairway! The yardage bar shows your distance. The closer you get to the hole, the better your grid becomes. Tap NEXT SHOT to continue.', 'GOT IT →', '.yrd-bar');
       return;
     }
@@ -4748,7 +4749,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 8){
-      _tutShowTip('YOU\'RE ON THE GREEN!', 'The green is the smooth grass around the hole. You are putting now! Tap NEXT SHOT to load the putting grid.', 'GOT IT →', '.zone-pill');
+      _tutShowTip('GREAT APPROACH!', 'You landed on the green! Tap NEXT SHOT to load the putting grid so you can finish the hole.', 'GOT IT →', '#nextShotBtn');
       return;
     }
     if(_tutStep === 9){
@@ -4758,7 +4759,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 10){
-      _tutShowTip('PUTTING TIME!', 'The grid now has 1-Putt (green, 1 stroke to finish), 2-Putt (yellow, 2 strokes), and 3-Putt (red, 3 strokes). Roll to finish!', 'I\'LL ROLL →', '.grid-wrap');
+      _tutShowTip('PUTTING TIME!', 'The green is the smooth grass around the hole. The grid now has 1-Putt (green, 1 stroke to finish), 2-Putt (yellow, 2 strokes), and 3-Putt (red, 3 strokes). Roll to finish!', 'I\'LL ROLL →', '.grid-wrap');
       return;
     }
     if(_tutStep === 11){
@@ -4787,7 +4788,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('WILDCARDS!', 'If you roll doubles (e.g., two 3s), you earn a Wildcard! These give you special abilities. Let\'s roll doubles now.', 'I\'LL ROLL →', '#rollBtn');
+      _tutShowTip('TEE OFF!', 'Let\'s roll your first shot. I have a feeling something good might happen...', 'I\'LL ROLL →', '#rollBtn');
       return;
     }
     if(_tutStep === 2){
@@ -4798,7 +4799,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 3){
-      _tutShowTip('WILDCARD EARNED!', 'You got a Phantom Stroke! It is saved in your drawer. Now tap NEXT SHOT to continue.', 'GOT IT →', null);
+      _tutShowTip('WILDCARD EARNED!', 'If you roll doubles (e.g., two 3s), you earn a Wildcard! You got a Phantom Stroke! It is saved in your drawer. Now tap NEXT SHOT to continue.', 'GOT IT →', null);
       return;
     }
     if(_tutStep === 4){
@@ -4808,7 +4809,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 5){
-      _tutShowTip('WATCH OUT!', 'Roll again to try and reach the green.', 'I\'LL ROLL →', '#rollBtn');
+      _tutShowTip('WATCH OUT!', 'Roll your approach shot to try and reach the green. Avoid the water!', 'I\'LL ROLL →', '#rollBtn');
       return;
     }
     if(_tutStep === 6){
@@ -4846,7 +4847,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 12){
-      _tutShowTip('ON THE GREEN!', 'You made it past the water. Tap NEXT SHOT, then putt to finish the hole.', 'GOT IT →', null);
+      _tutShowTip('ON THE GREEN!', 'You made it past the water. Tap NEXT SHOT, then putt to finish the hole.', 'GOT IT →', '#nextShotBtn');
       return;
     }
     if(_tutStep === 13){
