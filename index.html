@@ -24,7 +24,7 @@ body.theme-light{
   --dark:#f0f4f8;--card:#ffffff;--border:#d0d7de;
   --text:#1c2128;--muted:#57606a;--gold:#b87800;
 }
-body.theme-light body::before{
+body.theme-light .app::before{
   background-image:repeating-linear-gradient(90deg,transparent,transparent 16px,rgba(58,122,48,.03) 16px,rgba(58,122,48,.03) 32px),repeating-linear-gradient(0deg,transparent,transparent 16px,rgba(58,122,48,.03) 16px,rgba(58,122,48,.03) 32px);
 }
 body.theme-light .tv-bar{background:#1e3a5f;}
@@ -100,15 +100,14 @@ body{
   overflow:hidden;
 }
 .wc-drawer.open{right:0;}
-body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(90deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px),repeating-linear-gradient(0deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px);pointer-events:none;z-index:0;}
+.app::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(90deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px),repeating-linear-gradient(0deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px);pointer-events:none;z-index:-1;}
 
 /* HEADER */
 header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 16px 0;position:sticky;top:0;z-index:100;}
-.logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.logo{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:4px;line-height:1;}
+.logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:4px;}
+.logo{font-family:'Bebas Neue',cursive;font-size:clamp(20px, 6vw, 28px);letter-spacing:2px;line-height:1;text-align:center;margin:0;}
 .logo span{color:var(--c-fwyl);}
-.hole-badge{background:var(--c-tee);color:#fff;font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;padding:4px 12px;border-radius:20px;}
-/* Sc-wrap allows scrolling */
+.hole-badge{background:var(--c-tee);color:#fff;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;padding:4px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;}/* Sc-wrap allows scrolling */
 .sc-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow-x:auto;margin-bottom:12px;}
 .sc-inner{display:flex;flex-direction:column;min-width:100%;width:max-content;}
 .sc-row{display:grid;font-family:'Sen', sans-serif;font-size:10px;}
@@ -868,11 +867,11 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 <div class="app" id="mainApp" style="display:none">
 <header>
   <div class="logo-row">
-    <div style="display:flex;align-items:center;gap:6px;">
-      <button onclick="returnToMenuSave()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:0 10px;height:26px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:4px;">← MENU</button>
-      <button onclick="openSettings()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;width:26px;height:26px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;" title="Settings">⚙️</button>
+    <div style="display:flex;align-items:center;gap:4px;">
+      <button onclick="returnToMenuSave()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:0 6px;height:26px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;">← MENU</button>
+      <button onclick="openSettings()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;width:26px;height:26px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;" title="Settings">⚙️</button>
     </div>
-    <div class="logo" style="margin:0 auto;">GRID<span>GOLF</span></div>
+    <div class="logo">GRID<span>GOLF</span></div>
     <div class="hole-badge" id="holeBadge">HOLE 1 / 9</div>
   </div>
   <div class="sc-wrap">
@@ -1377,6 +1376,10 @@ let _lastMenuScreen = 'menuScreen';
 function forceHideGame() {
   const app = document.getElementById('mainApp');
   if (app) app.style.display = 'none';
+  const tv = document.getElementById('tvBar');
+  if (tv) tv.classList.remove('show');
+  const fab = document.getElementById('wcFab');
+  if (fab) fab.classList.remove('visible');
 }
 
 function navBack(to) {
@@ -3826,20 +3829,23 @@ function activateWildcard(slotIdx){
       return; 
     }
     if(wc.id==='mulligan'){
-      WCS.active=null;
+          WCS.active=null;
+          renderWcFab();
+          setTimeout(()=>{
+            S.rolling=false;
+            doRoll();
+          },500);
+          return;
+        }
+      }
+      
+      if (WCS.equipped.length === 0) {
+          closeWcDrawer();
+      } else {
+          renderWcDrawer();
+      }
       renderWcFab();
-      setTimeout(()=>{
-        S.rolling=false;
-        doRoll();
-      },500);
-      return;
     }
-  }
-  
-  // If it's a standard wildcard (not a reroll), leave the drawer open!
-  renderWcDrawer();
-  renderWcFab();
-}
 
 function discardEquipped(i){
   WCS.equipped.splice(i,1);
@@ -4178,7 +4184,24 @@ function continueGame(){
     document.getElementById('holePar').textContent=h.par;
     buildGrid();updateZonePill();updateYrd();renderLog();updateFloat();updateTVBanner();
     hideNextShotBtn();
-    if(S.holeDone) showNextShotBtn();
+    if(S.holeDone) {
+        showNextShotBtn();
+        if (S.holeIdx >= S.endIdx && S.currentRound === S.totalRounds) {
+            showRoundEnd();
+        } else if (S.holeIdx >= S.endIdx) {
+            showRoundEnd(); 
+        } else {
+            document.getElementById('ovEmoji').textContent='⛳';
+            document.getElementById('ovTitle').textContent='HOLE COMPLETE';
+            document.getElementById('ovNameRow').textContent='';
+            document.getElementById('ovStatsRow').textContent=`${S.strokes} strokes · par ${HOLES[S.holeIdx].par}`;
+            document.getElementById('ovBtn').style.display='block';
+            document.getElementById('ovBtn').textContent = `HOLE ${S.holeIdx + 2} →`;
+            document.getElementById('ovSummaryBtn').style.display='none';
+            document.getElementById('ovPlayAgainBtn').style.display='none';
+            document.getElementById('overlay').classList.add('show');
+        }
+    }
     maybeShowShakeBanner();
   }catch(e){console.error('Continue failed:',e);}
 }
