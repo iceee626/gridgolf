@@ -508,7 +508,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;
 }
 .profile-btn:hover{border-color:var(--c-fwyl);color:var(--c-fwyl);}
-.profile-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:600;align-items:center;justify-content:center;padding:20px;}
+.profile-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:600;align-items:flex-start;justify-content:center;padding:max(20px, 8vh) 20px 20px;overflow-y:auto;}
 .profile-modal.show{display:flex;}
 @keyframes fadeInModal{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
 .profile-modal.show{display:flex;}
@@ -751,7 +751,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .tut-overlay{
   position:fixed;bottom:100px;left:50%;transform:translateX(-50%);
   background:rgba(30,58,95,.97);border:1px solid var(--c-fwyl);border-radius:14px;
-  padding:14px 18px;z-index:150;max-width:340px;width:90%;
+  padding:14px 18px;z-index:550;max-width:340px;width:90%;
   box-shadow:0 4px 24px rgba(0,0,0,.6);animation:popin .3s cubic-bezier(.34,1.56,.64,1);
   display:none;
 }
@@ -3122,13 +3122,11 @@ function selectProfile(i){
   const profiles=loadProfiles();
   const p=profiles[i];
   if(!p)return;
-  showConfirm('Switch to '+p.name+'?',()=>{
-    setActiveProfileIdx(i);
-    PLAYER_NAME=p.name.toUpperCase();
-    renderProfileSlots();
-    updateMenuProfileDisplay();
-    setTimeout(()=>closeProfileModal(),300);
-  });
+  setActiveProfileIdx(i);
+  PLAYER_NAME=p.name.toUpperCase();
+  renderProfileSlots();
+  updateMenuProfileDisplay();
+  setTimeout(()=>closeProfileModal(),150);
 }
 
 function deleteProfile(i){
@@ -3181,9 +3179,11 @@ function saveNewProfile(){
   saveProfiles(profiles);
   const newIdx=profiles.length-1;
   setActiveProfileIdx(newIdx);
+  PLAYER_NAME=val;
+  updateMenuProfileDisplay();
   cancelNewProfile();
   renderProfileSlots();
-  selectProfile(newIdx);
+  closeProfileModal();
 }
 
 function openEditProfile(i){
@@ -4315,7 +4315,7 @@ function closeWcReveal(){
 // SAVE / CONTINUE SYSTEM
 // ═══════════════════════════════════════
 function saveGameState(){
-  if(!S||S.holeIdx===undefined)return;
+  if(!S||S.holeIdx===undefined || TUT.active)return;
   const save={
     mode:S.mode, totalRounds:S.totalRounds, currentRound:S.currentRound, holesConfig:S.holesConfig,
     startIdx:S.startIdx, endIdx:S.endIdx,
@@ -4688,36 +4688,34 @@ function tutAdvance(){
   // ═══ HOLE 1: PAR 5 ═══
   if(hi === 0){
     if(_tutStep === 0){
-      _tutShowTip('WELCOME TO GRID GOLF!', 'This is a dice-based golf game. You roll two dice to land on a cell in a 6×6 grid. Each cell is a zone on the course. Let\'s start with a Par 5!', 'GOT IT →', null);
+      _tutShowTip('WELCOME TO GRID GOLF!', 'This is a dice-based golf game. You roll two dice to land on a cell in a 6×6 grid. Each cell is a zone on the course. Let\'s start with a Par 5 (a long hole where you want to reach the hole in 5 shots)!', 'GOT IT →', null);
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('THE GRID', 'Each colored cell is a zone. Green = Fairway (good!), Brown = Rough (harder), Blue = Water (penalty!). The Row die picks your row, the Column die picks your column.', 'GOT IT →', '.grid-wrap');
+      _tutShowTip('THE GRID', 'Each colored cell is a zone. Green = Fairway (good, easy next shot), Brown = Rough (harder), Blue = Water (penalty!). The "Row" die picks your row, the "Col" die picks your column.', 'GOT IT →', '.grid-wrap');
       return;
     }
     if(_tutStep === 2){
-      _tutShowTip('ROLL THE DICE!', 'Tap the ROLL button to hit your tee shot! The dice will land on a cell in the grid.', 'OK, I\'LL ROLL →', '#rollBtn');
-      return; // After dismiss → unblock roll, wait for shot
+      _tutShowTip('ROLL THE DICE!', 'Tap the ROLL button to hit your tee shot! The dice determine where your ball lands.', 'OK, I\'LL ROLL →', '#rollBtn');
+      return;
     }
     if(_tutStep === 3){
-      // User needs to roll — unblock only roll button
       _tutBlockInput(false);
       _tutHighlight('#rollBtn');
       _tutDiceQueue = [{r:3,c:4}]; // → fwy
       _tutWaitFor('after_shot', ()=>{
         _tutHighlight(null);
-        _tutShowTip('GREAT TEE SHOT!', 'You landed on the Fairway! Check the yardage bar — it shows your distance to the hole. The zone pill shows where you are. Tap NEXT SHOT then ROLL again.', 'GOT IT →', '.yrd-bar');
+        _tutShowTip('GREAT TEE SHOT!', 'You landed on the Fairway! The yardage bar shows your distance to the hole. The closer you get, the better your grid becomes. Tap NEXT SHOT to continue.', 'GOT IT →', '.yrd-bar');
       });
       return;
     }
     if(_tutStep === 4){
-      // Wait for next shot + roll
       _tutBlockInput(false);
       _tutHighlight('#nextShotBtn');
       _tutDiceQueue = [{r:2,c:5}]; // → fwy again (closer)
       _tutWaitFor('after_shot', ()=>{
         _tutHighlight(null);
-        _tutShowTip('GETTING CLOSER!', 'Good approach! The grid changes as you get closer to the hole. You\'re now in range for the green. One more shot!', 'GOT IT →', '.zone-pill');
+        _tutShowTip('GETTING CLOSER!', 'Notice the grid changed. Because you are closer to the hole, you have more Green (Fairway) and Chip cells. Let\'s hit your approach shot onto the green!', 'GOT IT →', '.zone-pill');
       });
       return;
     }
@@ -4725,21 +4723,19 @@ function tutAdvance(){
       _tutBlockInput(false);
       _tutDiceQueue = [{r:1,c:3}]; // → grn
       _tutWaitFor('after_shot', ()=>{
-        _tutShowTip('YOU\'RE ON THE GREEN!', 'The green means you\'re putting now! The putting grid has 1-Putt (green, +1 stroke), 2-Putt (yellow, +2), and 3-Putt (red, +3). Roll to putt!', 'GOT IT →', '.grid-wrap');
+        _tutShowTip('YOU\'RE ON THE GREEN!', 'The green is the smooth grass around the hole. You are putting now! The grid has 1-Putt (green, 1 stroke to finish), 2-Putt (yellow, 2 strokes), and 3-Putt (red, 3 strokes). Roll to finish!', 'GOT IT →', '.grid-wrap');
       });
       return;
     }
     if(_tutStep === 6){
-      // Putt — all p1 grid, guaranteed 1-putt
       _tutBlockInput(false);
       _tutDiceQueue = [{r:2,c:4}]; // → p1
       _tutWaitFor('after_putt', ()=>{
-        _tutShowTip('HOLE COMPLETE!', 'You holed out! Check the scorecard at the top — it tracks your score vs par. Under par = great, over par = room to improve. Let\'s move to Hole 2!', 'NEXT HOLE →', '.sc-wrap');
+        _tutShowTip('HOLE COMPLETE!', 'You holed out (finished the hole)! The scorecard tracks your strokes vs "Par". Under par (-1, -2) is amazing, over par (+1, +2) leaves room to improve. Let\'s move to Hole 2!', 'NEXT HOLE →', '.sc-wrap');
       });
       return;
     }
     if(_tutStep === 7){
-      // Finish hole 1, advance to hole 2
       document.getElementById('overlay').classList.remove('show');
       S.holeIdx = 1;
       _tutHoleKey = 'h2';
@@ -4754,7 +4750,7 @@ function tutAdvance(){
   // ═══ HOLE 2: PAR 4 (water + wildcard) ═══
   if(hi === 1){
     if(_tutStep === 0){
-      _tutShowTip('HOLE 2 — PAR 4', 'This hole has water hazards! 💧 Landing in water = +2 penalty (stroke + penalty). You replay from where you were. Watch out for the blue cells!', 'GOT IT →', '.grid-wrap');
+      _tutShowTip('HOLE 2 — HAZARDS', 'This hole has water! 💧 Landing in water adds a +2 penalty to your score, and you must hit from the same spot again. Avoid the blue cells!', 'GOT IT →', '.grid-wrap');
       return;
     }
     if(_tutStep === 1){
@@ -4767,24 +4763,22 @@ function tutAdvance(){
       _tutDiceQueue = [{r:3,c:1}]; // → h2o!
       _tutWaitFor('after_shot', ()=>{
         _tutHighlight(null);
-        // Give phantom stroke wildcard
         _tutPhantomGiven = true;
         const phantom = WILDCARDS.find(w=>w.id==='phantom_stroke');
         WCS.equipped.push({...phantom});
         renderWcFab(); renderWcDrawer();
         const fab = document.getElementById('wcFab'); if(fab) fab.classList.add('visible');
         
-        _tutShowTip('💧 WATER HAZARD!', 'You hit the water! That\'s +2 penalty strokes. But wait — you just earned a Phantom Stroke wildcard! 🃏 Open the wildcard drawer (purple button on the right) and tap USE to remove 1 penalty stroke!', 'I\'LL USE IT →', '#wcFab');
+        _tutShowTip('💧 WATER HAZARD!', 'Oh no! That adds +2 penalty strokes. But wait — you earned a "Phantom Stroke" wildcard! 🃏 Wildcards give you special powers. Open the wildcard drawer (purple button on the right) and tap USE to remove 1 penalty stroke!', 'I\'LL USE IT →', '#wcFab');
       });
       return;
     }
     if(_tutStep === 3){
-      // Wait for wildcard use
       _tutBlockInput(false);
       _tutHighlight('#wcFab');
       _tutWaitFor('wc_used', ()=>{
         _tutHighlight(null);
-        _tutShowTip('PENALTY REMOVED!', 'The Phantom Stroke removed 1 penalty stroke! Wildcards are earned by rolling doubles and can save your round. Now tap NEXT SHOT and ROLL to reach the green.', 'GOT IT →', null);
+        _tutShowTip('PENALTY REMOVED!', 'You saved a stroke! You earn wildcards by rolling doubles (e.g., two 3s). Now tap NEXT SHOT and ROLL to reach the green.', 'GOT IT →', null);
       });
       return;
     }
@@ -4792,7 +4786,7 @@ function tutAdvance(){
       _tutBlockInput(false);
       _tutDiceQueue = [{r:1,c:1}]; // → grn
       _tutWaitFor('after_shot', ()=>{
-        _tutShowTip('ON THE GREEN!', 'You made it! Putt to finish the hole.', 'GOT IT →', null);
+        _tutShowTip('ON THE GREEN!', 'You made it past the water. Putt to finish the hole.', 'GOT IT →', null);
       });
       return;
     }
@@ -4800,7 +4794,7 @@ function tutAdvance(){
       _tutBlockInput(false);
       _tutDiceQueue = [{r:2,c:3}]; // → p1
       _tutWaitFor('after_putt', ()=>{
-        _tutShowTip('HOLE 2 DONE!', 'Even with a water hazard, the wildcard limited the damage! Check the TV scorebar at the bottom — it shows your running score. Final hole coming up!', 'NEXT HOLE →', '#tvBar');
+        _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round! Check the TV scorebar at the bottom — it shows your running total. Final hole coming up!', 'NEXT HOLE →', '#tvBar');
       });
       return;
     }
@@ -4819,7 +4813,7 @@ function tutAdvance(){
   // ═══ HOLE 3: PAR 3 (HIO) ═══
   if(hi === 2){
     if(_tutStep === 0){
-      _tutShowTip('HOLE 3 — PAR 3', 'Par 3 holes are short! You tee off directly at the green. This grid has a special ⛳ Hole cell. Land on it for a hole-in-one attempt!', 'GOT IT →', '.grid-wrap');
+      _tutShowTip('HOLE 3 — PAR 3', 'Par 3 holes are very short! You tee off directly at the green. This grid has a special ⛳ "Hole In!" cell. Land on it for a chance at a hole-in-one!', 'GOT IT →', '.grid-wrap');
       return;
     }
     if(_tutStep === 1){
@@ -4830,9 +4824,8 @@ function tutAdvance(){
       _tutBlockInput(false);
       _tutHighlight('#rollBtn');
       _tutDiceQueue = [{r:1,c:3}]; // → hole!
-      // HIO on par3 triggers confirmation — we need to handle that
       _tutWaitFor('hole_complete', ()=>{
-        _tutShowTip('🏆 TUTORIAL COMPLETE!', 'Amazing — a hole-in-one! You\'ve learned zones, dice rolling, penalties, wildcards, and putting. Now go play the real course. Good luck! 🏌️', 'FINISH TUTORIAL →', null);
+        _tutShowTip('🏆 TUTORIAL COMPLETE!', 'A hole-in-one! You\'ve learned zones, dice, penalties, wildcards, and putting. The goal of golf is the lowest score possible. Now go play the real course! 🏌️', 'FINISH TUTORIAL →', null);
       });
       return;
     }
@@ -5054,7 +5047,7 @@ function vsStartTurn(){
   S._mulliganJustFired=false; S._puttWcUsed=false; S._pendingPuttResult=null;
   
   S.scorecards[0] = [...VS.scores[VS.currentPlayer]]; // Sync scorecard for current player
-  Object.assign(WCS, VS.wcs[VS.currentPlayer]); // Sync wildcards
+  if (VS.wcs && VS.wcs[VS.currentPlayer]) Object.assign(WCS, VS.wcs[VS.currentPlayer]); // Sync wildcards
   
   const h = HOLES[S.holeIdx];
   S.yrdTotal=h.yards; S.yrdRemain=h.yards;
@@ -5083,6 +5076,11 @@ function vsCompleteHole(){
   const score = S.strokes;
   VS.scores[VS.currentPlayer][S.holeIdx] = score;
   VS.histories[VS.currentPlayer][S.holeIdx] = {log:[...S.log], strokes:score, par:HOLES[S.holeIdx].par, name:HOLES[S.holeIdx].name};
+  
+  if (!VS.wcs) {
+    const baseWc = () => ({ equipped:[], active:null, greenLightShots:0, sandCastleActive:false, luckyBounceActive:false, ironWillActive:false, ferrettActive:false, goldenPutterActive:false, eagleEyeActive:false, sandWedgeProActive:false, birdieBoostActive:false, holeWallActive:false, hioActive:false, shortcutActive:false });
+    VS.wcs = [baseWc(), baseWc()];
+  }
   VS.wcs[VS.currentPlayer] = {...WCS}; // Save wildcards for current player
   
   if(VS.currentPlayer === 0){
