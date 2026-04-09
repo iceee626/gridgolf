@@ -1958,10 +1958,12 @@ function processShot(row,col){
   let wcAppliedNote='';
   
   if (WCS.shortcutActive) {
-      resolvedOutcome = 'chip';
       WCS.shortcutActive = false;
-      wcAppliedNote = ' (⚡ Shortcut)';
-      showWcToast('⚡ Shortcut activated!');
+      if (!['grn', 'hole', 'p1', 'p2', 'p3'].includes(resolvedOutcome)) {
+          resolvedOutcome = 'chip';
+          wcAppliedNote = ' (⚡ Shortcut)';
+          showWcToast('⚡ Shortcut activated!');
+      }
   }
   if (WCS.luckyBounceActive && (resolvedOutcome === 'ob' || resolvedOutcome === 'h2o')) {
       resolvedOutcome = 'fwy';
@@ -2109,7 +2111,7 @@ function _showTailwindDieChoice(){
         setDie(dpId, newVal);
         d.classList.add('landed');
         vibDiceLand();
-        showWcToast(`💨 Tailwind applied!`);
+        showWcToast(`💨 Tailwind activated!`);
         S._wcNextShotNote = ` (💨 Tailwind)`;
         
         // Flash the new cell on the grid so you see the change before processing
@@ -3976,14 +3978,14 @@ function trackWcDiscard() {
 function applyWildcardEffect(wc){
   const h=HOLES[S.holeIdx];
   let applied = true;
-  let toastMsg = `${wc.icon} ${wc.name} readied!`;
+  let toastMsg = `${wc.icon} ${wc.name} applied!`;
 
   switch(wc.id){
     case 'shortcut':
       if(S.zone==='tee'){
         WCS.shortcutActive = true;
         S._wcNextShotNote = ` (${wc.icon} ${wc.name})`;
-        toastMsg = `⚡ Shortcut readied!`;
+        toastMsg = `⚡ Shortcut applied!`;
       } else {
         const prevZone = S.zone;
         const prevYrdRemain = S.yrdRemain;
@@ -4069,7 +4071,7 @@ function applyWildcardEffect(wc){
 
 function showWcToast(msg){
   const t=document.createElement('div');
-  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(123,47,158,.95);color:#fff;font-family:"DM Mono",monospace;font-size:12px;letter-spacing:1px;padding:8px 16px;border-radius:8px;z-index:200;animation:fadein .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.4);max-width:85vw;text-align:center;line-height:1.4;';
+  t.style.cssText='position:fixed;bottom:115px;left:50%;transform:translateX(-50%);background:rgba(123,47,158,.95);color:#fff;font-family:"DM Mono",monospace;font-size:12px;letter-spacing:1px;padding:8px 16px;border-radius:8px;z-index:200;animation:fadein .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.4);max-width:85vw;text-align:center;line-height:1.4;';
   t.textContent=msg;
   document.body.appendChild(t);
   setTimeout(()=>t.remove(),2200);
