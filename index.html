@@ -1570,6 +1570,9 @@ function buildScorecard(){
 }
 
 function loadHole(){
+  const nr=document.getElementById('ovNameRow');
+  if(nr){nr.style.fontSize='';nr.style.fontFamily='';nr.style.letterSpacing='';nr.style.color='';}
+
   const h=HOLES[S.holeIdx];
   S.zone='tee';S.strokes=0;S.shotNum=1;S.shotCount=0;
   S._wcsUsedThisHole=[];S._wcNextShotNote=null;
@@ -1661,7 +1664,9 @@ function updateTVBanner(){
     else if(puttScore===-1){puttStatus.textContent='FOR BOGEY';puttStatus.classList.add('bogey-c');}
     else if(puttScore===-2){puttStatus.textContent='FOR DOUBLE BOGEY';puttStatus.classList.add('double-c');}
     else if(puttScore===-3){puttStatus.textContent='FOR TRIPLE BOGEY';puttStatus.classList.add('double-c');}
-    else                   {puttStatus.textContent='FOR TRIPLE BOGEY+';puttStatus.classList.add('double-c');}
+    else if(puttScore===-4){puttStatus.textContent='FOR QUADRUPLE BOGEY';puttStatus.classList.add('double-c');}
+    else if(puttScore===-5){puttStatus.textContent='FOR QUINTUPLE BOGEY';puttStatus.classList.add('double-c');}
+    else                   {puttStatus.textContent=`FOR ${Math.abs(puttScore)}+`;puttStatus.classList.add('double-c');}
   } else {
     row2.classList.remove('show');
   }
@@ -2217,6 +2222,8 @@ function showCelebration(d, onDone){
   else if(d===1) {txt='BOGEY';      cls='celeb-bogey';}
   else if(d===2) {txt='DOUBLE BOGEY'; cls='celeb-double';}
   else if(d===3) {txt='TRIPLE BOGEY'; cls='celeb-double';}
+  else if(d===4) {txt='QUADRUPLE BOGEY'; cls='celeb-double';}
+  else if(d===5) {txt='QUINTUPLE BOGEY'; cls='celeb-double';}
   else           {txt=`+${d}`;     cls='celeb-double';}
 
   const ov=document.createElement('div');
@@ -2273,6 +2280,8 @@ function completeHole(){
   else if(d===1){emoji='⛳';title='BOGEY';}
   else if(d===2){emoji='⛳';title='DOUBLE BOGEY';}
   else if(d===3){emoji='⛳';title='TRIPLE BOGEY';}
+  else if(d===4){emoji='⛳';title='QUADRUPLE BOGEY';}
+  else if(d===5){emoji='⛳';title='QUINTUPLE BOGEY';}
   else{emoji='⛳';title=`+${d}`;}
 
   let totalScore = 0; let totalPar = 0;
@@ -2532,6 +2541,9 @@ function openSummary(viewRound = S.currentRound){
     else if(d===0){scoreColor='var(--c-fwyl)';resultLabel='Par';}
     else if(d===1){scoreColor='#ff8c5a';resultLabel='Bogey';}
     else if(d===2){scoreColor='#e05252';resultLabel='Double';}
+    else if(d===3){scoreColor='#e05252';resultLabel='Triple';}
+    else if(d===4){scoreColor='#e05252';resultLabel='Quad';}
+    else if(d===5){scoreColor='#e05252';resultLabel='Quint';}
     else{scoreColor='#e05252';resultLabel=`+${d}`;}
 
     const row=document.createElement('div');
@@ -2548,9 +2560,9 @@ function openSummary(viewRound = S.currentRound){
     row.innerHTML=`
       <span style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;color:var(--muted);min-width:54px;">${h.name}</span>
       <span style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);">par ${h.par}${wcBadge}</span>
-      <span style="font-family:'Bebas Neue',cursive;font-size:18px;color:${scoreColor};margin-left:auto;">${hist.strokes}</span>
-      <span style="font-family:'Sen',sans-serif;font-size:10px;color:${scoreColor};min-width:40px;">${resultLabel}</span>
-      <span style="display:flex;gap:3px;align-items:center;">${zoneDots}</span>
+      <span style="font-family:'Sen',sans-serif;font-size:10px;color:${scoreColor};margin-left:auto;text-align:right;min-width:44px;">${resultLabel}</span>
+      <span style="display:flex;gap:3px;align-items:center;margin:0 6px;">${zoneDots}</span>
+      <span style="font-family:'Bebas Neue',cursive;font-size:18px;color:${scoreColor};min-width:16px;text-align:center;">${hist.strokes}</span>
     `;
     row.onclick=()=>openHistInline(absoluteIdx, body, viewRound);
     holeList.appendChild(row);
@@ -3980,14 +3992,14 @@ function applyWildcardEffect(wc){
       }
       break;
     case 'sand_castle':
-      WCS.sandCastleActive=true; S._wcNextShotNote = ` (${wc.icon} ${wc.name})`;
-      if(S.zone==='sand') { buildGrid(); toastMsg = null; showWcToast('🏰 Sand Castle activated!'); }
+      WCS.sandCastleActive=true;
+      if(S.zone==='sand') { buildGrid(); toastMsg = null; }
       break;
     case 'green_light':
       WCS.greenLightShots=2;
       break;
     case 'eagle_eye':
-      WCS.eagleEyeActive=true; S._wcNextShotNote = ` (${wc.icon} ${wc.name})`;
+      WCS.eagleEyeActive=true;
       if(h.par===3&&S.zone==='tee') { buildGrid(); toastMsg = null; }
       break;
     case 'lucky_bounce':
@@ -3997,33 +4009,33 @@ function applyWildcardEffect(wc){
       WCS.ironWillActive=true;
       break;
     case 'sand_wedge_pro':
-      WCS.sandWedgeProActive=true; S._wcNextShotNote = ` (${wc.icon} ${wc.name})`;
+      WCS.sandWedgeProActive=true;
       if(S.zone==='sand'){
         WCS.sandWedgeProActive=false;
         S.zone='grn'; S.yrdRemain=Math.round(3+Math.random()*22);
+        addLog(S.shotNum, `Skipped to Green (🏖️ Sand Wedge Pro)`, 'grn', 'WC', false, null, null, null);
         updateZonePill();updateYrd(); buildGrid();
-        toastMsg = null;
-        showWcToast('🏖️ Sand Wedge Pro activated!');
+        toastMsg = '🏖️ Sand Wedge Pro activated!';
       }
       break;
     case 'birdie_boost':
-      WCS.birdieBoostActive=true; S._wcNextShotNote = ` (${wc.icon} ${wc.name})`;
+      WCS.birdieBoostActive=true;
       if(['fwy','rgh','sand','chip'].includes(S.zone)) { buildGrid(); toastMsg = null; }
       break;
     case 'hole_wall':
-      WCS.holeWallActive=true; S._wcNextShotNote = ` (${wc.icon} ${wc.name})`;
+      WCS.holeWallActive=true;
       if(h.par===3&&S.zone==='tee') { buildGrid(); toastMsg = null; }
       break;
     case 'the_ferrett':
-      WCS.ferrettActive=true; S._wcNextShotNote = ` (${wc.icon} ${wc.name})`;
+      WCS.ferrettActive=true;
       if(S.zone==='sand') { buildGrid(); toastMsg = null; }
       break;
     case 'hole_in_one':
-      WCS.hioActive=true; S._wcNextShotNote = ` (${wc.icon} ${wc.name})`;
+      WCS.hioActive=true;
       if(h.par===3&&S.zone==='tee') { buildGrid(); toastMsg = null; }
       break;
     case 'golden_putter':
-      WCS.goldenPutterActive=true; S._wcNextShotNote = ` (${wc.icon} ${wc.name})`;
+      WCS.goldenPutterActive=true;
       if(S.zone==='grn') { buildGrid(); toastMsg = null; }
       break;
     case 'mulligan':
@@ -4051,29 +4063,36 @@ function applyWcGridMods(grid){
   if (WCS.ferrettActive && S.zone === 'sand') {
     WCS.ferrettActive = false; 
     showWcToast('🦡 The Ferrett activated!');
+    S._wcNextShotNote = ' (🦡 The Ferrett)';
     grid = grid.map(r=>r.map(()=>Math.random()<.75?'hole':'grn'));
   }
   if (WCS.sandCastleActive && S.zone === 'sand') {
+    showWcToast('🏰 Sand Castle activated!');
+    S._wcNextShotNote = ' (🏰 Sand Castle)';
     grid = grid.map(r=>r.map(()=>'grn'));
   }
   if (WCS.goldenPutterActive && S.zone === 'grn') {
     WCS.goldenPutterActive = false;
     showWcToast('🥇 Golden Putter activated!');
+    S._wcNextShotNote = ' (🥇 Golden Putter)';
     grid = grid.map(r=>r.map(()=>'p1'));
   }
   if (WCS.eagleEyeActive && h.par === 3 && S.zone === 'tee') {
     WCS.eagleEyeActive = false;
     showWcToast('🦅 Eagle Eye activated!');
+    S._wcNextShotNote = ' (🦅 Eagle Eye)';
     grid = grid.map(r=>r.map(c=>(c!=='hole' && Math.random()<.5)?'grn':c));
   }
   if (WCS.sandWedgeProActive && S.zone === 'sand') {
     WCS.sandWedgeProActive = false;
     showWcToast('🏖️ Sand Wedge Pro activated!');
+    S._wcNextShotNote = ' (🏖️ Sand Wedge Pro)';
     grid = grid.map(r=>r.map(()=>'grn'));
   }
   if (WCS.birdieBoostActive && ['fwy','rgh','sand','chip'].includes(S.zone)) {
     WCS.birdieBoostActive = false;
     showWcToast('🚀 Birdie Boost activated!');
+    S._wcNextShotNote = ' (🚀 Birdie Boost)';
     let eligible = [];
     for(let r=0; r<6; r++) {
       for(let c=0; c<6; c++) {
@@ -4086,11 +4105,13 @@ function applyWcGridMods(grid){
   if (WCS.holeWallActive && h.par === 3 && S.zone === 'tee') {
     WCS.holeWallActive = false;
     showWcToast('🕳️ Hole In The Wall activated!');
+    S._wcNextShotNote = ' (🕳️ Hole In The Wall)';
     grid = grid.map(r=>r.map(c=>(c==='rgh'||c==='sand'||c==='fwy'||c==='ob')?'chip':'grn'));
   }
   if (WCS.hioActive && h.par === 3 && S.zone === 'tee') {
     WCS.hioActive = false;
     showWcToast('🌟 Hole In One activated!');
+    S._wcNextShotNote = ' (🌟 Hole In One)';
     grid = grid.map(r=>r.map(()=>Math.random()<.80?'hole':'grn'));
   }
 
