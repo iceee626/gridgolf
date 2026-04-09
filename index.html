@@ -244,7 +244,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .btn-roll:hover{background:var(--c-fwyl);}
 .btn-roll:disabled{opacity:.3;cursor:not-allowed;}
 .roll-col{flex:1;display:flex;}
-#nextShotBtn{letter-spacing:2px;font-size:16px;}
+#nextShotBtn{letter-spacing:2px;font-size:14px;}
 
 /* RESULT */
 .result-panel{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 15px;min-height:66px;display:flex;align-items:center;gap:12px;}
@@ -1901,6 +1901,7 @@ function processShot(row,col){
   let outcome=S.currentGrid[row][col];
   litCell(row,col);
   const prevZone=S.zone;
+  const prevYrdRemain=S.yrdRemain;
   const snapGrid=S.currentGrid.map(r=>[...r]);
 
   if(S.zone==='grn'){
@@ -1915,8 +1916,8 @@ function processShot(row,col){
     playShotSound('grn', outcome);
     S.strokes+=finalPutts;S.yrdRemain=0;
     S._pendingPuttResult={putts:finalPutts, row, col, snapGrid, prevZone};
-    addLog(S.shotNum,`Green → ${finalPutts} putt${finalPutts>1?'s':''}${wcPuttNote}`,outcome,`+${finalPutts}`,false,row,col,snapGrid);
-    S.shotNum += finalPutts; // Fix: Jump shot count by the number of putts taken
+    addLog(S.shotNum,`Green → ${finalPutts} putt${finalPutts>1?'s':''}${wcPuttNote}`,outcome,`+${finalPutts}`,false,row,col,snapGrid, prevZone, prevYrdRemain);
+    S.shotNum += finalPutts; 
     updateYrd();
     S.holeDone=false;
 
@@ -1955,6 +1956,13 @@ function processShot(row,col){
 
   let resolvedOutcome=outcome;
   let wcAppliedNote='';
+  
+  if (WCS.shortcutActive) {
+      resolvedOutcome = 'chip';
+      WCS.shortcutActive = false;
+      wcAppliedNote = ' (⚡ Shortcut)';
+      showWcToast('⚡ Shortcut activated!');
+  }
   if (WCS.luckyBounceActive && (resolvedOutcome === 'ob' || resolvedOutcome === 'h2o')) {
       resolvedOutcome = 'fwy';
       WCS.luckyBounceActive = false; 
@@ -1975,7 +1983,7 @@ function processShot(row,col){
       }
       WCS.greenLightShots--;
   }
-  
+
   if (S._wcNextShotNote) {
       wcAppliedNote += S._wcNextShotNote;
       S._wcNextShotNote = null;
@@ -1984,9 +1992,9 @@ function processShot(row,col){
   if(resolvedOutcome==='h2o'||resolvedOutcome==='ob'){
     playShotSound(prevZone, resolvedOutcome);
     S.strokes+=2;
-    addLog(S.shotNum,`→ ${Z[resolvedOutcome].name} — penalty`,resolvedOutcome,'+2 (pen)',true,row,col,snapGrid);
+    addLog(S.shotNum,`→ ${Z[resolvedOutcome].name} — penalty`,resolvedOutcome,'+2 (pen)',true,row,col,snapGrid, prevZone, prevYrdRemain);
     showResult(Z[resolvedOutcome],'Penalty — no advance','pen',`Back in ${Z[prevZone].name} · ${fmtYds(S.yrdRemain)} left`);
-    S.shotNum += 2; // Fix: Jump shot count by 2 for the penalty
+    S.shotNum += 2; 
     updateFloat();updateTVBanner();
     document.getElementById('resultPanel').classList.add('pflash');
     setTimeout(()=>document.getElementById('resultPanel').classList.remove('pflash'),600);
@@ -2001,7 +2009,7 @@ function processShot(row,col){
     } else {
       playShotSound(prevZone,'hole');
       S.strokes+=1;S.yrdRemain=0;
-      addLog(S.shotNum,'⛳ Hole In!','hole','+1',false,row,col,snapGrid);
+      addLog(S.shotNum,'⛳ Hole In!','hole','+1',false,row,col,snapGrid, prevZone, prevYrdRemain);
       showResult(Z.hole,'Hole In!','good',`Row ${row+1} · Col ${col+1}`);
       S.shotNum++;S.holeDone=true;
       hideNextShotBtn();hidePostShotWcBtn();
@@ -2029,7 +2037,7 @@ function processShot(row,col){
   S._puttWcUsed=false;
 
   const yrdStr=S.yrdRemain>0?` · ${fmtYds(S.yrdRemain)} left`:' · on green';
-  addLog(S.shotNum,`${Z[prevZone].name} → ${Z[resolvedOutcome].name}${yrdStr}${wcAppliedNote}`,resolvedOutcome,'+1',false,row,col,snapGrid);
+  addLog(S.shotNum,`${Z[prevZone].name} → ${Z[resolvedOutcome].name}${yrdStr}${wcAppliedNote}`,resolvedOutcome,'+1',false,row,col,snapGrid, prevZone, prevYrdRemain);
   showResult(Z[resolvedOutcome],`${Z[prevZone].name} → ${Z[resolvedOutcome].name}`,'ok',
     S.yrdRemain>0?fmtYds(S.yrdRemain)+' to hole'+wcAppliedNote:'Reached the green'+wcAppliedNote);
   S.shotNum++;updateFloat();updateYrd();updateTVBanner();
@@ -2189,8 +2197,8 @@ function showResult(zd,title,mode,sub){
   else{b.textContent='';b.className='res-badge b-ok';}
 }
 
-function addLog(num,desc,zk,note,pen,row,col,gridSnap){
-  S.log.push({num,desc,zk,note,pen,row,col,gridSnap});
+function addLog(num,desc,zk,note,pen,row,col,gridSnap,prevZone,prevYrdRemain){
+  S.log.push({num,desc,zk,note,pen,row,col,gridSnap,prevZone,prevYrdRemain});
   renderLog();
   saveGameState();
 }
@@ -2553,7 +2561,7 @@ function openSummary(viewRound = S.currentRound){
     row.onmouseleave=()=>row.style.borderColor='var(--border)';
 
     const zoneDots=hist.log.map(e=>`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${(Z[e.zk]||Z.fwy).color};flex-shrink:0;"></span>`).join('');
-
+    
     const wcs = hist.wcsUsed || [];
     const wcBadge = (wcEnabled() && wcs.length > 0) ? `<span style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-left:6px;">🃏 ${wcs.length}</span>` : '';
 
@@ -3615,6 +3623,17 @@ function updateSettingsUI(){
   _setToggle('shakeToggle',getRollMode()==='haptic');
   updateMetricsUI();
   updateCellLabelUI();
+  
+  const wcToggle = document.getElementById('wcToggle');
+  if (wcToggle) {
+      if (document.getElementById('mainApp').style.display === 'block' || hasSavedGame()) {
+          wcToggle.style.opacity = '0.4';
+          wcToggle.style.pointerEvents = 'none';
+      } else {
+          wcToggle.style.opacity = '1';
+          wcToggle.style.pointerEvents = 'auto';
+      }
+  }
 }
 
 function openSettings(){
@@ -3687,19 +3706,11 @@ function randWildcard(){
 }
 
 const WCS={
-  equipped:[],
-  active:null,
-  greenLightShots:0,
-  sandCastleActive:false,
-  luckyBounceActive:false,
-  ironWillActive:false,
-  ferrettActive:false,
-  goldenPutterActive:false,
-  eagleEyeActive:false,
-  sandWedgeProActive:false,
-  birdieBoostActive:false,
-  holeWallActive:false,
-  hioActive:false,
+  equipped:[], active:null, greenLightShots:0,
+  sandCastleActive:false, luckyBounceActive:false, ironWillActive:false,
+  ferrettActive:false, goldenPutterActive:false, eagleEyeActive:false,
+  sandWedgeProActive:false, birdieBoostActive:false, holeWallActive:false,
+  hioActive:false, shortcutActive:false,
 };
 
 function wcReset(){
@@ -3707,12 +3718,12 @@ function wcReset(){
   WCS.greenLightShots=0; WCS.sandCastleActive=false; WCS.luckyBounceActive=false;
   WCS.ironWillActive=false; WCS.ferrettActive=false; WCS.goldenPutterActive=false;
   WCS.eagleEyeActive=false; WCS.sandWedgeProActive=false; WCS.birdieBoostActive=false;
-  WCS.holeWallActive=false; WCS.hioActive=false;
+  WCS.holeWallActive=false; WCS.hioActive=false; WCS.shortcutActive=false;
   renderWcFab(); renderWcDrawer();
 }
 function wcResetHole(){
   WCS.active=null; WCS.pending=null; WCS.pendingRow=null; WCS.pendingCol=null;
-  WCS.greenLightShots=0; WCS.sandCastleActive=false;
+  WCS.greenLightShots=0; WCS.sandCastleActive=false; WCS.shortcutActive=false;
   renderWcFab(); renderWcDrawer();
 }
 
@@ -3879,11 +3890,14 @@ function activateWildcard(slotIdx){
     const popped = S.log.pop();
     if (popped) {
         let deduction = 1;
-        if (popped.pen) deduction = 2; // Subtracts both shots accumulated by the penalty
+        if (popped.pen) deduction = 2; 
         else if (S._pendingPuttResult) deduction = S._pendingPuttResult.putts;
         
         S.strokes = Math.max(0, S.strokes - deduction);
         S.shotNum = Math.max(1, S.shotNum - deduction);
+        
+        if (popped.prevZone) S.zone = popped.prevZone;
+        if (popped.prevYrdRemain !== undefined) S.yrdRemain = popped.prevYrdRemain;
     }
     renderLog();
 
@@ -3893,7 +3907,6 @@ function activateWildcard(slotIdx){
       S._puttWcUsed=true;
       S._skipCelebration=false; 
     } else {
-      if(S.prevZone) S.zone=S.prevZone;
       S._preserveGrid=true; 
       updateFloat();updateYrd();updateZonePill();
     }
@@ -3968,22 +3981,27 @@ function applyWildcardEffect(wc){
   switch(wc.id){
     case 'shortcut':
       if(S.zone==='tee'){
-        toastMsg = `${wc.icon} ${wc.name}: Cannot use on tee shot.`;
-        applied = false;
+        WCS.shortcutActive = true;
+        S._wcNextShotNote = ` (${wc.icon} ${wc.name})`;
+        toastMsg = `⚡ Shortcut readied!`;
       } else {
+        const prevZone = S.zone;
+        const prevYrdRemain = S.yrdRemain;
         S.zone='chip';
         S.yrdRemain=Math.min(S.yrdRemain, Math.round(15+Math.random()*30));
-        addLog(S.shotNum, `Skipped to Chip (${wc.icon} ${wc.name})`, 'chip', 'WC', false, null, null, null);
+        addLog(S.shotNum, `Skipped to Chip (${wc.icon} ${wc.name})`, 'chip', 'WC', false, null, null, null, prevZone, prevYrdRemain);
         updateZonePill();updateYrd();
         buildGrid();
-        toastMsg = `${wc.icon} ${wc.name} activated!`;
+        toastMsg = `⚡ Shortcut activated!`;
       }
       break;
     case 'phantom_stroke':
       let hasPenalty = S.log.some(e => e.pen);
       if(hasPenalty) {
+        const prevZone = S.zone;
+        const prevYrdRemain = S.yrdRemain;
         S.strokes=Math.max(0,S.strokes-1);
-        addLog(S.shotNum, `Penalty removed (${wc.icon} ${wc.name})`, S.zone, '-1', false, null, null, null);
+        addLog(S.shotNum, `Penalty removed (${wc.icon} ${wc.name})`, S.zone, '-1', false, null, null, null, prevZone, prevYrdRemain);
         updateFloat();updateTVBanner();
         toastMsg = `${wc.icon} ${wc.name} activated!`;
       } else {
@@ -4051,7 +4069,7 @@ function applyWildcardEffect(wc){
 
 function showWcToast(msg){
   const t=document.createElement('div');
-  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(123,47,158,.95);color:#fff;font-family:"DM Mono",monospace;font-size:12px;letter-spacing:1px;padding:8px 16px;border-radius:8px;z-index:200;white-space:nowrap;animation:fadein .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.4);';
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(123,47,158,.95);color:#fff;font-family:"DM Mono",monospace;font-size:12px;letter-spacing:1px;padding:8px 16px;border-radius:8px;z-index:200;animation:fadein .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.4);max-width:85vw;text-align:center;line-height:1.4;';
   t.textContent=msg;
   document.body.appendChild(t);
   setTimeout(()=>t.remove(),2200);
@@ -4230,13 +4248,15 @@ function saveGameState(){
     scorecards:S.scorecards, histories:S.histories,
     holeDone:S.holeDone, yrdRemain:S.yrdRemain, yrdTotal:S.yrdTotal, fwyVisits:S.fwyVisits, prevZone:S.prevZone, shotCount:S.shotCount,
     _wcUsedThisRound:S._wcUsedThisRound||0,
-    _wcDiscardedThisRound:S._wcDiscardedThisRound||0, // <-- Added here to save it
+    _wcDiscardedThisRound:S._wcDiscardedThisRound||0,
     _wcsUsedThisHole:S._wcsUsedThisHole||[], _wcNextShotNote:S._wcNextShotNote||null,
+    currentGrid:S.currentGrid,
     wcsEquipped:WCS.equipped, wcsActive:WCS.active, 
     wcsGreenLightShots:WCS.greenLightShots, wcsSandCastle:WCS.sandCastleActive, wcsLuckyBounce:WCS.luckyBounceActive,
     wcsIronWill:WCS.ironWillActive, wcsFerrett:WCS.ferrettActive,
     wcsGoldenPutter:WCS.goldenPutterActive, wcsEagleEye:WCS.eagleEyeActive, wcsSandWedgePro:WCS.sandWedgeProActive,
     wcsBirdieBoost:WCS.birdieBoostActive, wcsHoleWall:WCS.holeWallActive, wcsHio:WCS.hioActive,
+    wcsShortcut:WCS.shortcutActive,
     gameDiff:GAME_DIFF, playerName:PLAYER_NAME, timestamp:Date.now(),
   };
   try{localStorage.setItem('gg_save',JSON.stringify(save));}catch(e){}
@@ -4263,6 +4283,7 @@ function continueGame(){
     S.mode=save.mode||'single'; S.totalRounds=save.totalRounds||1; S.currentRound=save.currentRound||1;
     S.holesConfig=save.holesConfig||'18'; S.startIdx=save.startIdx||0; S.endIdx=save.endIdx||17;
     S.holeIdx=save.holeIdx; S.zone=save.zone; S.strokes=save.strokes; S.shotNum=save.shotNum; S.log=save.log||[];
+    S.currentGrid=save.currentGrid||null;
     
     if(save.scorecard && !save.scorecards) {
        S.scorecards = [Array(18).fill(null)];
@@ -4276,7 +4297,7 @@ function continueGame(){
     S.holeDone=save.holeDone||false; S.yrdRemain=save.yrdRemain; S.yrdTotal=save.yrdTotal; S.fwyVisits=save.fwyVisits||0;
     S.prevZone=save.prevZone; S.shotCount=save.shotCount||0; 
     S._wcUsedThisRound=save._wcUsedThisRound||0;
-    S._wcDiscardedThisRound=save._wcDiscardedThisRound||0; // <-- Added here to load it
+    S._wcDiscardedThisRound=save._wcDiscardedThisRound||0; 
     S._wcsUsedThisHole=save._wcsUsedThisHole||[]; S._wcNextShotNote=save._wcNextShotNote||null;
     
     WCS.equipped=save.wcsEquipped||[]; WCS.active=save.wcsActive||null; 
@@ -4284,6 +4305,7 @@ function continueGame(){
     WCS.luckyBounceActive=save.wcsLuckyBounce||false; WCS.ironWillActive=save.wcsIronWill||false; WCS.ferrettActive=save.wcsFerrett||false;
     WCS.goldenPutterActive=save.wcsGoldenPutter||false; WCS.eagleEyeActive=save.wcsEagleEye||false; WCS.sandWedgeProActive=save.wcsSandWedgePro||false;
     WCS.birdieBoostActive=save.wcsBirdieBoost||false; WCS.holeWallActive=save.wcsHoleWall||false; WCS.hioActive=save.wcsHio||false;
+    WCS.shortcutActive=save.wcsShortcut||false;
     
     document.getElementById('menuScreen').style.display='none';
     document.getElementById('mainApp').style.display='block';
@@ -4293,7 +4315,10 @@ function continueGame(){
     document.getElementById('holeYards').textContent=fmtYds(h.yards);
     document.getElementById('holeStars').textContent=starsHTML(h.diff);
     document.getElementById('holePar').textContent=h.par;
-    buildGrid();updateZonePill();updateYrd();renderLog();updateFloat();updateTVBanner();
+    
+    if (S.currentGrid) renderGrid(); else buildGrid();
+    
+    updateZonePill();updateYrd();renderLog();updateFloat();updateTVBanner();
     hideNextShotBtn();
     if(S.holeDone) {
         showNextShotBtn();
@@ -4393,6 +4418,8 @@ function doHioRoll(){
 function resolveHio(r1, r2){
   const isDoubles=r1===r2;
   const resultEl=document.getElementById('hioResult');
+  const prevZone = S.zone;
+  const prevYrdRemain = S.yrdRemain;
   document.getElementById('hioBall').style.animation='none';
   resultEl.style.display='block';
   if(isDoubles){
@@ -4410,7 +4437,9 @@ function resolveHio(r1, r2){
       document.getElementById('hioOverlay').classList.remove('show');
       const snapGrid=_hioSnap;
       S.strokes+=1; S.yrdRemain=0;
-      addLog(S.shotNum,'⛳ HOLE IN ONE!','hole','+1',false,_hioRow,_hioCol,snapGrid);
+      let wcNote = S._wcNextShotNote ? S._wcNextShotNote : '';
+      S._wcNextShotNote = null;
+      addLog(S.shotNum,`⛳ HOLE IN ONE!${wcNote}`,'hole','+1',false,_hioRow,_hioCol,snapGrid, prevZone, prevYrdRemain);
       showResult(Z.hole,'HOLE IN ONE!','good','');
       S.shotNum++;S.holeDone=true;
       hideNextShotBtn();hidePostShotWcBtn();
@@ -4426,10 +4455,12 @@ function resolveHio(r1, r2){
       document.getElementById('hioOverlay').classList.remove('show');
       const snapGrid=_hioSnap;
       S.strokes+=1; S.yrdRemain=1;
-      const prevZone=S.zone; S.zone='grn';
+      S.zone='grn';
       advanceYrd('grn'); S.yrdRemain=1;
       S.shotCount++;
-      addLog(S.shotNum,`${Z[prevZone].name} → Green · ${fmtYds(1)}`,'grn','+1',false,_hioRow,_hioCol,snapGrid);
+      let wcNote = S._wcNextShotNote ? S._wcNextShotNote : '';
+      S._wcNextShotNote = null;
+      addLog(S.shotNum,`${Z[prevZone].name} → Green · ${fmtYds(1)}${wcNote}`,'grn','+1',false,_hioRow,_hioCol,snapGrid, prevZone, prevYrdRemain);
       showResult(Z.grn,`Ball stopped ${fmtYds(1)} from hole`,'ok',`${fmtYds(1)} to hole`);
       S.shotNum++;updateFloat();updateYrd();updateZonePill();updateTVBanner();
       S.currentGrid=Array(6).fill(null).map(()=>Array(6).fill('p1'));
