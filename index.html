@@ -4807,9 +4807,13 @@ function _tutHighlight(sel, darken = true){
      el.style.position = window.getComputedStyle(el).position === 'static' ? 'relative' : window.getComputedStyle(el).position;
      el.style.zIndex = '745';
      
-     // Scroll the screen to the first highlighted element
+     // Robust scrolling calculation for iOS Safari compatibility
      if (!scrolled) {
-         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+         setTimeout(() => {
+             const rect = el.getBoundingClientRect();
+             const y = rect.top + window.scrollY - (window.innerHeight / 2) + (rect.height / 2);
+             window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+         }, 50); // slight delay ensures layout is ready before moving
          scrolled = true;
      }
   });
@@ -5171,19 +5175,22 @@ function tutGetGrid(){
   return null;
 }
 
-function tutComplete(){
+function tutComplete(isAbandon = false){
   _tutHideTip();
   _tutBlockInput(false);
   TUT.active = false;
   TUT.blocked = false;
   tutMarkDone();
   
-  const profiles=loadProfiles();
-  const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
-  if(profiles[idx]){
-     profiles[idx].tutorialCompleted = (profiles[idx].tutorialCompleted||0)+1;
-     saveProfiles(profiles);
-     setTimeout(()=>checkAndAwardAchievements(), 300);
+  // ONLY award the achievement if they successfully finished it
+  if (!isAbandon) {
+      const profiles=loadProfiles();
+      const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
+      if(profiles[idx]){
+         profiles[idx].tutorialCompleted = (profiles[idx].tutorialCompleted||0)+1;
+         saveProfiles(profiles);
+         setTimeout(()=>checkAndAwardAchievements(), 300);
+      }
   }
 
   const origHoles = [
@@ -5198,7 +5205,7 @@ function tutComplete(){
 
 function tutMenuIntercept(){
   showConfirm('ABANDON TUTORIAL? You can always replay it from Settings.', ()=>{
-    tutComplete();
+    tutComplete(true); // Pass true because we abandoned it!
   });
 }
 
