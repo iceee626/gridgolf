@@ -504,24 +504,28 @@ header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12
 .sum-sc-table td{font-size:11px;}
 
 /* REDESIGNED HOLE COMPLETE SCREEN */
-.hc-screen { position:fixed; inset:0; background:var(--dark); z-index:450; display:none; flex-direction:column; padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px); overflow-y:auto; animation:fadein .3s ease; }
+.hc-screen { position:fixed; inset:0; background:var(--dark); z-index:450; display:none; flex-direction:column; padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px); overflow-y:hidden; animation:fadein .3s ease; }
 .hc-screen.show { display:flex; }
-.hc-header { display:flex; justify-content:center; align-items:center; font-family:'Bebas Neue',cursive; font-size:18px; letter-spacing:2px; color:var(--muted); margin-bottom:16px; position:relative; }
+.hc-header { display:flex; justify-content:center; align-items:center; font-family:'Bebas Neue',cursive; font-size:18px; letter-spacing:2px; color:var(--muted); margin-bottom:16px; position:relative; flex-shrink:0; }
 .hc-rnd-badge { position:absolute; right:0; background:rgba(240,192,64,.15); color:var(--gold); padding:4px 8px; border-radius:12px; font-size:10px; border:1px solid rgba(240,192,64,.3); font-family:'Sen',sans-serif; letter-spacing:1px; }
-.hc-card { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:16px; padding:32px 24px; text-align:center; margin-bottom:24px; box-shadow:0 8px 24px rgba(0,0,0,0.4); }
+.hc-card { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:16px; padding:32px 24px; text-align:center; margin-bottom:20px; box-shadow:0 8px 24px rgba(0,0,0,0.4); flex-shrink:0; }
 .hc-card-icon { font-size:56px; margin-bottom:12px; line-height:1; }
 .hc-card-title { font-family:'Bebas Neue',cursive; font-size:48px; letter-spacing:3px; line-height:1; margin-bottom:12px; }
 .hc-card-sub { font-family:'Sen',sans-serif; font-size:12px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:20px; }
 .hc-card-tot { display:inline-block; background:#0d1117; border:1px solid var(--border); border-radius:24px; padding:8px 20px; font-family:'Bebas Neue',cursive; font-size:22px; letter-spacing:1px; }
-.hc-section-title { font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:12px; }
-.hc-log-list { display:flex; flex-direction:column; gap:8px; max-height:180px; overflow-y:auto; margin-bottom:24px; padding-right:4px; }
-.hc-log-item { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:12px; padding:10px 12px; }
-.hc-log-num { width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,.05); display:flex; align-items:center; justify-content:center; font-family:'Sen',sans-serif; font-size:9px; color:var(--muted); flex-shrink:0; }
-.hc-log-dice { display:flex; gap:4px; }
-.hc-log-die { background:#fff; color:#000; border-radius:4px; width:16px; height:16px; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',cursive; font-size:12px; font-weight:bold; }
-.hc-log-desc { flex:1; font-family:'Sen',sans-serif; font-size:11px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.hc-log-res { font-size:12px; color:var(--muted); }
-.hc-btn-wrap { margin-top:auto; padding-top:16px; }
+.hc-section-title { font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:8px; flex-shrink:0; }
+.hc-log-list { display:flex; flex-direction:column; gap:4px; max-height:120px; overflow-y:auto; margin-bottom:20px; -ms-overflow-style:none; scrollbar-width:none; flex-shrink:0; }
+.hc-log-list::-webkit-scrollbar { display:none; }
+.hc-btn-wrap { margin-top:auto; padding-top:16px; flex-shrink:0; }
+
+/* TEXT TOGGLE PILL FOR SETTINGS */
+.txt-toggle{position:relative;width:96px;height:28px;background:rgba(255,255,255,.12);border-radius:14px;cursor:pointer;display:flex;align-items:center;border:1px solid rgba(255,255,255,.1);font-family:'Sen',sans-serif;font-size:10px;font-weight:700;color:var(--muted);}
+.txt-toggle-knob{position:absolute;top:2px;left:2px;width:45px;height:22px;border-radius:11px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .3s cubic-bezier(.4,.1,.2,1);}
+.txt-toggle.on .txt-toggle-knob{transform:translateX(47px);}
+.txt-lbl{flex:1;text-align:center;z-index:2;transition:color .3s;}
+.txt-toggle.on .lbl-r{color:#000;}
+.txt-toggle:not(.on) .lbl-l{color:#000;}
+body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,.1);}
 
 /* PROFILE SYSTEM */
 .profile-btn{
@@ -857,14 +861,13 @@ header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12
   <div id="menuActiveProfile" style="display:none;"></div>
   
   <div class="menu-btns" id="menuBtns">
-  <button class="menu-btn-play" id="menuContinueBtn" onclick="continueGame()" style="display:none;background:#1a5f8a;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;padding:12px;">
-      </button>
-  <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()" style="padding:24px 16px; font-size:28px;">⛳ PLAY</button>
-  <div style="display:flex; gap:10px;">
-    <button class="menu-btn-play" id="menuVersusBtn" onclick="navToVersusSetup()" style="flex:1; background:linear-gradient(135deg,#1a5f8a,#2a3a6e);box-shadow:0 4px 20px rgba(30,95,138,.4); font-size:20px; padding:20px 10px;">🆚 VERSUS</button>
-    <button class="menu-btn-sec" onclick="openSettings()" style="flex:1; font-size:20px; letter-spacing:2px; padding:20px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; background:rgba(255,255,255,0.05); border-radius:14px;"><span style="font-size:24px;line-height:1;">⚙️</span> SETTINGS</button>
+    <button class="menu-btn-play" id="menuContinueBtn" onclick="continueGame()" style="display:none;background:#1a5f8a;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;padding:12px;"></button>
+    <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()" style="padding:24px 16px; font-size:28px;">⛳ PLAY</button>
+    <div style="display:flex; gap:10px;">
+      <button class="menu-btn-play" id="menuVersusBtn" onclick="navToVersusSetup()" style="flex:1; background:linear-gradient(135deg,#1a5f8a,#2a3a6e);box-shadow:0 4px 20px rgba(30,95,138,.4); font-size:20px; padding:20px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;"><span style="font-size:24px;line-height:1;">🆚</span> VERSUS</button>
+      <button class="menu-btn-sec" onclick="openSettings()" style="flex:1; font-size:20px; letter-spacing:2px; padding:20px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; background:rgba(255,255,255,0.05); border-radius:14px;"><span style="font-size:24px;line-height:1;">⚙️</span> SETTINGS</button>
+    </div>
   </div>
-</div>
 </div>
 </div>
 
@@ -1243,14 +1246,14 @@ function fmtYds(yds){
 }
 function updateMetricsUI(){
   const m=getMetrics();
-  ['metricsBtn-yards','metricsBtn-meters'].forEach(id=>{
-    const b=document.getElementById(id);
-    if(!b)return;
-    const active=id.endsWith(m);
-    b.style.background=active?'var(--c-fwy)':'rgba(255,255,255,.08)';
-    b.style.borderColor=active?'var(--c-fwyl)':'var(--border)';
-    b.style.color=active?'#fff':'var(--muted)';
-  });
+  const el=document.getElementById('metricsToggle');
+  if(el)el.classList.toggle('on', m==='meters');
+  updateYrd();
+  const h=HOLES[S.holeIdx];
+  if(h){
+    document.getElementById('holeYards').textContent=fmtYds(h.yards);
+    document.getElementById('yrdNum').textContent=S.yrdRemain>0?fmtYds(S.yrdRemain):'On green';
+  }
 }
 function setMetricsPref(m){
   setMetrics(m);
@@ -1766,11 +1769,11 @@ function returnToMenu(){
   VS.active = false;
   TUT.active = false;
   document.getElementById('overlay').classList.remove('show');
+  const hc = document.getElementById('hcScreen'); if(hc) hc.classList.remove('show');
   document.getElementById('summaryModal').classList.remove('show');
   document.getElementById('mainApp').style.display='none';
   document.getElementById('vsTurnScreen').classList.remove('show');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
-  // Reset ovBtn onclick
   document.getElementById('ovBtn').onclick = ()=>nextHole();
   navBack('menuScreen');
   autoLoadProfile();
@@ -2640,7 +2643,7 @@ function completeHole(){
   const h=HOLES[S.holeIdx];
   const score=S.strokes;
   
-  // VERSUS MODE: don't save to profile, use VS completion
+  // VERSUS MODE
   if(VS.active){
     S.holeDone=true;
     hideNextShotBtn();hidePostShotWcBtn();
@@ -2659,30 +2662,30 @@ function completeHole(){
     else{emoji='⛳';title=d>=2?'+'+d:'';}
     
     document.getElementById('ovEmoji').textContent=emoji;
-      document.getElementById('ovEmoji').style.display='block';
-      document.getElementById('ovTitle').textContent=title;
+    document.getElementById('ovEmoji').style.display='block';
+    document.getElementById('ovTitle').textContent=title;
 
-      let pTotal = 0, pPar = 0;
-      for(let i=S.startIdx; i<=S.holeIdx; i++){
-          if (i === S.holeIdx) {
-              pTotal += score;
-          } else if (VS.scores[VS.currentPlayer][i] !== null) {
-              pTotal += VS.scores[VS.currentPlayer][i];
-          }
-          pPar += HOLES[i].par;
-      }
-      let diff = pTotal - pPar;
-      let diffStr = diff === 0 ? 'E' : diff > 0 ? `+${diff}` : `${diff}`;
-      
-      if (VS.format === 'stroke') {
-          document.getElementById('ovNameRow').textContent=`${VS.players[VS.currentPlayer].name}: ${diffStr} (Total)`;
-      } else {
-          document.getElementById('ovNameRow').textContent=`${VS.players[VS.currentPlayer].name}: ${score} strokes`;
-      }
+    let pTotal = 0, pPar = 0;
+    for(let i=S.startIdx; i<=S.holeIdx; i++){
+        if (i === S.holeIdx) {
+            pTotal += score;
+        } else if (VS.scores[VS.currentPlayer][i] !== null) {
+            pTotal += VS.scores[VS.currentPlayer][i];
+        }
+        pPar += HOLES[i].par;
+    }
+    let diff = pTotal - pPar;
+    let diffStr = diff === 0 ? 'E' : diff > 0 ? `+${diff}` : `${diff}`;
+    
+    if (VS.format === 'stroke') {
+        document.getElementById('ovNameRow').textContent=`${VS.players[VS.currentPlayer].name}: ${diffStr} (Total)`;
+    } else {
+        document.getElementById('ovNameRow').textContent=`${VS.players[VS.currentPlayer].name}: ${score} strokes`;
+    }
 
-      document.getElementById('ovNameRow').style.fontSize='';
-      document.getElementById('ovStatsRow').textContent=`Par ${h.par}`;
-      document.getElementById('ovBtn').textContent='CONTINUE →';
+    document.getElementById('ovNameRow').style.fontSize='';
+    document.getElementById('ovStatsRow').textContent=`Par ${h.par}`;
+    document.getElementById('ovBtn').textContent='CONTINUE →';
     document.getElementById('ovBtn').style.display='block';
     document.getElementById('ovBtn').onclick=()=>vsCompleteHole();
     document.getElementById('ovSummaryBtn').style.display='none';
@@ -2705,7 +2708,7 @@ function completeHole(){
     const curHist = S.histories[S.currentRound - 1];
     curSc[S.holeIdx] = score;
     curHist[S.holeIdx] = {log:[...S.log], strokes:score, par:h.par, name:h.name, yards:h.yards, diff:h.diff, wcsUsed: [...(S._wcsUsedThisHole||[])]};
-    buildScorecard(); // Update the visual UI at the top
+    buildScorecard();
     
     S.holeDone=true;
     hideNextShotBtn();hidePostShotWcBtn();
@@ -2744,11 +2747,10 @@ function completeHole(){
         tutAfterHoleComplete();
       });
     }
-    
     return;
   }
   
-  // NORMAL MODE (original code)
+  // NORMAL SINGLE PLAYER MODE
   const curSc = S.scorecards[S.currentRound - 1];
   const curHist = S.histories[S.currentRound - 1];
   
@@ -2801,120 +2803,106 @@ function completeHole(){
   
   buildScorecard();
 
-  if (!VS.active && !TUT.active) {
-      const hcScreen = document.getElementById('hcScreen');
-      document.getElementById('hcHoleTitle').textContent = `HOLE ${S.holeIdx + 1} COMPLETE`;
-      document.getElementById('hcRndBadge').textContent = `RND ${S.currentRound}`;
-      document.getElementById('hcRndBadge').style.display = S.totalRounds > 1 ? 'block' : 'none';
+  const hcScreen = document.getElementById('hcScreen');
+  document.getElementById('hcHoleTitle').textContent = `HOLE ${S.holeIdx + 1} COMPLETE`;
+  document.getElementById('hcRndBadge').textContent = `RND ${S.currentRound}`;
+  document.getElementById('hcRndBadge').style.display = S.totalRounds > 1 ? 'block' : 'none';
 
-      document.getElementById('hcIcon').textContent = emoji;
-      const hcTitle = document.getElementById('hcTitle');
-      hcTitle.textContent = title;
-      
-      if(d<=-2) hcTitle.style.color='var(--gold)';
-      else if(d===-1) hcTitle.style.color='#ff6b9d';
-      else if(d===0) hcTitle.style.color='var(--c-fwyl)';
-      else hcTitle.style.color='#e05252';
+  document.getElementById('hcIcon').textContent = emoji;
+  const hcTitle = document.getElementById('hcTitle');
+  hcTitle.textContent = title;
+  
+  if(d<=-2) hcTitle.style.color='var(--gold)';
+  else if(d===-1) hcTitle.style.color='#ff6b9d';
+  else if(d===0) hcTitle.style.color='var(--c-fwyl)';
+  else hcTitle.style.color='#e05252';
 
-      document.getElementById('hcSub').textContent = score === 1 ? `HOLE IN ONE! · PAR ${h.par}` : `${score} STROKES · PAR ${h.par}`;
+  document.getElementById('hcSub').textContent = score === 1 ? `HOLE IN ONE! · PAR ${h.par}` : `${score} STROKES · PAR ${h.par}`;
 
-      const totSpan = document.getElementById('hcTotSpan');
-      totSpan.textContent = totalStr;
-      if(totalDiff<0) totSpan.style.color='var(--gold)';
-      else if(totalDiff===0) totSpan.style.color='var(--c-fwyl)';
-      else totSpan.style.color='#e05252';
+  const totSpan = document.getElementById('hcTotSpan');
+  totSpan.textContent = totalStr;
+  if(totalDiff<0) totSpan.style.color='var(--gold)';
+  else if(totalDiff===0) totSpan.style.color='var(--c-fwyl)';
+  else totSpan.style.color='#e05252';
 
-      // Populate Shot Replay
-      const logList = document.getElementById('hcLogList');
-      logList.innerHTML = '';
-      [...S.log].forEach(e => {
-          const zd = Z[e.zk] || Z.fwy;
-          const item = document.createElement('div');
-          item.className = 'hc-log-item';
-          let diceHtml = '';
-          if (e.row !== null && e.row !== undefined && e.col !== null && e.col !== undefined) {
-              diceHtml = `<div class="hc-log-dice"><div class="hc-log-die">${e.row+1}</div><div class="hc-log-die">${e.col+1}</div></div>`;
-          } else {
-              diceHtml = `<div class="hc-log-dice"><div class="hc-log-die" style="opacity:0.3">-</div><div class="hc-log-die" style="opacity:0.3">-</div></div>`;
-          }
-          const isPutt = e.zk === 'p1' || e.zk === 'p2' || e.zk === 'p3' || e.zk === 'hole';
-          item.innerHTML = `
-              <div class="hc-log-num">${e.num}</div>
-              ${diceHtml}
-              <div style="width:8px;height:8px;border-radius:50%;background:${zd.color};flex-shrink:0;"></div>
-              <div class="hc-log-desc">${isPutt ? e.desc : zd.name}</div>
-              <div class="hc-log-res">${isPutt ? '✓' : '→'}</div>
-          `;
-          logList.appendChild(item);
-      });
+  // Populate Shot Replay mimicking the Shot Log
+  const logList = document.getElementById('hcLogList');
+  logList.innerHTML = '';
+  [...S.log].reverse().forEach(e => {
+      const zd = Z[e.zk] || Z.fwy;
+      const item = document.createElement('div');
+      item.className = 'log-entry';
+      item.style.marginBottom = '4px';
+      item.innerHTML = `<div class="log-n">${e.num}</div><div class="log-dot" style="background:${zd.color}"></div><span style="color:var(--text);flex:1">${e.desc}</span>${(e.note&&e.note!=='+1')?`<span class="log-r" style="color:${e.pen?'#e05252':'var(--muted)'}">${e.note}</span>`:''}`;
+      logList.appendChild(item);
+  });
 
-      // Populate Mini Scorecard
-      const scHead = document.getElementById('hcScHead');
-      const scPar = document.getElementById('hcScPar');
-      const scYou = document.getElementById('hcScYou');
-      scHead.innerHTML = '<div class="sc-lbl">H</div>';
-      scPar.innerHTML = '<div class="sc-lbl">PAR</div>';
-      scYou.innerHTML = '<div class="sc-lbl">YOU</div>';
+  // Populate Mini Scorecard
+  const scHead = document.getElementById('hcScHead');
+  const scPar = document.getElementById('hcScPar');
+  const scYou = document.getElementById('hcScYou');
+  scHead.innerHTML = '<div class="sc-lbl">H</div>';
+  scPar.innerHTML = '<div class="sc-lbl">PAR</div>';
+  scYou.innerHTML = '<div class="sc-lbl">YOU</div>';
 
-      const activeHoles = HOLES.slice(S.startIdx, S.endIdx + 1);
-      let runningTot = 0, runningPar = 0;
-      activeHoles.forEach((ah, i) => {
-          const absIdx = S.startIdx + i;
-          const v = S.scorecards[S.currentRound-1][absIdx];
-          if (v !== null) { runningTot+=v; runningPar+=ah.par; }
+  const activeHoles = HOLES.slice(S.startIdx, S.endIdx + 1);
+  let runningTot = 0, runningPar = 0;
+  activeHoles.forEach((ah, i) => {
+      const absIdx = S.startIdx + i;
+      const v = S.scorecards[S.currentRound-1][absIdx];
+      if (v !== null) { runningTot+=v; runningPar+=ah.par; }
 
-          const d1 = document.createElement('div'); d1.textContent = absIdx + 1; scHead.appendChild(d1);
-          const d2 = document.createElement('div'); d2.textContent = ah.par; scPar.appendChild(d2);
-          const d3 = document.createElement('div');
-          if(v!==null){
-              const diff = v - ah.par;
-              if(diff<=-2){ d3.innerHTML=`<span class="sc-sym sc-sym-eagle">${v}</span>`; }
-              else if(diff===-1){ d3.innerHTML=`<span class="sc-sym sc-sym-birdie">${v}</span>`; }
-              else if(diff===0){ d3.innerHTML=`<span class="sc-sym">${v}</span>`; }
-              else if(diff===1){ d3.innerHTML=`<span class="sc-sym sc-sym-bogey">${v}</span>`; }
-              else { d3.innerHTML=`<span class="sc-sym sc-sym-double">${v}</span>`; }
-          } else {
-              d3.textContent = '·';
-          }
-          scYou.appendChild(d3);
-      });
-      
-      const t1 = document.createElement('div'); t1.textContent = 'TOT'; t1.style.background='rgba(0,0,0,.2)'; scHead.appendChild(t1);
-      const t2 = document.createElement('div'); t2.textContent = runningPar; t2.style.background='rgba(0,0,0,.2)'; scPar.appendChild(t2);
-      const t3 = document.createElement('div');
-      const runDiff = runningTot - runningPar;
-      t3.textContent = runDiff === 0 ? 'E' : runDiff > 0 ? `+${runDiff}` : `${runDiff}`;
-      t3.style.background='rgba(0,0,0,.2)';
-      t3.style.color = runDiff < 0 ? 'var(--gold)' : runDiff > 0 ? '#e05252' : 'var(--c-fwyl)';
-      t3.style.fontWeight = 'bold';
-      scYou.appendChild(t3);
-
-      const colW = activeHoles.length <= 9 ? '1fr' : '34px';
-      scHead.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
-      scPar.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
-      scYou.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
-
-      const btn = document.getElementById('hcBtn');
-      if (S.holeIdx === S.endIdx) {
-          if (S.currentRound < S.totalRounds) {
-              btn.textContent = `COMPLETE ROUND ${S.currentRound} →`;
-          } else {
-              btn.textContent = 'FINAL SCORECARD →';
-          }
+      const d1 = document.createElement('div'); d1.textContent = absIdx + 1; scHead.appendChild(d1);
+      const d2 = document.createElement('div'); d2.textContent = ah.par; scPar.appendChild(d2);
+      const d3 = document.createElement('div');
+      if(v!==null){
+          const diff = v - ah.par;
+          if(diff<=-2){ d3.innerHTML=`<span class="sc-sym sc-sym-eagle">${v}</span>`; }
+          else if(diff===-1){ d3.innerHTML=`<span class="sc-sym sc-sym-birdie">${v}</span>`; }
+          else if(diff===0){ d3.innerHTML=`<span class="sc-sym">${v}</span>`; }
+          else if(diff===1){ d3.innerHTML=`<span class="sc-sym sc-sym-bogey">${v}</span>`; }
+          else { d3.innerHTML=`<span class="sc-sym sc-sym-double">${v}</span>`; }
       } else {
-          btn.textContent = `HOLE ${S.holeIdx + 2} →`;
+          d3.textContent = '·';
       }
+      scYou.appendChild(d3);
+  });
+  
+  const t1 = document.createElement('div'); t1.textContent = 'TOT'; t1.style.background='rgba(0,0,0,.2)'; scHead.appendChild(t1);
+  const t2 = document.createElement('div'); t2.textContent = runningPar; t2.style.background='rgba(0,0,0,.2)'; scPar.appendChild(t2);
+  const t3 = document.createElement('div');
+  const runDiff = runningTot - runningPar;
+  t3.textContent = runDiff === 0 ? 'E' : runDiff > 0 ? `+${runDiff}` : `${runDiff}`;
+  t3.style.background='rgba(0,0,0,.2)';
+  t3.style.color = runDiff < 0 ? 'var(--gold)' : runDiff > 0 ? '#e05252' : 'var(--c-fwyl)';
+  t3.style.fontWeight = 'bold';
+  scYou.appendChild(t3);
 
-      if(S._skipCelebration){
-        S._skipCelebration=false;
-        document.getElementById('hcScreen').classList.add('show');
+  const colW = activeHoles.length <= 9 ? '1fr' : '34px';
+  scHead.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
+  scPar.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
+  scYou.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
+
+  const btn = document.getElementById('hcBtn');
+  if (S.holeIdx === S.endIdx) {
+      if (S.currentRound < S.totalRounds) {
+          btn.textContent = `COMPLETE ROUND ${S.currentRound} →`;
       } else {
-        showCelebration(isHoleInOne?-99:d, ()=>{
-          document.getElementById('hcScreen').classList.add('show');
-        });
+          btn.textContent = 'FINAL SCORECARD →';
       }
-      return;
+  } else {
+      btn.textContent = `HOLE ${S.holeIdx + 2} →`;
   }
+
+  if(S._skipCelebration){
+    S._skipCelebration=false;
+    document.getElementById('hcScreen').classList.add('show');
+  } else {
+    showCelebration(isHoleInOne?-99:d, ()=>{
+      document.getElementById('hcScreen').classList.add('show');
+    });
+  }
+}
 
   // Fallback for TUTORIAL 
   document.getElementById('ovEmoji').textContent=emoji;
@@ -3738,14 +3726,9 @@ function toggleCellLabels(){
 }
 function updateCellLabelUI(){
   const m=getCellLabelMode();
-  ['tap','always'].forEach(id=>{
-    const b=document.getElementById('cellLabelBtn-'+id);
-    if(b){
-      const active = m===id;
-      b.style.background=active?'var(--c-fwy)':'rgba(255,255,255,.08)';
-      b.style.borderColor=active?'var(--c-fwyl)':'var(--border)';
-      b.style.color=active?'#fff':'var(--muted)';
-    }
+  const el=document.getElementById('labelsToggle');
+  if(el)el.classList.toggle('on', m==='always');
+}
   });
 }
 
@@ -4878,6 +4861,7 @@ function returnToMenuSave(){
   VS.active = false;
   TUT.active = false;
   document.getElementById('overlay').classList.remove('show');
+  const hc = document.getElementById('hcScreen'); if(hc) hc.classList.remove('show');
   document.getElementById('mainApp').style.display='none';
   document.getElementById('vsTurnScreen').classList.remove('show');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
@@ -5980,24 +5964,26 @@ function vsGetCachedGrid(){
         </div>
         <div class="toggle-switch" id="wcToggle" onclick="setWcPref(!wcEnabled())"><div class="toggle-knob"></div></div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📏 DISTANCE</div>
           <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Unit of measurement</div>
         </div>
-        <div style="display:flex;gap:6px;">
-          <button id="metricsBtn-yards" onclick="setMetricsPref('yards')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">YARDS</button>
-          <button id="metricsBtn-meters" onclick="setMetricsPref('meters')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">METERS</button>
+        <div class="txt-toggle" id="metricsToggle" onclick="setMetricsPref(getMetrics()==='yards'?'meters':'yards')">
+          <div class="txt-toggle-knob"></div>
+          <div class="txt-lbl lbl-l">YDS</div>
+          <div class="txt-lbl lbl-r">M</div>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🏷️ CELL LABELS</div>
           <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Show zone name on tap</div>
         </div>
-        <div style="display:flex;gap:6px;">
-          <button id="cellLabelBtn-tap" onclick="setCellLabelModeDirect('tap')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">TAP</button>
-          <button id="cellLabelBtn-always" onclick="setCellLabelModeDirect('always')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">VISIBLE</button>
+        <div class="txt-toggle" id="labelsToggle" onclick="setCellLabelModeDirect(getCellLabelMode()==='tap'?'always':'tap')">
+          <div class="txt-toggle-knob"></div>
+          <div class="txt-lbl lbl-l">TAP</div>
+          <div class="txt-lbl lbl-r">VIS</div>
         </div>
       </div>
       <div id="settingsTutorialRow" style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
