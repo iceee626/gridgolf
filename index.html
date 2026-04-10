@@ -1143,9 +1143,10 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     ZONE LEGEND <span id="legendArrow">▾</span>
   </button>
 </div>
-<div class="legend" id="legend" style="display:grid;"></div>
-
-</div><div class="summary-modal" id="summaryModal">
+<div class="legend" id="legend" style="display:grid;">
+</div>
+</div>
+  <div class="summary-modal" id="summaryModal">
   <div class="summary-card">
     <div class="sum-head">
       <div class="sum-title" id="sumTitle" style="flex:1;text-align:center;">ROUND SUMMARY</div>
@@ -1153,8 +1154,18 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="sum-body" id="sumBody"></div>
   </div>
 </div>
+
 <div class="overlay" id="overlay">
+  <div class="ov">
+    <div class="ov-emoji" id="ovEmoji">⛳</div>
+    <div class="ov-title" id="ovTitle">HOLE COMPLETE</div>
+    <div class="ov-namerow" id="ovNameRow"></div>
+    <div class="ov-statsrow" id="ovStatsRow"></div>
+    <button class="ov-btn" id="ovBtn" onclick="nextHole()">CONTINUE →</button>
+    <button class="ov-btn" id="ovSummaryBtn" style="display:none;margin-top:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);" onclick="openSummary()">VIEW SUMMARY</button>
+    <button class="ov-btn" id="ovPlayAgainBtn" style="display:none;margin-top:8px;background:var(--c-fwy);" onclick="">PLAY AGAIN</button>
   </div>
+</div>
 
 <div class="hc-screen" id="hcScreen">
   <div class="hc-header">
@@ -1774,7 +1785,8 @@ function returnToMenu(){
   document.getElementById('mainApp').style.display='none';
   document.getElementById('vsTurnScreen').classList.remove('show');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
-  document.getElementById('ovBtn').onclick = ()=>nextHole();
+  const ovBtn = document.getElementById('ovBtn');
+  if(ovBtn) ovBtn.onclick = ()=>nextHole();
   navBack('menuScreen');
   autoLoadProfile();
 }
@@ -2910,8 +2922,9 @@ function nextHole(){
   if(nr){nr.style.fontSize='';nr.style.fontFamily='';nr.style.letterSpacing='';nr.style.color='';}
   document.getElementById('overlay').classList.remove('show');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
-  // Reset ovBtn onclick
-  document.getElementById('ovBtn').onclick = ()=>nextHole();
+  // Reset ovBtn onclick safely
+  const ovBtn = document.getElementById('ovBtn');
+  if(ovBtn) ovBtn.onclick = ()=>nextHole();
 
   if(S.holeIdx >= S.endIdx){ showRoundEnd(); return; }
   S.holeIdx++; loadHole();
@@ -4831,7 +4844,8 @@ function returnToMenuSave(){
   document.getElementById('mainApp').style.display='none';
   document.getElementById('vsTurnScreen').classList.remove('show');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
-  document.getElementById('ovBtn').onclick = ()=>nextHole();
+  const ovBtn = document.getElementById('ovBtn');
+  if(ovBtn) ovBtn.onclick = ()=>nextHole();
   navBack('menuScreen');
   autoLoadProfile();
 }
