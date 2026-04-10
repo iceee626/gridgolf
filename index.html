@@ -3986,12 +3986,14 @@ function activateWildcard(slotIdx){
   S._wcsUsedThisHole.push(wc.name);
   WCS.equipped.splice(slotIdx,1);
 
-  const profiles = loadProfiles();
-  const pIdx = Math.min(getActiveProfileIdx(), profiles.length-1);
-  if(profiles[pIdx]) {
-    profiles[pIdx].wildcardsUsed = (profiles[pIdx].wildcardsUsed || 0) + 1;
-    saveProfiles(profiles);
-    setTimeout(() => checkAndAwardAchievements(), 300);
+  if (!TUT.active) {
+    const profiles = loadProfiles();
+    const pIdx = Math.min(getActiveProfileIdx(), profiles.length-1);
+    if(profiles[pIdx]) {
+      profiles[pIdx].wildcardsUsed = (profiles[pIdx].wildcardsUsed || 0) + 1;
+      saveProfiles(profiles);
+      setTimeout(() => checkAndAwardAchievements(), 300);
+    }
   }
 
   const rerollWcs=['mulligan','tailwind'];
@@ -4772,9 +4774,10 @@ function _tutBlockInput(block){
   TUT.blocked = block;
   const rollBtn = document.getElementById('rollBtn');
   const nextBtn = document.getElementById('nextShotBtn');
+  const wcFab = document.getElementById('wcFab');
   if(rollBtn) rollBtn.disabled = block;
-  if(nextBtn && block) nextBtn.style.pointerEvents = 'none';
-  if(nextBtn && !block) nextBtn.style.pointerEvents = '';
+  if(nextBtn) nextBtn.style.pointerEvents = block ? 'none' : '';
+  if(wcFab) wcFab.style.pointerEvents = block ? 'none' : '';
 }
 
 function _tutHighlight(sel, darken = true){
@@ -4811,13 +4814,28 @@ function _tutHighlight(sel, darken = true){
   else bd.classList.remove('show');
 }
 
-function _tutShowTip(title, text, btnLabel, highlight, darken = true, position = 'bottom'){
+function _tutShowTip(title, text, btnLabel, highlight, darken = true, position = 'auto'){
   _tutBlockInput(true);
   _tutHighlight(highlight || null, darken);
   const ov = document.getElementById('tutOverlay');
   ov.classList.remove('top', 'middle');
-  if(position === 'top') ov.classList.add('top');
-  else if(position === 'middle') ov.classList.add('middle');
+  
+  let pos = position;
+  if (pos === 'auto' && highlight) {
+      const el = document.querySelector(highlight.split(',')[0].trim());
+      if (el) {
+          const rect = el.getBoundingClientRect();
+          const centerY = rect.top + (rect.height / 2);
+          pos = (centerY > window.innerHeight / 2) ? 'top' : 'bottom';
+      } else {
+          pos = 'bottom';
+      }
+  } else if (pos === 'auto') {
+      pos = 'bottom';
+  }
+
+  if(pos === 'top') ov.classList.add('top');
+  else if(pos === 'middle') ov.classList.add('middle');
   
   document.getElementById('tutOverlayTitle').textContent = title;
   document.getElementById('tutOverlayText').textContent = text;
@@ -4855,11 +4873,11 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 3){
-      _tutShowTip('ZONE LEGEND', 'Each color represents a different zone on the course. Green = Fairway (safe), Brown = Rough (harder), Blue = Water (penalty), Yellow = Sand (tricky), and the Putting Green for finishing.', 'GOT IT →', '.legend', true, 'middle');
+      _tutShowTip('ZONE LEGEND', 'Each color represents a different zone on the course. Green = Fairway (safe), Brown = Rough (harder), Blue = Water (penalty), Yellow = Sand (tricky), and the Putting Green for finishing.', 'GOT IT →', '.legend', true, 'auto');
       return;
     }
     if(_tutStep === 4){
-      _tutShowTip('THE GRID', 'The grid represents the landing zones. The "Row" die picks the row, the "Col" die picks the column.', 'GOT IT →', '.grid-wrap', true);
+      _tutShowTip('THE GRID', 'The grid represents the landing zones. The "Row" die picks the row, the "Col" die picks the column.', 'GOT IT →', '.grid-wrap, .dice-row', true, 'auto');
       return;
     }
     if(_tutStep === 5){
