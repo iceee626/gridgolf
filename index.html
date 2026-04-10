@@ -2904,38 +2904,6 @@ function completeHole(){
   }
 }
 
-  // Fallback for TUTORIAL 
-  document.getElementById('ovEmoji').textContent=emoji;
-  document.getElementById('ovEmoji').style.display='block';
-  document.getElementById('ovTitle').textContent=title;
-  document.getElementById('ovNameRow').textContent=`TOTAL SCORE: ${totalStr}`;
-  document.getElementById('ovStatsRow').textContent= score === 1 ? `Hole in One! · par ${h.par}` : `${score} strokes · par ${h.par}`;
-  
-  const ovBtn = document.getElementById('ovBtn');
-  ovBtn.style.display='block';
-  document.getElementById('ovSummaryBtn').style.display='none';
-  document.getElementById('ovPlayAgainBtn').style.display='none';
-  
-  if (S.holeIdx === S.endIdx) {
-    if (S.currentRound < S.totalRounds) {
-      ovBtn.textContent = `COMPLETE ROUND ${S.currentRound} →`;
-    } else {
-      ovBtn.textContent = 'FINAL SCORECARD →';
-    }
-  } else {
-    ovBtn.textContent = `HOLE ${S.holeIdx + 2} →`;
-  }
-  
-  if(S._skipCelebration){
-    S._skipCelebration=false;
-    document.getElementById('overlay').classList.add('show');
-  } else {
-    showCelebration(isHoleInOne?-99:d, ()=>{
-      document.getElementById('overlay').classList.add('show');
-    });
-  }
-}
-
 function nextHole(){
   document.getElementById('hcScreen').classList.remove('show');
   const nr=document.getElementById('ovNameRow');
@@ -3728,8 +3696,6 @@ function updateCellLabelUI(){
   const m=getCellLabelMode();
   const el=document.getElementById('labelsToggle');
   if(el)el.classList.toggle('on', m==='always');
-}
-  });
 }
 
 function setCellLabelModeDirect(mode){
