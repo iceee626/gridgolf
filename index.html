@@ -111,8 +111,8 @@ header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12
 .logo span{color:var(--c-fwyl);}
 .hole-badge{background:var(--c-tee);color:#fff;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;padding:4px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
 /* Hide Scrollbars */
-.sc-wrap::-webkit-scrollbar, .sum-tabs::-webkit-scrollbar, .sc-table-wrapper::-webkit-scrollbar { display: none; }
-.sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; scrollbar-width: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar, .sc-wrap::-webkit-scrollbar, .sum-tabs::-webkit-scrollbar, .sc-table-wrapper::-webkit-scrollbar { display: none; }
+html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; scrollbar-width: none; }
 /* Sc-wrap allows scrolling */
 .sc-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow-x:auto;margin-bottom:12px;}
 .sc-inner{display:flex;flex-direction:column;min-width:100%;width:max-content;}
@@ -1179,7 +1179,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <style>
     #hcScreen { overscroll-behavior: none; touch-action: none; }
     /* Vertical scroll for the log list only */
-    #hcLogList { overscroll-behavior: contain; touch-action: pan-y; overflow-y: auto; -webkit-overflow-scrolling: touch; max-height: 95px; -ms-overflow-style: none; scrollbar-width: none; }
+    #hcLogList { overscroll-behavior: contain; touch-action: pan-y; overflow-y: auto; -webkit-overflow-scrolling: touch; max-height: 115px; -ms-overflow-style: none; scrollbar-width: none; }
     #hcLogList::-webkit-scrollbar { display: none; }
     /* Horizontal scroll for the scorecard only */
     #hcScreen .sc-wrap { overscroll-behavior: contain; touch-action: pan-x; overflow-x: auto; -webkit-overflow-scrolling: touch; -ms-overflow-style: none; scrollbar-width: none; }
