@@ -1772,6 +1772,8 @@ function loadHole(){
   buildScorecard();buildGrid();updateZonePill();updateYrd();resetResult();renderLog();updateFloat();
   updateTVBanner();
   if(typeof wcResetHole==='function')wcResetHole();
+  
+  if(!TUT.active) scrollToGrid();
 }
 
 // ═══════════════════════════════════════
@@ -2270,6 +2272,18 @@ function hideNextShotBtn(){
   if(roll){roll.style.display='block';roll.disabled=false;}
   if(next)next.style.display='none';
 }
+function scrollToGrid() {
+  setTimeout(() => {
+    const gridSec = document.querySelector('.grid-section');
+    const header = document.querySelector('header');
+    if (gridSec) {
+      const headerOffset = header ? header.offsetHeight : 0;
+      const y = gridSec.getBoundingClientRect().top + window.scrollY - headerOffset - 10;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+    }
+  }, 50);
+}
+
 function doNextShot(){
   if(S.holeDone)return;
   S._mulliganJustFired=false;
@@ -2279,6 +2293,8 @@ function doNextShot(){
   else{buildGrid();}
   updateZonePill();
   setTimeout(()=>startDiceIdle(),100);
+  
+  if(!TUT.active) scrollToGrid();
   
   if(TUT.active) _tutFire('next_shot_clicked');
 }
@@ -4882,6 +4898,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false); 
+      scrollToGrid();
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
@@ -4909,6 +4926,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
+      scrollToGrid();
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
@@ -4931,6 +4949,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
+      scrollToGrid();
       _tutWaitFor('after_putt_shot', ()=>{ tutAdvance(); });
       return;
     }
@@ -4967,6 +4986,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
+      scrollToGrid();
       _tutWaitFor('wc_revealed', ()=>{ tutAdvance(); }); 
       return;
     }
@@ -5000,6 +5020,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
+      scrollToGrid();
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
@@ -5033,6 +5054,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
+      scrollToGrid();
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
@@ -5051,6 +5073,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
+      scrollToGrid();
       _tutWaitFor('after_putt_shot', ()=>{ tutAdvance(); });
       return;
     }
@@ -5083,6 +5106,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
+      scrollToGrid();
       _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
       return;
     }
