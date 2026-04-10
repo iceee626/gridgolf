@@ -2105,6 +2105,17 @@ function processShot(row,col){
     addLog(S.shotNum,`Green → ${finalPutts} putt${finalPutts>1?'s':''}${wcPuttNote}`,outcome,`+${finalPutts}`,false,row,col,snapGrid, prevZone, prevYrdRemain);
     S.shotNum += finalPutts; 
     updateYrd();
+    
+    if(TUT.active) {
+       S.holeDone = true;
+       hideNextShotBtn();
+       const rollBtn2=document.getElementById('rollBtn');
+       if(rollBtn2)rollBtn2.style.display='none';
+       updateTVBanner();
+       setTimeout(()=>completeHole(), 300);
+       return;
+    }
+
     S.holeDone=false;
 
     {
@@ -2528,10 +2539,20 @@ function completeHole(){
     document.getElementById('ovNameRow').textContent=`TOTAL SCORE: ${tutDiffStr}`;
     document.getElementById('ovStatsRow').textContent=`${score} strokes · par ${h.par}`;
     document.getElementById('ovBtn').style.display='block';
-    document.getElementById('ovBtn').textContent='NEXT →';
+    document.getElementById('ovBtn').textContent = S.holeIdx === 2 ? 'FINISH TUTORIAL →' : 'NEXT HOLE →';
     document.getElementById('ovBtn').onclick = () => {
         document.getElementById('overlay').classList.remove('show');
-        tutAfterHoleComplete();
+        if(S.holeIdx === 0) {
+           S.holeIdx = 1; _tutHoleKey = 'h2'; _tutStep = -1;
+           loadHole();
+           setTimeout(()=>tutAdvance(), 400);
+        } else if (S.holeIdx === 1) {
+           S.holeIdx = 2; _tutHoleKey = 'h3'; _tutStep = -1;
+           loadHole();
+           setTimeout(()=>tutAdvance(), 400);
+        } else {
+           tutComplete();
+        }
     };
     document.getElementById('ovSummaryBtn').style.display='none';
     document.getElementById('ovPlayAgainBtn').style.display='none';
@@ -2544,7 +2565,6 @@ function completeHole(){
         document.getElementById('overlay').classList.add('show');
       });
     }
-    
     return;
   }
   
@@ -3836,13 +3856,16 @@ function openWcDrawer(){
   document.getElementById('wcDrawer').classList.add('open');
   document.getElementById('wcBackdrop').classList.add('show');
   if (TUT.active && _tutWaitEvent === 'wc_used') {
-     _tutHighlight('.wc-slot', false); 
+     _tutHighlight('.wc-use-btn', false); 
   }
 }
 function closeWcDrawer(){
   document.getElementById('wcDrawer').classList.remove('open');
   document.getElementById('wcBackdrop').classList.remove('show');
   closeWcInfo();
+  if (TUT.active && _tutWaitEvent === 'wc_used') {
+     _tutHighlight('#wcFab', false);
+  }
 }
 function openWcInfo(){
   const panel=document.getElementById('wcInfoPanel');
@@ -4624,17 +4647,14 @@ const TUT_GRIDS = {
   h1_fwy_far: [['fwy','fwy','chip','fwy','rgh','fwy'],['fwy','fwy','fwy','fwy','fwy','chip'],['rgh','fwy','fwy','fwy','fwy','fwy'],['fwy','fwy','fwy','fwy','rgh','fwy'],['fwy','chip','fwy','fwy','fwy','fwy'],['fwy','fwy','fwy','fwy','fwy','rgh']],
   h1_fwy_mid: [['grn','grn','grn','chip','grn','grn'],['grn','grn','grn','grn','grn','grn'],['chip','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','chip'],['grn','grn','grn','grn','grn','grn'],['grn','chip','grn','grn','grn','grn']],
   h1_putt: [['p1','p1','p1','p1','p2','p3'],['p1','p1','p1','p1','p1','p2'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1']],
-  h2_tee: [['fwy','fwy','h2o','fwy','fwy','ob'],['fwy','fwy','fwy','h2o','fwy','fwy'],['h2o','fwy','fwy','fwy','fwy','h2o'],['fwy','h2o','fwy','fwy','fwy','ob'],['fwy','fwy','fwy','fwy','h2o','fwy'],['fwy','ob','fwy','fwy','fwy','fwy']],
+  h2_tee: [['fwy','fwy','h2o','fwy','fwy','fwy'],['fwy','fwy','fwy','h2o','fwy','fwy'],['h2o','fwy','fwy','fwy','fwy','h2o'],['fwy','h2o','fwy','fwy','fwy','ob'],['fwy','fwy','fwy','fwy','h2o','fwy'],['fwy','fwy','fwy','fwy','fwy','fwy']],
   h2_after: [['grn','grn','chip','grn','h2o','grn'],['grn','grn','grn','grn','grn','chip'],['h2o','grn','grn','grn','grn','grn'],['chip','grn','grn','h2o','grn','grn'],['grn','grn','grn','grn','grn','h2o'],['grn','grn','grn','grn','chip','grn']],
   h2_putt: [['p1','p1','p2','p1','p2','p3'],['p1','p1','p1','p2','p2','p3'],['p1','p1','p1','p1','p2','p2'],['p1','p1','p1','p1','p1','p2'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1']],
   h3_tee: [['grn','grn','hole','grn','chip','grn'],['grn','grn','grn','grn','grn','grn'],['chip','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','chip'],['grn','grn','grn','grn','grn','grn']],
 };
 
-// Each step: title, text, highlight (CSS selector to pulse), action to wait for, then callback
 let _tutStep = -1;
-let _tutDiceQueue = [];
 let _tutHoleKey = 'h1';
-let _tutPhantomGiven = false;
 
 function startTutorial(){
   document.getElementById('tutPrompt').classList.remove('show');
@@ -4642,9 +4662,7 @@ function startTutorial(){
   TUT.active = true;
   TUT.blocked = true;
   _tutStep = -1;
-  _tutDiceQueue = [];
   _tutHoleKey = 'h1';
-  _tutPhantomGiven = false;
 
   SETUP.mode = 'custom'; SETUP.rounds = 1; SETUP.holesConfig = '18';
   GAME_DIFF = 1;
@@ -4662,7 +4680,6 @@ function startTutorial(){
   wcReset();
   init();
   
-  // Block all user input until tutorial overlay shows
   _tutBlockInput(true);
   setTimeout(()=>tutAdvance(), 600);
 }
@@ -4757,7 +4774,6 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false); 
-      _tutDiceQueue = [{r:3,c:4}]; // -> fwy
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
@@ -4785,7 +4801,6 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
-      _tutDiceQueue = [{r:1,c:3}]; // -> grn
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
@@ -4808,31 +4823,6 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
-      _tutDiceQueue = [{r:2,c:4}]; // -> p1
-      _tutWaitFor('after_putt_shot', ()=>{ tutAdvance(); });
-      return;
-    }
-    if(_tutStep === 16){
-      _tutShowTip('GREAT PUTT!', 'You made the putt! Tap FINISH HOLE to complete the hole.', 'I\'LL TAP IT', '#nextShotBtn', true);
-      return;
-    }
-    if(_tutStep === 17){
-      _tutHideTip();
-      _tutBlockInput(false);
-      _tutHighlight('#nextShotBtn', false);
-      _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
-      return;
-    }
-    if(_tutStep === 18){
-      _tutShowTip('HOLE COMPLETE!', 'You holed out! Let\'s move to Hole 2 to learn about hazards and special abilities.', 'NEXT HOLE →', '.sc-wrap', true);
-      return;
-    }
-    if(_tutStep === 19){
-      document.getElementById('overlay').classList.remove('show');
-      document.getElementById('overlay').classList.remove('tut-pulse');
-      S.holeIdx = 1; _tutHoleKey = 'h2'; _tutDiceQueue = []; _tutStep = -1;
-      loadHole();
-      setTimeout(()=>tutAdvance(), 500);
       return;
     }
   }
@@ -4843,14 +4833,13 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('WILDCARDS!', 'If you roll doubles (e.g., two 3s), you earn a Wildcard! These give you special abilities. Let\'s roll to see what happens.', 'I\'LL ROLL', '#rollBtn', true);
+      _tutShowTip('WILDCARDS!', 'If you roll doubles (e.g., two 3s), you earn a Wildcard! These give you special abilities. Click on roll to proceed.', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
     if(_tutStep === 2){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
-      _tutDiceQueue = [{r:3,c:3}]; // -> fwy, doubles!
       _tutWaitFor('wc_revealed', ()=>{ tutAdvance(); }); 
       return;
     }
@@ -4884,7 +4873,6 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
-      _tutDiceQueue = [{r:3,c:1}]; // -> h2o
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
@@ -4918,7 +4906,6 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
-      _tutDiceQueue = [{r:1,c:2}]; // -> grn
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
@@ -4941,58 +4928,19 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
-      _tutDiceQueue = [{r:2,c:3}]; // -> p1
-      _tutWaitFor('after_putt_shot', ()=>{ tutAdvance(); });
-      return;
-    }
-    if(_tutStep === 19){
-      _tutShowTip('GREAT PUTT!', 'Tap FINISH HOLE.', 'I\'LL TAP IT', '#nextShotBtn', true);
-      return;
-    }
-    if(_tutStep === 20){
-      _tutHideTip();
-      _tutBlockInput(false);
-      _tutHighlight('#nextShotBtn', false);
-      _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
-      return;
-    }
-    if(_tutStep === 21){
-      _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round! Final hole coming up!', 'NEXT HOLE →', '.sc-wrap', true);
-      return;
-    }
-    if(_tutStep === 22){
-      document.getElementById('overlay').classList.remove('show');
-      document.getElementById('overlay').classList.remove('tut-pulse');
-      S.holeIdx = 2; _tutHoleKey = 'h3'; _tutDiceQueue = []; _tutStep = -1;
-      loadHole();
-      setTimeout(()=>tutAdvance(), 500);
       return;
     }
   }
   
   if(hi === 2){
     if(_tutStep === 0){
-      _tutShowTip('HOLE 3 — PAR 3', 'Par 3 holes are very short! You tee off directly at the green. This grid has a special ⛳ "Hole In!" cell. Land on it for a chance at a hole-in-one!', 'GOT IT →', '.grid-wrap', true);
+      _tutShowTip('HOLE 3 — PAR 3', 'Par 3 holes are very short! You tee off directly at the green. This grid has a special ⛳ "Hole In!" cell. Land on it for a chance at a hole-in-one! Click on roll to proceed.', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('GO FOR THE HOLE!', 'Roll the dice — aim for the ⛳ cell!', 'I\'LL ROLL', '#rollBtn', true);
-      return;
-    }
-    if(_tutStep === 2){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
-      _tutDiceQueue = [{r:1,c:3}]; // -> hole!
-      _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
-      return;
-    }
-    if(_tutStep === 3){
-      _tutShowTip('🏆 TUTORIAL COMPLETE!', 'A hole-in-one! You\'ve learned zones, dice, penalties, wildcards, and putting. Now go play the real course! 🏌️', 'FINISH TUTORIAL →', null, true);
-      return;
-    }
-    if(_tutStep === 4){
-      tutComplete();
       return;
     }
   }
@@ -5012,39 +4960,49 @@ function _tutFire(event){
     const cb = _tutWaitCallback;
     _tutWaitEvent = null;
     _tutWaitCallback = null;
-    setTimeout(()=>cb(), 600);
+    cb();
   }
 }
 
-// Called from processShot after non-putt shot
 function tutAfterShot(outcome){
   if(!TUT.active) return;
   _tutFire('after_shot');
 }
 
-// Called after putt resolves (hole done)
 function tutAfterPutt(){
   if(!TUT.active) return;
   _tutFire('after_putt');
 }
 
-// Called from completeHole
 function tutAfterHoleComplete(){
   if(!TUT.active) return;
-  // For the putt wait — fire after_putt from here
   _tutFire('after_putt');
   _tutFire('hole_complete');
 }
 
-// Called when wildcard is used
 function tutAfterWcUse(){
   if(!TUT.active) return;
   _tutFire('wc_used');
 }
 
 function tutGetDice(){
-  if(_tutDiceQueue.length === 0) return null;
-  return _tutDiceQueue.shift();
+  const hi = S.holeIdx;
+  const sn = S.shotNum;
+  if(hi === 0){
+    if(sn === 1) return {r:3, c:4}; // tee -> fwy
+    if(sn === 2) return {r:1, c:3}; // fwy -> grn
+    if(sn === 3) return {r:2, c:4}; // grn -> p1
+  }
+  if(hi === 1){
+    if(sn === 1) return {r:3, c:3}; // tee -> fwy (doubles)
+    if(sn === 2) return {r:3, c:1}; // fwy -> h2o
+    if(sn === 3) return {r:1, c:2}; // fwy -> grn (after phantom stroke)
+    if(sn === 4) return {r:2, c:3}; // grn -> p1
+  }
+  if(hi === 2){
+    if(sn === 1) return {r:1, c:3}; // tee -> hole
+  }
+  return {r:1, c:1}; // Fallback
 }
 
 function tutGetGrid(){
@@ -5066,8 +5024,6 @@ function tutGetGrid(){
   return null;
 }
 
-function tutGivePhantom(){ /* legacy compat - now handled inline */ }
-
 function tutComplete(){
   _tutHideTip();
   TUT.active = false;
@@ -5083,7 +5039,6 @@ function tutComplete(){
   returnToMenu();
 }
 
-// Intercept menu button during tutorial
 function tutMenuIntercept(){
   showConfirm('ABANDON TUTORIAL? You can always replay it from Settings.', ()=>{
     tutComplete();
