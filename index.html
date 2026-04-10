@@ -535,13 +535,13 @@ header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12
   .profile-action-btn:hover{border-color:var(--text);color:var(--text);}
   .profile-action-btn.del:hover{border-color:#e05252;color:#e05252;}
 }
-.profile-action-btn:active{border-color:var(--text);color:var(--text);background:rgba(255,255,255,.05);}
+.profile-action-btn:active, .profile-action-btn.active-action {border-color:var(--text);color:var(--text);background:rgba(255,255,255,.08);}
 .profile-action-btn.del:active{border-color:#e05252;color:#e05252;background:rgba(224,82,82,.1);}
 #confirmModal, #alertModal { align-items:center; }
 
 /* Floating Menu Elements */
-#floatingEntities { position:absolute; top:0; left:0; width:100%; height:80%; pointer-events:none; overflow:hidden; z-index:5; }
-.float-item { position:absolute; font-size:36px; pointer-events:auto; cursor:grab; user-select:none; touch-action:none; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+#floatingEntities { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden; z-index:30; }
+.float-item { position:absolute; top:0; left:0; font-size:36px; pointer-events:auto; cursor:grab; user-select:none; touch-action:none; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.3)); will-change: transform; }
 .float-item:active { cursor:grabbing; }
 .profile-new-form{display:none;border-top:1px solid var(--border);padding-top:12px;}
 .profile-new-form.show{display:block;}
@@ -1420,22 +1420,23 @@ function initFloatingEntities() {
   const container = document.getElementById('floatingEntities');
   if(!container) return;
   container.innerHTML = '';
-  const emojis = ['⛳', '🎲', '🏌️', '🏌️‍♀️', '🏆', '☁️', '☀️'];
+  const emojis = ['⛳', '🎲', '🏌️', '🏌️‍♀️', '🏆'];
   const items = [];
   
-  for(let i=0; i<10; i++) {
+  // Increased density
+  for(let i=0; i<25; i++) {
     const el = document.createElement('div');
     el.className = 'float-item';
     el.textContent = emojis[i % emojis.length];
     
-    let startX = Math.random() * window.innerWidth;
-    let startY = 5 + Math.random() * 65; 
-    el.style.top = startY + '%';
-    el.style.left = startX + 'px';
+    let x = Math.random() * window.innerWidth;
+    let y = Math.random() * window.innerHeight; 
     
-    let speed = (Math.random() * 0.4 + 0.1) * (Math.random() > 0.5 ? 1 : -1);
+    // Increased speed & added slight vertical drift
+    let speedX = (Math.random() * 1.0 + 0.3) * (Math.random() > 0.5 ? 1 : -1);
+    let speedY = (Math.random() * 1.0 - 0.5); 
     let rotation = Math.random() * 360;
-    let rotSpeed = (Math.random() * 0.8 - 0.4); 
+    let rotSpeed = (Math.random() * 1.5 - 0.75); 
     
     container.appendChild(el);
     
@@ -1447,17 +1448,17 @@ function initFloatingEntities() {
       el.style.zIndex = '100';
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      const rect = el.getBoundingClientRect();
-      offsetX = clientX - rect.left;
-      offsetY = clientY - rect.top;
+      offsetX = clientX - x;
+      offsetY = clientY - y;
     };
     const moveDrag = (e) => {
       if(!isDragging) return;
+      e.preventDefault(); // Prevents mobile screen from scrolling while dragging
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      startX = clientX - offsetX;
-      el.style.left = startX + 'px';
-      el.style.top = (clientY - offsetY) + 'px';
+      x = clientX - offsetX;
+      y = clientY - offsetY;
+      el.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rotation}deg)`;
     };
     const endDrag = () => {
       if(!isDragging) return;
@@ -1466,24 +1467,30 @@ function initFloatingEntities() {
     };
     
     el.addEventListener('mousedown', startDrag);
-    window.addEventListener('mousemove', moveDrag);
+    window.addEventListener('mousemove', moveDrag, {passive: false});
     window.addEventListener('mouseup', endDrag);
-    el.addEventListener('touchstart', startDrag, {passive:true});
-    window.addEventListener('touchmove', moveDrag, {passive:true});
-    window.addEventListener('touchend', endDrag, {passive:true});
+    el.addEventListener('touchstart', startDrag, {passive: false});
+    window.addEventListener('touchmove', moveDrag, {passive: false});
+    window.addEventListener('touchend', endDrag, {passive: false});
     
-    items.push({el, speed, x: startX, rot: rotation, rotSpeed});
+    items.push({el, speedX, speedY, x, y, rot: rotation, rotSpeed, isDragging: () => isDragging});
   }
   
   const animate = () => {
     items.forEach(item => {
-      if(!item.el.style.zIndex) { // Only animate if not being dragged
-        item.x += item.speed;
+      if(!item.isDragging()) {
+        item.x += item.speedX;
+        item.y += item.speedY;
         item.rot += item.rotSpeed;
+        
+        // Wrap around screen smoothly
         if(item.x > window.innerWidth + 50) item.x = -50;
         if(item.x < -50) item.x = window.innerWidth + 50;
-        item.el.style.left = item.x + 'px';
-        item.el.style.transform = `rotate(${item.rot}deg)`;
+        if(item.y > window.innerHeight + 50) item.y = -50;
+        if(item.y < -50) item.y = window.innerHeight + 50;
+        
+        // Hardware accelerated movement
+        item.el.style.transform = `translate3d(${item.x}px, ${item.y}px, 0) rotate(${item.rot}deg)`;
       }
     });
     requestAnimationFrame(animate);
@@ -3444,13 +3451,29 @@ function showProfileStats(i){
   const profiles=loadProfiles();
   const p=profiles[i];
   if(!p)return;
+  
+  const slotsContainer = document.getElementById('profileSlots');
+  const allBtns = slotsContainer.querySelectorAll('.profile-action-btn');
+  
   const existing=document.getElementById('profileStatsPanel');
-  if(existing){existing.remove();return;}
-  const slots=document.getElementById('profileSlots');
+  if(existing){
+    const isSame = existing.dataset.profileIdx === String(i);
+    existing.remove();
+    allBtns.forEach(b => b.classList.remove('active-action'));
+    if(isSame) return; // If clicking the same one, just close it and return
+  }
+  
+  // Highlight the clicked STATS button (it is the 2nd button in the action list)
+  const slotDivs = slotsContainer.querySelectorAll('.profile-slot:not(.empty)');
+  if (slotDivs[i]) {
+      const statsBtn = slotDivs[i].querySelectorAll('.profile-action-btn')[1];
+      if (statsBtn) statsBtn.classList.add('active-action');
+  }
+
   const panel=document.createElement('div');
   panel.id='profileStatsPanel';
-  panel.style.cssText='background:rgba(255,255,255,.04);border:1px solid var(--c-fwyl);border-radius:10px;padding:12px;margin-top:6px;animation:fadein .2s ease;max-height:60vh;overflow-y:auto;';
-  const bestStr=p.bestDiff===undefined?'—':p.bestDiff===0?'E':p.bestDiff>0?`+${p.bestDiff}`:`${p.bestDiff}`;
+  panel.dataset.profileIdx = String(i);
+  panel.style.cssText='background:rgba(255,255,255,.04);border:1px solid var(--c-fwyl);border-radius:10px;padding:12px;margin-top:6px;animation:fadein .2s ease;max-height:60vh;overflow-y:auto;';  const bestStr=p.bestDiff===undefined?'—':p.bestDiff===0?'E':p.bestDiff>0?`+${p.bestDiff}`:`${p.bestDiff}`;
   const rows=[
     ['Games Played', p.gamesPlayed||0],['Holes Played', p.holesPlayed||0],
     ['Birdies', p.birdies||0],['Eagles', p.eagles||0],
