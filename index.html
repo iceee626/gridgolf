@@ -3305,7 +3305,6 @@ function createFirstProfile(){
   setActiveProfileIdx(0);
   PLAYER_NAME=val;
   hideScreen('onboardScreen');
-  showScreen('menuScreen','flex');
   updateMenuProfileDisplay();
   setTimeout(()=>{
     maybeTutorialPrompt();
@@ -4822,6 +4821,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
+      _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 16){
@@ -4938,6 +4938,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
+      _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 19){
