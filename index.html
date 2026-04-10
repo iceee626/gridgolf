@@ -5158,27 +5158,27 @@ function tutAdvance(){
   
   if(hi === 0){
     if(_tutStep === 0){
-      _tutShowTip('WELCOME TO GRID GOLF!', 'The goal of golf is the lowest score possible! Every shot you hit counts as 1 stroke. Let\'s start with a Par 4 (you want to reach the hole in 4 strokes).', 'GOT IT →', null);
+      _tutShowTip('WELCOME TO GRID GOLF!', 'The goal of golf is simple: finish each hole in as few strokes as possible. Every shot you take counts as 1 stroke. Each hole has a target called "Par" — the number of shots a good player is expected to need. This first hole is a Par 4, meaning reaching the hole in 4 strokes is the goal. In the game you will have a chance to play on par 3 (short) and par 5 (long) holes as well.', 'GOT IT', null);
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('SCORECARD', 'Here is your scorecard. It shows your score versus the Par for each hole. Under par (-1) is great, over par (+1) leaves room to improve.', 'GOT IT →', 'header', true);
+      _tutShowTip('SCORECARD', 'This is your scorecard. It shows how many strokes you used on each hole compared to Par (the expected number of shots). "E" means Even — you matched Par exactly. Fewer strokes is great (Birdie = -1, Eagle = -2, Albatross = -3). More strokes adds to your score (Bogey = +1, Double Bogey = +2, etc.).', 'GOT IT', 'header', true);
       return;
     }
     if(_tutStep === 2){
-      _tutShowTip('TV SCOREBOARD', 'At the bottom, this TV banner tracks your total running score for the round.', 'GOT IT →', '#tvBar', true);
+      _tutShowTip('TV SCOREBOARD', 'At the bottom, this TV banner tracks your shots and total running score for the round.', 'GOT IT', '#tvBar', true);
       return;
     }
     if(_tutStep === 3){
-      _tutShowTip('ZONE LEGEND', 'Each color represents a different zone on the course. Green = Fairway (safe), Brown = Rough (harder), Blue = Water (penalty), Yellow = Sand (tricky), and the Putting Green for finishing.', 'GOT IT →', '.legend', true, 'middle');
+      _tutShowTip('ZONE LEGEND', 'Each color represents a different area of the course: Green = Fairway (safe), Brown = Rough (harder shot), Light Green = Chip (short shot near the green), Yellow = Sand bunker (tricky), Blue = Water (penalty), Red = Out of Bounds (penalty). The Putting Green is where you finish the hole. Tap on ZONE LEGEND if you want to hide or unhide it.', 'GOT IT', '.legend', true, 'middle');
       return;
     }
     if(_tutStep === 4){
-      _tutShowTip('THE GRID', 'The grid represents the landing zones. The "Row" die picks the row, the "Col" die picks the column.', 'GOT IT →', '.grid-wrap, .dice-row', true);
+      _tutShowTip('THE GRID', 'The grid represents all the possible landing spots for your shot. When you roll the dice, one die selects the Row and the other selects the Column. Where they intersect is where your ball lands.', 'GOT IT', '.grid-wrap, .dice-row', true);
       return;
     }
     if(_tutStep === 5){
-      _tutShowTip('ROLL THE DICE!', 'Tap the ROLL button to hit your tee shot! The dice determine where your ball lands.', 'OK, I\'LL ROLL', '#rollBtn', true);
+      _tutShowTip('ROLL THE DICE!', 'Time to shine! Tap the ROLL button to hit your tee shot. The dices determine where your ball lands.', 'SWING!', '#rollBtn', true);
       return;
     }
     if(_tutStep === 6){
@@ -5190,12 +5190,12 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 7){
-      _tutShowTip('SHOT LOG', 'Nice! You landed on the Fairway. The Shot Log right here tracks every shot you take.', 'GOT IT →', '.log-section', true);
+      _tutShowTip('SHOT LOG', 'Nice! You landed on the Fairway. The Shot Log right here tracks every shot you take.', 'GOT IT', '.log-section', true);
       return;
     }
     if(_tutStep === 8){
       S.yrdRemain = 150; updateYrd(); 
-      _tutShowTip('GREAT TEE SHOT!', 'The yardage bar shows your distance. The closer you get to the hole, the better your grid becomes. Tap NEXT SHOT to continue.', 'I\'LL TAP IT', '.yrd-bar, #nextShotBtn', true);
+      _tutShowTip('GREAT TEE SHOT!', 'The yardage bar shows your distance. The closer you get to the hole, the better your grid becomes. Tap NEXT SHOT to continue.', 'GOT IT', '.yrd-bar, #nextShotBtn', true);
       return;
     }
     if(_tutStep === 9){
@@ -5207,7 +5207,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 10){
-      _tutShowTip('GETTING CLOSER!', 'Notice the grid changed. Because you are closer to the hole, you have more Green (Fairway) cells. Let\'s roll your approach shot!', 'I\'LL ROLL', '.grid-wrap', true);
+      _tutShowTip('GETTING CLOSER', 'Notice the grid changed. Because you are closer to the hole, you have more Green (Fairway) cells. Let\'s roll your approach shot!', 'PROCEED', '.grid-wrap', true);
       scrollToGrid();
       return;
     }
@@ -5220,7 +5220,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 12){
-      _tutShowTip('GREAT APPROACH!', 'You landed on the green! Tap NEXT SHOT to load the putting grid so you can finish the hole.', 'GOT IT', '#nextShotBtn', true);
+      _tutShowTip('GREAT APPROACH!', 'You landed on the green — the smooth area around the hole used for putting. Harder holes include more challenging zones like Rough, Sand, Chip areas, and sometimes Water hazards that can make your next shot harder. Tap NEXT SHOT to load the putting grid so you can finish the hole.', 'GOT IT', '#nextShotBtn', true);
       scrollToGrid();
       return;
     }
@@ -5233,7 +5233,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 14){
-      _tutShowTip('PUTTING TIME!', 'The green is the smooth grass around the hole. The grid now has 1-Putt (green, 1 stroke to finish), 2-Putt (yellow, 2 strokes), and 3-Putt (red, 3 strokes). Roll to finish!', 'I\'LL ROLL', '.grid-wrap', true);
+      _tutShowTip('PUTTING TIME!', 'The green is the smooth grass around the hole. The grid now has 1-Putt (green, 1 stroke to finish), 2-Putt (yellow, 2 strokes), and 3-Putt (red, 3 strokes). Aim always for 1P!', 'PUTT FOR BIRDIE', '.grid-wrap', true);
       scrollToGrid();
       return;
     }
@@ -5254,7 +5254,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 17){
-      _tutShowTip('HOLE COMPLETE!', 'You holed out! Let\'s move to Hole 2 to learn about hazards and special abilities.', 'NEXT HOLE →', '.overlay .ov', true);
+      _tutShowTip('HOLE 1 COMPLETE!', 'Nice shot! You finished one stroke under Par — that’s called a Birdie. The goal is always to beat Par whenever you can! Let’s move to Hole 2 to learn about hazards and special abilities.', 'NEXT HOLE →', '.overlay .ov', true);
       return;
     }
     if(_tutStep === 18){
@@ -5268,11 +5268,11 @@ function tutAdvance(){
   
   if(hi === 1){
     if(_tutStep === 0){
-      _tutShowTip('HOLE 2 — HAZARDS', 'This hole has hazards! 💧 Water and 🚫 Out of Bounds (OB) add a +2 penalty to your score, and you replay from the same spot. Let\'s see what happens.', 'GOT IT →', '.grid-wrap', true);
+      _tutShowTip('HOLE 2 — PAR 5', 'This par 5 hole has hazards! 💧 Water and 🚫 Out of Bounds (OB) add a +2 penalty to your score, and you replay from the same spot. Let\'s see what happens.', 'GOT IT', '.grid-wrap', true);
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('WILDCARDS!', 'If you roll doubles (e.g., two 3s), you earn a Wildcard! These give you special abilities. Click on roll to proceed.', 'I\'LL ROLL', '#rollBtn', true);
+      _tutShowTip('WILDCARDS!', 'If you roll doubles (e.g., two 3s), you earn a Wildcard! These give you special abilities. There are several wildcards available in the game. To see them all, open Wildcard drawer on the right, and click on "i" at the top. Click on roll to proceed.', 'PROCEED', '#rollBtn', true);
       return;
     }
     if(_tutStep === 2){
@@ -5284,7 +5284,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 3){
-      _tutShowTip('WILDCARD EARNED!', 'You rolled doubles and found a Wildcard! Tap the card to reveal it, then tap EQUIP to save it in your drawer.', 'GOT IT →', '#wcReveal', false);
+      _tutShowTip('WILDCARD EARNED!', 'You rolled doubles and found a Wildcard! Tap the card to reveal it, then tap EQUIP to save it in your drawer.', 'GOT IT', '#wcReveal', false);
       return;
     }
     if(_tutStep === 4){
@@ -5295,7 +5295,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 5){
-      _tutShowTip('NEXT SHOT', 'Your Phantom Stroke is saved in your drawer on the right. You can have up to 3 wildcards stored at the same time. Tap NEXT SHOT to continue playing.', 'I\'LL TAP IT', '#nextShotBtn', true);
+      _tutShowTip('NEXT SHOT', 'Your Phantom Stroke is saved in your drawer on the right. You can have up to 3 wildcards stored at the same time. When you are ready, tap NEXT SHOT to continue playing.', 'PROCEED', '#nextShotBtn', true);
       return;
     }
     if(_tutStep === 6){
@@ -5307,7 +5307,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 7){
-      _tutShowTip('WATCH OUT!', 'Roll your approach shot to try and reach the green. Avoid the water!', 'I\'LL ROLL', '#rollBtn', true);
+      _tutShowTip('WATCH OUT!', 'First hazards avoided. Now, roll your approach shot to try and reach the green. Keep away from the water!', 'PROCEED', '#rollBtn', true);
       scrollToGrid();
       return;
     }
@@ -5320,7 +5320,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 9){
-      _tutShowTip('💧 WATER HAZARD!', 'Oh no! That adds +2 penalty strokes. But wait... tap the purple Wildcard drawer and tap USE on the Phantom Stroke to remove 1 penalty!', 'I\'LL USE IT', null, true);
+      _tutShowTip('💧 WATER HAZARD!', 'Oh no! That adds +2 penalty strokes. But wait... tap the purple Wildcard drawer and tap USE on the Phantom Stroke to remove 1 penalty!', 'PROCEED', null, true);
       return;
     }
     if(_tutStep === 10){
@@ -5331,7 +5331,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 11){
-      _tutShowTip('PENALTY REMOVED!', 'You saved a stroke! Now tap NEXT SHOT to continue.', 'GOT IT', '#nextShotBtn', true);
+      _tutShowTip('PENALTY REMOVED!', 'Thanks to the Wildcard, you saved a stroke! Now tap NEXT SHOT to continue.', 'GOT IT', '#nextShotBtn', true);
       scrollToGrid();
       return;
     }
@@ -5344,7 +5344,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 13){
-      _tutShowTip('RECOVERY SHOT', 'Because of the penalty, you hit from the same spot. Roll for the green!', 'I\'LL ROLL', '#rollBtn', true);
+      _tutShowTip('RECOVERY SHOT', 'Your wildcard saved you from the penalty stroke! But you still have to replay the shot from the same spot — like getting a second chance. Roll again to try landing on the green.', 'THANKS!', '#rollBtn', true);
       scrollToGrid();
       return;
     }
@@ -5365,7 +5365,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 16){
-      _tutShowTip('FINISH THE HOLE!', 'Roll to putt.', 'I\'LL ROLL', '#rollBtn', true);
+      _tutShowTip('FINISH THE HOLE', 'Great, you have a chance for birdie now! Roll to putt.', 'PROCEED', '#rollBtn', true);
       scrollToGrid();
       return;
     }
@@ -5386,7 +5386,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 19){
-      _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round! Final hole coming up!', 'NEXT HOLE →', '.overlay .ov', true);
+      _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round, use them wisely! Final hole coming up!', 'NEXT HOLE →', '.overlay .ov', true);
       return;
     }
     if(_tutStep === 20){
@@ -5400,7 +5400,7 @@ function tutAdvance(){
   
   if(hi === 2){
     if(_tutStep === 0){
-      _tutShowTip('HOLE 3 — PAR 3', 'Par 3 holes are very short! You tee off directly at the green. This grid has a special ⛳ "Hole In!" cell. Land on it for a chance at a hole-in-one! Click on roll to proceed.', 'I\'LL ROLL', '#rollBtn', true);
+      _tutShowTip('HOLE 3 — PAR 3', 'Par 3 holes are very short. You tee off directly at the green. This grid has a special ⛳ "Hole In!" cell. Land on it for a chance at a hole-in-one! Click on roll to proceed.', 'ROLL', '#rollBtn', true);
       scrollToGrid();
       return;
     }
@@ -5413,7 +5413,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 2){
-      _tutShowTip('🏆 TUTORIAL COMPLETE!', 'A hole-in-one! You\'ve learned zones, dice, penalties, wildcards, and putting. Now go play the real course! 🏌️', 'FINISH TUTORIAL →', '.overlay .ov', true);
+      _tutShowTip('🏆 TUTORIAL COMPLETE!', 'WOW! A hole-in-one! You\'ve learned zones, dice, penalties, wildcards, and putting. Now go explore the whole game! 🏌️', 'FINISH TUTORIAL', '.overlay .ov', true);
       return;
     }
     if(_tutStep === 3){
