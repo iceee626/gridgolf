@@ -763,6 +763,8 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   transition:transform .4s cubic-bezier(0.2,0.8,0.2,1), opacity .3s ease;
 }
 .tut-overlay.show{transform:translate(-50%, 0); opacity:1; pointer-events:auto;}
+.tut-overlay.top{bottom:auto; top:100px; transform:translate(-50%, -30px);}
+.tut-overlay.top.show{transform:translate(-50%, 0);}
 .tut-overlay-title{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:var(--c-fwyl);margin-bottom:6px;}
 .tut-overlay-text{font-family:'Sen',sans-serif;font-size:11px;color:rgba(255,255,255,.85);line-height:1.5;margin-bottom:10px;}
 .tut-overlay-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:10px;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;cursor:pointer;}
@@ -2133,6 +2135,7 @@ function processShot(row,col){
     renderWcFab();
     S._puttWcUsed=false;
     S.rolling=false;
+    if(TUT.active) _tutFire('after_putt_shot');
     return;
   }
 
@@ -4608,7 +4611,7 @@ const TUT_GRIDS = {
   h1_tee: [['fwy','fwy','fwy','fwy','rgh','fwy'],['fwy','rgh','fwy','fwy','fwy','fwy'],['fwy','fwy','fwy','fwy','fwy','rgh'],['rgh','fwy','fwy','fwy','fwy','fwy'],['fwy','fwy','rgh','fwy','fwy','fwy'],['fwy','fwy','fwy','fwy','fwy','fwy']],
   h1_fwy_far: [['fwy','fwy','chip','fwy','rgh','fwy'],['fwy','fwy','fwy','fwy','fwy','chip'],['rgh','fwy','fwy','fwy','fwy','fwy'],['fwy','fwy','fwy','fwy','rgh','fwy'],['fwy','chip','fwy','fwy','fwy','fwy'],['fwy','fwy','fwy','fwy','fwy','rgh']],
   h1_fwy_mid: [['grn','grn','grn','chip','grn','grn'],['grn','grn','grn','grn','grn','grn'],['chip','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','chip'],['grn','grn','grn','grn','grn','grn'],['grn','chip','grn','grn','grn','grn']],
-  h1_putt: [['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1']],
+  h1_putt: [['p1','p1','p1','p1','p2','p3'],['p1','p1','p1','p1','p1','p2'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1']],
   h2_tee: [['fwy','fwy','h2o','fwy','fwy','ob'],['fwy','fwy','fwy','h2o','fwy','fwy'],['h2o','fwy','fwy','fwy','fwy','h2o'],['fwy','h2o','fwy','fwy','fwy','ob'],['fwy','fwy','fwy','fwy','h2o','fwy'],['fwy','ob','fwy','fwy','fwy','fwy']],
   h2_after: [['grn','grn','chip','grn','h2o','grn'],['grn','grn','grn','grn','grn','chip'],['h2o','grn','grn','grn','grn','grn'],['chip','grn','grn','h2o','grn','grn'],['grn','grn','grn','grn','grn','h2o'],['grn','grn','grn','grn','chip','grn']],
   h2_putt: [['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1']],
@@ -4683,10 +4686,11 @@ function _tutHighlight(sel, darken = true){
   else bd.classList.remove('show');
 }
 
-function _tutShowTip(title, text, btnLabel, highlight, darken = true){
+function _tutShowTip(title, text, btnLabel, highlight, darken = true, position = 'bottom'){
   _tutBlockInput(true);
   _tutHighlight(highlight || null, darken);
   const ov = document.getElementById('tutOverlay');
+  if(position === 'top') ov.classList.add('top'); else ov.classList.remove('top');
   document.getElementById('tutOverlayTitle').textContent = title;
   document.getElementById('tutOverlayText').textContent = text;
   document.getElementById('tutOverlayBtn').textContent = btnLabel || 'GOT IT →';
@@ -4696,6 +4700,8 @@ function _tutShowTip(title, text, btnLabel, highlight, darken = true){
 function _tutHideTip(){
   document.getElementById('tutOverlay').classList.remove('show');
   _tutHighlight(null);
+  const bd = document.getElementById('tutBackdrop');
+  if(bd) bd.classList.remove('show');
 }
 
 function tutNext(){
@@ -4713,90 +4719,102 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('SCORECARD', 'Here is your scorecard. It shows your score versus the Par for each hole. Under par (-1) is great, over par (+1) leaves room to improve.', 'GOT IT →', '.sc-wrap');
+      _tutShowTip('SCORECARD', 'Here is your scorecard. It shows your score versus the Par for each hole. Under par (-1) is great, over par (+1) leaves room to improve.', 'GOT IT →', 'header', true);
       return;
     }
     if(_tutStep === 2){
-      _tutShowTip('TV SCOREBOARD', 'At the bottom, this TV banner tracks your total running score for the round.', 'GOT IT →', '#tvBar');
+      _tutShowTip('TV SCOREBOARD', 'At the bottom, this TV banner tracks your total running score for the round.', 'GOT IT →', '#tvBar', true);
       return;
     }
     if(_tutStep === 3){
-      _tutShowTip('ZONE LEGEND', 'Each color represents a different zone on the course. Green = Fairway, Brown = Rough, Blue = Water, etc.', 'GOT IT →', '.legend');
+      _tutShowTip('ZONE LEGEND', 'Each color represents a different zone on the course. Green = Fairway (safe), Brown = Rough (harder), Blue = Water (penalty), Yellow = Sand (tricky), and the Putting Green for finishing.', 'GOT IT →', '.legend', true, 'top');
       return;
     }
     if(_tutStep === 4){
-      _tutShowTip('THE GRID', 'The grid represents the landing zones. The "Row" die picks the row, the "Col" die picks the column.', 'GOT IT →', '.grid-wrap');
+      _tutShowTip('THE GRID', 'The grid represents the landing zones. The "Row" die picks the row, the "Col" die picks the column.', 'GOT IT →', '.grid-wrap', true);
       return;
     }
     if(_tutStep === 5){
-      _tutShowTip('ROLL THE DICE!', 'Tap the ROLL button to hit your tee shot! The dice determine where your ball lands.', 'OK, I\'LL ROLL', '#rollBtn');
+      _tutShowTip('ROLL THE DICE!', 'Tap the ROLL button to hit your tee shot! The dice determine where your ball lands.', 'OK, I\'LL ROLL', '#rollBtn', true);
       return;
     }
     if(_tutStep === 6){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#rollBtn', true);
+      _tutHighlight('#rollBtn', false); // No screen darkening here!
       _tutDiceQueue = [{r:3,c:4}]; // -> fwy
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 7){
-      _tutShowTip('SHOT LOG', 'Nice! You landed on the Fairway. The Shot Log right here tracks every shot you take.', 'GOT IT →', '.log-section');
+      _tutShowTip('SHOT LOG', 'Nice! You landed on the Fairway. The Shot Log right here tracks every shot you take.', 'GOT IT →', '.log-section', true);
       return;
     }
     if(_tutStep === 8){
       S.yrdRemain = 150; updateYrd(); // Force distance to ensure mid grid is generated
-      _tutShowTip('GREAT TEE SHOT!', 'The yardage bar shows your distance. The closer you get to the hole, the better your grid becomes. Tap NEXT SHOT to continue.', 'I\'LL TAP IT', '#nextShotBtn');
+      _tutShowTip('GREAT TEE SHOT!', 'The yardage bar shows your distance. The closer you get to the hole, the better your grid becomes. Tap NEXT SHOT to continue.', 'I\'LL TAP IT', '#nextShotBtn', true);
       return;
     }
     if(_tutStep === 9){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#nextShotBtn', true);
+      _tutHighlight('#nextShotBtn', false);
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 10){
-      _tutShowTip('GETTING CLOSER!', 'Notice the grid changed. Because you are closer to the hole, you have more Green (Fairway) cells. Let\'s roll your approach shot!', 'I\'LL ROLL', '.grid-wrap');
+      _tutShowTip('GETTING CLOSER!', 'Notice the grid changed. Because you are closer to the hole, you have more Green (Fairway) cells. Let\'s roll your approach shot!', 'I\'LL ROLL', '.grid-wrap', true);
       return;
     }
     if(_tutStep === 11){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#rollBtn', true);
+      _tutHighlight('#rollBtn', false);
       _tutDiceQueue = [{r:1,c:3}]; // -> grn
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 12){
-      _tutShowTip('GREAT APPROACH!', 'You landed on the green! Tap NEXT SHOT to load the putting grid so you can finish the hole.', 'GOT IT', '#nextShotBtn');
+      _tutShowTip('GREAT APPROACH!', 'You landed on the green! Tap NEXT SHOT to load the putting grid so you can finish the hole.', 'GOT IT', '#nextShotBtn', true);
       return;
     }
     if(_tutStep === 13){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#nextShotBtn', true);
+      _tutHighlight('#nextShotBtn', false);
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 14){
-      _tutShowTip('PUTTING TIME!', 'The green is the smooth grass around the hole. The grid now has 1-Putt (green, 1 stroke to finish), 2-Putt (yellow, 2 strokes), and 3-Putt (red, 3 strokes). Roll to finish!', 'I\'LL ROLL', '.grid-wrap');
+      _tutShowTip('PUTTING TIME!', 'The green is the smooth grass around the hole. The grid now has 1-Putt (green, 1 stroke to finish), 2-Putt (yellow, 2 strokes), and 3-Putt (red, 3 strokes). Roll to finish!', 'I\'LL ROLL', '.grid-wrap', true);
       return;
     }
     if(_tutStep === 15){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#rollBtn', true);
+      _tutHighlight('#rollBtn', false);
       _tutDiceQueue = [{r:2,c:4}]; // -> p1
-      _tutWaitFor('after_putt', ()=>{ tutAdvance(); });
+      _tutWaitFor('after_putt_shot', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 16){
-      _tutShowTip('HOLE COMPLETE!', 'You holed out! Let\'s move to Hole 2 to learn about hazards and special abilities.', 'NEXT HOLE →', '.sc-wrap');
+      _tutShowTip('GREAT PUTT!', 'You made the putt! Tap FINISH HOLE to complete the hole.', 'I\'LL TAP IT', '#nextShotBtn', true);
       return;
     }
     if(_tutStep === 17){
+      _tutHideTip();
+      _tutBlockInput(false);
+      _tutHighlight('#nextShotBtn', false);
+      _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
+      return;
+    }
+    if(_tutStep === 18){
+      _tutShowTip('HOLE COMPLETE!', 'You holed out! Let\'s move to Hole 2 to learn about hazards and special abilities.', 'NEXT HOLE →', '#overlay', true);
+      return;
+    }
+    if(_tutStep === 19){
       document.getElementById('overlay').classList.remove('show');
+      document.getElementById('overlay').classList.remove('tut-pulse');
       S.holeIdx = 1; _tutHoleKey = 'h2'; _tutDiceQueue = []; _tutStep = -1;
       loadHole();
       setTimeout(()=>tutAdvance(), 500);
@@ -4806,111 +4824,123 @@ function tutAdvance(){
   
   if(hi === 1){
     if(_tutStep === 0){
-      _tutShowTip('HOLE 2 — HAZARDS', 'This hole has hazards! 💧 Water and 🚫 Out of Bounds (OB) add a +2 penalty to your score, and you replay from the same spot. Let\'s see what happens.', 'GOT IT →', '.grid-wrap');
+      _tutShowTip('HOLE 2 — HAZARDS', 'This hole has hazards! 💧 Water and 🚫 Out of Bounds (OB) add a +2 penalty to your score, and you replay from the same spot. Let\'s see what happens.', 'GOT IT →', '.grid-wrap', true);
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('TEE OFF!', 'Let\'s roll your first shot. I have a feeling something good might happen...', 'I\'LL ROLL', '#rollBtn');
+      _tutShowTip('TEE OFF!', 'Let\'s roll your first shot. I have a feeling something good might happen...', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
     if(_tutStep === 2){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#rollBtn', true);
+      _tutHighlight('#rollBtn', false);
       _tutDiceQueue = [{r:3,c:3}]; // -> fwy, doubles!
       _tutWaitFor('wc_equipped', ()=>{ tutAdvance(); }); 
       return;
     }
     if(_tutStep === 3){
-      _tutShowTip('WILDCARD EARNED!', 'If you roll doubles (e.g., two 3s), you earn a Wildcard! You got a Phantom Stroke, and it was saved in your drawer on the right. Wildcards give you special abilities to cheat the rules!', 'GOT IT →', '#wcFab', false);
+      _tutShowTip('WILDCARD EARNED!', 'If you roll doubles (e.g., two 3s), you earn a Wildcard! You got a Phantom Stroke, and it was saved in your drawer on the right. Wildcards give you special abilities to cheat the rules!', 'GOT IT →', '#wcFab', true, 'top');
       return;
     }
     if(_tutStep === 4){
-      _tutShowTip('NEXT SHOT', 'Tap NEXT SHOT to continue playing.', 'GOT IT', '#nextShotBtn');
+      _tutShowTip('NEXT SHOT', 'Tap NEXT SHOT to continue playing.', 'GOT IT', '#nextShotBtn', true);
       return;
     }
     if(_tutStep === 5){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#nextShotBtn', true);
+      _tutHighlight('#nextShotBtn', false);
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 6){
-      _tutShowTip('WATCH OUT!', 'Roll your approach shot to try and reach the green. Avoid the water!', 'I\'LL ROLL', '#rollBtn');
+      _tutShowTip('WATCH OUT!', 'Roll your approach shot to try and reach the green. Avoid the water!', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
     if(_tutStep === 7){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#rollBtn', true);
+      _tutHighlight('#rollBtn', false);
       _tutDiceQueue = [{r:3,c:1}]; // -> h2o
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 8){
-      _tutShowTip('💧 WATER HAZARD!', 'Oh no! That adds +2 penalty strokes. But wait... open the Wildcard drawer (purple button) and tap USE on the Phantom Stroke to remove 1 penalty!', 'I\'LL USE IT', '#wcFab');
+      _tutShowTip('💧 WATER HAZARD!', 'Oh no! That adds +2 penalty strokes. But wait... open the Wildcard drawer (purple button) and tap USE on the Phantom Stroke to remove 1 penalty!', 'I\'LL USE IT', '#wcFab', true);
       return;
     }
     if(_tutStep === 9){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#wcFab', true);
+      _tutHighlight('#wcFab', false);
       _tutWaitFor('wc_used', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 10){
-      _tutShowTip('PENALTY REMOVED!', 'You saved a stroke! Now tap NEXT SHOT to continue.', 'GOT IT', '#nextShotBtn');
+      _tutShowTip('PENALTY REMOVED!', 'You saved a stroke! Now tap NEXT SHOT to continue.', 'GOT IT', '#nextShotBtn', true);
       return;
     }
     if(_tutStep === 11){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#nextShotBtn', true);
+      _tutHighlight('#nextShotBtn', false);
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 12){
-      _tutShowTip('RECOVERY SHOT', 'Because of the penalty, you hit from the same spot. Roll for the green!', 'I\'LL ROLL', '#rollBtn');
+      _tutShowTip('RECOVERY SHOT', 'Because of the penalty, you hit from the same spot. Roll for the green!', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
     if(_tutStep === 13){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#rollBtn', true);
+      _tutHighlight('#rollBtn', false);
       _tutDiceQueue = [{r:1,c:1}]; // -> grn
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 14){
-      _tutShowTip('ON THE GREEN!', 'You made it past the water. Tap NEXT SHOT to load the putting grid.', 'GOT IT', '#nextShotBtn');
+      _tutShowTip('ON THE GREEN!', 'You made it past the water. Tap NEXT SHOT to load the putting grid.', 'GOT IT', '#nextShotBtn', true);
       return;
     }
     if(_tutStep === 15){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#nextShotBtn', true);
+      _tutHighlight('#nextShotBtn', false);
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 16){
-      _tutShowTip('FINISH THE HOLE!', 'Roll to putt.', 'I\'LL ROLL', '#rollBtn');
+      _tutShowTip('FINISH THE HOLE!', 'Roll to putt.', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
     if(_tutStep === 17){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#rollBtn', true);
+      _tutHighlight('#rollBtn', false);
       _tutDiceQueue = [{r:2,c:3}]; // -> p1
-      _tutWaitFor('after_putt', ()=>{ tutAdvance(); });
+      _tutWaitFor('after_putt_shot', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 18){
-      _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round! Final hole coming up!', 'NEXT HOLE →', '#tvBar');
+      _tutShowTip('GREAT PUTT!', 'Tap FINISH HOLE.', 'I\'LL TAP IT', '#nextShotBtn', true);
       return;
     }
     if(_tutStep === 19){
+      _tutHideTip();
+      _tutBlockInput(false);
+      _tutHighlight('#nextShotBtn', false);
+      _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
+      return;
+    }
+    if(_tutStep === 20){
+      _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round! Final hole coming up!', 'NEXT HOLE →', '#overlay', true);
+      return;
+    }
+    if(_tutStep === 21){
       document.getElementById('overlay').classList.remove('show');
+      document.getElementById('overlay').classList.remove('tut-pulse');
       S.holeIdx = 2; _tutHoleKey = 'h3'; _tutDiceQueue = []; _tutStep = -1;
       loadHole();
       setTimeout(()=>tutAdvance(), 500);
@@ -4920,23 +4950,23 @@ function tutAdvance(){
   
   if(hi === 2){
     if(_tutStep === 0){
-      _tutShowTip('HOLE 3 — PAR 3', 'Par 3 holes are very short! You tee off directly at the green. This grid has a special ⛳ "Hole In!" cell. Land on it for a chance at a hole-in-one!', 'GOT IT →', '.grid-wrap');
+      _tutShowTip('HOLE 3 — PAR 3', 'Par 3 holes are very short! You tee off directly at the green. This grid has a special ⛳ "Hole In!" cell. Land on it for a chance at a hole-in-one!', 'GOT IT →', '.grid-wrap', true);
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('GO FOR THE HOLE!', 'Roll the dice — aim for the ⛳ cell!', 'I\'LL ROLL', '#rollBtn');
+      _tutShowTip('GO FOR THE HOLE!', 'Roll the dice — aim for the ⛳ cell!', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
     if(_tutStep === 2){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#rollBtn', true);
+      _tutHighlight('#rollBtn', false);
       _tutDiceQueue = [{r:1,c:3}]; // -> hole!
       _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 3){
-      _tutShowTip('🏆 TUTORIAL COMPLETE!', 'A hole-in-one! You\'ve learned zones, dice, penalties, wildcards, and putting. Now go play the real course! 🏌️', 'FINISH TUTORIAL →', null);
+      _tutShowTip('🏆 TUTORIAL COMPLETE!', 'A hole-in-one! You\'ve learned zones, dice, penalties, wildcards, and putting. Now go play the real course! 🏌️', 'FINISH TUTORIAL →', null, true);
       return;
     }
     if(_tutStep === 4){
@@ -5083,8 +5113,9 @@ function selectVsEmoji(pn,emoji){
 }
 
 function navToVsOptions(){
-  const n1=document.getElementById('vs1Name').value.trim().toUpperCase()||'PLAYER 1';
-  const n2=document.getElementById('vs2Name').value.trim().toUpperCase()||'PLAYER 2';
+  const n1=document.getElementById('vs1Name').value.trim().toUpperCase();
+  const n2=document.getElementById('vs2Name').value.trim().toUpperCase();
+  if(!n1 || !n2){ showWcToast('Both players must enter a name!'); return; }
   if(n1===n2){ showWcToast('Players must have different names!'); return; }
   VS.players[0]={name:n1, icon:document.getElementById('vs1Icon').textContent};
   VS.players[1]={name:n2, icon:document.getElementById('vs2Icon').textContent};
