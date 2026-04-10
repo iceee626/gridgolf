@@ -535,7 +535,14 @@ header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12
   .profile-action-btn:hover{border-color:var(--text);color:var(--text);}
   .profile-action-btn.del:hover{border-color:#e05252;color:#e05252;}
 }
+.profile-action-btn:active{border-color:var(--text);color:var(--text);background:rgba(255,255,255,.05);}
+.profile-action-btn.del:active{border-color:#e05252;color:#e05252;background:rgba(224,82,82,.1);}
 #confirmModal, #alertModal { align-items:center; }
+
+/* Floating Menu Elements */
+#floatingEntities { position:absolute; top:0; left:0; width:100%; height:80%; pointer-events:none; overflow:hidden; z-index:5; }
+.float-item { position:absolute; font-size:36px; pointer-events:auto; cursor:grab; user-select:none; touch-action:none; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+.float-item:active { cursor:grabbing; }
 .profile-new-form{display:none;border-top:1px solid var(--border);padding-top:12px;}
 .profile-new-form.show{display:block;}
 .profile-new-input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--text);outline:none;text-transform:uppercase;margin-bottom:8px;transition:border-color .2s;}
@@ -817,6 +824,7 @@ header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12
 
 <div class="menu-screen" id="menuScreen" style="display:none;">
   <div class="menu-bg-grass"></div>
+  <div id="floatingEntities"></div>
   <div style="position:absolute;top:calc(env(safe-area-inset-top) + 10px);right:16px;display:flex;align-items:center;gap:6px;z-index:20;">
     <span id="menuProfileName" style="font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);"></span>
     <button class="menu-profile-icon" id="menuProfileIconBtn" onclick="openProfileModal()" title="Profiles" style="position:static;top:auto;right:auto;">👤</button>
@@ -1390,6 +1398,7 @@ window.addEventListener('DOMContentLoaded', function(){
   initTheme();
   _loadShakePermission();
   applyRollMode(getRollMode());
+  initFloatingEntities();
   const oi=document.getElementById('onboardInput');
   if(oi) oi.addEventListener('keydown',e=>{if(e.key==='Enter')createFirstProfile();});
   const pni=document.getElementById('profileNewInput');
@@ -1406,6 +1415,81 @@ window.addEventListener('DOMContentLoaded', function(){
   if(epm) epm.addEventListener('click',function(e){if(e.target===this)closeEditProfile();});
   autoLoadProfile();
 });
+
+function initFloatingEntities() {
+  const container = document.getElementById('floatingEntities');
+  if(!container) return;
+  container.innerHTML = '';
+  const emojis = ['⛳', '🎲', '🏌️', '🏌️‍♀️', '🏆', '☁️', '☀️'];
+  const items = [];
+  
+  for(let i=0; i<10; i++) {
+    const el = document.createElement('div');
+    el.className = 'float-item';
+    el.textContent = emojis[i % emojis.length];
+    
+    let startX = Math.random() * window.innerWidth;
+    let startY = 5 + Math.random() * 65; 
+    el.style.top = startY + '%';
+    el.style.left = startX + 'px';
+    
+    let speed = (Math.random() * 0.4 + 0.1) * (Math.random() > 0.5 ? 1 : -1);
+    let rotation = Math.random() * 360;
+    let rotSpeed = (Math.random() * 0.8 - 0.4); 
+    
+    container.appendChild(el);
+    
+    let isDragging = false;
+    let offsetX = 0, offsetY = 0;
+    
+    const startDrag = (e) => {
+      isDragging = true;
+      el.style.zIndex = '100';
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const rect = el.getBoundingClientRect();
+      offsetX = clientX - rect.left;
+      offsetY = clientY - rect.top;
+    };
+    const moveDrag = (e) => {
+      if(!isDragging) return;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      startX = clientX - offsetX;
+      el.style.left = startX + 'px';
+      el.style.top = (clientY - offsetY) + 'px';
+    };
+    const endDrag = () => {
+      if(!isDragging) return;
+      isDragging = false;
+      el.style.zIndex = '';
+    };
+    
+    el.addEventListener('mousedown', startDrag);
+    window.addEventListener('mousemove', moveDrag);
+    window.addEventListener('mouseup', endDrag);
+    el.addEventListener('touchstart', startDrag, {passive:true});
+    window.addEventListener('touchmove', moveDrag, {passive:true});
+    window.addEventListener('touchend', endDrag, {passive:true});
+    
+    items.push({el, speed, x: startX, rot: rotation, rotSpeed});
+  }
+  
+  const animate = () => {
+    items.forEach(item => {
+      if(!item.el.style.zIndex) { // Only animate if not being dragged
+        item.x += item.speed;
+        item.rot += item.rotSpeed;
+        if(item.x > window.innerWidth + 50) item.x = -50;
+        if(item.x < -50) item.x = window.innerWidth + 50;
+        item.el.style.left = item.x + 'px';
+        item.el.style.transform = `rotate(${item.rot}deg)`;
+      }
+    });
+    requestAnimationFrame(animate);
+  };
+  requestAnimationFrame(animate);
+}
 
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;}
 function makeGrid(t){const s=shuffle([...t]);const g=[];for(let r=0;r<6;r++)g.push(s.slice(r*6,r*6+6));return g;}
@@ -2569,7 +2653,7 @@ function completeHole(){
     document.getElementById('ovEmoji').style.display='block';
     document.getElementById('ovTitle').textContent=title;
     document.getElementById('ovNameRow').textContent=`TOTAL SCORE: ${tutDiffStr}`;
-    document.getElementById('ovStatsRow').textContent=`${score} strokes · par ${h.par}`;
+    document.getElementById('ovStatsRow').textContent= score === 1 ? `Hole in One! · par ${h.par}` : `${score} strokes · par ${h.par}`;
     
     document.getElementById('ovBtn').style.display='none';
     document.getElementById('ovSummaryBtn').style.display='none';
@@ -2644,7 +2728,7 @@ function completeHole(){
   document.getElementById('ovEmoji').style.display='block';
   document.getElementById('ovTitle').textContent=title;
   document.getElementById('ovNameRow').textContent=`TOTAL SCORE: ${totalStr}`;
-  document.getElementById('ovStatsRow').textContent=`${score} strokes · par ${h.par}`;
+  document.getElementById('ovStatsRow').textContent= score === 1 ? `Hole in One! · par ${h.par}` : `${score} strokes · par ${h.par}`;
   
   const ovBtn = document.getElementById('ovBtn');
   ovBtn.style.display='block';
@@ -5489,20 +5573,23 @@ function vsShowHoleComparison(){
   const p1NameStyle = `font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:${p1Leading ? '22px' : '16px'};color:${p1Leading ? 'var(--gold)' : 'inherit'};white-space:nowrap;`;
   const p2NameStyle = `font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:${p2Leading ? '22px' : '16px'};color:${p2Leading ? 'var(--gold)' : 'inherit'};white-space:nowrap;`;
 
+  const s1Text = s1 === 1 ? 'Hole in One!' : `H: ${s1} strokes (${fmtD(d1)})`;
+  const s2Text = s2 === 1 ? 'Hole in One!' : `H: ${s2} strokes (${fmtD(d2)})`;
+
   let p1Html, p2Html;
   if (VS.format === 'match') {
       p1Html = `
         <div style="font-size:24px;margin-bottom:4px;">${p1.icon}</div>
         <div style="${p1NameStyle}">${p1.name}</div>
         <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;margin-top:4px;color:${p1Leading ? 'var(--gold)' : 'var(--text)'};">${VS.matchScore[0]}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">H: ${s1} strokes (${fmtD(d1)})</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">${s1Text}</div>
         <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;">TOTAL: ${fmtD(td1)}</div>
       `;
       p2Html = `
         <div style="font-size:24px;margin-bottom:4px;">${p2.icon}</div>
         <div style="${p2NameStyle}">${p2.name}</div>
         <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;margin-top:4px;color:${p2Leading ? 'var(--gold)' : 'var(--text)'};">${VS.matchScore[1]}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">H: ${s2} strokes (${fmtD(d2)})</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">${s2Text}</div>
         <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;">TOTAL: ${fmtD(td2)}</div>
       `;
   } else {
@@ -5511,14 +5598,14 @@ function vsShowHoleComparison(){
         <div style="${p1NameStyle}">${p1.name}</div>
         <div style="font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;margin-bottom:2px;">TOTAL</div>
         <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;color:${td1<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(td1)}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">H: ${s1} strokes (${fmtD(d1)})</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">${s1Text}</div>
       `;
       p2Html = `
         <div style="font-size:24px;margin-bottom:4px;">${p2.icon}</div>
         <div style="${p2NameStyle}">${p2.name}</div>
         <div style="font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;margin-bottom:2px;">TOTAL</div>
         <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;color:${td2<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(td2)}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">H: ${s2} strokes (${fmtD(d2)})</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">${s2Text}</div>
       `;
   }
 
