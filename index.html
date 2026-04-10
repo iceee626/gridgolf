@@ -1177,12 +1177,14 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="hc-card-tot" id="hcTot">TOTAL: <span id="hcTotSpan" style="color:#52c87a">-1</span></div>
   </div>
   <style>
+    #hcScreen { overscroll-behavior: none; }
+    .hc-scroll-area { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
     .hc-scroll-area::-webkit-scrollbar { display: none; }
   </style>
-  <div class="hc-scroll-area" style="flex:1; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; display:flex; flex-direction:column; min-height:0; padding-bottom:12px;">
-    <div class="sec-title" style="flex-shrink:0;">SHOT REPLAY</div>
-    <div class="hc-log-list" id="hcLogList" style="flex:1; max-height:none; min-height:60px; margin-bottom:16px;"></div>
-    <div class="sec-title" style="flex-shrink:0;">SCOREBOARD</div>
+  <div class="hc-scroll-area" style="flex:1; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; min-height:0; padding-bottom:12px; display:block;">
+    <div class="sec-title">SHOT REPLAY</div>
+    <div class="hc-log-list" id="hcLogList" style="max-height:none; min-height:60px; margin-bottom:16px;"></div>
+    <div class="sec-title">SCOREBOARD</div>
     <div class="sc-wrap" style="margin-bottom:0; flex-shrink:0;">
       <div class="sc-inner">
         <div class="sc-row sc-head" id="hcScHead"></div>
