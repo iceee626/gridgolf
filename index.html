@@ -4350,7 +4350,7 @@ function closeWcReveal(){
 // SAVE / CONTINUE SYSTEM
 // ═══════════════════════════════════════
 function saveGameState(){
-  if(!S||S.holeIdx===undefined || TUT.active || VS.active)return;
+  if(!S||S.holeIdx===undefined || TUT.active)return;
   const save={
     mode:S.mode, totalRounds:S.totalRounds, currentRound:S.currentRound, holesConfig:S.holesConfig,
     startIdx:S.startIdx, endIdx:S.endIdx,
@@ -4368,6 +4368,17 @@ function saveGameState(){
     wcsBirdieBoost:WCS.birdieBoostActive, wcsHoleWall:WCS.holeWallActive, wcsHio:WCS.hioActive,
     wcsShortcut:WCS.shortcutActive,
     gameDiff:GAME_DIFF, playerName:PLAYER_NAME, timestamp:Date.now(),
+    vsState: VS.active ? {
+        format: VS.format,
+        players: VS.players,
+        currentPlayer: VS.currentPlayer,
+        scores: VS.scores,
+        histories: VS.histories,
+        matchScore: VS.matchScore,
+        sharedGrids: VS.sharedGrids,
+        setup: VS.setup,
+        wcs: VS.wcs
+    } : null
   };
   try{localStorage.setItem('gg_save',JSON.stringify(save));}catch(e){}
 }
@@ -4417,6 +4428,21 @@ function continueGame(){
     WCS.birdieBoostActive=save.wcsBirdieBoost||false; WCS.holeWallActive=save.wcsHoleWall||false; WCS.hioActive=save.wcsHio||false;
     WCS.shortcutActive=save.wcsShortcut||false;
     
+    if(save.vsState) {
+        VS.active = true;
+        VS.format = save.vsState.format;
+        VS.players = save.vsState.players;
+        VS.currentPlayer = save.vsState.currentPlayer;
+        VS.scores = save.vsState.scores;
+        VS.histories = save.vsState.histories;
+        VS.matchScore = save.vsState.matchScore;
+        VS.sharedGrids = save.vsState.sharedGrids || {};
+        VS.setup = save.vsState.setup;
+        VS.wcs = save.vsState.wcs;
+    } else {
+        VS.active = false;
+    }
+    
     document.getElementById('menuScreen').style.display='none';
     document.getElementById('mainApp').style.display='block';
     buildLegend();buildScorecard();
@@ -4430,7 +4456,19 @@ function continueGame(){
     
     updateZonePill();updateYrd();renderLog();updateFloat();updateTVBanner();
     hideNextShotBtn();
-    if(S.holeDone) {
+    if (VS.active) {
+        const tvIcon = document.querySelector('.tv-icon-box');
+        if(tvIcon) tvIcon.textContent = VS.players[VS.currentPlayer].icon;
+        document.getElementById('tvName').textContent = VS.players[VS.currentPlayer].name;
+        PLAYER_NAME = VS.players[VS.currentPlayer].name;
+        if (S.holeDone) {
+            showNextShotBtn();
+            if (VS.currentPlayer === 1) vsShowHoleComparison();
+            else vsShowTurnScreen();
+        } else {
+            renderWcFab();
+        }
+    } else if(S.holeDone) {
         showNextShotBtn();
         if (S.holeIdx >= S.endIdx && S.currentRound === S.totalRounds) {
             showRoundEnd();
@@ -4453,7 +4491,7 @@ function continueGame(){
 }
 
 function returnToMenuSave(){
-  if(!VS.active && !TUT.active) saveGameState();
+  if(!TUT.active) saveGameState();
   VS.active = false;
   TUT.active = false;
   document.getElementById('overlay').classList.remove('show');
@@ -4470,23 +4508,31 @@ function updateMenuContinueBtn(){
   if(!btn)return;
   if(hasSavedGame()){
     const save=JSON.parse(localStorage.getItem('gg_save'));
-    let totalScore = 0; let totalPar = 0;
     
-    if (save.scorecards) {
-       save.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ totalScore+=s; totalPar+=HOLES[i].par; } }));
-    } else if (save.scorecard) {
-       save.scorecard.forEach((s, i) => { if(s!==null){ totalScore+=s; totalPar+=HOLES[i].par; } });
+    if (save.vsState) {
+        const p1 = save.vsState.players[0].name;
+        const p2 = save.vsState.players[1].name;
+        const holeDisplay = save.holeIdx + 1;
+        const format = save.vsState.format === 'match' ? 'MATCH PLAY' : 'STROKE PLAY';
+        btn.innerHTML=`<div>▶ CONTINUE VERSUS</div><div style="font-family:'Sen', sans-serif;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:1px;font-weight:normal;margin-top:4px;">${format} · H${holeDisplay} · ${p1} vs ${p2}</div>`;
+        btn.style.display='flex';
+    } else {
+        let totalScore = 0; let totalPar = 0;
+        if (save.scorecards) {
+           save.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ totalScore+=s; totalPar+=HOLES[i].par; } }));
+        } else if (save.scorecard) {
+           save.scorecard.forEach((s, i) => { if(s!==null){ totalScore+=s; totalPar+=HOLES[i].par; } });
+        }
+        
+        const diff = totalScore - totalPar;
+        const diffStr = diff > 0 ? `+${diff}` : diff === 0 ? 'E' : `${diff}`;
+        const rnd = save.currentRound || 1;
+        const cName = 'LITTLE PINES';
+        const holeDisplay = save.holeIdx + 1;
+        
+        btn.innerHTML=`<div>▶ CONTINUE</div><div style="font-family:'Sen', sans-serif;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:1px;font-weight:normal;margin-top:4px;">${cName} · R${rnd} · H${holeDisplay} · ${diffStr}</div>`;
+        btn.style.display='flex';
     }
-    
-    const diff = totalScore - totalPar;
-    const diffStr = diff > 0 ? `+${diff}` : diff === 0 ? 'E' : `${diff}`;
-    const rnd = save.currentRound || 1;
-    const cName = 'LITTLE PINES';
-    const startIdx = save.startIdx || 0;
-    const holeDisplay = save.holeIdx + 1;
-    
-    btn.innerHTML=`<div>▶ CONTINUE</div><div style="font-family:'Sen', sans-serif;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:1px;font-weight:normal;margin-top:4px;">${cName} · R${rnd} · H${holeDisplay} · ${diffStr}</div>`;
-    btn.style.display='flex';
   } else {
     btn.style.display='none';
   }
@@ -5320,8 +5366,8 @@ function vsShowHoleComparison(){
     p2Leading = td2 < td1;
   }
   
-  const p1NameStyle = `font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:${p1Leading ? '22px' : '16px'};color:${p1Leading ? 'var(--gold)' : 'inherit'};`;
-  const p2NameStyle = `font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:${p2Leading ? '22px' : '16px'};color:${p2Leading ? 'var(--gold)' : 'inherit'};`;
+  const p1NameStyle = `font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:${p1Leading ? '22px' : '16px'};color:${p1Leading ? 'var(--gold)' : 'inherit'};white-space:nowrap;`;
+  const p2NameStyle = `font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:${p2Leading ? '22px' : '16px'};color:${p2Leading ? 'var(--gold)' : 'inherit'};white-space:nowrap;`;
 
   let p1Html, p2Html;
   if (VS.format === 'match') {
@@ -5329,15 +5375,15 @@ function vsShowHoleComparison(){
         <div style="font-size:24px;margin-bottom:4px;">${p1.icon}</div>
         <div style="${p1NameStyle}">${p1.name}</div>
         <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;margin-top:4px;color:${p1Leading ? 'var(--gold)' : 'var(--text)'};">${VS.matchScore[0]}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:6px;">H: ${s1} strokes (${fmtD(d1)})</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">TOTAL: ${fmtD(td1)}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">H: ${s1} strokes (${fmtD(d1)})</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;">TOTAL: ${fmtD(td1)}</div>
       `;
       p2Html = `
         <div style="font-size:24px;margin-bottom:4px;">${p2.icon}</div>
         <div style="${p2NameStyle}">${p2.name}</div>
         <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;margin-top:4px;color:${p2Leading ? 'var(--gold)' : 'var(--text)'};">${VS.matchScore[1]}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:6px;">H: ${s2} strokes (${fmtD(d2)})</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">TOTAL: ${fmtD(td2)}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">H: ${s2} strokes (${fmtD(d2)})</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;">TOTAL: ${fmtD(td2)}</div>
       `;
   } else {
       p1Html = `
@@ -5345,33 +5391,33 @@ function vsShowHoleComparison(){
         <div style="${p1NameStyle}">${p1.name}</div>
         <div style="font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;margin-bottom:2px;">TOTAL</div>
         <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;color:${td1<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(td1)}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:6px;">H: ${s1} strokes (${fmtD(d1)})</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">H: ${s1} strokes (${fmtD(d1)})</div>
       `;
       p2Html = `
         <div style="font-size:24px;margin-bottom:4px;">${p2.icon}</div>
         <div style="${p2NameStyle}">${p2.name}</div>
         <div style="font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;margin-bottom:2px;">TOTAL</div>
         <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;color:${td2<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(td2)}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:6px;">H: ${s2} strokes (${fmtD(d2)})</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">H: ${s2} strokes (${fmtD(d2)})</div>
       `;
   }
-  
+
   document.getElementById('ovEmoji').textContent = emojiIcon;
   document.getElementById('ovEmoji').style.display='block';
   document.getElementById('ovTitle').textContent = headerText;
-  
+
   document.getElementById('ovNameRow').innerHTML = `
-    <div style="display:flex;justify-content:space-around;width:100%;font-family:'Sen',sans-serif;font-size:12px;margin:8px 0;">
-      <div style="text-align:center;">${p1Html}</div>
-      <div style="display:flex;align-items:center;font-family:'Bebas Neue',cursive;font-size:20px;color:var(--muted);">VS</div>
-      <div style="text-align:center;">${p2Html}</div>
+    <div style="display:flex;justify-content:space-between;width:100%;font-family:'Sen',sans-serif;font-size:12px;margin:8px 0;">
+      <div style="text-align:center; flex:1; display:flex; flex-direction:column; justify-content:flex-end;">${p1Html}</div>
+      <div style="display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:20px;color:var(--muted);width:30px;">VS</div>
+      <div style="text-align:center; flex:1; display:flex; flex-direction:column; justify-content:flex-end;">${p2Html}</div>
     </div>`;
   document.getElementById('ovNameRow').style.fontSize='';
   document.getElementById('ovStatsRow').textContent=`Par ${h.par}`;
-  
+
   const ovBtn=document.getElementById('ovBtn');
   const ovPlayAgainBtn = document.getElementById('ovPlayAgainBtn');
-  
+
   if (S.holeIdx >= S.endIdx) {
       ovBtn.textContent = 'FINAL RESULTS →';
       ovBtn.style.display = 'block';
@@ -5391,7 +5437,7 @@ function vsShowHoleComparison(){
       };
       ovPlayAgainBtn.style.display = 'none';
   }
-  
+
   document.getElementById('ovSummaryBtn').style.display='none';
   document.getElementById('overlay').classList.add('show');
 }
