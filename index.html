@@ -772,7 +772,8 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .tut-overlay-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:10px;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;cursor:pointer;}
 .tut-overlay-btn:hover{background:var(--c-fwyl);}
 @keyframes tutPulse{0%,100%{box-shadow:0 0 0 0 rgba(78,158,66,.8);}50%{box-shadow:0 0 0 10px rgba(78,158,66,0);}}
-.tut-pulse{animation:tutPulse 1.2s ease infinite!important;position:relative !important;z-index:545 !important;border-radius:8px;}
+.tut-pulse{animation:tutPulse 1.2s ease infinite!important;border-radius:8px;}
+.tut-elevate{position:relative !important;z-index:545 !important;}
 
 /* VERSUS MODE */
 .vs-turn-screen{position:fixed;inset:0;background:var(--dark);z-index:180;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;}
@@ -2538,33 +2539,21 @@ function completeHole(){
     document.getElementById('ovTitle').textContent=title;
     document.getElementById('ovNameRow').textContent=`TOTAL SCORE: ${tutDiffStr}`;
     document.getElementById('ovStatsRow').textContent=`${score} strokes · par ${h.par}`;
-    document.getElementById('ovBtn').style.display='block';
-    document.getElementById('ovBtn').textContent = S.holeIdx === 2 ? 'FINISH TUTORIAL →' : 'NEXT HOLE →';
-    document.getElementById('ovBtn').onclick = () => {
-        document.getElementById('overlay').classList.remove('show');
-        if(S.holeIdx === 0) {
-           S.holeIdx = 1; _tutHoleKey = 'h2'; _tutStep = -1;
-           loadHole();
-           setTimeout(()=>tutAdvance(), 400);
-        } else if (S.holeIdx === 1) {
-           S.holeIdx = 2; _tutHoleKey = 'h3'; _tutStep = -1;
-           loadHole();
-           setTimeout(()=>tutAdvance(), 400);
-        } else {
-           tutComplete();
-        }
-    };
+    document.getElementById('ovBtn').style.display='none';
     document.getElementById('ovSummaryBtn').style.display='none';
     document.getElementById('ovPlayAgainBtn').style.display='none';
     
     if(S._skipCelebration){
       S._skipCelebration=false;
       document.getElementById('overlay').classList.add('show');
+      setTimeout(()=>tutAfterHoleComplete(), 800);
     } else {
       showCelebration(isHoleInOne?-99:d, ()=>{
         document.getElementById('overlay').classList.add('show');
+        setTimeout(()=>tutAfterHoleComplete(), 800);
       });
     }
+    
     return;
   }
   
@@ -3170,6 +3159,7 @@ function deleteProfile(i){
     profiles.splice(i,1);
     saveProfiles(profiles);
     if(!profiles.length){
+      try{localStorage.removeItem('gg_tutorial_done');}catch{}
       closeProfileModal();
       hideScreen('menuScreen');
       const oi=document.getElementById('onboardInput');
@@ -4694,7 +4684,10 @@ function _tutBlockInput(block){
 }
 
 function _tutHighlight(sel, darken = true){
-  document.querySelectorAll('.tut-pulse').forEach(e=>e.classList.remove('tut-pulse'));
+  document.querySelectorAll('.tut-pulse').forEach(e => {
+     e.classList.remove('tut-pulse');
+     e.classList.remove('tut-elevate');
+  });
   let bd = document.getElementById('tutBackdrop');
   if (!bd) {
       bd = document.createElement('div');
@@ -4702,15 +4695,21 @@ function _tutHighlight(sel, darken = true){
       bd.className = 'tut-backdrop';
       document.getElementById('mainApp').appendChild(bd);
   }
-  
+
   if(!sel) {
     if(bd) bd.classList.remove('show');
     return;
   }
-  
+
   const els = document.querySelectorAll(sel);
-  els.forEach(el => el.classList.add('tut-pulse'));
-  
+  els.forEach(el => {
+     el.classList.add('tut-pulse');
+     const zi = parseInt(window.getComputedStyle(el).zIndex) || 0;
+     if (zi < 540) {
+         el.classList.add('tut-elevate');
+     }
+  });
+
   if (darken) bd.classList.add('show');
   else bd.classList.remove('show');
 }
@@ -4825,6 +4824,17 @@ function tutAdvance(){
       _tutHighlight('#rollBtn', false);
       return;
     }
+    if(_tutStep === 16){
+      _tutShowTip('HOLE COMPLETE!', 'You holed out! Let\'s move to Hole 2 to learn about hazards and special abilities.', 'NEXT HOLE →', '.overlay .ov', true);
+      return;
+    }
+    if(_tutStep === 17){
+      document.getElementById('overlay').classList.remove('show');
+      S.holeIdx = 1; _tutHoleKey = 'h2'; _tutStep = -1;
+      loadHole();
+      setTimeout(()=>tutAdvance(), 500);
+      return;
+    }
   }
   
   if(hi === 1){
@@ -4930,6 +4940,17 @@ function tutAdvance(){
       _tutHighlight('#rollBtn', false);
       return;
     }
+    if(_tutStep === 19){
+      _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round! Final hole coming up!', 'NEXT HOLE →', '.overlay .ov', true);
+      return;
+    }
+    if(_tutStep === 20){
+      document.getElementById('overlay').classList.remove('show');
+      S.holeIdx = 2; _tutHoleKey = 'h3'; _tutStep = -1;
+      loadHole();
+      setTimeout(()=>tutAdvance(), 500);
+      return;
+    }
   }
   
   if(hi === 2){
@@ -4941,6 +4962,15 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
+      _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
+      return;
+    }
+    if(_tutStep === 2){
+      _tutShowTip('🏆 TUTORIAL COMPLETE!', 'A hole-in-one! You\'ve learned zones, dice, penalties, wildcards, and putting. Now go play the real course! 🏌️', 'FINISH TUTORIAL →', '.overlay .ov', true);
+      return;
+    }
+    if(_tutStep === 3){
+      tutComplete();
       return;
     }
   }
