@@ -750,7 +750,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .tut-prompt-btns{display:flex;gap:10px;}
 .tut-prompt-btns button{flex:1;border:none;border-radius:12px;padding:14px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;}
 .tut-backdrop {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 540;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 740;
   display: none; opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
 }
 .tut-backdrop.show { display: block; opacity: 1; pointer-events: auto; }
@@ -759,7 +759,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
   position:fixed;bottom:100px;left:50%;
   transform:translate(-50%, 30px); opacity:0; pointer-events:none;
   background:rgba(30,58,95,.97);border:1px solid var(--c-fwyl);border-radius:14px;
-  padding:14px 18px;z-index:550;max-width:340px;width:90%;
+  padding:14px 18px;z-index:750;max-width:340px;width:90%;
   box-shadow:0 4px 24px rgba(0,0,0,.6);
   transition:transform .4s cubic-bezier(0.2,0.8,0.2,1), opacity .3s ease;
 }
@@ -773,7 +773,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .tut-overlay-btn:hover{background:var(--c-fwyl);}
 @keyframes tutPulse{0%,100%{box-shadow:0 0 0 0 rgba(78,158,66,.8);}50%{box-shadow:0 0 0 10px rgba(78,158,66,0);}}
 .tut-pulse{animation:tutPulse 1.2s ease infinite!important;border-radius:8px;}
-.tut-elevate{position:relative !important;z-index:545 !important;}
+.tut-elevate{position:relative !important;z-index:745 !important;}
 
 /* VERSUS MODE */
 .vs-turn-screen{position:fixed;inset:0;background:var(--dark);z-index:180;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;}
@@ -2106,17 +2106,6 @@ function processShot(row,col){
     addLog(S.shotNum,`Green → ${finalPutts} putt${finalPutts>1?'s':''}${wcPuttNote}`,outcome,`+${finalPutts}`,false,row,col,snapGrid, prevZone, prevYrdRemain);
     S.shotNum += finalPutts; 
     updateYrd();
-    
-    if(TUT.active) {
-       S.holeDone = true;
-       hideNextShotBtn();
-       const rollBtn2=document.getElementById('rollBtn');
-       if(rollBtn2)rollBtn2.style.display='none';
-       updateTVBanner();
-       setTimeout(()=>completeHole(), 300);
-       return;
-    }
-
     S.holeDone=false;
 
     {
@@ -2539,6 +2528,7 @@ function completeHole(){
     document.getElementById('ovTitle').textContent=title;
     document.getElementById('ovNameRow').textContent=`TOTAL SCORE: ${tutDiffStr}`;
     document.getElementById('ovStatsRow').textContent=`${score} strokes · par ${h.par}`;
+    
     document.getElementById('ovBtn').style.display='none';
     document.getElementById('ovSummaryBtn').style.display='none';
     document.getElementById('ovPlayAgainBtn').style.display='none';
@@ -2546,11 +2536,11 @@ function completeHole(){
     if(S._skipCelebration){
       S._skipCelebration=false;
       document.getElementById('overlay').classList.add('show');
-      setTimeout(()=>tutAfterHoleComplete(), 800);
+      tutAfterHoleComplete();
     } else {
       showCelebration(isHoleInOne?-99:d, ()=>{
         document.getElementById('overlay').classList.add('show');
-        setTimeout(()=>tutAfterHoleComplete(), 800);
+        tutAfterHoleComplete();
       });
     }
     
@@ -4821,14 +4811,25 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
-      _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
+      _tutWaitFor('after_putt_shot', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 16){
-      _tutShowTip('HOLE COMPLETE!', 'You holed out! Let\'s move to Hole 2 to learn about hazards and special abilities.', 'NEXT HOLE →', '.overlay .ov', true);
+      _tutShowTip('GREAT PUTT!', 'You made the putt! Tap FINISH HOLE to complete the hole.', 'I\'LL TAP IT', '#nextShotBtn', true);
       return;
     }
     if(_tutStep === 17){
+      _tutHideTip();
+      _tutBlockInput(false);
+      _tutHighlight('#nextShotBtn', false);
+      _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
+      return;
+    }
+    if(_tutStep === 18){
+      _tutShowTip('HOLE COMPLETE!', 'You holed out! Let\'s move to Hole 2 to learn about hazards and special abilities.', 'NEXT HOLE →', '.overlay .ov', true);
+      return;
+    }
+    if(_tutStep === 19){
       document.getElementById('overlay').classList.remove('show');
       S.holeIdx = 1; _tutHoleKey = 'h2'; _tutStep = -1;
       loadHole();
@@ -4938,14 +4939,25 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
-      _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
+      _tutWaitFor('after_putt_shot', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 19){
-      _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round! Final hole coming up!', 'NEXT HOLE →', '.overlay .ov', true);
+      _tutShowTip('GREAT PUTT!', 'Tap FINISH HOLE.', 'I\'LL TAP IT', '#nextShotBtn', true);
       return;
     }
     if(_tutStep === 20){
+      _tutHideTip();
+      _tutBlockInput(false);
+      _tutHighlight('#nextShotBtn', false);
+      _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
+      return;
+    }
+    if(_tutStep === 21){
+      _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round! Final hole coming up!', 'NEXT HOLE →', '.overlay .ov', true);
+      return;
+    }
+    if(_tutStep === 22){
       document.getElementById('overlay').classList.remove('show');
       S.holeIdx = 2; _tutHoleKey = 'h3'; _tutStep = -1;
       loadHole();
