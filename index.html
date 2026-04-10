@@ -332,8 +332,9 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 @keyframes flip-out{0%{transform:rotateY(180deg)}50%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
 
 /* HOLE RESULT CELEBRATION */
-.celebration-badge{font-family:'Bebas Neue',cursive;font-size:48px;letter-spacing:4px;text-align:center;padding:18px 32px;border-radius:16px;animation:celebIn .5s cubic-bezier(.34,1.56,.64,1) forwards, celebOut .3s ease .9s forwards;}
-@keyframes celebIn{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+/* HOLE RESULT CELEBRATION */
+.celebration-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:none;}
+.celebration-badge{font-family:'Bebas Neue',cursive;font-size:48px;letter-spacing:4px;text-align:center;padding:18px 32px;border-radius:16px;animation:celebIn .5s cubic-bezier(.34,1.56,.64,1) forwards, celebOut .3s ease .9s forwards;}@keyframes celebIn{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 @keyframes celebOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(1.1)}}
 .celeb-eagle{background:rgba(240,192,64,.95);color:#3a2800;}
 .celeb-birdie{background:rgba(255,107,157,.95);color:#3a0020;}
@@ -775,6 +776,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .tut-pulse{animation:tutPulse 1.2s ease infinite!important;border-radius:8px;}
 .tut-elevate{z-index:745 !important;}
 .tut-relative{position:relative !important;}
+.celebration-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:none;}
 
 /* VERSUS MODE */
 .vs-turn-screen{position:fixed;inset:0;background:var(--dark);z-index:180;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;}
@@ -1733,6 +1735,12 @@ function buildScorecard(){
 function loadHole(){
   const nr=document.getElementById('ovNameRow');
   if(nr){nr.style.fontSize='';nr.style.fontFamily='';nr.style.letterSpacing='';nr.style.color='';}
+
+  const nextBtn = document.getElementById('nextShotBtn');
+  if(nextBtn){
+     nextBtn.textContent='NEXT SHOT →';
+     nextBtn.onclick=doNextShot;
+  }
 
   const h=HOLES[S.holeIdx];
   S.zone='tee';S.strokes=0;S.shotNum=1;S.shotCount=0;
@@ -4633,6 +4641,7 @@ const TUT_GRIDS = {
   h3_tee: [['grn','grn','hole','grn','chip','grn'],['grn','grn','grn','grn','grn','grn'],['chip','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','chip'],['grn','grn','grn','grn','grn','grn']],
 };
 
+let TUT = { active:false, step:0, blocked:true };
 let _tutStep = -1;
 let _tutHoleKey = 'h1';
 
@@ -4819,21 +4828,17 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 16){
-      _tutShowTip('GREAT PUTT!', 'You made the putt! Tap FINISH HOLE to complete the hole.', 'I\'LL TAP IT', '#nextShotBtn', true);
-      return;
-    }
-    if(_tutStep === 17){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#nextShotBtn', false);
+      _tutHighlight('#nextShotBtn', false); // Highlight the FINISH HOLE button
       _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
       return;
     }
-    if(_tutStep === 18){
+    if(_tutStep === 17){
       _tutShowTip('HOLE COMPLETE!', 'You holed out! Let\'s move to Hole 2 to learn about hazards and special abilities.', 'NEXT HOLE →', '.overlay .ov', true);
       return;
     }
-    if(_tutStep === 19){
+    if(_tutStep === 18){
       document.getElementById('overlay').classList.remove('show');
       S.holeIdx = 1; _tutHoleKey = 'h2'; _tutStep = -1;
       loadHole();
@@ -4870,7 +4875,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 5){
-      _tutShowTip('NEXT SHOT', 'Your Phantom Stroke is saved in your drawer on the right. Tap NEXT SHOT to continue playing.', 'I\'LL TAP IT', '#nextShotBtn', true);
+      _tutShowTip('NEXT SHOT', 'Your Phantom Stroke is saved in your drawer on the right. You can have up to 3 wildcards stored at the same time. Tap NEXT SHOT to continue playing.', 'I\'LL TAP IT', '#nextShotBtn', true);
       return;
     }
     if(_tutStep === 6){
@@ -4925,43 +4930,35 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 15){
-      _tutShowTip('ON THE GREEN!', 'You made it past the water. Tap NEXT SHOT to load the putting grid.', 'GOT IT', '#nextShotBtn', true);
-      return;
-    }
-    if(_tutStep === 16){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#nextShotBtn', false);
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
-    if(_tutStep === 17){
+    if(_tutStep === 16){
       _tutShowTip('FINISH THE HOLE!', 'Roll to putt.', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
-    if(_tutStep === 18){
+    if(_tutStep === 17){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
       _tutWaitFor('after_putt_shot', ()=>{ tutAdvance(); });
       return;
     }
-    if(_tutStep === 19){
-      _tutShowTip('GREAT PUTT!', 'Tap FINISH HOLE.', 'I\'LL TAP IT', '#nextShotBtn', true);
-      return;
-    }
-    if(_tutStep === 20){
+    if(_tutStep === 18){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#nextShotBtn', false);
+      _tutHighlight('#nextShotBtn', false); // Highlight the FINISH HOLE button
       _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
       return;
     }
-    if(_tutStep === 21){
+    if(_tutStep === 19){
       _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round! Final hole coming up!', 'NEXT HOLE →', '.overlay .ov', true);
       return;
     }
-    if(_tutStep === 22){
+    if(_tutStep === 20){
       document.getElementById('overlay').classList.remove('show');
       S.holeIdx = 2; _tutHoleKey = 'h3'; _tutStep = -1;
       loadHole();
