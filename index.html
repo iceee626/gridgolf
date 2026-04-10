@@ -825,7 +825,7 @@ header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12
 <div class="menu-screen" id="menuScreen" style="display:none;">
   <div class="menu-bg-grass"></div>
   <div id="floatingEntities"></div>
-  <div style="position:absolute;top:calc(env(safe-area-inset-top) + 10px);right:16px;display:flex;align-items:center;gap:6px;z-index:20;">
+  <div style="position:absolute;top:calc(env(safe-area-inset-top) + 10px);right:16px;display:flex;align-items:center;gap:6px;z-index:110;">
     <span id="menuProfileName" style="font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);"></span>
     <button class="menu-profile-icon" id="menuProfileIconBtn" onclick="openProfileModal()" title="Profiles" style="position:static;top:auto;right:auto;">👤</button>
   </div>
@@ -1423,22 +1423,24 @@ function initFloatingEntities() {
   const emojis = ['⛳', '🎲', '🏌️', '🏌️‍♀️', '🏆', '☁️', '☀️'];
   const items = [];
   
-  // Helper to spawn/respawn items off-screen on the left or right
+  // Helper to spawn/respawn items
   const spawnItem = (item, isInitial = false) => {
-    const isLeft = Math.random() > 0.5;
+    if (isInitial) {
+      // On first load, spawn them immediately visible across the screen
+      item.x = Math.random() * window.innerWidth;
+      item.y = Math.random() * (window.innerHeight * 0.4); // Top 40% of screen
+      item.speedX = (Math.random() * 0.8 + 0.3) * (Math.random() > 0.5 ? 1 : -1);
+    } else {
+      // For respawns, place them off-screen to the left or right
+      const isLeft = Math.random() > 0.5;
+      const offset = Math.random() * 50;
+      item.x = isLeft ? -60 - offset : window.innerWidth + 60 + offset;
+      item.y = window.innerHeight * 0.1 + Math.random() * (window.innerHeight * 0.3);
+      item.speedX = (Math.random() * 0.8 + 0.3) * (isLeft ? 1 : -1);
+    }
     
-    // Stagger the initial spawns far off-screen so they enter the screen gradually
-    const offset = isInitial ? Math.random() * 800 : Math.random() * 50;
-    item.x = isLeft ? -60 - offset : window.innerWidth + 60 + offset;
-    
-    // Spawn them somewhere in the top 40% of the screen, but low enough so they can float up
-    item.y = window.innerHeight * 0.1 + Math.random() * (window.innerHeight * 0.3);
-    
-    // Float inwards towards the center
-    item.speedX = (Math.random() * 0.8 + 0.3) * (isLeft ? 1 : -1);
     // Float upwards
     item.speedY = -(Math.random() * 0.6 + 0.2); 
-    
     item.rot = Math.random() * 360;
     item.rotSpeed = (Math.random() * 1.5 - 0.75);
   };
