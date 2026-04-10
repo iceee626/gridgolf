@@ -522,7 +522,7 @@ header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12
 .profile-body{padding:14px;}
 .profile-slots{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
 .profile-slot{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;}
-.profile-slot:hover{border-color:var(--c-fwyl);background:rgba(78,158,66,.1);}
+@media (hover: hover) { .profile-slot:hover{border-color:var(--c-fwyl);background:rgba(78,158,66,.1);} }
 .profile-slot.active-profile{border-color:var(--c-fwyl);background:rgba(78,158,66,.15);}
 .profile-slot.empty{border-style:dashed;cursor:default;}
 .profile-avatar{width:40px;height:40px;border-radius:50%;background:var(--c-tee);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
@@ -829,7 +829,7 @@ header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12
       </button>
   <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()">⛳ PLAY</button>
   <button class="menu-btn-play" id="menuVersusBtn" onclick="navToVersusSetup()" style="background:linear-gradient(135deg,#1a5f8a,#2a3a6e);box-shadow:0 4px 20px rgba(30,95,138,.4);">🆚 VERSUS MODE</button>
-  <button class="menu-btn-sec" onclick="openSettings()" style="margin-top:10px; font-size:22px; letter-spacing:3px;">⚙️ SETTINGS</button>
+  <button class="menu-btn-sec" onclick="openSettings()" style="font-size:22px; letter-spacing:3px;">⚙️ SETTINGS</button>
 </div>
 </div>
 </div>
@@ -2273,6 +2273,7 @@ function hideNextShotBtn(){
   if(next)next.style.display='none';
 }
 function scrollToGrid() {
+  window._disableTutScroll = true; // Tell the tutorial to skip its centering scroll
   setTimeout(() => {
     const gridSec = document.querySelector('.grid-section');
     const header = document.querySelector('header');
@@ -2281,7 +2282,8 @@ function scrollToGrid() {
       const y = gridSec.getBoundingClientRect().top + window.scrollY - headerOffset - 10;
       window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
     }
-  }, 150);
+    setTimeout(() => { window._disableTutScroll = false; }, 500); // Re-enable tutorial scroll
+  }, 50);
 }
 
 function doNextShot(){
@@ -4828,10 +4830,11 @@ function _tutHighlight(sel, darken = true){
      // Robust scrolling calculation for iOS Safari compatibility
      if (!scrolled) {
          setTimeout(() => {
+             if (window._disableTutScroll) return; // Yield to scrollToGrid() if active
              const rect = el.getBoundingClientRect();
              const y = rect.top + window.scrollY - (window.innerHeight / 2) + (rect.height / 2);
              window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
-         }, 50); // slight delay ensures layout is ready before moving
+         }, 60);
          scrolled = true;
      }
   });
