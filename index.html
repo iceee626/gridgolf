@@ -503,6 +503,26 @@ header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12
 .sum-total-par{font-family:'Sen', sans-serif;font-size:11px;color:var(--muted);}
 .sum-sc-table td{font-size:11px;}
 
+/* REDESIGNED HOLE COMPLETE SCREEN */
+.hc-screen { position:fixed; inset:0; background:var(--dark); z-index:450; display:none; flex-direction:column; padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px); overflow-y:auto; animation:fadein .3s ease; }
+.hc-screen.show { display:flex; }
+.hc-header { display:flex; justify-content:center; align-items:center; font-family:'Bebas Neue',cursive; font-size:18px; letter-spacing:2px; color:var(--muted); margin-bottom:16px; position:relative; }
+.hc-rnd-badge { position:absolute; right:0; background:rgba(240,192,64,.15); color:var(--gold); padding:4px 8px; border-radius:12px; font-size:10px; border:1px solid rgba(240,192,64,.3); font-family:'Sen',sans-serif; letter-spacing:1px; }
+.hc-card { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:16px; padding:32px 24px; text-align:center; margin-bottom:24px; box-shadow:0 8px 24px rgba(0,0,0,0.4); }
+.hc-card-icon { font-size:56px; margin-bottom:12px; line-height:1; }
+.hc-card-title { font-family:'Bebas Neue',cursive; font-size:48px; letter-spacing:3px; line-height:1; margin-bottom:12px; }
+.hc-card-sub { font-family:'Sen',sans-serif; font-size:12px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:20px; }
+.hc-card-tot { display:inline-block; background:#0d1117; border:1px solid var(--border); border-radius:24px; padding:8px 20px; font-family:'Bebas Neue',cursive; font-size:22px; letter-spacing:1px; }
+.hc-section-title { font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:12px; }
+.hc-log-list { display:flex; flex-direction:column; gap:8px; max-height:180px; overflow-y:auto; margin-bottom:24px; padding-right:4px; }
+.hc-log-item { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:12px; padding:10px 12px; }
+.hc-log-num { width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,.05); display:flex; align-items:center; justify-content:center; font-family:'Sen',sans-serif; font-size:9px; color:var(--muted); flex-shrink:0; }
+.hc-log-dice { display:flex; gap:4px; }
+.hc-log-die { background:#fff; color:#000; border-radius:4px; width:16px; height:16px; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',cursive; font-size:12px; font-weight:bold; }
+.hc-log-desc { flex:1; font-family:'Sen',sans-serif; font-size:11px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.hc-log-res { font-size:12px; color:var(--muted); }
+.hc-btn-wrap { margin-top:auto; padding-top:16px; }
+
 /* PROFILE SYSTEM */
 .profile-btn{
   background:rgba(255,255,255,.08);border:1px solid var(--border);
@@ -825,10 +845,12 @@ header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12
 <div class="menu-screen" id="menuScreen" style="display:none;">
   <div class="menu-bg-grass"></div>
   <div id="floatingEntities"></div>
-  <div style="position:absolute;top:calc(env(safe-area-inset-top) + 10px);right:16px;display:flex;align-items:center;gap:6px;z-index:110;">
-    <span id="menuProfileName" style="font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);"></span>
-    <button class="menu-profile-icon" id="menuProfileIconBtn" onclick="openProfileModal()" title="Profiles" style="position:static;top:auto;right:auto;">👤</button>
-  </div>
+  
+  <button onclick="openProfileModal()" style="position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:16px;display:flex;align-items:center;gap:8px;z-index:110;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:30px;padding:4px 12px 4px 4px;cursor:pointer;backdrop-filter:blur(4px);transition:background 0.15s;">
+    <div id="menuProfileIconBtn" style="width:28px;height:28px;border-radius:50%;background:var(--c-fwy);display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 4px rgba(0,0,0,0.3);">👤</div>
+    <span id="menuProfileName" style="font-family:'Bebas Neue', cursive;font-size:16px;letter-spacing:1px;color:var(--text);padding-bottom:1px;"></span>
+  </button>
+  
   <div class="menu-content">
   <div class="menu-logo">GRID<span>GOLF</span></div>
   <div class="menu-tagline">A DICE GOLF EXPERIENCE</div>
@@ -837,9 +859,11 @@ header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12
   <div class="menu-btns" id="menuBtns">
   <button class="menu-btn-play" id="menuContinueBtn" onclick="continueGame()" style="display:none;background:#1a5f8a;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;padding:12px;">
       </button>
-  <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()">⛳ PLAY</button>
-  <button class="menu-btn-play" id="menuVersusBtn" onclick="navToVersusSetup()" style="background:linear-gradient(135deg,#1a5f8a,#2a3a6e);box-shadow:0 4px 20px rgba(30,95,138,.4);">🆚 VERSUS MODE</button>
-  <button class="menu-btn-sec" onclick="openSettings()" style="font-size:22px; letter-spacing:3px;">⚙️ SETTINGS</button>
+  <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()" style="padding:24px 16px; font-size:28px;">⛳ PLAY</button>
+  <div style="display:flex; gap:10px;">
+    <button class="menu-btn-play" id="menuVersusBtn" onclick="navToVersusSetup()" style="flex:1; background:linear-gradient(135deg,#1a5f8a,#2a3a6e);box-shadow:0 4px 20px rgba(30,95,138,.4); font-size:20px; padding:20px 10px;">🆚 VERSUS</button>
+    <button class="menu-btn-sec" onclick="openSettings()" style="flex:1; font-size:20px; letter-spacing:2px; padding:20px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; background:rgba(255,255,255,0.05); border-radius:14px;"><span style="font-size:24px;line-height:1;">⚙️</span> SETTINGS</button>
+  </div>
 </div>
 </div>
 </div>
@@ -1127,14 +1151,30 @@ header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12
   </div>
 </div>
 <div class="overlay" id="overlay">
-  <div class="ov">
-    <div class="ov-emoji" id="ovEmoji">⛳</div>
-    <div class="ov-title" id="ovTitle">HOLE COMPLETE</div>
-    <div class="ov-namerow" id="ovNameRow">—</div>
-    <div class="ov-statsrow" id="ovStatsRow">—</div>
-    <button class="ov-btn" id="ovBtn" onclick="nextHole()">NEXT HOLE →</button>
-    <button class="ov-btn" id="ovSummaryBtn" onclick="openSummary()" style="display:none;margin-top:8px;background:transparent;border:1px solid var(--c-fwyl);color:var(--c-fwyl);">📋 VIEW SUMMARY</button>
-    <button class="ov-btn" id="ovPlayAgainBtn" onclick="returnToMenu()" style="display:none;margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--muted);">↩ PLAY AGAIN</button>
+  </div>
+
+<div class="hc-screen" id="hcScreen">
+  <div class="hc-header">
+    <span id="hcHoleTitle">HOLE 1 COMPLETE</span>
+    <div class="hc-rnd-badge" id="hcRndBadge">RND 1</div>
+  </div>
+  <div class="hc-card">
+    <div class="hc-card-icon" id="hcIcon">🐦</div>
+    <div class="hc-card-title" id="hcTitle">BIRDIE!</div>
+    <div class="hc-card-sub" id="hcSub">3 STROKES · PAR 4</div>
+    <div class="hc-card-tot" id="hcTot">TOTAL <span id="hcTotSpan" style="color:#52c87a">-1</span></div>
+  </div>
+  <div class="hc-section-title">SHOT REPLAY</div>
+  <div class="hc-log-list" id="hcLogList"></div>
+  <div class="sc-wrap" style="margin-bottom:0; flex-shrink:0;">
+    <div class="sc-inner">
+      <div class="sc-row sc-head" id="hcScHead"></div>
+      <div class="sc-row sc-body" id="hcScPar"><div class="sc-lbl">PAR</div></div>
+      <div class="sc-row sc-body" id="hcScYou"><div class="sc-lbl">YOU</div></div>
+    </div>
+  </div>
+  <div class="hc-btn-wrap">
+    <button class="menu-btn-play" id="hcBtn" onclick="nextHole()" style="width:100%; font-size:24px;">HOLE 2 →</button>
   </div>
 </div>
 
@@ -1736,7 +1776,11 @@ function returnToMenu(){
   autoLoadProfile();
 }
 
+let _skipGridScrollOnce = false;
+
 function startGame(){
+  clearSavedGame();
+  _skipGridScrollOnce = true;
   clearSavedGame();
   resetGameState();
   const p=getActiveProfile();
@@ -2389,6 +2433,11 @@ function scrollToGrid() {
   window._disableTutScroll = true; // Tell the tutorial to skip its centering scroll
   clearTimeout(_scrollGridTimeout);
   setTimeout(() => {
+    if (_skipGridScrollOnce) {
+        _skipGridScrollOnce = false;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+    }
     const gridSec = document.querySelector('.grid-section');
     const header = document.querySelector('header');
     if (gridSec) {
@@ -2750,6 +2799,124 @@ function completeHole(){
   const totalDiff=totalScore-totalPar;
   const totalStr=totalDiff===0?'E':totalDiff>0?`+${totalDiff}`:`${totalDiff}`;
   
+  buildScorecard();
+
+  if (!VS.active && !TUT.active) {
+      const hcScreen = document.getElementById('hcScreen');
+      document.getElementById('hcHoleTitle').textContent = `HOLE ${S.holeIdx + 1} COMPLETE`;
+      document.getElementById('hcRndBadge').textContent = `RND ${S.currentRound}`;
+      document.getElementById('hcRndBadge').style.display = S.totalRounds > 1 ? 'block' : 'none';
+
+      document.getElementById('hcIcon').textContent = emoji;
+      const hcTitle = document.getElementById('hcTitle');
+      hcTitle.textContent = title;
+      
+      if(d<=-2) hcTitle.style.color='var(--gold)';
+      else if(d===-1) hcTitle.style.color='#ff6b9d';
+      else if(d===0) hcTitle.style.color='var(--c-fwyl)';
+      else hcTitle.style.color='#e05252';
+
+      document.getElementById('hcSub').textContent = score === 1 ? `HOLE IN ONE! · PAR ${h.par}` : `${score} STROKES · PAR ${h.par}`;
+
+      const totSpan = document.getElementById('hcTotSpan');
+      totSpan.textContent = totalStr;
+      if(totalDiff<0) totSpan.style.color='var(--gold)';
+      else if(totalDiff===0) totSpan.style.color='var(--c-fwyl)';
+      else totSpan.style.color='#e05252';
+
+      // Populate Shot Replay
+      const logList = document.getElementById('hcLogList');
+      logList.innerHTML = '';
+      [...S.log].forEach(e => {
+          const zd = Z[e.zk] || Z.fwy;
+          const item = document.createElement('div');
+          item.className = 'hc-log-item';
+          let diceHtml = '';
+          if (e.row !== null && e.row !== undefined && e.col !== null && e.col !== undefined) {
+              diceHtml = `<div class="hc-log-dice"><div class="hc-log-die">${e.row+1}</div><div class="hc-log-die">${e.col+1}</div></div>`;
+          } else {
+              diceHtml = `<div class="hc-log-dice"><div class="hc-log-die" style="opacity:0.3">-</div><div class="hc-log-die" style="opacity:0.3">-</div></div>`;
+          }
+          const isPutt = e.zk === 'p1' || e.zk === 'p2' || e.zk === 'p3' || e.zk === 'hole';
+          item.innerHTML = `
+              <div class="hc-log-num">${e.num}</div>
+              ${diceHtml}
+              <div style="width:8px;height:8px;border-radius:50%;background:${zd.color};flex-shrink:0;"></div>
+              <div class="hc-log-desc">${isPutt ? e.desc : zd.name}</div>
+              <div class="hc-log-res">${isPutt ? '✓' : '→'}</div>
+          `;
+          logList.appendChild(item);
+      });
+
+      // Populate Mini Scorecard
+      const scHead = document.getElementById('hcScHead');
+      const scPar = document.getElementById('hcScPar');
+      const scYou = document.getElementById('hcScYou');
+      scHead.innerHTML = '<div class="sc-lbl">H</div>';
+      scPar.innerHTML = '<div class="sc-lbl">PAR</div>';
+      scYou.innerHTML = '<div class="sc-lbl">YOU</div>';
+
+      const activeHoles = HOLES.slice(S.startIdx, S.endIdx + 1);
+      let runningTot = 0, runningPar = 0;
+      activeHoles.forEach((ah, i) => {
+          const absIdx = S.startIdx + i;
+          const v = S.scorecards[S.currentRound-1][absIdx];
+          if (v !== null) { runningTot+=v; runningPar+=ah.par; }
+
+          const d1 = document.createElement('div'); d1.textContent = absIdx + 1; scHead.appendChild(d1);
+          const d2 = document.createElement('div'); d2.textContent = ah.par; scPar.appendChild(d2);
+          const d3 = document.createElement('div');
+          if(v!==null){
+              const diff = v - ah.par;
+              if(diff<=-2){ d3.innerHTML=`<span class="sc-sym sc-sym-eagle">${v}</span>`; }
+              else if(diff===-1){ d3.innerHTML=`<span class="sc-sym sc-sym-birdie">${v}</span>`; }
+              else if(diff===0){ d3.innerHTML=`<span class="sc-sym">${v}</span>`; }
+              else if(diff===1){ d3.innerHTML=`<span class="sc-sym sc-sym-bogey">${v}</span>`; }
+              else { d3.innerHTML=`<span class="sc-sym sc-sym-double">${v}</span>`; }
+          } else {
+              d3.textContent = '·';
+          }
+          scYou.appendChild(d3);
+      });
+      
+      const t1 = document.createElement('div'); t1.textContent = 'TOT'; t1.style.background='rgba(0,0,0,.2)'; scHead.appendChild(t1);
+      const t2 = document.createElement('div'); t2.textContent = runningPar; t2.style.background='rgba(0,0,0,.2)'; scPar.appendChild(t2);
+      const t3 = document.createElement('div');
+      const runDiff = runningTot - runningPar;
+      t3.textContent = runDiff === 0 ? 'E' : runDiff > 0 ? `+${runDiff}` : `${runDiff}`;
+      t3.style.background='rgba(0,0,0,.2)';
+      t3.style.color = runDiff < 0 ? 'var(--gold)' : runDiff > 0 ? '#e05252' : 'var(--c-fwyl)';
+      t3.style.fontWeight = 'bold';
+      scYou.appendChild(t3);
+
+      const colW = activeHoles.length <= 9 ? '1fr' : '34px';
+      scHead.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
+      scPar.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
+      scYou.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
+
+      const btn = document.getElementById('hcBtn');
+      if (S.holeIdx === S.endIdx) {
+          if (S.currentRound < S.totalRounds) {
+              btn.textContent = `COMPLETE ROUND ${S.currentRound} →`;
+          } else {
+              btn.textContent = 'FINAL SCORECARD →';
+          }
+      } else {
+          btn.textContent = `HOLE ${S.holeIdx + 2} →`;
+      }
+
+      if(S._skipCelebration){
+        S._skipCelebration=false;
+        document.getElementById('hcScreen').classList.add('show');
+      } else {
+        showCelebration(isHoleInOne?-99:d, ()=>{
+          document.getElementById('hcScreen').classList.add('show');
+        });
+      }
+      return;
+  }
+
+  // Fallback for TUTORIAL 
   document.getElementById('ovEmoji').textContent=emoji;
   document.getElementById('ovEmoji').style.display='block';
   document.getElementById('ovTitle').textContent=title;
@@ -2771,7 +2938,6 @@ function completeHole(){
     ovBtn.textContent = `HOLE ${S.holeIdx + 2} →`;
   }
   
-  buildScorecard();
   if(S._skipCelebration){
     S._skipCelebration=false;
     document.getElementById('overlay').classList.add('show');
@@ -2783,6 +2949,7 @@ function completeHole(){
 }
 
 function nextHole(){
+  document.getElementById('hcScreen').classList.remove('show');
   const nr=document.getElementById('ovNameRow');
   if(nr){nr.style.fontSize='';nr.style.fontFamily='';nr.style.letterSpacing='';nr.style.color='';}
   document.getElementById('overlay').classList.remove('show');
@@ -3571,8 +3738,21 @@ function toggleCellLabels(){
 }
 function updateCellLabelUI(){
   const m=getCellLabelMode();
-  const btn=document.getElementById('cellLabelBtn');
-  if(btn){btn.textContent=m==='always'?'VISIBLE':'TAP';btn.style.background=m==='always'?'var(--c-fwy)':'rgba(255,255,255,.1)';btn.style.color=m==='always'?'#fff':'var(--muted)';}
+  ['tap','always'].forEach(id=>{
+    const b=document.getElementById('cellLabelBtn-'+id);
+    if(b){
+      const active = m===id;
+      b.style.background=active?'var(--c-fwy)':'rgba(255,255,255,.08)';
+      b.style.borderColor=active?'var(--c-fwyl)':'var(--border)';
+      b.style.color=active?'#fff':'var(--muted)';
+    }
+  });
+}
+
+function setCellLabelModeDirect(mode){
+  setCellLabelMode(mode);
+  updateCellLabelUI();
+  if(S.currentGrid)renderGrid();
 }
 
 // ═══════════════════════════════════════
@@ -4562,6 +4742,7 @@ function continueGame(){
   try{
     const save=JSON.parse(localStorage.getItem('gg_save')||'null');
     if(!save)return;
+    _skipGridScrollOnce = true;
     PLAYER_NAME=save.playerName||PLAYER_NAME;
     GAME_DIFF=save.gameDiff||1;
     const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };
@@ -5799,22 +5980,25 @@ function vsGetCachedGrid(){
         </div>
         <div class="toggle-switch" id="wcToggle" onclick="setWcPref(!wcEnabled())"><div class="toggle-knob"></div></div>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📏 DISTANCE</div>
           <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Unit of measurement</div>
         </div>
-        <div style="display:flex;gap:5px;">
-          <button id="metricsBtn-yards" onclick="setMetricsPref('yards')" style="border-radius:8px;padding:6px 10px;font-family:'Sen', sans-serif;font-size:9px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">YDS</button>
-          <button id="metricsBtn-meters" onclick="setMetricsPref('meters')" style="border-radius:8px;padding:6px 10px;font-family:'Sen', sans-serif;font-size:9px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">M</button>
+        <div style="display:flex;gap:6px;">
+          <button id="metricsBtn-yards" onclick="setMetricsPref('yards')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">YARDS</button>
+          <button id="metricsBtn-meters" onclick="setMetricsPref('meters')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">METERS</button>
         </div>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🏷️ CELL LABELS</div>
           <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Show zone name on tap</div>
         </div>
-        <button id="cellLabelBtn" onclick="toggleCellLabels()" style="background:rgba(255,255,255,.1);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-family:'Sen', sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;min-width:52px;">TAP</button>
+        <div style="display:flex;gap:6px;">
+          <button id="cellLabelBtn-tap" onclick="setCellLabelModeDirect('tap')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">TAP</button>
+          <button id="cellLabelBtn-always" onclick="setCellLabelModeDirect('always')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">VISIBLE</button>
+        </div>
       </div>
       <div id="settingsTutorialRow" style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
