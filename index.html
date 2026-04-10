@@ -1423,28 +1423,33 @@ function initFloatingEntities() {
   const emojis = ['⛳', '🎲', '🏌️', '🏌️‍♀️', '🏆', '☁️', '☀️'];
   const items = [];
   
-  // Set the "header" area height (approx top 30% of screen)
-  const maxY = window.innerHeight * 0.3;
+  // Helper to spawn/respawn items off-screen on the left or right
+  const spawnItem = (item, isInitial = false) => {
+    const isLeft = Math.random() > 0.5;
+    
+    // Stagger the initial spawns far off-screen so they enter the screen gradually
+    const offset = isInitial ? Math.random() * 800 : Math.random() * 50;
+    item.x = isLeft ? -60 - offset : window.innerWidth + 60 + offset;
+    
+    // Spawn them somewhere in the top 40% of the screen, but low enough so they can float up
+    item.y = window.innerHeight * 0.1 + Math.random() * (window.innerHeight * 0.3);
+    
+    // Float inwards towards the center
+    item.speedX = (Math.random() * 0.8 + 0.3) * (isLeft ? 1 : -1);
+    // Float upwards
+    item.speedY = -(Math.random() * 0.6 + 0.2); 
+    
+    item.rot = Math.random() * 360;
+    item.rotSpeed = (Math.random() * 1.5 - 0.75);
+  };
   
   for(let i=0; i<25; i++) {
     const el = document.createElement('div');
     el.className = 'float-item';
     el.textContent = emojis[i % emojis.length];
     
-    const item = {
-      el: el,
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * maxY,
-      // Horizontal drift (left or right)
-      speedX: (Math.random() * 0.8 + 0.2) * (Math.random() > 0.5 ? 1 : -1),
-      // Strictly UPWARD drift (negative Y)
-      speedY: -(Math.random() * 0.8 + 0.3),
-      rot: Math.random() * 360,
-      rotSpeed: (Math.random() * 1.5 - 0.75),
-      isDragging: false,
-      offsetX: 0,
-      offsetY: 0
-    };
+    const item = { el: el, isDragging: false, offsetX: 0, offsetY: 0 };
+    spawnItem(item, true); // Do the initial staggered off-screen spawn
     
     container.appendChild(el);
     
@@ -1482,27 +1487,24 @@ function initFloatingEntities() {
   }
   
   const animate = () => {
-    const currentMaxY = window.innerHeight * 0.3;
-
     items.forEach(item => {
       if(!item.isDragging) {
         item.x += item.speedX;
-        item.y += item.speedY; // Always moves UP because speedY is negative
+        item.y += item.speedY; 
         item.rot += item.rotSpeed;
         
-        // Wrap horizontally around the screen
-        if(item.x > window.innerWidth + 50) item.x = -50;
-        if(item.x < -50) item.x = window.innerWidth + 50;
+        // If an item floats completely off the top, or drifts completely across to the opposite side
+        const isOffTop = item.y < -60;
+        const isOffRight = item.speedX > 0 && item.x > window.innerWidth + 60;
+        const isOffLeft = item.speedX < 0 && item.x < -60;
         
-        // If it floats off the top of the screen, respawn it at the bottom of the header area
-        if(item.y < -50) {
-            item.y = currentMaxY + 40;
-            item.x = Math.random() * window.innerWidth; // Add some horizontal randomness on respawn
+        if (isOffTop || isOffRight || isOffLeft) {
+            spawnItem(item, false); // Respawn it smoothly off-screen
         }
         
-        // Failsafe: if dragged completely off the bottom of the screen, bring it back
-        if(item.y > window.innerHeight + 50) {
-            item.y = currentMaxY + 40;
+        // Failsafe: if dragged completely off the bottom of the screen, respawn it
+        if(item.y > window.innerHeight + 60) {
+            spawnItem(item, false);
         }
         
         item.el.style.transform = `translate3d(${item.x}px, ${item.y}px, 0) rotate(${item.rot}deg)`;
