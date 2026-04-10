@@ -4801,6 +4801,7 @@ function _tutHighlight(sel, darken = true){
      e.classList.remove('tut-pulse', 'tut-elevate', 'tut-relative');
      e.style.zIndex = '';
      e.style.position = '';
+     if (e.id === 'rollBtn') e.style.opacity = ''; // Restore original opacity
   });
   let bd = document.getElementById('tutBackdrop');
   if (!bd) {
@@ -4822,6 +4823,7 @@ function _tutHighlight(sel, darken = true){
      // Force elevation inline to guarantee it pops over the backdrop
      el.style.position = window.getComputedStyle(el).position === 'static' ? 'relative' : window.getComputedStyle(el).position;
      el.style.zIndex = '745';
+     if (el.id === 'rollBtn') el.style.opacity = '1'; // Prevent button from appearing dark when disabled
      
      // Robust scrolling calculation for iOS Safari compatibility
      if (!scrolled) {
@@ -4915,6 +4917,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#nextShotBtn', false);
+      scrollToGrid();
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
@@ -4938,6 +4941,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#nextShotBtn', false);
+      scrollToGrid();
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
@@ -4957,6 +4961,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#nextShotBtn', false); // Highlight the FINISH HOLE button
+      scrollToGrid();
       _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
       return;
     }
@@ -5009,10 +5014,12 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#nextShotBtn', false);
+      scrollToGrid();
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 7){
+      scrollToGrid();
       _tutShowTip('WATCH OUT!', 'Roll your approach shot to try and reach the green. Avoid the water!', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
@@ -5036,6 +5043,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 11){
+      scrollToGrid();
       _tutShowTip('PENALTY REMOVED!', 'You saved a stroke! Now tap NEXT SHOT to continue.', 'GOT IT', '#nextShotBtn', true);
       return;
     }
@@ -5043,10 +5051,12 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#nextShotBtn', false);
+      scrollToGrid();
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 13){
+      scrollToGrid();
       _tutShowTip('RECOVERY SHOT', 'Because of the penalty, you hit from the same spot. Roll for the green!', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
@@ -5062,10 +5072,12 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#nextShotBtn', false);
+      scrollToGrid();
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 16){
+      scrollToGrid();
       _tutShowTip('FINISH THE HOLE!', 'Roll to putt.', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
@@ -5081,6 +5093,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#nextShotBtn', false); // Highlight the FINISH HOLE button
+      scrollToGrid();
       _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
       return;
     }
@@ -5099,6 +5112,7 @@ function tutAdvance(){
   
   if(hi === 2){
     if(_tutStep === 0){
+      scrollToGrid();
       _tutShowTip('HOLE 3 — PAR 3', 'Par 3 holes are very short! You tee off directly at the green. This grid has a special ⛳ "Hole In!" cell. Land on it for a chance at a hole-in-one! Click on roll to proceed.', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
