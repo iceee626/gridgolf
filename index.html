@@ -2281,7 +2281,7 @@ function scrollToGrid() {
       const y = gridSec.getBoundingClientRect().top + window.scrollY - headerOffset - 10;
       window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
     }
-  }, 50);
+  }, 150);
 }
 
 function doNextShot(){
@@ -4923,6 +4923,7 @@ function tutAdvance(){
     }
     if(_tutStep === 10){
       _tutShowTip('GETTING CLOSER!', 'Notice the grid changed. Because you are closer to the hole, you have more Green (Fairway) cells. Let\'s roll your approach shot!', 'I\'LL ROLL', '.grid-wrap', true);
+      scrollToGrid();
       return;
     }
     if(_tutStep === 11){
@@ -4935,6 +4936,7 @@ function tutAdvance(){
     }
     if(_tutStep === 12){
       _tutShowTip('GREAT APPROACH!', 'You landed on the green! Tap NEXT SHOT to load the putting grid so you can finish the hole.', 'GOT IT', '#nextShotBtn', true);
+      scrollToGrid();
       return;
     }
     if(_tutStep === 13){
@@ -4947,6 +4949,7 @@ function tutAdvance(){
     }
     if(_tutStep === 14){
       _tutShowTip('PUTTING TIME!', 'The green is the smooth grass around the hole. The grid now has 1-Putt (green, 1 stroke to finish), 2-Putt (yellow, 2 strokes), and 3-Putt (red, 3 strokes). Roll to finish!', 'I\'LL ROLL', '.grid-wrap', true);
+      scrollToGrid();
       return;
     }
     if(_tutStep === 15){
@@ -4960,7 +4963,7 @@ function tutAdvance(){
     if(_tutStep === 16){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#nextShotBtn', false); // Highlight the FINISH HOLE button
+      _tutHighlight('#nextShotBtn', false); 
       scrollToGrid();
       _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
       return;
@@ -5019,8 +5022,8 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 7){
-      scrollToGrid();
       _tutShowTip('WATCH OUT!', 'Roll your approach shot to try and reach the green. Avoid the water!', 'I\'LL ROLL', '#rollBtn', true);
+      scrollToGrid();
       return;
     }
     if(_tutStep === 8){
@@ -5043,8 +5046,8 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 11){
-      scrollToGrid();
       _tutShowTip('PENALTY REMOVED!', 'You saved a stroke! Now tap NEXT SHOT to continue.', 'GOT IT', '#nextShotBtn', true);
+      scrollToGrid();
       return;
     }
     if(_tutStep === 12){
@@ -5056,8 +5059,8 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 13){
-      scrollToGrid();
       _tutShowTip('RECOVERY SHOT', 'Because of the penalty, you hit from the same spot. Roll for the green!', 'I\'LL ROLL', '#rollBtn', true);
+      scrollToGrid();
       return;
     }
     if(_tutStep === 14){
@@ -5077,8 +5080,8 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 16){
-      scrollToGrid();
       _tutShowTip('FINISH THE HOLE!', 'Roll to putt.', 'I\'LL ROLL', '#rollBtn', true);
+      scrollToGrid();
       return;
     }
     if(_tutStep === 17){
@@ -5112,8 +5115,8 @@ function tutAdvance(){
   
   if(hi === 2){
     if(_tutStep === 0){
-      scrollToGrid();
       _tutShowTip('HOLE 3 — PAR 3', 'Par 3 holes are very short! You tee off directly at the green. This grid has a special ⛳ "Hole In!" cell. Land on it for a chance at a hole-in-one! Click on roll to proceed.', 'I\'LL ROLL', '#rollBtn', true);
+      scrollToGrid();
       return;
     }
     if(_tutStep === 1){
