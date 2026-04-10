@@ -1739,6 +1739,7 @@ function loadHole(){
   const nextBtn = document.getElementById('nextShotBtn');
   if(nextBtn){
      nextBtn.textContent='NEXT SHOT →';
+     nextBtn.style.pointerEvents = '';
      nextBtn.onclick=doNextShot;
   }
 
@@ -5070,6 +5071,7 @@ function tutGetGrid(){
 
 function tutComplete(){
   _tutHideTip();
+  _tutBlockInput(false);
   TUT.active = false;
   TUT.blocked = false;
   tutMarkDone();
