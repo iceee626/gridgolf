@@ -1244,7 +1244,7 @@ const SOUNDS_B64={
 };
 
 // Audio cache — decoded once, reused
-const _audioCache={};
+let _audioCache={};
 let _audioCtx=null;
 
 function getAudioCtx(){
@@ -4641,7 +4641,7 @@ const TUT_GRIDS = {
   h3_tee: [['grn','grn','hole','grn','chip','grn'],['grn','grn','grn','grn','grn','grn'],['chip','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','chip'],['grn','grn','grn','grn','grn','grn']],
 };
 
-let TUT = { active:false, step:0, blocked:true };
+TUT = { active:false, step:0, blocked:true };
 let _tutStep = -1;
 let _tutHoleKey = 'h1';
 
