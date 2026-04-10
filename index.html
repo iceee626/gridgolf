@@ -3783,8 +3783,8 @@ const WILDCARDS=[
   {id:'eagle_eye',       icon:'🦅', name:'Eagle Eye',         desc:'Par 3 only: 50% of grid becomes Green this shot.'},
   {id:'tailwind',        icon:'💨', name:'Tailwind',          desc:'Re-roll one die of your choice this hole.'},
   {id:'lucky_bounce',    icon:'🍀', name:'Lucky Bounce',      desc:'Next OOB or Water result treated as Fairway.'},
-  {id:'shortcut',        icon:'⚡', name:'Shortcut',          desc:'Skip straight to Chip zone on next shot.'},
-  {id:'mulligan',        icon:'↩️',  name:'Mulligan',          desc:'Re-roll both dice once, discard previous result.'},
+  {id:'shortcut',        icon:'⚡', name:'Shortcut',          desc:'Skip straight to Chip zone (only par 4/5 after tee shot).'},
+  {id:'mulligan',        icon:'↩️',  name:'Mulligan',         desc:'Re-roll both dice once, discard previous result.'},
   {id:'iron_will',       icon:'🔩', name:'Iron Will',         desc:'Next Rough result treated as Fairway.'},
   {id:'sand_wedge_pro',  icon:'🏖️',  name:'Sand Wedge Pro',   desc:'If in sand now: instantly move to Green. Otherwise next Sand shot becomes Green.'},
   {id:'birdie_boost',    icon:'🚀', name:'Birdie Boost',      desc:'Add 8 extra Green cells to next approach grid.'},
@@ -4086,10 +4086,9 @@ function applyWildcardEffect(wc){
 
   switch(wc.id){
     case 'shortcut':
-      if(S.zone==='tee'){
-        WCS.shortcutActive = true;
-        S._wcNextShotNote = ` (${wc.icon} ${wc.name})`;
-        toastMsg = `⚡ Shortcut applied!`;
+      if (h.par === 3 || S.zone === 'tee') {
+        toastMsg = `⚡ Shortcut only works on Par 4/5 after the tee shot!`;
+        applied = false;
       } else {
         const prevZone = S.zone;
         const prevYrdRemain = S.yrdRemain;
@@ -5196,7 +5195,8 @@ function vsStartGame(){
   VS.histories = [Array(18).fill(null), Array(18).fill(null)];
   VS.matchScore = [0, 0];
   VS.sharedGrids = {};
-  VS.wcs = [{equipped:[]}, {equipped:[]}];
+  const baseWc = () => ({ equipped:[], active:null, greenLightShots:0, sandCastleActive:false, luckyBounceActive:false, ironWillActive:false, ferrettActive:false, goldenPutterActive:false, eagleEyeActive:false, sandWedgeProActive:false, birdieBoostActive:false, holeWallActive:false, hioActive:false, shortcutActive:false });
+  VS.wcs = [baseWc(), baseWc()];
   vsShowTurnScreen();
 }
 
@@ -5222,6 +5222,13 @@ function vsStartTurn(){
   S._mulliganJustFired=false; S._puttWcUsed=false; S._pendingPuttResult=null;
   
   S.scorecards[0] = [...VS.scores[VS.currentPlayer]]; // Sync scorecard for current player
+  
+  // Wipe all active wildcard states cleanly before switching turns
+  WCS.active=null; WCS.greenLightShots=0; WCS.sandCastleActive=false; WCS.luckyBounceActive=false;
+  WCS.ironWillActive=false; WCS.ferrettActive=false; WCS.goldenPutterActive=false;
+  WCS.eagleEyeActive=false; WCS.sandWedgeProActive=false; WCS.birdieBoostActive=false;
+  WCS.holeWallActive=false; WCS.hioActive=false; WCS.shortcutActive=false;
+
   if (VS.wcs && VS.wcs[VS.currentPlayer]) {
       Object.assign(WCS, VS.wcs[VS.currentPlayer]); // Load persistent buffs
       WCS.equipped = [...(VS.wcs[VS.currentPlayer].equipped || [])]; // Safely copy drawer
@@ -5299,12 +5306,54 @@ function vsShowHoleComparison(){
   let headerText = 'HOLE COMPLETE';
   let emojiIcon = '⛳';
   
-  let matchInfo = '';
+  let p1Leading = false;
+  let p2Leading = false;
+  
   if(VS.format === 'match'){
     let winner = s1<s2 ? p1.name : s2<s1 ? p2.name : 'TIE';
     headerText = winner==='TIE' ? 'HOLE TIED!' : winner+' WINS HOLE!';
     emojiIcon = s1<s2 ? p1.icon : s2<s1 ? p2.icon : '🤝';
-    matchInfo = `<div style="text-align:center;margin-top:6px;font-family:'Sen',sans-serif;font-size:11px;color:var(--gold);letter-spacing:1px;">MATCH: ${p1.name} ${VS.matchScore[0]} — ${VS.matchScore[1]} ${p2.name}</div>`;
+    p1Leading = VS.matchScore[0] > VS.matchScore[1];
+    p2Leading = VS.matchScore[1] > VS.matchScore[0];
+  } else {
+    p1Leading = td1 < td2;
+    p2Leading = td2 < td1;
+  }
+  
+  const p1NameStyle = `font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:${p1Leading ? '22px' : '16px'};color:${p1Leading ? 'var(--gold)' : 'inherit'};`;
+  const p2NameStyle = `font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:${p2Leading ? '22px' : '16px'};color:${p2Leading ? 'var(--gold)' : 'inherit'};`;
+
+  let p1Html, p2Html;
+  if (VS.format === 'match') {
+      p1Html = `
+        <div style="font-size:24px;margin-bottom:4px;">${p1.icon}</div>
+        <div style="${p1NameStyle}">${p1.name}</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;margin-top:4px;color:${p1Leading ? 'var(--gold)' : 'var(--text)'};">${VS.matchScore[0]}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:6px;">H: ${s1} strokes (${fmtD(d1)})</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">TOTAL: ${fmtD(td1)}</div>
+      `;
+      p2Html = `
+        <div style="font-size:24px;margin-bottom:4px;">${p2.icon}</div>
+        <div style="${p2NameStyle}">${p2.name}</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;margin-top:4px;color:${p2Leading ? 'var(--gold)' : 'var(--text)'};">${VS.matchScore[1]}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:6px;">H: ${s2} strokes (${fmtD(d2)})</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">TOTAL: ${fmtD(td2)}</div>
+      `;
+  } else {
+      p1Html = `
+        <div style="font-size:24px;margin-bottom:4px;">${p1.icon}</div>
+        <div style="${p1NameStyle}">${p1.name}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;margin-bottom:2px;">TOTAL</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;color:${td1<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(td1)}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:6px;">H: ${s1} strokes (${fmtD(d1)})</div>
+      `;
+      p2Html = `
+        <div style="font-size:24px;margin-bottom:4px;">${p2.icon}</div>
+        <div style="${p2NameStyle}">${p2.name}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;margin-bottom:2px;">TOTAL</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;color:${td2<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(td2)}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:6px;">H: ${s2} strokes (${fmtD(d2)})</div>
+      `;
   }
   
   document.getElementById('ovEmoji').textContent = emojiIcon;
@@ -5313,22 +5362,10 @@ function vsShowHoleComparison(){
   
   document.getElementById('ovNameRow').innerHTML = `
     <div style="display:flex;justify-content:space-around;width:100%;font-family:'Sen',sans-serif;font-size:12px;margin:8px 0;">
-      <div style="text-align:center;">
-        <div style="font-size:24px;margin-bottom:4px;">${p1.icon}</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;">${p1.name}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;margin-bottom:2px;">TOTAL</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;color:${td1<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(td1)}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--text);margin-top:6px;">Hole ${S.holeIdx + 1}: ${s1} (${fmtD(d1)})</div>
-      </div>
+      <div style="text-align:center;">${p1Html}</div>
       <div style="display:flex;align-items:center;font-family:'Bebas Neue',cursive;font-size:20px;color:var(--muted);">VS</div>
-      <div style="text-align:center;">
-        <div style="font-size:24px;margin-bottom:4px;">${p2.icon}</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;">${p2.name}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;margin-bottom:2px;">TOTAL</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;color:${td2<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(td2)}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--text);margin-top:6px;">Hole ${S.holeIdx + 1}: ${s2} (${fmtD(d2)})</div>
-      </div>
-    </div>${matchInfo}`;
+      <div style="text-align:center;">${p2Html}</div>
+    </div>`;
   document.getElementById('ovNameRow').style.fontSize='';
   document.getElementById('ovStatsRow').textContent=`Par ${h.par}`;
   
