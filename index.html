@@ -1420,24 +1420,25 @@ function initFloatingEntities() {
   const container = document.getElementById('floatingEntities');
   if(!container) return;
   container.innerHTML = '';
-  const emojis = ['⛳', '🎲', '🏌️', '🏌️‍♀️', '🏆'];
+  const emojis = ['⛳', '🎲', '🏌️', '🏌️‍♀️', '🏆', '☁️', '☀️'];
   const items = [];
   
-  // Confine elements to the top 25% of the screen (above the logo)
-  const maxY = window.innerHeight * 0.25;
+  // Set the "header" area height (approx top 30% of screen)
+  const maxY = window.innerHeight * 0.3;
   
   for(let i=0; i<25; i++) {
     const el = document.createElement('div');
     el.className = 'float-item';
     el.textContent = emojis[i % emojis.length];
     
-    // Store variables directly in an object so dragging references the live position
     const item = {
       el: el,
       x: Math.random() * window.innerWidth,
       y: Math.random() * maxY,
-      speedX: (Math.random() * 1.0 + 0.3) * (Math.random() > 0.5 ? 1 : -1),
-      speedY: (Math.random() * 1.0 - 0.5),
+      // Horizontal drift (left or right)
+      speedX: (Math.random() * 0.8 + 0.2) * (Math.random() > 0.5 ? 1 : -1),
+      // Strictly UPWARD drift (negative Y)
+      speedY: -(Math.random() * 0.8 + 0.3),
       rot: Math.random() * 360,
       rotSpeed: (Math.random() * 1.5 - 0.75),
       isDragging: false,
@@ -1457,7 +1458,7 @@ function initFloatingEntities() {
     };
     const moveDrag = (e) => {
       if(!item.isDragging) return;
-      e.preventDefault(); // Prevents mobile scroll while dragging
+      e.preventDefault(); // Prevents mobile screen from scrolling while dragging
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
       item.x = clientX - item.offsetX;
@@ -1481,20 +1482,28 @@ function initFloatingEntities() {
   }
   
   const animate = () => {
-    // Recalculate max height dynamically in case the user rotates their phone
-    const currentMaxY = window.innerHeight * 0.25;
+    const currentMaxY = window.innerHeight * 0.3;
 
     items.forEach(item => {
       if(!item.isDragging) {
         item.x += item.speedX;
-        item.y += item.speedY;
+        item.y += item.speedY; // Always moves UP because speedY is negative
         item.rot += item.rotSpeed;
         
-        // Wrap around strictly inside the top banner area
+        // Wrap horizontally around the screen
         if(item.x > window.innerWidth + 50) item.x = -50;
         if(item.x < -50) item.x = window.innerWidth + 50;
-        if(item.y > currentMaxY + 40) item.y = -40;
-        if(item.y < -40) item.y = currentMaxY + 40;
+        
+        // If it floats off the top of the screen, respawn it at the bottom of the header area
+        if(item.y < -50) {
+            item.y = currentMaxY + 40;
+            item.x = Math.random() * window.innerWidth; // Add some horizontal randomness on respawn
+        }
+        
+        // Failsafe: if dragged completely off the bottom of the screen, bring it back
+        if(item.y > window.innerHeight + 50) {
+            item.y = currentMaxY + 40;
+        }
         
         item.el.style.transform = `translate3d(${item.x}px, ${item.y}px, 0) rotate(${item.rot}deg)`;
       }
