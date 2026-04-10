@@ -4783,6 +4783,8 @@ function _tutBlockInput(block){
 function _tutHighlight(sel, darken = true){
   document.querySelectorAll('.tut-pulse').forEach(e => {
      e.classList.remove('tut-pulse', 'tut-elevate', 'tut-relative');
+     e.style.zIndex = '';
+     e.style.position = '';
   });
   let bd = document.getElementById('tutBackdrop');
   if (!bd) {
@@ -4798,44 +4800,32 @@ function _tutHighlight(sel, darken = true){
   }
 
   const els = document.querySelectorAll(sel);
+  let scrolled = false;
   els.forEach(el => {
      el.classList.add('tut-pulse');
-     const comp = window.getComputedStyle(el);
-     const zi = parseInt(comp.zIndex) || 0;
-     if (zi < 540) {
-         el.classList.add('tut-elevate');
-         if (comp.position === 'static') {
-             el.classList.add('tut-relative');
-         }
-      }
+     // Force elevation inline to guarantee it pops over the backdrop
+     el.style.position = window.getComputedStyle(el).position === 'static' ? 'relative' : window.getComputedStyle(el).position;
+     el.style.zIndex = '745';
+     
+     // Scroll the screen to the first highlighted element
+     if (!scrolled) {
+         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+         scrolled = true;
+     }
   });
 
   if (darken) bd.classList.add('show');
   else bd.classList.remove('show');
 }
 
-function _tutShowTip(title, text, btnLabel, highlight, darken = true, position = 'auto'){
+function _tutShowTip(title, text, btnLabel, highlight, darken = true, position = 'bottom'){
   _tutBlockInput(true);
   _tutHighlight(highlight || null, darken);
   const ov = document.getElementById('tutOverlay');
   ov.classList.remove('top', 'middle');
   
-  let pos = position;
-  if (pos === 'auto' && highlight) {
-      const el = document.querySelector(highlight.split(',')[0].trim());
-      if (el) {
-          const rect = el.getBoundingClientRect();
-          const centerY = rect.top + (rect.height / 2);
-          pos = (centerY > window.innerHeight / 2) ? 'top' : 'bottom';
-      } else {
-          pos = 'bottom';
-      }
-  } else if (pos === 'auto') {
-      pos = 'bottom';
-  }
-
-  if(pos === 'top') ov.classList.add('top');
-  else if(pos === 'middle') ov.classList.add('middle');
+  if(position === 'top') ov.classList.add('top');
+  else if(position === 'middle') ov.classList.add('middle');
   
   document.getElementById('tutOverlayTitle').textContent = title;
   document.getElementById('tutOverlayText').textContent = text;
@@ -4873,11 +4863,11 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 3){
-      _tutShowTip('ZONE LEGEND', 'Each color represents a different zone on the course. Green = Fairway (safe), Brown = Rough (harder), Blue = Water (penalty), Yellow = Sand (tricky), and the Putting Green for finishing.', 'GOT IT →', '.legend', true, 'auto');
+      _tutShowTip('ZONE LEGEND', 'Each color represents a different zone on the course. Green = Fairway (safe), Brown = Rough (harder), Blue = Water (penalty), Yellow = Sand (tricky), and the Putting Green for finishing.', 'GOT IT →', '.legend', true, 'middle');
       return;
     }
     if(_tutStep === 4){
-      _tutShowTip('THE GRID', 'The grid represents the landing zones. The "Row" die picks the row, the "Col" die picks the column.', 'GOT IT →', '.grid-wrap, .dice-row', true, 'auto');
+      _tutShowTip('THE GRID', 'The grid represents the landing zones. The "Row" die picks the row, the "Col" die picks the column.', 'GOT IT →', '.grid-wrap, .dice-row', true);
       return;
     }
     if(_tutStep === 5){
