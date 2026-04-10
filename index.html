@@ -945,9 +945,9 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="setup-group">
       <span class="setup-lbl">DIFFICULTY</span>
       <div class="diff-row">
-        <button class="diff-btn active" id="vsDiff-1" onclick="vsSetDiff(1)">⛳ EASY</button>
-        <button class="diff-btn" id="vsDiff-2" onclick="vsSetDiff(2)">🏌️ MEDIUM</button>
-        <button class="diff-btn" id="vsDiff-3" onclick="vsSetDiff(3)">💀 HARD</button>
+        <button class="diff-btn active" id="vsDiff-1" onclick="vsSetDiff(1)">EASY</button>
+        <button class="diff-btn" id="vsDiff-2" onclick="vsSetDiff(2)">MEDIUM</button>
+        <button class="diff-btn" id="vsDiff-3" onclick="vsSetDiff(3)">HARD</button>
       </div>
     </div>
     
@@ -1049,9 +1049,9 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="setup-title">DIFFICULTY</div>
     
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
-      <button class="diff-btn active" id="diff-btn-1" onclick="setDiff(1)" style="padding:16px;font-size:20px;">⛳ EASY</button>
-      <button class="diff-btn" id="diff-btn-2" onclick="setDiff(2)" style="padding:16px;font-size:20px;">🏌️ MEDIUM</button>
-      <button class="diff-btn" id="diff-btn-3" onclick="setDiff(3)" style="padding:16px;font-size:20px;">💀 HARD</button>
+      <button class="diff-btn active" id="diff-btn-1" onclick="setDiff(1)" style="padding:16px;font-size:20px;">EASY</button>
+      <button class="diff-btn" id="diff-btn-2" onclick="setDiff(2)" style="padding:16px;font-size:20px;">MEDIUM</button>
+      <button class="diff-btn" id="diff-btn-3" onclick="setDiff(3)" style="padding:16px;font-size:20px;">HARD</button>
     </div>
     
     <button class="menu-btn-play" style="width:100%;font-size:20px;" onclick="startGame()">TEE OFF →</button>
@@ -1138,10 +1138,8 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <div class="log-list" id="logList"></div>
 </div>
 
-<div style="margin:0 16px 7px;">
-  <button onclick="toggleLegend()" id="legendToggleBtn" style="background:none;border:none;color:var(--muted);font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;cursor:pointer;padding:0;display:flex;align-items:center;gap:5px;text-transform:uppercase;">
-    ZONE LEGEND <span id="legendArrow">▾</span>
-  </button>
+<div class="sec-title" id="legendToggleBtn" style="margin:0 16px 7px; cursor:pointer;" onclick="toggleLegend()">
+  ZONE LEGEND <span id="legendArrow">▾</span>
 </div>
 <div class="legend" id="legend" style="display:grid;">
 </div>
@@ -1176,18 +1174,24 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="hc-card-icon" id="hcIcon">🐦</div>
     <div class="hc-card-title" id="hcTitle">BIRDIE!</div>
     <div class="hc-card-sub" id="hcSub">3 STROKES · PAR 4</div>
-    <div class="hc-card-tot" id="hcTot">TOTAL <span id="hcTotSpan" style="color:#52c87a">-1</span></div>
+    <div class="hc-card-tot" id="hcTot">TOTAL: <span id="hcTotSpan" style="color:#52c87a">-1</span></div>
   </div>
-  <div class="hc-section-title">SHOT REPLAY</div>
-  <div class="hc-log-list" id="hcLogList"></div>
-  <div class="sc-wrap" style="margin-bottom:0; flex-shrink:0;">
-    <div class="sc-inner">
-      <div class="sc-row sc-head" id="hcScHead"></div>
-      <div class="sc-row sc-body" id="hcScPar"><div class="sc-lbl">PAR</div></div>
-      <div class="sc-row sc-body" id="hcScYou"><div class="sc-lbl">YOU</div></div>
+  <style>
+    .hc-scroll-area::-webkit-scrollbar { display: none; }
+  </style>
+  <div class="hc-scroll-area" style="flex:1; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; display:flex; flex-direction:column; min-height:0; padding-bottom:12px;">
+    <div class="sec-title" style="flex-shrink:0;">SHOT REPLAY</div>
+    <div class="hc-log-list" id="hcLogList" style="flex:1; max-height:none; min-height:60px; margin-bottom:16px;"></div>
+    <div class="sec-title" style="flex-shrink:0;">SCOREBOARD</div>
+    <div class="sc-wrap" style="margin-bottom:0; flex-shrink:0;">
+      <div class="sc-inner">
+        <div class="sc-row sc-head" id="hcScHead"></div>
+        <div class="sc-row sc-body" id="hcScPar"><div class="sc-lbl">PAR</div></div>
+        <div class="sc-row sc-body" id="hcScYou"><div class="sc-lbl">YOU</div></div>
+      </div>
     </div>
   </div>
-  <div class="hc-btn-wrap">
+  <div class="hc-btn-wrap" style="padding-top:4px;">
     <button class="menu-btn-play" id="hcBtn" onclick="nextHole()" style="width:100%; font-size:24px;">HOLE 2 →</button>
   </div>
 </div>
@@ -3721,6 +3725,7 @@ function setCellLabelModeDirect(mode){
 // ACHIEVEMENTS SYSTEM
 // ═══════════════════════════════════════
 const ACHIEVEMENTS=[
+  {id:'mini_tiger',     icon:'🐯', name:'Mini-Tiger',       desc:'Complete the tutorial',                     check:p=>(p.tutorialCompleted||0)>=1},
   {id:'hole_in_one',    icon:'🕳️', name:'Ace!',             desc:'Hole-in-one on a par 3',                    check:p=>(p.holeInOnes||0)>=1},
   {id:'eagle',          icon:'🦅', name:'Eagle Eye',        desc:'Score an Eagle on any hole',                check:p=>(p.eagles||0)>=1},
   {id:'first_birdie',   icon:'🐦', name:'First Birdie',     desc:'Score your first Birdie',                   check:p=>(p.birdies||0)>=1},
@@ -3740,7 +3745,6 @@ const ACHIEVEMENTS=[
   {id:'tour_winner',    icon:'👑', name:'Tour Winner',      desc:'Finish under par on Hard difficulty',       check:p=>(p.hardUnderPar||0)>=1},
   {id:'grand_slam',     icon:'🏆', name:'Grand Slam',       desc:'Under par on all 3 difficulties',           check:p=>(p.easyUnderPar||0)>=1&&(p.medUnderPar||0)>=1&&(p.hardUnderPar||0)>=1},
   {id:'shake_roller',   icon:'📳', name:'Shake It Off',     desc:'Roll the dice using shake mode 10 times',   check:p=>(p.shakeRolls||0)>=10},
-  {id:'mini_tiger',     icon:'🐯', name:'Mini-Tiger',       desc:'Complete the tutorial',                     check:p=>(p.tutorialCompleted||0)>=1},
 ];
 
 function checkAndAwardAchievements(){
@@ -5996,7 +6000,7 @@ function vsGetCachedGrid(){
       <div style="font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:8px;">CHOOSE ICON</div>
       <div id="editProfileEmojiGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:14px;padding:2px;"></div>
       <div class="profile-new-row">
-        <button class="profile-save-btn" onclick="saveEditProfile()">SAVE →</button>
+        <button class="profile-save-btn" onclick="saveEditProfile()">SAVE</button>
         <button class="profile-cancel-btn" onclick="closeEditProfile()">CANCEL</button>
       </div>
     </div>
