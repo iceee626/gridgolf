@@ -2081,7 +2081,7 @@ function doRoll(){
     d2.classList.add('landed');
     vibDiceLand();
     setTimeout(()=>{
-      if(r1===r2 && (wcEnabled() || TUT.active) && !S.holeDone && !VS.active){
+      if(r1===r2 && (wcEnabled() || TUT.active) && !S.holeDone){
         triggerWcReveal(r1-1,r2-1);
       } else {
         processShot(r1-1,r2-1);
@@ -3829,7 +3829,7 @@ function wcResetHole(){
 function renderWcFab(){
   const fab=document.getElementById('wcFab');
   if(!fab)return;
-  if(!wcEnabled()||VS.active){ fab.classList.remove('visible');return; }
+  if(!wcEnabled()){ fab.classList.remove('visible');return; }
   fab.classList.add('visible');
   const countEl=document.getElementById('wcFabCount');
   if(countEl)countEl.textContent=`${WCS.equipped.length}/3`;
@@ -4546,10 +4546,12 @@ function resolveHio(r1, r2){
     playSound('putt', 1.0);
     vibHoleInOne();
     setTimeout(()=>playSound('cheer', 0.9), 400);
-    const profiles=loadProfiles();
-    const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
-    if(profiles[idx])profiles[idx].holeInOnes=(profiles[idx].holeInOnes||0)+1;
-    saveProfiles(profiles);
+    if (!TUT.active) {
+      const profiles=loadProfiles();
+      const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
+      if(profiles[idx])profiles[idx].holeInOnes=(profiles[idx].holeInOnes||0)+1;
+      saveProfiles(profiles);
+    }
     setTimeout(()=>{
       document.getElementById('hioOverlay').classList.remove('show');
       const snapGrid=_hioSnap;
@@ -5290,15 +5292,18 @@ function vsShowHoleComparison(){
   const p1=VS.players[0], p2=VS.players[1];
   const fmtD=(d)=>d===0?'E':d>0?'+'+d:''+d;
   
-  let winner = s1<s2 ? p1.name : s2<s1 ? p2.name : 'TIE';
-  let headerText = winner==='TIE' ? 'HOLE TIED!' : winner+' WINS HOLE!';
+  let headerText = 'HOLE COMPLETE';
+  let emojiIcon = '⛳';
   
   let matchInfo = '';
   if(VS.format === 'match'){
+    let winner = s1<s2 ? p1.name : s2<s1 ? p2.name : 'TIE';
+    headerText = winner==='TIE' ? 'HOLE TIED!' : winner+' WINS HOLE!';
+    emojiIcon = s1<s2 ? p1.icon : s2<s1 ? p2.icon : '🤝';
     matchInfo = `<div style="text-align:center;margin-top:6px;font-family:'Sen',sans-serif;font-size:11px;color:var(--gold);letter-spacing:1px;">MATCH: ${p1.name} ${VS.matchScore[0]} — ${VS.matchScore[1]} ${p2.name}</div>`;
   }
   
-  document.getElementById('ovEmoji').textContent = s1<s2 ? p1.icon : s2<s1 ? p2.icon : '🤝';
+  document.getElementById('ovEmoji').textContent = emojiIcon;
   document.getElementById('ovEmoji').style.display='block';
   document.getElementById('ovTitle').textContent = headerText;
   
@@ -5309,28 +5314,33 @@ function vsShowHoleComparison(){
       <div style="text-align:center;"><div style="font-size:20px;">${p2.icon}</div><div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;">${p2.name}</div><div style="font-family:'Bebas Neue',cursive;font-size:24px;color:${d2<=0?'var(--c-fwyl)':'#e05252'};">${s2} (${fmtD(d2)})</div><div style="font-size:10px;color:var(--muted);">Total: ${fmtD(td2)}</div></div>
     </div>${matchInfo}`;
   document.getElementById('ovNameRow').style.fontSize='';
-          document.getElementById('ovStatsRow').textContent=`Par ${h.par}`;
-          
-          const ovBtn=document.getElementById('ovBtn');
-          ovBtn.textContent='PLAY AGAIN';
-      ovBtn.style.display='block';
-      ovBtn.onclick=()=>{
-        VS.active=false;
-        document.getElementById('overlay').classList.remove('show');
-        navToVersusSetup();
+  document.getElementById('ovStatsRow').textContent=`Par ${h.par}`;
+  
+  const ovBtn=document.getElementById('ovBtn');
+  const ovPlayAgainBtn = document.getElementById('ovPlayAgainBtn');
+  
+  if (S.holeIdx >= S.endIdx) {
+      ovBtn.textContent = 'FINAL RESULTS →';
+      ovBtn.style.display = 'block';
+      ovBtn.onclick = () => {
+          document.getElementById('overlay').classList.remove('show');
+          vsShowFinal();
       };
-      
-      const ovPlayAgainBtn = document.getElementById('ovPlayAgainBtn');
-      ovPlayAgainBtn.textContent = 'BACK TO MENU';
-      ovPlayAgainBtn.style.display = 'block';
-      ovPlayAgainBtn.onclick = ()=>{
-        VS.active=false;
-        document.getElementById('overlay').classList.remove('show');
-        returnToMenu();
+      ovPlayAgainBtn.style.display = 'none';
+  } else {
+      ovBtn.textContent = `HOLE ${S.holeIdx + 2} →`;
+      ovBtn.style.display = 'block';
+      ovBtn.onclick = () => {
+          document.getElementById('overlay').classList.remove('show');
+          S.holeIdx++;
+          loadHole();
+          vsShowTurnScreen();
       };
-      
-      document.getElementById('ovSummaryBtn').style.display='none';
-      document.getElementById('overlay').classList.add('show');
+      ovPlayAgainBtn.style.display = 'none';
+  }
+  
+  document.getElementById('ovSummaryBtn').style.display='none';
+  document.getElementById('overlay').classList.add('show');
 }
 
 function vsShowFinal(){
