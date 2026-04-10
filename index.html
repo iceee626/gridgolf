@@ -94,7 +94,7 @@ body{
   width:min(300px,82vw);
   background:#1a0e28;border-left:1px solid #4a2a6e;border-bottom:1px solid #4a2a6e;
   border-bottom-left-radius:16px;
-  z-index:120;transition:right .3s cubic-bezier(.4,0,.2,1);
+  z-index:610;transition:right .3s cubic-bezier(.4,0,.2,1);
   display:flex;flex-direction:column;
   box-shadow:-4px 0 24px rgba(0,0,0,.6);
   overflow:hidden;
@@ -530,6 +530,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .profile-action-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:5px 8px;font-family:'Sen', sans-serif;font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .15s;white-space:nowrap;}
 .profile-action-btn:hover{border-color:var(--text);color:var(--text);}
 .profile-action-btn.del:hover{border-color:#e05252;color:#e05252;}
+#confirmModal, #alertModal { align-items:center; }
 .profile-new-form{display:none;border-top:1px solid var(--border);padding-top:12px;}
 .profile-new-form.show{display:block;}
 .profile-new-input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--text);outline:none;text-transform:uppercase;margin-bottom:8px;transition:border-color .2s;}
@@ -626,14 +627,14 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 
 /* Drawer backdrop */
 .wc-backdrop{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:110;
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:605;
 }
 .wc-backdrop.show{display:block;}
 
 /* Wildcard reveal screen (fullscreen modal) */
 .wc-reveal{
   display:none;position:fixed;inset:0;
-  background:rgba(10,4,20,.95);z-index:300;
+  background:rgba(10,4,20,.95);z-index:620;
   align-items:center;justify-content:center;flex-direction:column;
   padding-top:env(safe-area-inset-top);
   padding-bottom:env(safe-area-inset-bottom);
@@ -2180,7 +2181,7 @@ function processShot(row,col){
   if(resolvedOutcome==='h2o'||resolvedOutcome==='ob'){
     playShotSound(prevZone, resolvedOutcome);
     S.strokes+=2;
-    addLog(S.shotNum,`→ ${Z[resolvedOutcome].name} — penalty`,resolvedOutcome,'+2 (pen)',true,row,col,snapGrid, prevZone, prevYrdRemain);
+    addLog(S.shotNum,`${Z[prevZone].name} → ${Z[resolvedOutcome].name} — penalty`,resolvedOutcome,'+2 (pen)',true,row,col,snapGrid, prevZone, prevYrdRemain);
     showResult(Z[resolvedOutcome],'Penalty — no advance','pen',`Back in ${Z[prevZone].name} · ${fmtYds(S.yrdRemain)} left`);
     S.shotNum += 2; 
     updateFloat();updateTVBanner();
@@ -2526,7 +2527,12 @@ function completeHole(){
     document.getElementById('ovTitle').textContent=title;
     document.getElementById('ovNameRow').textContent=`TOTAL SCORE: ${tutDiffStr}`;
     document.getElementById('ovStatsRow').textContent=`${score} strokes · par ${h.par}`;
-    document.getElementById('ovBtn').style.display='none';
+    document.getElementById('ovBtn').style.display='block';
+    document.getElementById('ovBtn').textContent='NEXT →';
+    document.getElementById('ovBtn').onclick = () => {
+        document.getElementById('overlay').classList.remove('show');
+        tutAfterHoleComplete();
+    };
     document.getElementById('ovSummaryBtn').style.display='none';
     document.getElementById('ovPlayAgainBtn').style.display='none';
     
@@ -2539,8 +2545,6 @@ function completeHole(){
       });
     }
     
-    // Advance tutorial
-    tutAfterHoleComplete();
     return;
   }
   
@@ -3291,6 +3295,8 @@ function createFirstProfile(){
   setActiveProfileIdx(0);
   PLAYER_NAME=val;
   hideScreen('onboardScreen');
+  showScreen('menuScreen','flex');
+  updateMenuProfileDisplay();
   setTimeout(()=>{
     maybeTutorialPrompt();
   }, 300);
@@ -3829,6 +3835,9 @@ function openWcDrawer(){
   renderWcDrawer();
   document.getElementById('wcDrawer').classList.add('open');
   document.getElementById('wcBackdrop').classList.add('show');
+  if (TUT.active && _tutWaitEvent === 'wc_used') {
+     _tutHighlight('.wc-slot', false); 
+  }
 }
 function closeWcDrawer(){
   document.getElementById('wcDrawer').classList.remove('open');
@@ -4072,7 +4081,7 @@ function applyWildcardEffect(wc){
         const prevYrdRemain = S.yrdRemain;
         S.zone='chip';
         S.yrdRemain=Math.min(S.yrdRemain, Math.round(15+Math.random()*30));
-        addLog(S.shotNum, `Skipped to Chip (${wc.icon} ${wc.name})`, 'chip', 'WC', false, null, null, null, prevZone, prevYrdRemain);
+        addLog('🃏', `Skipped to Chip (${wc.icon} ${wc.name})`, 'chip', 'WC', false, null, null, null, prevZone, prevYrdRemain);
         updateZonePill();updateYrd();
         buildGrid();
         toastMsg = `⚡ Shortcut activated!`;
@@ -4084,7 +4093,8 @@ function applyWildcardEffect(wc){
         const prevZone = S.zone;
         const prevYrdRemain = S.yrdRemain;
         S.strokes=Math.max(0,S.strokes-1);
-        addLog(S.shotNum, `Penalty removed (${wc.icon} ${wc.name})`, S.zone, '-1', false, null, null, null, prevZone, prevYrdRemain);
+        S.shotNum=Math.max(1,S.shotNum-1);
+        addLog('🃏', `Penalty removed (${wc.icon} ${wc.name})`, S.zone, '-1', false, null, null, null, prevZone, prevYrdRemain);
         updateFloat();updateTVBanner();
         toastMsg = `${wc.icon} ${wc.name} activated!`;
       } else {
@@ -4114,7 +4124,7 @@ function applyWildcardEffect(wc){
       if(S.zone==='sand'){
         WCS.sandWedgeProActive=false;
         S.zone='grn'; S.yrdRemain=Math.round(3+Math.random()*22);
-        addLog(S.shotNum, `Skipped to Green (🏖️ Sand Wedge Pro)`, 'grn', 'WC', false, null, null, null);
+        addLog('🃏', `Skipped to Green (🏖️ Sand Wedge Pro)`, 'grn', 'WC', false, null, null, null);
         updateZonePill();updateYrd(); buildGrid();
         toastMsg = '🏖️ Sand Wedge Pro activated!';
       }
@@ -4616,7 +4626,7 @@ const TUT_GRIDS = {
   h1_putt: [['p1','p1','p1','p1','p2','p3'],['p1','p1','p1','p1','p1','p2'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1']],
   h2_tee: [['fwy','fwy','h2o','fwy','fwy','ob'],['fwy','fwy','fwy','h2o','fwy','fwy'],['h2o','fwy','fwy','fwy','fwy','h2o'],['fwy','h2o','fwy','fwy','fwy','ob'],['fwy','fwy','fwy','fwy','h2o','fwy'],['fwy','ob','fwy','fwy','fwy','fwy']],
   h2_after: [['grn','grn','chip','grn','h2o','grn'],['grn','grn','grn','grn','grn','chip'],['h2o','grn','grn','grn','grn','grn'],['chip','grn','grn','h2o','grn','grn'],['grn','grn','grn','grn','grn','h2o'],['grn','grn','grn','grn','chip','grn']],
-  h2_putt: [['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1']],
+  h2_putt: [['p1','p1','p2','p1','p2','p3'],['p1','p1','p1','p2','p2','p3'],['p1','p1','p1','p1','p2','p2'],['p1','p1','p1','p1','p1','p2'],['p1','p1','p1','p1','p1','p1'],['p1','p1','p1','p1','p1','p1']],
   h3_tee: [['grn','grn','hole','grn','chip','grn'],['grn','grn','grn','grn','grn','grn'],['chip','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','chip'],['grn','grn','grn','grn','grn','grn']],
 };
 
@@ -4833,7 +4843,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('WILDCARDS!', 'If you roll doubles (e.g., two 3s), you earn a Wildcard! These give you special abilities. Let\'s roll doubles now.', 'I\'LL ROLL', '#rollBtn', true);
+      _tutShowTip('WILDCARDS!', 'If you roll doubles (e.g., two 3s), you earn a Wildcard! These give you special abilities. Let\'s roll to see what happens.', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
     if(_tutStep === 2){
@@ -4879,13 +4889,13 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 9){
-      _tutShowTip('💧 WATER HAZARD!', 'Oh no! That adds +2 penalty strokes. But wait... tap the purple Wildcard drawer and tap USE on the Phantom Stroke to remove 1 penalty!', 'I\'LL USE IT', '#wcFab, #wcDrawer', true);
+      _tutShowTip('💧 WATER HAZARD!', 'Oh no! That adds +2 penalty strokes. But wait... tap the purple Wildcard drawer and tap USE on the Phantom Stroke to remove 1 penalty!', 'I\'LL USE IT', '#wcFab', true);
       return;
     }
     if(_tutStep === 10){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#wcFab, #wcDrawer, .wc-slot', false);
+      _tutHighlight('#wcFab', false);
       _tutWaitFor('wc_used', ()=>{ tutAdvance(); });
       return;
     }
@@ -4908,7 +4918,7 @@ function tutAdvance(){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
-      _tutDiceQueue = [{r:1,c:1}]; // -> grn
+      _tutDiceQueue = [{r:1,c:2}]; // -> grn
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
