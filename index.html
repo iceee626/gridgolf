@@ -3443,6 +3443,7 @@ const ACHIEVEMENTS=[
   {id:'tour_winner',    icon:'👑', name:'Tour Winner',      desc:'Finish under par on Hard difficulty',       check:p=>(p.hardUnderPar||0)>=1},
   {id:'grand_slam',     icon:'🏆', name:'Grand Slam',       desc:'Under par on all 3 difficulties',           check:p=>(p.easyUnderPar||0)>=1&&(p.medUnderPar||0)>=1&&(p.hardUnderPar||0)>=1},
   {id:'shake_roller',   icon:'📳', name:'Shake It Off',     desc:'Roll the dice using shake mode 10 times',   check:p=>(p.shakeRolls||0)>=10},
+  {id:'mini_tiger',     icon:'🐯', name:'Mini-Tiger',       desc:'Complete the tutorial',                     check:p=>(p.tutorialCompleted||0)>=1},
 ];
 
 function checkAndAwardAchievements(){
@@ -4366,6 +4367,8 @@ function saveGameState(){
     _wcUsedThisRound:S._wcUsedThisRound||0,
     _wcDiscardedThisRound:S._wcDiscardedThisRound||0,
     _wcsUsedThisHole:S._wcsUsedThisHole||[], _wcNextShotNote:S._wcNextShotNote||null,
+    _waitingForNextShot:(document.getElementById('nextShotBtn')?.style.display === 'block'),
+    _pendingPuttResult:S._pendingPuttResult||null,
     currentGrid:S.currentGrid,
     wcsEquipped:WCS.equipped, wcsActive:WCS.active, 
     wcsGreenLightShots:WCS.greenLightShots, wcsSandCastle:WCS.sandCastleActive, wcsLuckyBounce:WCS.luckyBounceActive,
@@ -4426,8 +4429,10 @@ function continueGame(){
     S._wcUsedThisRound=save._wcUsedThisRound||0;
     S._wcDiscardedThisRound=save._wcDiscardedThisRound||0; 
     S._wcsUsedThisHole=save._wcsUsedThisHole||[]; S._wcNextShotNote=save._wcNextShotNote||null;
+    S._pendingPuttResult=save._pendingPuttResult||null;
+    const waitingForNextShot=save._waitingForNextShot||false;
     
-    WCS.equipped=save.wcsEquipped||[]; WCS.active=save.wcsActive||null; 
+    WCS.equipped=save.wcsEquipped||[]; WCS.active=save.wcsActive||null;
     WCS.greenLightShots=save.wcsGreenLightShots||0; WCS.sandCastleActive=save.wcsSandCastle||false;
     WCS.luckyBounceActive=save.wcsLuckyBounce||false; WCS.ironWillActive=save.wcsIronWill||false; WCS.ferrettActive=save.wcsFerrett||false;
     WCS.goldenPutterActive=save.wcsGoldenPutter||false; WCS.eagleEyeActive=save.wcsEagleEye||false; WCS.sandWedgeProActive=save.wcsSandWedgePro||false;
@@ -4461,7 +4466,33 @@ function continueGame(){
     if (S.currentGrid) renderGrid(); else buildGrid();
     
     updateZonePill();updateYrd();renderLog();updateFloat();updateTVBanner();
-    hideNextShotBtn();
+    
+    if (S._pendingPuttResult) {
+        showNextShotBtn();
+        const nextBtn = document.getElementById('nextShotBtn');
+        if(nextBtn){
+            nextBtn.textContent='FINISH HOLE →';
+            nextBtn.style.background='var(--c-tee)';
+            nextBtn.onclick=()=>{
+                const b=document.getElementById('puttWcBtn');if(b)b.remove();
+                S._pendingPuttResult=null;
+                S.holeDone=true;
+                nextBtn.style.display='none';
+                const rollBtn2=document.getElementById('rollBtn');
+                if(rollBtn2)rollBtn2.style.display='none';
+                updateTVBanner();
+                setTimeout(()=>{
+                    nextBtn.textContent='NEXT SHOT →';nextBtn.onclick=doNextShot;
+                    completeHole();
+                },200);
+            };
+        }
+    } else if (waitingForNextShot && !S.holeDone) {
+        showNextShotBtn();
+    } else {
+        hideNextShotBtn();
+    }
+
     if (VS.active) {
         const tvIcon = document.querySelector('.tv-icon-box');
         if(tvIcon) tvIcon.textContent = VS.players[VS.currentPlayer].icon;
@@ -4961,13 +4992,13 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 9){
-      _tutShowTip('💧 WATER HAZARD!', 'Oh no! That adds +2 penalty strokes. But wait... tap the purple Wildcard drawer and tap USE on the Phantom Stroke to remove 1 penalty!', 'I\'LL USE IT', '#wcFab', true);
+      _tutShowTip('💧 WATER HAZARD!', 'Oh no! That adds +2 penalty strokes. But wait... tap the purple Wildcard drawer and tap USE on the Phantom Stroke to remove 1 penalty!', 'I\'LL USE IT', null, true);
       return;
     }
     if(_tutStep === 10){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#wcFab', false);
+      _tutHighlight('#wcFab', true);
       _tutWaitFor('wc_used', ()=>{ tutAdvance(); });
       return;
     }
@@ -5138,6 +5169,15 @@ function tutComplete(){
   TUT.active = false;
   TUT.blocked = false;
   tutMarkDone();
+  
+  const profiles=loadProfiles();
+  const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
+  if(profiles[idx]){
+     profiles[idx].tutorialCompleted = (profiles[idx].tutorialCompleted||0)+1;
+     saveProfiles(profiles);
+     setTimeout(()=>checkAndAwardAchievements(), 300);
+  }
+
   const origHoles = [
     {name:'HOLE 1',yards:387,par:4,baseDiff:1,diff:1,hasWater:false},
     {name:'HOLE 2',yards:512,par:5,baseDiff:3,diff:3,hasWater:true},
