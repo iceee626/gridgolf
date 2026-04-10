@@ -4351,7 +4351,7 @@ function closeWcReveal(){
 // SAVE / CONTINUE SYSTEM
 // ═══════════════════════════════════════
 function saveGameState(){
-  if(!S||S.holeIdx===undefined || TUT.active)return;
+  if(!S||S.holeIdx===undefined || TUT.active || VS.active)return;
   const save={
     mode:S.mode, totalRounds:S.totalRounds, currentRound:S.currentRound, holesConfig:S.holesConfig,
     startIdx:S.startIdx, endIdx:S.endIdx,
@@ -5196,8 +5196,7 @@ function vsStartGame(){
   VS.histories = [Array(18).fill(null), Array(18).fill(null)];
   VS.matchScore = [0, 0];
   VS.sharedGrids = {};
-  const baseWc = () => ({ equipped:[], active:null, greenLightShots:0, sandCastleActive:false, luckyBounceActive:false, ironWillActive:false, ferrettActive:false, goldenPutterActive:false, eagleEyeActive:false, sandWedgeProActive:false, birdieBoostActive:false, holeWallActive:false, hioActive:false, shortcutActive:false });
-  VS.wcs = [baseWc(), baseWc()];
+  VS.wcs = [{equipped:[]}, {equipped:[]}];
   vsShowTurnScreen();
 }
 
@@ -5223,7 +5222,11 @@ function vsStartTurn(){
   S._mulliganJustFired=false; S._puttWcUsed=false; S._pendingPuttResult=null;
   
   S.scorecards[0] = [...VS.scores[VS.currentPlayer]]; // Sync scorecard for current player
-  if (VS.wcs && VS.wcs[VS.currentPlayer]) Object.assign(WCS, VS.wcs[VS.currentPlayer]); // Sync wildcards
+  if (VS.wcs && VS.wcs[VS.currentPlayer]) {
+      Object.assign(WCS, VS.wcs[VS.currentPlayer]); // Load persistent buffs
+      WCS.equipped = [...(VS.wcs[VS.currentPlayer].equipped || [])]; // Safely copy drawer
+  }
+  wcResetHole(); // Clear only temporary per-shot flags
   
   const h = HOLES[S.holeIdx];
   S.yrdTotal=h.yards; S.yrdRemain=h.yards;
@@ -5245,6 +5248,7 @@ function vsStartTurn(){
   hideNextShotBtn();
   buildGrid(); updateZonePill(); updateYrd(); resetResult(); renderLog(); updateFloat();
   updateTVBanner();
+  buildScorecard(); // FIX: ensure missing scorecard updates immediately
   renderWcFab(); // Re-render WC fab for current player
 }
 
@@ -5257,7 +5261,7 @@ function vsCompleteHole(){
     const baseWc = () => ({ equipped:[], active:null, greenLightShots:0, sandCastleActive:false, luckyBounceActive:false, ironWillActive:false, ferrettActive:false, goldenPutterActive:false, eagleEyeActive:false, sandWedgeProActive:false, birdieBoostActive:false, holeWallActive:false, hioActive:false, shortcutActive:false });
     VS.wcs = [baseWc(), baseWc()];
   }
-  VS.wcs[VS.currentPlayer] = {...WCS}; // Save wildcards for current player
+  VS.wcs[VS.currentPlayer] = { ...WCS, equipped: [...WCS.equipped] }; // Save FULL wildcard state for this player
   
   if(VS.currentPlayer === 0){
     VS.currentPlayer = 1;
@@ -5309,9 +5313,21 @@ function vsShowHoleComparison(){
   
   document.getElementById('ovNameRow').innerHTML = `
     <div style="display:flex;justify-content:space-around;width:100%;font-family:'Sen',sans-serif;font-size:12px;margin:8px 0;">
-      <div style="text-align:center;"><div style="font-size:20px;">${p1.icon}</div><div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;">${p1.name}</div><div style="font-family:'Bebas Neue',cursive;font-size:24px;color:${d1<=0?'var(--c-fwyl)':'#e05252'};">${s1} (${fmtD(d1)})</div><div style="font-size:10px;color:var(--muted);">Total: ${fmtD(td1)}</div></div>
+      <div style="text-align:center;">
+        <div style="font-size:24px;margin-bottom:4px;">${p1.icon}</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;">${p1.name}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;margin-bottom:2px;">TOTAL</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;color:${td1<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(td1)}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--text);margin-top:6px;">Hole ${S.holeIdx + 1}: ${s1} (${fmtD(d1)})</div>
+      </div>
       <div style="display:flex;align-items:center;font-family:'Bebas Neue',cursive;font-size:20px;color:var(--muted);">VS</div>
-      <div style="text-align:center;"><div style="font-size:20px;">${p2.icon}</div><div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;">${p2.name}</div><div style="font-family:'Bebas Neue',cursive;font-size:24px;color:${d2<=0?'var(--c-fwyl)':'#e05252'};">${s2} (${fmtD(d2)})</div><div style="font-size:10px;color:var(--muted);">Total: ${fmtD(td2)}</div></div>
+      <div style="text-align:center;">
+        <div style="font-size:24px;margin-bottom:4px;">${p2.icon}</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;">${p2.name}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;margin-bottom:2px;">TOTAL</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;color:${td2<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(td2)}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--text);margin-top:6px;">Hole ${S.holeIdx + 1}: ${s2} (${fmtD(d2)})</div>
+      </div>
     </div>${matchInfo}`;
   document.getElementById('ovNameRow').style.fontSize='';
   document.getElementById('ovStatsRow').textContent=`Par ${h.par}`;
