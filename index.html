@@ -773,7 +773,8 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .tut-overlay-btn:hover{background:var(--c-fwyl);}
 @keyframes tutPulse{0%,100%{box-shadow:0 0 0 0 rgba(78,158,66,.8);}50%{box-shadow:0 0 0 10px rgba(78,158,66,0);}}
 .tut-pulse{animation:tutPulse 1.2s ease infinite!important;border-radius:8px;}
-.tut-elevate{position:relative !important;z-index:745 !important;}
+.tut-elevate{z-index:745 !important;}
+.tut-relative{position:relative !important;}
 
 /* VERSUS MODE */
 .vs-turn-screen{position:fixed;inset:0;background:var(--dark);z-index:180;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;}
@@ -4632,6 +4633,7 @@ const TUT_GRIDS = {
   h3_tee: [['grn','grn','hole','grn','chip','grn'],['grn','grn','grn','grn','grn','grn'],['chip','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','chip'],['grn','grn','grn','grn','grn','grn']],
 };
 
+let TUT = { active:false, step:0, blocked:true };
 let _tutStep = -1;
 let _tutHoleKey = 'h1';
 
@@ -4674,8 +4676,7 @@ function _tutBlockInput(block){
 
 function _tutHighlight(sel, darken = true){
   document.querySelectorAll('.tut-pulse').forEach(e => {
-     e.classList.remove('tut-pulse');
-     e.classList.remove('tut-elevate');
+     e.classList.remove('tut-pulse', 'tut-elevate', 'tut-relative');
   });
   let bd = document.getElementById('tutBackdrop');
   if (!bd) {
@@ -4693,10 +4694,14 @@ function _tutHighlight(sel, darken = true){
   const els = document.querySelectorAll(sel);
   els.forEach(el => {
      el.classList.add('tut-pulse');
-     const zi = parseInt(window.getComputedStyle(el).zIndex) || 0;
+     const comp = window.getComputedStyle(el);
+     const zi = parseInt(comp.zIndex) || 0;
      if (zi < 540) {
          el.classList.add('tut-elevate');
-     }
+         if (comp.position === 'static') {
+             el.classList.add('tut-relative');
+         }
+      }
   });
 
   if (darken) bd.classList.add('show');
