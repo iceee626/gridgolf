@@ -765,8 +765,9 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 .tut-overlay.show{transform:translate(-50%, 0); opacity:1; pointer-events:auto;}
 .tut-overlay.top{bottom:auto; top:100px; transform:translate(-50%, -30px);}
 .tut-overlay.top.show{transform:translate(-50%, 0);}
-.tut-overlay-title{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:var(--c-fwyl);margin-bottom:6px;}
-.tut-overlay-text{font-family:'Sen',sans-serif;font-size:11px;color:rgba(255,255,255,.85);line-height:1.5;margin-bottom:10px;}
+.tut-overlay.middle{bottom:auto; top:35%; transform:translate(-50%, -30px);}
+.tut-overlay.middle.show{transform:translate(-50%, 0);}
+.tut-overlay-title{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:var(--c-fwyl);margin-bottom:6px;}.tut-overlay-text{font-family:'Sen',sans-serif;font-size:11px;color:rgba(255,255,255,.85);line-height:1.5;margin-bottom:10px;}
 .tut-overlay-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:10px;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;cursor:pointer;}
 .tut-overlay-btn:hover{background:var(--c-fwyl);}
 @keyframes tutPulse{0%,100%{box-shadow:0 0 0 0 rgba(78,158,66,.8);}50%{box-shadow:0 0 0 10px rgba(78,158,66,0);}}
@@ -4236,6 +4237,7 @@ function triggerWcReveal(row, col){
   document.getElementById('wcReveal').classList.add('show');
   playSound('wildcard', 0.85);
   vibWildcard();
+  if(TUT.active) setTimeout(() => _tutFire('wc_revealed'), 100);
 }
 
 function revealWcCard(){
@@ -4679,8 +4681,8 @@ function _tutHighlight(sel, darken = true){
     return;
   }
   
-  const el = document.querySelector(sel);
-  if(el) el.classList.add('tut-pulse');
+  const els = document.querySelectorAll(sel);
+  els.forEach(el => el.classList.add('tut-pulse'));
   
   if (darken) bd.classList.add('show');
   else bd.classList.remove('show');
@@ -4690,7 +4692,10 @@ function _tutShowTip(title, text, btnLabel, highlight, darken = true, position =
   _tutBlockInput(true);
   _tutHighlight(highlight || null, darken);
   const ov = document.getElementById('tutOverlay');
-  if(position === 'top') ov.classList.add('top'); else ov.classList.remove('top');
+  ov.classList.remove('top', 'middle');
+  if(position === 'top') ov.classList.add('top');
+  else if(position === 'middle') ov.classList.add('middle');
+  
   document.getElementById('tutOverlayTitle').textContent = title;
   document.getElementById('tutOverlayText').textContent = text;
   document.getElementById('tutOverlayBtn').textContent = btnLabel || 'GOT IT →';
@@ -4727,7 +4732,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 3){
-      _tutShowTip('ZONE LEGEND', 'Each color represents a different zone on the course. Green = Fairway (safe), Brown = Rough (harder), Blue = Water (penalty), Yellow = Sand (tricky), and the Putting Green for finishing.', 'GOT IT →', '.legend', true, 'top');
+      _tutShowTip('ZONE LEGEND', 'Each color represents a different zone on the course. Green = Fairway (safe), Brown = Rough (harder), Blue = Water (penalty), Yellow = Sand (tricky), and the Putting Green for finishing.', 'GOT IT →', '.legend', true, 'middle');
       return;
     }
     if(_tutStep === 4){
@@ -4741,7 +4746,7 @@ function tutAdvance(){
     if(_tutStep === 6){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#rollBtn', false); // No screen darkening here!
+      _tutHighlight('#rollBtn', false); 
       _tutDiceQueue = [{r:3,c:4}]; // -> fwy
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
@@ -4751,8 +4756,8 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 8){
-      S.yrdRemain = 150; updateYrd(); // Force distance to ensure mid grid is generated
-      _tutShowTip('GREAT TEE SHOT!', 'The yardage bar shows your distance. The closer you get to the hole, the better your grid becomes. Tap NEXT SHOT to continue.', 'I\'LL TAP IT', '#nextShotBtn', true);
+      S.yrdRemain = 150; updateYrd(); 
+      _tutShowTip('GREAT TEE SHOT!', 'The yardage bar shows your distance. The closer you get to the hole, the better your grid becomes. Tap NEXT SHOT to continue.', 'I\'LL TAP IT', '.yrd-bar, #nextShotBtn', true);
       return;
     }
     if(_tutStep === 9){
@@ -4809,7 +4814,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 18){
-      _tutShowTip('HOLE COMPLETE!', 'You holed out! Let\'s move to Hole 2 to learn about hazards and special abilities.', 'NEXT HOLE →', '#overlay', true);
+      _tutShowTip('HOLE COMPLETE!', 'You holed out! Let\'s move to Hole 2 to learn about hazards and special abilities.', 'NEXT HOLE →', '.sc-wrap', true);
       return;
     }
     if(_tutStep === 19){
@@ -4828,7 +4833,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('TEE OFF!', 'Let\'s roll your first shot. I have a feeling something good might happen...', 'I\'LL ROLL', '#rollBtn', true);
+      _tutShowTip('WILDCARDS!', 'If you roll doubles (e.g., two 3s), you earn a Wildcard! These give you special abilities. Let\'s roll doubles now.', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
     if(_tutStep === 2){
@@ -4836,29 +4841,36 @@ function tutAdvance(){
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
       _tutDiceQueue = [{r:3,c:3}]; // -> fwy, doubles!
-      _tutWaitFor('wc_equipped', ()=>{ tutAdvance(); }); 
+      _tutWaitFor('wc_revealed', ()=>{ tutAdvance(); }); 
       return;
     }
     if(_tutStep === 3){
-      _tutShowTip('WILDCARD EARNED!', 'If you roll doubles (e.g., two 3s), you earn a Wildcard! You got a Phantom Stroke, and it was saved in your drawer on the right. Wildcards give you special abilities to cheat the rules!', 'GOT IT →', '#wcFab', true, 'top');
+      _tutShowTip('WILDCARD EARNED!', 'You rolled doubles and found a Wildcard! Tap the card to reveal it, then tap EQUIP to save it in your drawer.', 'GOT IT →', '#wcReveal', false);
       return;
     }
     if(_tutStep === 4){
-      _tutShowTip('NEXT SHOT', 'Tap NEXT SHOT to continue playing.', 'GOT IT', '#nextShotBtn', true);
+      _tutHideTip();
+      _tutBlockInput(false);
+      _tutHighlight('#wcReveal', false);
+      _tutWaitFor('wc_equipped', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 5){
+      _tutShowTip('NEXT SHOT', 'Your Phantom Stroke is saved in your drawer on the right. Tap NEXT SHOT to continue playing.', 'I\'LL TAP IT', '#nextShotBtn', true);
+      return;
+    }
+    if(_tutStep === 6){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#nextShotBtn', false);
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
-    if(_tutStep === 6){
+    if(_tutStep === 7){
       _tutShowTip('WATCH OUT!', 'Roll your approach shot to try and reach the green. Avoid the water!', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
-    if(_tutStep === 7){
+    if(_tutStep === 8){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
@@ -4866,33 +4878,33 @@ function tutAdvance(){
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
-    if(_tutStep === 8){
-      _tutShowTip('💧 WATER HAZARD!', 'Oh no! That adds +2 penalty strokes. But wait... open the Wildcard drawer (purple button) and tap USE on the Phantom Stroke to remove 1 penalty!', 'I\'LL USE IT', '#wcFab', true);
-      return;
-    }
     if(_tutStep === 9){
-      _tutHideTip();
-      _tutBlockInput(false);
-      _tutHighlight('#wcFab', false);
-      _tutWaitFor('wc_used', ()=>{ tutAdvance(); });
+      _tutShowTip('💧 WATER HAZARD!', 'Oh no! That adds +2 penalty strokes. But wait... tap the purple Wildcard drawer and tap USE on the Phantom Stroke to remove 1 penalty!', 'I\'LL USE IT', '#wcFab, #wcDrawer', true);
       return;
     }
     if(_tutStep === 10){
-      _tutShowTip('PENALTY REMOVED!', 'You saved a stroke! Now tap NEXT SHOT to continue.', 'GOT IT', '#nextShotBtn', true);
+      _tutHideTip();
+      _tutBlockInput(false);
+      _tutHighlight('#wcFab, #wcDrawer, .wc-slot', false);
+      _tutWaitFor('wc_used', ()=>{ tutAdvance(); });
       return;
     }
     if(_tutStep === 11){
+      _tutShowTip('PENALTY REMOVED!', 'You saved a stroke! Now tap NEXT SHOT to continue.', 'GOT IT', '#nextShotBtn', true);
+      return;
+    }
+    if(_tutStep === 12){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#nextShotBtn', false);
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
-    if(_tutStep === 12){
+    if(_tutStep === 13){
       _tutShowTip('RECOVERY SHOT', 'Because of the penalty, you hit from the same spot. Roll for the green!', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
-    if(_tutStep === 13){
+    if(_tutStep === 14){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
@@ -4900,22 +4912,22 @@ function tutAdvance(){
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
     }
-    if(_tutStep === 14){
+    if(_tutStep === 15){
       _tutShowTip('ON THE GREEN!', 'You made it past the water. Tap NEXT SHOT to load the putting grid.', 'GOT IT', '#nextShotBtn', true);
       return;
     }
-    if(_tutStep === 15){
+    if(_tutStep === 16){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#nextShotBtn', false);
       _tutWaitFor('next_shot_clicked', ()=>{ tutAdvance(); });
       return;
     }
-    if(_tutStep === 16){
+    if(_tutStep === 17){
       _tutShowTip('FINISH THE HOLE!', 'Roll to putt.', 'I\'LL ROLL', '#rollBtn', true);
       return;
     }
-    if(_tutStep === 17){
+    if(_tutStep === 18){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#rollBtn', false);
@@ -4923,22 +4935,22 @@ function tutAdvance(){
       _tutWaitFor('after_putt_shot', ()=>{ tutAdvance(); });
       return;
     }
-    if(_tutStep === 18){
+    if(_tutStep === 19){
       _tutShowTip('GREAT PUTT!', 'Tap FINISH HOLE.', 'I\'LL TAP IT', '#nextShotBtn', true);
       return;
     }
-    if(_tutStep === 19){
+    if(_tutStep === 20){
       _tutHideTip();
       _tutBlockInput(false);
       _tutHighlight('#nextShotBtn', false);
       _tutWaitFor('hole_complete', ()=>{ tutAdvance(); });
       return;
     }
-    if(_tutStep === 20){
-      _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round! Final hole coming up!', 'NEXT HOLE →', '#overlay', true);
+    if(_tutStep === 21){
+      _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round! Final hole coming up!', 'NEXT HOLE →', '.sc-wrap', true);
       return;
     }
-    if(_tutStep === 21){
+    if(_tutStep === 22){
       document.getElementById('overlay').classList.remove('show');
       document.getElementById('overlay').classList.remove('tut-pulse');
       S.holeIdx = 2; _tutHoleKey = 'h3'; _tutDiceQueue = []; _tutStep = -1;
@@ -5115,8 +5127,16 @@ function selectVsEmoji(pn,emoji){
 function navToVsOptions(){
   const n1=document.getElementById('vs1Name').value.trim().toUpperCase();
   const n2=document.getElementById('vs2Name').value.trim().toUpperCase();
-  if(!n1 || !n2){ showWcToast('Both players must enter a name!'); return; }
-  if(n1===n2){ showWcToast('Players must have different names!'); return; }
+  if(!n1 || !n2){ 
+      document.getElementById('alertMsg').textContent = 'BOTH PLAYERS MUST ENTER A NAME!';
+      document.getElementById('alertModal').classList.add('show');
+      return; 
+  }
+  if(n1===n2){ 
+      document.getElementById('alertMsg').textContent = 'PLAYERS MUST HAVE DIFFERENT NAMES!';
+      document.getElementById('alertModal').classList.add('show');
+      return; 
+  }
   VS.players[0]={name:n1, icon:document.getElementById('vs1Icon').textContent};
   VS.players[1]={name:n2, icon:document.getElementById('vs2Icon').textContent};
   hideScreen('versusSetupScreen');
@@ -5566,6 +5586,15 @@ function vsGetCachedGrid(){
         <button id="confirmYes" style="flex:1;background:#e05252;color:#fff;border:none;border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">YES</button>
         <button onclick="closeConfirm()" style="flex:1;background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">CANCEL</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="profile-modal" id="alertModal" style="z-index:700;">
+  <div class="profile-card" style="max-width:300px;">
+    <div class="profile-body" style="padding:20px;">
+      <div id="alertMsg" style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--text);text-align:center;margin-bottom:20px;"></div>
+      <button onclick="document.getElementById('alertModal').classList.remove('show')" style="width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">OK</button>
     </div>
   </div>
 </div>
