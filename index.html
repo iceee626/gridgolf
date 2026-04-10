@@ -3440,6 +3440,7 @@ const ACHIEVEMENTS=[
 ];
 
 function checkAndAwardAchievements(){
+  if (TUT.active) return;
   const profiles=loadProfiles();
   const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
   const p=profiles[idx];if(!p)return;
@@ -4081,6 +4082,7 @@ function applyWildcardEffect(wc){
   const h=HOLES[S.holeIdx];
   let applied = true;
   let toastMsg = `${wc.icon} ${wc.name} applied!`;
+  const nextVisible = document.getElementById('nextShotBtn')?.style.display === 'block';
 
   switch(wc.id){
     case 'shortcut':
@@ -4115,52 +4117,52 @@ function applyWildcardEffect(wc){
       }
       break;
     case 'sand_castle':
-      WCS.sandCastleActive=true;
-      if(S.zone==='sand') { buildGrid(); toastMsg = null; }
-      break;
+        WCS.sandCastleActive=true;
+        if(S.zone==='sand' && !nextVisible) { buildGrid(); toastMsg = null; }
+        break;
     case 'green_light':
-      WCS.greenLightShots=2;
-      break;
+        WCS.greenLightShots=2;
+        break;
     case 'eagle_eye':
-      WCS.eagleEyeActive=true;
-      if(h.par===3&&S.zone==='tee') { buildGrid(); toastMsg = null; }
-      break;
+        WCS.eagleEyeActive=true;
+        if(h.par===3&&S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; }
+        break;
     case 'lucky_bounce':
-      WCS.luckyBounceActive=true;
-      break;
+        WCS.luckyBounceActive=true;
+        break;
     case 'iron_will':
-      WCS.ironWillActive=true;
-      break;
+        WCS.ironWillActive=true;
+        break;
     case 'sand_wedge_pro':
-      WCS.sandWedgeProActive=true;
-      if(S.zone==='sand'){
-        WCS.sandWedgeProActive=false;
-        S.zone='grn'; S.yrdRemain=Math.round(3+Math.random()*22);
-        addLog('🃏', `Skipped to Green (🏖️ Sand Wedge Pro)`, 'grn', 'WC', false, null, null, null);
-        updateZonePill();updateYrd(); buildGrid();
-        toastMsg = '🏖️ Sand Wedge Pro activated!';
-      }
-      break;
+          WCS.sandWedgeProActive=true;
+          if(S.zone==='sand'){
+            WCS.sandWedgeProActive=false;
+            S.zone='grn'; S.yrdRemain=Math.round(3+Math.random()*22);
+            addLog('🃏', `Skipped to Green (🏖️ Sand Wedge Pro)`, 'grn', 'WC', false, null, null, null);
+            updateZonePill();updateYrd(); buildGrid();
+            toastMsg = '🏖️ Sand Wedge Pro activated!';
+          }
+          break;
     case 'birdie_boost':
-      WCS.birdieBoostActive=true;
-      if(['fwy','rgh','sand','chip'].includes(S.zone)) { buildGrid(); toastMsg = null; }
-      break;
+        WCS.birdieBoostActive=true;
+        if(['fwy','rgh','sand','chip'].includes(S.zone) && !nextVisible) { buildGrid(); toastMsg = null; }
+        break;
     case 'hole_wall':
-      WCS.holeWallActive=true;
-      if(h.par===3&&S.zone==='tee') { buildGrid(); toastMsg = null; }
-      break;
+        WCS.holeWallActive=true;
+        if(h.par===3&&S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; }
+        break;
     case 'the_ferrett':
-      WCS.ferrettActive=true;
-      if(S.zone==='sand') { buildGrid(); toastMsg = null; }
-      break;
+        WCS.ferrettActive=true;
+        if(S.zone==='sand' && !nextVisible) { buildGrid(); toastMsg = null; }
+        break;
     case 'hole_in_one':
-      WCS.hioActive=true;
-      if(h.par===3&&S.zone==='tee') { buildGrid(); toastMsg = null; }
-      break;
+        WCS.hioActive=true;
+        if(h.par===3&&S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; }
+        break;
     case 'golden_putter':
-      WCS.goldenPutterActive=true;
-      if(S.zone==='grn') { buildGrid(); toastMsg = null; }
-      break;
+        WCS.goldenPutterActive=true;
+        if(S.zone==='grn' && !nextVisible) { buildGrid(); toastMsg = null; }
+        break;
     case 'mulligan':
     case 'tailwind':
       WCS.active = wc.id;
