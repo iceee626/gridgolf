@@ -4633,7 +4633,6 @@ const TUT_GRIDS = {
   h3_tee: [['grn','grn','hole','grn','chip','grn'],['grn','grn','grn','grn','grn','grn'],['chip','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','grn'],['grn','grn','grn','grn','grn','chip'],['grn','grn','grn','grn','grn','grn']],
 };
 
-let TUT = { active:false, step:0, blocked:true };
 let _tutStep = -1;
 let _tutHoleKey = 'h1';
 
@@ -5309,10 +5308,10 @@ function vsShowHoleComparison(){
       <div style="text-align:center;"><div style="font-size:20px;">${p2.icon}</div><div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;">${p2.name}</div><div style="font-family:'Bebas Neue',cursive;font-size:24px;color:${d2<=0?'var(--c-fwyl)':'#e05252'};">${s2} (${fmtD(d2)})</div><div style="font-size:10px;color:var(--muted);">Total: ${fmtD(td2)}</div></div>
     </div>${matchInfo}`;
   document.getElementById('ovNameRow').style.fontSize='';
-      document.getElementById('ovStatsRow').textContent=`Par ${par}`;
-      
-      const ovBtn=document.getElementById('ovBtn');
-      ovBtn.textContent='PLAY AGAIN';
+          document.getElementById('ovStatsRow').textContent=`Par ${h.par}`;
+          
+          const ovBtn=document.getElementById('ovBtn');
+          ovBtn.textContent='PLAY AGAIN';
       ovBtn.style.display='block';
       ovBtn.onclick=()=>{
         VS.active=false;
