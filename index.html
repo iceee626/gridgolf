@@ -1423,47 +1423,51 @@ function initFloatingEntities() {
   const emojis = ['⛳', '🎲', '🏌️', '🏌️‍♀️', '🏆'];
   const items = [];
   
-  // Increased density
+  // Confine elements to the top 25% of the screen (above the logo)
+  const maxY = window.innerHeight * 0.25;
+  
   for(let i=0; i<25; i++) {
     const el = document.createElement('div');
     el.className = 'float-item';
     el.textContent = emojis[i % emojis.length];
     
-    let x = Math.random() * window.innerWidth;
-    let y = Math.random() * window.innerHeight; 
-    
-    // Increased speed & added slight vertical drift
-    let speedX = (Math.random() * 1.0 + 0.3) * (Math.random() > 0.5 ? 1 : -1);
-    let speedY = (Math.random() * 1.0 - 0.5); 
-    let rotation = Math.random() * 360;
-    let rotSpeed = (Math.random() * 1.5 - 0.75); 
+    // Store variables directly in an object so dragging references the live position
+    const item = {
+      el: el,
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * maxY,
+      speedX: (Math.random() * 1.0 + 0.3) * (Math.random() > 0.5 ? 1 : -1),
+      speedY: (Math.random() * 1.0 - 0.5),
+      rot: Math.random() * 360,
+      rotSpeed: (Math.random() * 1.5 - 0.75),
+      isDragging: false,
+      offsetX: 0,
+      offsetY: 0
+    };
     
     container.appendChild(el);
     
-    let isDragging = false;
-    let offsetX = 0, offsetY = 0;
-    
     const startDrag = (e) => {
-      isDragging = true;
-      el.style.zIndex = '100';
+      item.isDragging = true;
+      item.el.style.zIndex = '100';
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      offsetX = clientX - x;
-      offsetY = clientY - y;
+      item.offsetX = clientX - item.x;
+      item.offsetY = clientY - item.y;
     };
     const moveDrag = (e) => {
-      if(!isDragging) return;
-      e.preventDefault(); // Prevents mobile screen from scrolling while dragging
+      if(!item.isDragging) return;
+      e.preventDefault(); // Prevents mobile scroll while dragging
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      x = clientX - offsetX;
-      y = clientY - offsetY;
-      el.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rotation}deg)`;
+      item.x = clientX - item.offsetX;
+      item.y = clientY - item.offsetY;
+      item.el.style.transform = `translate3d(${item.x}px, ${item.y}px, 0) rotate(${item.rot}deg)`;
     };
     const endDrag = () => {
-      if(!isDragging) return;
-      isDragging = false;
-      el.style.zIndex = '';
+      if(!item.isDragging) return;
+      item.isDragging = false;
+      item.el.style.zIndex = '';
     };
     
     el.addEventListener('mousedown', startDrag);
@@ -1473,23 +1477,25 @@ function initFloatingEntities() {
     window.addEventListener('touchmove', moveDrag, {passive: false});
     window.addEventListener('touchend', endDrag, {passive: false});
     
-    items.push({el, speedX, speedY, x, y, rot: rotation, rotSpeed, isDragging: () => isDragging});
+    items.push(item);
   }
   
   const animate = () => {
+    // Recalculate max height dynamically in case the user rotates their phone
+    const currentMaxY = window.innerHeight * 0.25;
+
     items.forEach(item => {
-      if(!item.isDragging()) {
+      if(!item.isDragging) {
         item.x += item.speedX;
         item.y += item.speedY;
         item.rot += item.rotSpeed;
         
-        // Wrap around screen smoothly
+        // Wrap around strictly inside the top banner area
         if(item.x > window.innerWidth + 50) item.x = -50;
         if(item.x < -50) item.x = window.innerWidth + 50;
-        if(item.y > window.innerHeight + 50) item.y = -50;
-        if(item.y < -50) item.y = window.innerHeight + 50;
+        if(item.y > currentMaxY + 40) item.y = -40;
+        if(item.y < -40) item.y = currentMaxY + 40;
         
-        // Hardware accelerated movement
         item.el.style.transform = `translate3d(${item.x}px, ${item.y}px, 0) rotate(${item.rot}deg)`;
       }
     });
@@ -3463,7 +3469,7 @@ function showProfileStats(i){
     if(isSame) return; // If clicking the same one, just close it and return
   }
   
-  // Highlight the clicked STATS button (it is the 2nd button in the action list)
+  // Highlight the clicked STATS button
   const slotDivs = slotsContainer.querySelectorAll('.profile-slot:not(.empty)');
   if (slotDivs[i]) {
       const statsBtn = slotDivs[i].querySelectorAll('.profile-action-btn')[1];
@@ -3473,7 +3479,9 @@ function showProfileStats(i){
   const panel=document.createElement('div');
   panel.id='profileStatsPanel';
   panel.dataset.profileIdx = String(i);
-  panel.style.cssText='background:rgba(255,255,255,.04);border:1px solid var(--c-fwyl);border-radius:10px;padding:12px;margin-top:6px;animation:fadein .2s ease;max-height:60vh;overflow-y:auto;';  const bestStr=p.bestDiff===undefined?'—':p.bestDiff===0?'E':p.bestDiff>0?`+${p.bestDiff}`:`${p.bestDiff}`;
+  panel.style.cssText='background:rgba(255,255,255,.04);border:1px solid var(--c-fwyl);border-radius:10px;padding:12px;margin-top:6px;animation:fadein .2s ease;max-height:60vh;overflow-y:auto;';
+  
+  const bestStr=p.bestDiff===undefined?'—':p.bestDiff===0?'E':p.bestDiff>0?`+${p.bestDiff}`:`${p.bestDiff}`;
   const rows=[
     ['Games Played', p.gamesPlayed||0],['Holes Played', p.holesPlayed||0],
     ['Birdies', p.birdies||0],['Eagles', p.eagles||0],
@@ -3506,7 +3514,8 @@ function showProfileStats(i){
     </button>`+
     `<div id="achList" style="display:block;">${achListHTML}</div>`+
     `<div style="margin-top:10px;"><button onclick="resetProfileStats(${i})" style="width:100%;background:rgba(255,82,82,.12);color:#ff8080;border:1px solid rgba(255,82,82,.3);border-radius:7px;padding:7px;font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;cursor:pointer;">RESET STATS</button></div>`;
-  slots.parentNode.insertBefore(panel, slots.nextSibling);
+  
+  slotsContainer.parentNode.insertBefore(panel, slotsContainer.nextSibling);
 }
 function updateMenuProfileDisplay(){
   const p=getActiveProfile();
