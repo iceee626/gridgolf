@@ -35,6 +35,8 @@ body.theme-light .wc-slot{background:rgba(0,0,0,.04);border-color:rgba(123,47,15
 body.theme-light .wc-slot-name{color:#5a1a8e;}
 body.theme-light .wc-slot-desc{color:rgba(0,0,0,.5);}
 body.theme-light .wc-slot.empty{background:rgba(0,0,0,.02);}
+body.theme-light .wc-slot-empty-txt{color:rgba(0,0,0,.4);}
+body.theme-light .menu-btn-sec{background:rgba(0,0,0,.05);}
 body.theme-light .hio-overlay{background:rgba(255,255,255,.97);}
 body.theme-light .hio-title{color:#8a6000;}
 body.theme-light .hio-die{background:var(--card);border-color:#b87800;color:#8a6000;}
@@ -103,7 +105,7 @@ body{
 .app::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(90deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px),repeating-linear-gradient(0deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px);pointer-events:none;z-index:-1;}
 
 /* HEADER */
-header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 16px 0;position:sticky;top:0;z-index:100;}
+header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12px 16px 0;position:sticky;top:0;z-index:100;}
 .logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:4px;}
 .logo{font-family:'Bebas Neue',cursive;font-size:clamp(20px, 6vw, 28px);letter-spacing:2px;line-height:1;text-align:center;margin:0;}
 .logo span{color:var(--c-fwyl);}
@@ -814,7 +816,7 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 <div class="menu-screen" id="menuScreen" style="display:none;">
   <div class="menu-bg-grass"></div>
   <div style="position:absolute;top:calc(env(safe-area-inset-top) + 10px);right:16px;display:flex;align-items:center;gap:6px;z-index:20;">
-    <span id="menuProfileName" style="font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;color:rgba(255,255,255,.6);"></span>
+    <span id="menuProfileName" style="font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);"></span>
     <button class="menu-profile-icon" id="menuProfileIconBtn" onclick="openProfileModal()" title="Profiles" style="position:static;top:auto;right:auto;">👤</button>
   </div>
   <div class="menu-content">
@@ -1023,8 +1025,9 @@ header{background:linear-gradient(180deg,#0d1117 60%,transparent);padding:12px 1
 <header>
   <div class="logo-row">
     <div style="display:flex;align-items:center;gap:4px;">
-      <button onclick="if(TUT.active){tutMenuIntercept();}else{returnToMenuSave();}" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:0 6px;height:26px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;">← MENU</button>
+      <button onclick="if(TUT.active){tutMenuIntercept();}else{returnToMenuSave();}" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:0 8px;height:26px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;">MENU</button>
       <button onclick="openSettings()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;width:26px;height:26px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;" title="Settings">⚙️</button>
+      <button id="abandonBtn" onclick="abandonCurrentGame()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;width:26px;height:26px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;" title="Abandon Game">❎</button>
     </div>
     <div class="logo">GRID<span>GOLF</span></div>
     <div class="hole-badge" id="holeBadge">HOLE 1 / 9</div>
@@ -1742,6 +1745,9 @@ function loadHole(){
      nextBtn.style.pointerEvents = '';
      nextBtn.onclick=doNextShot;
   }
+
+  const abandonBtn = document.getElementById('abandonBtn');
+  if(abandonBtn) abandonBtn.style.display = TUT.active ? 'none' : 'flex';
 
   const h=HOLES[S.holeIdx];
   S.zone='tee';S.strokes=0;S.shotNum=1;S.shotCount=0;
@@ -3947,7 +3953,7 @@ function renderWcDrawer(){
   if (activeWcs.length > 0) {
     const activeContainer = document.createElement('div');
     activeContainer.style.cssText = 'margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(123,47,158,.4);';
-    activeContainer.innerHTML = '<div style="font-family:\'Bebas Neue\',cursive;font-size:14px;letter-spacing:2px;color:#f0c040;margin-bottom:8px;">⚡ ACTIVE EFFECTS</div>';
+    activeContainer.innerHTML = '<div style="font-family:\'Bebas Neue\',cursive;font-size:14px;letter-spacing:2px;color:var(--gold);margin-bottom:8px;">⚡ ACTIVE EFFECTS</div>';
 
     activeWcs.forEach(wc => {
       if(!wc) return;
@@ -3956,15 +3962,14 @@ function renderWcDrawer(){
       item.innerHTML = `
         <div style="font-size:18px;line-height:1;">${wc.icon}</div>
         <div style="flex:1;">
-          <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;color:#f0c040;line-height:1;">${wc.name} ${wc.extra||''}</div>
-          <div style="font-family:'Sen', sans-serif;font-size:9px;color:rgba(255,255,255,.6);margin-top:2px;">Waiting for trigger...</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;color:var(--gold);line-height:1;">${wc.name} ${wc.extra||''}</div>
+          <div style="font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);margin-top:2px;">Waiting for trigger...</div>
         </div>
       `;
       activeContainer.appendChild(item);
     });
     el.appendChild(activeContainer);
   }
-}
 
 function activateWildcard(slotIdx){
   const wc=WCS.equipped[slotIdx];
@@ -4488,6 +4493,14 @@ function continueGame(){
     }
     maybeShowShakeBanner();
   }catch(e){console.error('Continue failed:',e);}
+}
+
+function abandonCurrentGame(){
+  showConfirm('ARE YOU SURE YOU WANT TO ABANDON THIS GAME?', () => {
+    clearSavedGame();
+    returnToMenu();
+    updateMenuContinueBtn();
+  });
 }
 
 function returnToMenuSave(){
@@ -5706,7 +5719,7 @@ function vsGetCachedGrid(){
       <div id="confirmMsg" style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--text);text-align:center;margin-bottom:20px;"></div>
       <div style="display:flex;gap:10px;">
         <button id="confirmYes" style="flex:1;background:#e05252;color:#fff;border:none;border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">YES</button>
-        <button onclick="closeConfirm()" style="flex:1;background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">CANCEL</button>
+        <button onclick="closeConfirm()" style="flex:1;background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">NO</button>
       </div>
     </div>
   </div>
