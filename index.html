@@ -10,6 +10,11 @@
 <meta name="theme-color" content="#0d1117">
 <title>Grid Golf</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sen:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
 <style>
 :root{
   --c-tee:#2c5f8a;--c-fwy:#3a7a30;--c-fwyl:#4e9e42;
@@ -1061,13 +1066,12 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 <div class="app" id="mainApp" style="display:none">
 <header>
   <div class="logo-row">
+    <button onclick="if(TUT.active){tutMenuIntercept();}else{returnToMenuSave();}" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:0 12px;height:26px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;">MENU</button>
+    <div class="logo">GRID<span>GOLF</span></div>
     <div style="display:flex;align-items:center;gap:4px;">
-      <button onclick="if(TUT.active){tutMenuIntercept();}else{returnToMenuSave();}" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:0 8px;height:26px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;">MENU</button>
       <button onclick="openSettings()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;width:26px;height:26px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;" title="Settings">⚙️</button>
       <button id="abandonBtn" onclick="abandonCurrentGame()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;width:26px;height:26px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;" title="Abandon Game">❎</button>
     </div>
-    <div class="logo">GRID<span>GOLF</span></div>
-    <div class="hole-badge" id="holeBadge">HOLE 1 / 9</div>
   </div>
   <div class="sc-wrap">
     <div class="sc-inner">
@@ -1246,13 +1250,34 @@ function getDieVal(dieId){
 // ═══════════════════════════════════════
 function vibEnabled(){try{return localStorage.getItem('gg_vibration')!=='off';}catch{return true;}}
 function setVibEnabled(v){try{localStorage.setItem('gg_vibration',v?'on':'off');}catch{}}
-function _hapticClick(){}
+
+// Haptics — uses Capacitor native API when running as iOS app, silent otherwise
+function _doHaptic(style){
+  if(!vibEnabled())return;
+  try{
+    if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.Haptics){
+      window.Capacitor.Plugins.Haptics.impact({style});
+    }else if(navigator.vibrate){
+      navigator.vibrate(style==='HEAVY'?80:style==='LIGHT'?20:40);
+    }
+  }catch(e){}
+}
+function _hapticClick(){ _doHaptic('LIGHT'); }
 function _androidVib(){}
-function vibDiceRoll(){}
-function vibDiceLand(){}
-function vibWildcard(){}
-function vibHoleInOne(){}
-function vibShot(){}
+function vibDiceRoll()  { _doHaptic('MEDIUM'); }
+function vibDiceLand()  { _doHaptic('LIGHT'); }
+function vibWildcard()  { _doHaptic('HEAVY'); }
+function vibHoleInOne() {
+  if(!vibEnabled())return;
+  try{
+    if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.Haptics){
+      window.Capacitor.Plugins.Haptics.notification({type:'SUCCESS'});
+    }else if(navigator.vibrate){
+      navigator.vibrate([50,30,50,30,100]);
+    }
+  }catch(e){}
+}
+function vibShot(){ _doHaptic('LIGHT'); }
 
 // ═══════════════════════════════════════
 // METRICS SYSTEM
@@ -1484,7 +1509,7 @@ function initFloatingEntities() {
   const container = document.getElementById('floatingEntities');
   if(!container) return;
   container.innerHTML = '';
-  const emojis = ['⛳', '🎲', '🏌️'];
+  const emojis = ['⛳', '🏌️', '🏌️‍♂️', '🏌️‍♀️', '⛳', '🏌️'];
   const items = [];
   
   // Helper to spawn/respawn items
@@ -1906,9 +1931,7 @@ function buildScorecard(){
     sr.appendChild(sc);
   });
   
-  const hText = S.holesConfig==='18' ? `HOLE ${S.holeIdx+1} / 18` : `HOLE ${S.holeIdx - S.startIdx + 1} (OF 9)`;
-  const rText = S.totalRounds > 1 ? `R${S.currentRound} · ` : '';
-  document.getElementById('holeBadge').textContent=`${rText}${hText}`;
+  // holeBadge removed from header
 
   setTimeout(()=>{
     const activeCell = sr.querySelector('.sc-active');
@@ -2044,11 +2067,13 @@ function buildGrid(){
       renderGrid(); return;
     }
   }
-  // Versus mode: player 2 uses player 1's grid
+  // Versus mode: player 2 uses player 1's base grid (pre-wildcard), then applies own wildcards
   if(VS.active && VS.currentPlayer === 1){
     const cached = vsGetCachedGrid();
     if(cached){
-      S.currentGrid = cached.map(r=>[...r]);
+      let tmpl = cached.map(r=>[...r]);
+      if(WCS&&wcEnabled()) tmpl=applyWcGridMods(tmpl);
+      S.currentGrid = tmpl;
       renderGrid(); return;
     }
   }
@@ -2061,22 +2086,25 @@ function buildGrid(){
   if(S.zone==='grn'||gate==='green'){
     tmpl = h.diff===1 ? T_PUTTING_1() : h.diff===2 ? T_PUTTING_2() : T_PUTTING_3();
     document.getElementById('gridTitle').textContent='Putting Grid';
+    if(VS.active)vsCacheGrid(tmpl);
     if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;if(VS.active)vsCacheGrid(S.currentGrid);renderGrid();return;
+    S.currentGrid=tmpl;renderGrid();return;
   }
 
   if(S.zone==='chip'||(gate==='short'&&S.zone==='chip')||(gate==='nearpin'&&S.zone!=='grn'&&S.zone!=='sand')){
     tmpl = h.diff===1 ? T_CHIP_NORM_E() : h.diff===2 ? T_CHIP_NORM_M() : T_CHIP_NORM_H();
     document.getElementById('gridTitle').textContent='Chip Shot Grid';
+    if(VS.active)vsCacheGrid(tmpl);
     if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;if(VS.active)vsCacheGrid(S.currentGrid);renderGrid();return;
+    S.currentGrid=tmpl;renderGrid();return;
   }
 
   if(S.zone==='sand'){
     tmpl = h.diff===1 ? T_SAND_NORM_E() : h.diff===2 ? T_SAND_NORM_M() : T_SAND_NORM_H();
     document.getElementById('gridTitle').textContent='Sand Shot Grid';
+    if(VS.active)vsCacheGrid(tmpl);
     if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;if(VS.active)vsCacheGrid(S.currentGrid);renderGrid();return;
+    S.currentGrid=tmpl;renderGrid();return;
   }
 
   if(S.zone==='tee'&&isPar3){
@@ -2084,8 +2112,9 @@ function buildGrid(){
     else tmpl = h.diff===1 ? T_TEE_P3E() : h.diff===2 ? T_TEE_P3M() : T_TEE_P3H();
     
     document.getElementById('gridTitle').textContent='Tee Shot Grid';
+    if(VS.active)vsCacheGrid(tmpl);
     if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;if(VS.active)vsCacheGrid(S.currentGrid);renderGrid();return;
+    S.currentGrid=tmpl;renderGrid();return;
   }
 
   if(S.zone==='tee'){
@@ -2093,8 +2122,9 @@ function buildGrid(){
     else tmpl = h.diff===1 ? T_TEE_EASY() : h.diff===2 ? T_TEE_MED() : T_TEE_HARD();
     
     document.getElementById('gridTitle').textContent='Tee Shot Grid';
+    if(VS.active)vsCacheGrid(tmpl);
     if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;if(VS.active)vsCacheGrid(S.currentGrid);renderGrid();return;
+    S.currentGrid=tmpl;renderGrid();return;
   }
 
   if(S.zone==='fwy'){
@@ -2110,8 +2140,9 @@ function buildGrid(){
       else tmpl = h.diff===1 ? T_FWY_FAR_E() : h.diff===2 ? T_FWY_FAR_M() : T_FWY_FAR_H();
     }
     document.getElementById('gridTitle').textContent='Fairway Shot Grid';
+    if(VS.active)vsCacheGrid(tmpl);
     if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;if(VS.active)vsCacheGrid(S.currentGrid);renderGrid();return;
+    S.currentGrid=tmpl;renderGrid();return;
   }
 
   if(S.zone==='rgh'){
@@ -2124,13 +2155,14 @@ function buildGrid(){
       tmpl = h.diff===1 ? T_RGH_MID_E() : h.diff===2 ? T_RGH_MID_M() : T_RGH_MID_H();
     }
     document.getElementById('gridTitle').textContent='Rough Shot Grid';
+    if(VS.active)vsCacheGrid(tmpl);
     if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;if(VS.active)vsCacheGrid(S.currentGrid);renderGrid();return;
+    S.currentGrid=tmpl;renderGrid();return;
   }
 
   tmpl=T_FWY_FAR_M();
+  if(VS.active) vsCacheGrid(tmpl);
   S.currentGrid=tmpl;renderGrid();
-  if(VS.active) vsCacheGrid(S.currentGrid);
 }
 
 function flipCell(cell, zd){
@@ -2169,9 +2201,10 @@ function renderGrid(){
       const cell=document.createElement('div');
       cell.className=`cell ${zd.cls}`;cell.id=`cell-${r}-${c}`;
       const abbr={ob:'OB',h2o:'H₂O',hole:'⛳',p1:'1P',p2:'2P',p3:'3P'};
+      const alwaysName={h2o:'WATER',ob:'OB',grn:'GREEN',fwy:'FAIRWAY',rgh:'ROUGH',chip:'CHIP',sand:'SAND',tee:'TEE',hole:'HOLE',p1:'1P',p2:'2P',p3:'3P'};
       if(alwaysLabels){
-        cell.textContent=zd.name;
-        cell.style.cssText='font-size:6px;line-height:1.1;text-align:center;padding:1px;word-break:break-word;';
+        cell.textContent=(alwaysName[zk]||zd.name).toUpperCase();
+        cell.style.cssText='font-size:6px;line-height:1.1;text-align:center;padding:1px;word-break:break-word;font-weight:700;';
       } else if(abbr[zk]){
         cell.textContent=abbr[zk];
       }
@@ -2203,8 +2236,8 @@ function updateYrd(){
 function advanceYrd(zk){
   if(['h2o','ob','grn','p1','p2','p3','hole'].includes(zk))return;
   if(zk==='chip'||zk==='sand'){
-    const shortDist=Math.round(15+Math.random()*30);
-    S.yrdRemain=Math.min(S.yrdRemain, shortDist);
+    const advance=Math.round(30+Math.random()*30);
+    S.yrdRemain=Math.max(15,S.yrdRemain-advance);
     return;
   }
   const gained=randYds(zk);
@@ -2992,7 +3025,9 @@ function showRoundEnd(){
     document.getElementById('ovSummaryBtn').textContent='VIEW SUMMARY';
     document.getElementById('ovSummaryBtn').style.display='block';
   } else {
-    saveGameState(); 
+    updateProfileAfterRound(roundTotal, roundPar);
+    updateProfileStatsAfterRound(roundTotal, roundPar, S._wcUsedThisRound||0);
+    saveGameState();
     document.getElementById('ovEmoji').textContent=roundDiff<0?'🏆':roundDiff===0?'⛳':'🏌️';
     document.getElementById('ovTitle').textContent=`ROUND ${S.currentRound} COMPLETE`;
     
@@ -3437,6 +3472,7 @@ function selectProfile(i){
   renderProfileSlots();
   updateMenuProfileDisplay();
   setTimeout(()=>closeProfileModal(),150);
+  setTimeout(()=>showToast('PROFILE CHANGED'),300);
 }
 
 function deleteProfile(i){
@@ -3877,6 +3913,32 @@ function getRollMode(){
 }
 function setRollMode(mode){
   try{localStorage.setItem('gg_rollmode',mode);}catch{}
+  // If enabling shake and iOS requires explicit permission, request it now.
+  // This is called directly from the toggle onclick, so we are inside a user gesture —
+  // the only context iOS allows requestPermission() to be called from.
+  if(mode==='haptic'
+      && typeof DeviceMotionEvent!=='undefined'
+      && typeof DeviceMotionEvent.requestPermission==='function'){
+    _loadShakePermission();
+    if(!_shakePermissionGranted){
+      DeviceMotionEvent.requestPermission().then(r=>{
+        if(r==='granted'){
+          _shakePermissionGranted=true;
+          _saveShakePermission();
+          _startShakeListener();
+        } else {
+          // User denied — revert toggle back to classic
+          try{localStorage.setItem('gg_rollmode','classic');}catch{}
+          updateRollModeUI('classic');
+        }
+      }).catch(()=>{
+        try{localStorage.setItem('gg_rollmode','classic');}catch{}
+        updateRollModeUI('classic');
+      });
+      updateRollModeUI('haptic');
+      return; // listener started async above; skip applyRollMode for now
+    }
+  }
   applyRollMode(mode);
   updateRollModeUI(mode);
 }
@@ -3906,32 +3968,15 @@ function applyRollMode(mode){
     _loadShakePermission();
     if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){
       if(_shakePermissionGranted){
-        try{
-          DeviceMotionEvent.requestPermission().then(r=>{
-            if(r==='granted'){
-              _startShakeListener();
-              const b=document.getElementById('shakePermBanner');if(b)b.remove();
-            } else {
-              _shakePermissionGranted=false;
-              try{localStorage.removeItem('gg_shakeperm');}catch{}
-              _showShakePermissionBanner();
-            }
-          }).catch(()=>{
-            _startShakeListener();
-            const b=document.getElementById('shakePermBanner');if(b)b.remove();
-          });
-        }catch(e){
-          _startShakeListener();
-        }
-      } else {
-        _showShakePermissionBanner();
+        // Permission was granted in a prior session — start listener directly.
+        _startShakeListener();
       }
+      // If not granted, setRollMode handles it from the toggle user-gesture context.
     } else if(typeof DeviceMotionEvent!=='undefined'){
       _startShakeListener();
     }
   } else {
     if(rollBtn) rollBtn.textContent='⚄ ROLL';
-    const b=document.getElementById('shakePermBanner');if(b)b.remove();
   }
 }
 
@@ -4010,17 +4055,24 @@ document.addEventListener('visibilitychange',()=>{
 });
 
 function maybeShowShakeBanner(){
-  if(getRollMode()==='haptic'&&!_shakePermissionGranted){
-    if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){
-      setTimeout(()=>_showShakePermissionBanner(),800);
-    }
-  }
+  // No-op: permission is now requested inline from the toggle user-gesture, no banner needed.
 }
 
 // ═══════════════════════════════════════
 // SETTINGS
 // ═══════════════════════════════════════
-function toggleVibSetting(){setVibEnabled(!vibEnabled());updateSettingsUI();}
+function toggleVibSetting(){
+  const nowOn=!vibEnabled();
+  setVibEnabled(nowOn);
+  updateSettingsUI();
+  if(nowOn){
+    if(navigator.vibrate){
+      navigator.vibrate([40,30,40]);
+    } else {
+      showWcToast('📳 Vibration not supported on this device');
+    }
+  }
+}
 function setVibPref(on){setVibEnabled(on);updateSettingsUI();}
 function setSoundPref(on){setSoundEnabled(on);updateSettingsUI();}
 function setWcPref(on){setWcEnabled(on);updateSettingsUI();}
@@ -5001,6 +5053,17 @@ function closeConfirm(){
   document.getElementById('confirmModal').classList.remove('show');
 }
 
+function showToast(msg){
+  let el=document.getElementById('gg-toast');
+  if(!el){
+    el=document.createElement('div');el.id='gg-toast';
+    el.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(30,30,40,.95);color:#fff;font-family:"Bebas Neue",cursive;font-size:15px;letter-spacing:2px;padding:10px 22px;border-radius:10px;border:1px solid rgba(255,255,255,.12);z-index:9999;pointer-events:none;opacity:0;transition:opacity .25s;white-space:nowrap;';
+    document.body.appendChild(el);
+  }
+  el.textContent=msg;el.style.opacity='1';
+  clearTimeout(el._t);el._t=setTimeout(()=>el.style.opacity='0',2000);
+}
+
 // ═══════════════════════════════════════════════════════
 // TUTORIAL SYSTEM (complete rewrite)
 // ═══════════════════════════════════════════════════════
@@ -5825,7 +5888,22 @@ function vsShowHoleComparison(){
   const ovBtn=document.getElementById('ovBtn');
   const ovPlayAgainBtn = document.getElementById('ovPlayAgainBtn');
 
-  if (S.holeIdx >= S.endIdx) {
+  // Match play early clinch check
+  let matchClinched = false;
+  if (VS.format === 'match' && S.holeIdx < S.endIdx) {
+    const holesLeft = S.endIdx - S.holeIdx; // holes remaining AFTER this one
+    const lead = VS.matchScore[0] - VS.matchScore[1];
+    const absLead = Math.abs(lead);
+    if (absLead > holesLeft) {
+      matchClinched = true;
+      const clinchWinner = lead > 0 ? p1 : p2;
+      const clinchNotation = `${absLead}&${holesLeft}`;
+      document.getElementById('ovTitle').textContent = `${clinchWinner.name} WINS ${clinchNotation}!`;
+      document.getElementById('ovEmoji').textContent = clinchWinner.icon;
+    }
+  }
+
+  if (S.holeIdx >= S.endIdx || matchClinched) {
       ovBtn.textContent = 'FINAL RESULTS →';
       ovBtn.style.display = 'block';
       ovBtn.onclick = () => {
@@ -5891,6 +5969,7 @@ function vsShowFinal(){
   ovBtn.style.display='block';
   ovBtn.onclick=()=>{
     VS.active=false;
+    clearSavedGame();
     document.getElementById('overlay').classList.remove('show');
     returnToMenu();
   };
@@ -5923,7 +6002,7 @@ function vsGetCachedGrid(){
       <div style="display:flex;gap:6px;margin-bottom:16px;">
         <button id="themeBtn-dark" onclick="setTheme('dark')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">🌙 DARK</button>
         <button id="themeBtn-light" onclick="setTheme('light')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">☀️ LIGHT</button>
-        <button id="themeBtn-system" onclick="setTheme('system')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">🔄 AUTO</button>
+        <button id="themeBtn-system" onclick="setTheme('system')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">🔄 SYSTEM</button>
       </div>
       <div style="font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">GAME OPTIONS</div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
@@ -5968,12 +6047,12 @@ function vsGetCachedGrid(){
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🏷️ CELL LABELS</div>
-          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Show zone name on tap</div>
+          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Show zone name always</div>
         </div>
         <div class="txt-toggle" id="labelsToggle" onclick="setCellLabelModeDirect(getCellLabelMode()==='tap'?'always':'tap')">
           <div class="txt-toggle-knob"></div>
           <div class="txt-lbl lbl-l">TAP</div>
-          <div class="txt-lbl lbl-r">VIS</div>
+          <div class="txt-lbl lbl-r">YES</div>
         </div>
       </div>
       <div id="settingsTutorialRow" style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
@@ -6117,8 +6196,8 @@ function vsGetCachedGrid(){
     <div class="profile-body" style="padding:20px;">
       <div id="confirmMsg" style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--text);text-align:center;margin-bottom:20px;"></div>
       <div style="display:flex;gap:10px;">
-        <button id="confirmYes" style="flex:1;background:#e05252;color:#fff;border:none;border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">YES</button>
-        <button onclick="closeConfirm()" style="flex:1;background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">NO</button>
+        <button id="confirmYes" style="flex:1;background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">YES</button>
+        <button onclick="closeConfirm()" style="flex:1;background:#e05252;color:#fff;border:none;border-radius:8px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">NO</button>
       </div>
     </div>
   </div>
@@ -6132,5 +6211,13 @@ function vsGetCachedGrid(){
     </div>
   </div>
 </div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js').catch(function() {});
+  });
+}
+</script>
 </body>
 </html>
