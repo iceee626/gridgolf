@@ -110,7 +110,8 @@ body{
 .app::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(90deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px),repeating-linear-gradient(0deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px);pointer-events:none;z-index:-1;}
 
 /* HEADER */
-header{background:linear-gradient(180deg,var(--dark) 60%,transparent);padding:12px 16px 0;position:sticky;top:env(safe-area-inset-top);z-index:100;}
+header{background:var(--dark);padding:12px 16px 12px;position:sticky;top:0;z-index:100;}
+header::before{content:'';position:absolute;bottom:100%;left:0;right:0;height:50vh;background:var(--dark);pointer-events:none;}
 .logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:4px;}
 .logo{font-family:'Bebas Neue',cursive;font-size:clamp(20px, 6vw, 28px);letter-spacing:2px;line-height:1;text-align:center;margin:0;}
 .logo span{color:var(--c-fwyl);}
@@ -844,7 +845,6 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <div class="menu-bg-grass"></div>
   <div class="menu-content">
     <div class="menu-logo">GRID<span>GOLF</span></div>
-    <div class="menu-tagline">A DICE GOLF EXPERIENCE</div>
     <div style="font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:20px;">CREATE YOUR PROFILE</div>
     <input class="onboard-input" id="onboardInput" placeholder="ENTER YOUR NAME" maxlength="12" autocomplete="off" spellcheck="false">
     <button class="menu-btn-play" onclick="createFirstProfile()" style="margin-top:12px;">START PLAYING →</button>
@@ -862,7 +862,6 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   
   <div class="menu-content">
   <div class="menu-logo">GRID<span>GOLF</span></div>
-  <div class="menu-tagline">A DICE GOLF EXPERIENCE</div>
   <div id="menuActiveProfile" style="display:none;"></div>
   
   <div class="menu-btns" id="menuBtns">
@@ -1957,7 +1956,10 @@ function loadHole(){
   }
 
   const abandonBtn = document.getElementById('abandonBtn');
-  if(abandonBtn) abandonBtn.style.display = TUT.active ? 'none' : 'flex';
+  if(abandonBtn) {
+     abandonBtn.style.display = 'flex';
+     abandonBtn.onclick = TUT.active ? tutMenuIntercept : abandonCurrentGame;
+  }
 
   const h=HOLES[S.holeIdx];
   S.zone='tee';S.strokes=0;S.shotNum=1;S.shotCount=0;
@@ -2506,7 +2508,8 @@ function scrollToGrid() {
     const header = document.querySelector('header');
     if (gridSec) {
       const headerOffset = header ? header.offsetHeight : 0;
-      const y = gridSec.getBoundingClientRect().top + window.scrollY - headerOffset - 10;
+      // Increased the negative buffer from -10 to -32 to leave breathing room above the grid
+      const y = gridSec.getBoundingClientRect().top + window.scrollY - headerOffset - 32;
       window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
     }
     _scrollGridTimeout = setTimeout(() => { window._disableTutScroll = false; }, 500); // Re-enable tutorial scroll
@@ -5231,7 +5234,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('SCORECARD', 'This is your scorecard. It shows how many strokes you used on each hole compared to Par (the expected number of shots). "E" means Even — you matched Par exactly. Fewer strokes is great (Birdie = -1, Eagle = -2, Albatross = -3). More strokes adds to your score (Bogey = +1, Double Bogey = +2, etc.).', 'GOT IT', 'header', true);
+      _tutShowTip('SCORECARD', 'This is your scorecard. It shows how many strokes you used on each hole compared to Par (the expected number of shots). "E" means Even — you matched Par exactly. Fewer strokes is great (Birdie = -1, Eagle = -2, Albatross = -3). More strokes adds to your score (Bogey = +1, Double Bogey = +2, etc.).', 'GOT IT', '.sc-wrap', true);
       return;
     }
     if(_tutStep === 2){
