@@ -110,8 +110,14 @@ body{
 .app::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(90deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px),repeating-linear-gradient(0deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px);pointer-events:none;z-index:-1;}
 
 /* HEADER */
-header{background:var(--dark);padding:12px 16px 12px;position:sticky;top:0;z-index:100;}
-header::before{content:'';position:absolute;bottom:100%;left:0;right:0;height:50vh;background:var(--dark);pointer-events:none;}
+header {
+  background: var(--dark);
+  padding: calc(env(safe-area-inset-top) + 12px) 16px 10px;
+  margin-top: calc(-1 * env(safe-area-inset-top));
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 .logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:4px;}
 .logo{font-family:'Bebas Neue',cursive;font-size:clamp(20px, 6vw, 28px);letter-spacing:2px;line-height:1;text-align:center;margin:0;}
 .logo span{color:var(--c-fwyl);}
@@ -863,6 +869,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <div class="menu-content">
   <div class="menu-logo">GRID<span>GOLF</span></div>
   <div id="menuActiveProfile" style="display:none;"></div>
+  <br>
   
   <div class="menu-btns" id="menuBtns">
     <button class="menu-btn-play" id="menuContinueBtn" onclick="continueGame()" style="display:none;background:#1a5f8a;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;padding:12px;"></button>
@@ -4088,15 +4095,22 @@ function updateSettingsUI(){
   updateMetricsUI();
   updateCellLabelUI();
   
+  const isGameActive = document.getElementById('mainApp').style.display === 'block';
+  
   const wcToggle = document.getElementById('wcToggle');
   if (wcToggle) {
-      if (document.getElementById('mainApp').style.display === 'block' || hasSavedGame()) {
+      if (isGameActive || hasSavedGame()) {
           wcToggle.style.opacity = '0.4';
           wcToggle.style.pointerEvents = 'none';
       } else {
           wcToggle.style.opacity = '1';
           wcToggle.style.pointerEvents = 'auto';
       }
+  }
+  
+  const tutRow = document.getElementById('settingsTutorialRow');
+  if (tutRow) {
+      tutRow.style.display = isGameActive ? 'none' : 'flex';
   }
 }
 
@@ -5172,6 +5186,10 @@ function _tutHighlight(sel, darken = true){
     return;
   }
 
+  // Reset header z-index safely before applying new highlights
+  const header = document.querySelector('header');
+  if(header) header.style.zIndex = '100';
+
   const els = document.querySelectorAll(sel);
   let scrolled = false;
   els.forEach(el => {
@@ -5180,6 +5198,10 @@ function _tutHighlight(sel, darken = true){
      el.style.position = window.getComputedStyle(el).position === 'static' ? 'relative' : window.getComputedStyle(el).position;
      el.style.zIndex = '745';
      if (el.id === 'rollBtn') el.style.opacity = '1'; // Prevent button from appearing dark when disabled
+     
+     // Elevate parent header if target is inside it to break stacking context
+     const parentHeader = el.closest('header');
+     if(parentHeader) parentHeader.style.zIndex = '745';
      
      // Robust scrolling calculation for iOS Safari compatibility
      if (!scrolled) {
