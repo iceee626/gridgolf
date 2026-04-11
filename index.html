@@ -112,14 +112,16 @@ body{
 /* HEADER */
 header {
   background: var(--dark);
-  padding: calc(env(safe-area-inset-top) + 12px) 16px 4px;
+  padding: calc(env(safe-area-inset-top) + 12px) 16px 0;
   margin-top: calc(-1 * env(safe-area-inset-top));
   position: sticky;
   top: 0;
   z-index: 100;
+  padding-bottom: 6px;
 }
 header .sc-wrap {
   margin-bottom: 0;
+  border-radius: 8px 8px 0 0;
 }
 .logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:4px;}
 .logo{font-family:'Bebas Neue',cursive;font-size:clamp(20px, 6vw, 28px);letter-spacing:2px;line-height:1;text-align:center;margin:0;}
@@ -1629,78 +1631,154 @@ function cells(...pairs){const c=[];pairs.forEach(([k,n])=>c.push(...rep(k,n)));
 // ═══════════════════════════════════════
 // GRID TEMPLATES
 // ═══════════════════════════════════════
-const T_TEE_EASY  = ()=>cells(['fwy',30],['rgh',6]);
-const T_TEE_MED   = ()=>cells(['fwy',24],['rgh',10],['sand',2]);
-const T_TEE_HARD  = ()=>cells(['fwy',16],['rgh',14],['sand',4],['ob',2]);
+// Layout families: open | doglegs | bunkerFwy | bunkerGreen | waterCross | waterApproach | cathedral
+// Each template = exactly 36 cells (6×6 grid)
 
-const T_TEE_H2O_E = ()=>cells(['fwy',28],['rgh',6],['h2o',2]);
-const T_TEE_H2O_M = ()=>cells(['fwy',20],['rgh',8],['h2o',4],['sand',4]);
-const T_TEE_H2O_H = ()=>cells(['fwy',14],['rgh',10],['h2o',8],['sand',2],['ob',2]);
+// ── TEE SHOTS (par 4/5) ─────────────────────────────────────
+// open / bunkerGreen / waterApproach share a wide-fairway tee (hazard is elsewhere)
+const T_TEE_OPEN_E  = ()=>cells(['fwy',30],['rgh',6]);
+const T_TEE_OPEN_M  = ()=>cells(['fwy',24],['rgh',10],['sand',2]);
+const T_TEE_OPEN_H  = ()=>cells(['fwy',18],['rgh',15],['sand',3]);
 
-const T_TEE_P3E   = ()=>cells(['grn',28],['chip',6],['sand',1],['hole',1]);
-const T_TEE_P3M   = ()=>cells(['grn',20],['chip',10],['sand',5],['hole',1]);
-const T_TEE_P3H   = ()=>cells(['grn',12],['chip',10],['sand',8],['rgh',5],['hole',1]);
+// doglegs — narrow line, OB punishes big miss
+const T_TEE_DOG_E   = ()=>cells(['fwy',28],['rgh',8]);
+const T_TEE_DOG_M   = ()=>cells(['fwy',21],['rgh',12],['ob',1],['sand',2]);
+const T_TEE_DOG_H   = ()=>cells(['fwy',15],['rgh',16],['ob',1],['sand',4]);
 
-const T_TEE_P3_H2O_E = ()=>cells(['grn',26],['chip',6],['h2o',2],['sand',1],['hole',1]);
-const T_TEE_P3_H2O_M = ()=>cells(['grn',16],['chip',10],['sand',4],['h2o',5],['hole',1]);
-const T_TEE_P3_H2O_H = ()=>cells(['grn',10],['chip',8],['sand',6],['h2o',9],['rgh',2],['hole',1]);
+// bunkerFwy — fairway bunker sits in landing zone
+const T_TEE_BFWY_E  = ()=>cells(['fwy',28],['rgh',5],['sand',3]);
+const T_TEE_BFWY_M  = ()=>cells(['fwy',18],['rgh',8],['sand',10]);
+const T_TEE_BFWY_H  = ()=>cells(['fwy',12],['rgh',10],['sand',14]);
 
-const T_FWY_FAR_E = ()=>cells(['fwy',28],['rgh',6],['chip',2]);
-const T_FWY_FAR_M = ()=>cells(['fwy',22],['rgh',10],['sand',4]);
-const T_FWY_FAR_H = ()=>cells(['fwy',16],['rgh',12],['sand',8]);
+// waterCross — must carry water off the tee
+const T_TEE_WCRS_E  = ()=>cells(['fwy',29],['rgh',4],['h2o',3]);
+const T_TEE_WCRS_M  = ()=>cells(['fwy',24],['rgh',7],['h2o',5]);
+const T_TEE_WCRS_H  = ()=>cells(['fwy',17],['rgh',10],['h2o',7],['sand',2]);
 
-const T_FWY_FAR_H2O_E = ()=>cells(['fwy',26],['rgh',6],['h2o',2],['sand',2]);
-const T_FWY_FAR_H2O_M = ()=>cells(['fwy',18],['rgh',10],['sand',4],['h2o',4]);
-const T_FWY_FAR_H2O_H = ()=>cells(['fwy',12],['rgh',10],['sand',6],['h2o',8]);
+// cathedral — tight trees, OB both sides
+const T_TEE_CATH_E  = ()=>cells(['fwy',26],['rgh',10]);
+const T_TEE_CATH_M  = ()=>cells(['fwy',18],['rgh',14],['ob',1],['sand',3]);
+const T_TEE_CATH_H  = ()=>cells(['fwy',11],['rgh',15],['ob',1],['sand',9]);
 
-const T_FWY_MID_E = ()=>cells(['grn',28],['chip',6],['sand',2]);
-const T_FWY_MID_M = ()=>cells(['grn',20],['chip',10],['rgh',4],['sand',2]);
-const T_FWY_MID_H = ()=>cells(['grn',12],['chip',10],['rgh',8],['sand',6]);
+// ── TEE SHOTS (par 3) ──────────────────────────────────────
+// open par 3 — short, generous green
+const T_P3_OPEN_E   = ()=>cells(['grn',30],['chip',4],['sand',1],['hole',1]);
+const T_P3_OPEN_M   = ()=>cells(['grn',22],['chip',8],['sand',5],['hole',1]);
+const T_P3_OPEN_H   = ()=>cells(['grn',14],['chip',10],['sand',8],['rgh',3],['hole',1]);
 
-const T_FWY_MID_H2O_E = ()=>cells(['grn',26],['chip',6],['h2o',2],['sand',2]);
-const T_FWY_MID_H2O_M = ()=>cells(['grn',18],['chip',8],['sand',4],['h2o',6]);
-const T_FWY_MID_H2O_H = ()=>cells(['grn',10],['chip',8],['sand',6],['h2o',8],['rgh',4]);
+// waterCross par 3 — full carry over water
+const T_P3_WCRS_E   = ()=>cells(['grn',27],['chip',5],['h2o',2],['sand',1],['hole',1]);
+const T_P3_WCRS_M   = ()=>cells(['grn',21],['chip',6],['h2o',5],['sand',3],['hole',1]);
+const T_P3_WCRS_H   = ()=>cells(['grn',13],['chip',6],['h2o',7],['sand',9],['hole',1]);
 
-const T_RGH_FAR_E   = ()=>cells(['fwy',26],['rgh',8],['chip',2]);
-const T_RGH_FAR_M   = ()=>cells(['fwy',18],['rgh',12],['sand',6]);
-const T_RGH_FAR_H   = ()=>cells(['fwy',12],['rgh',14],['sand',8],['ob',2]);
+// bunkerGreen par 3 — bunkers all around green
+const T_P3_BGRN_E   = ()=>cells(['grn',24],['chip',6],['sand',5],['hole',1]);
+const T_P3_BGRN_M   = ()=>cells(['grn',16],['chip',8],['sand',10],['rgh',1],['hole',1]);
+const T_P3_BGRN_H   = ()=>cells(['grn',8],['chip',6],['sand',14],['rgh',5],['h2o',2],['hole',1]);
 
-const T_RGH_MID_E   = ()=>cells(['grn',18],['chip',10],['rgh',6],['sand',2]);
-const T_RGH_MID_M   = ()=>cells(['grn',12],['chip',12],['rgh',8],['sand',4]);
-const T_RGH_MID_H   = ()=>cells(['grn',6],['chip',10],['rgh',12],['sand',8]);
+// ── FAIRWAY FAR (>200 yds) ─────────────────────────────────
+const T_FAR_OPEN_E  = ()=>cells(['fwy',28],['rgh',6],['chip',2]);
+const T_FAR_OPEN_M  = ()=>cells(['fwy',22],['rgh',10],['sand',4]);
+const T_FAR_OPEN_H  = ()=>cells(['fwy',16],['rgh',12],['sand',8]);
 
-const T_RGH_SHORT_E = ()=>cells(['chip',18],['grn',14],['sand',4]);
-const T_RGH_SHORT_M = ()=>cells(['chip',16],['grn',10],['sand',10]);
-const T_RGH_SHORT_H = ()=>cells(['chip',10],['grn',6],['sand',14],['rgh',6]);
+// tight (doglegs/cathedral) — narrower corridor
+const T_FAR_TGHT_E  = ()=>cells(['fwy',26],['rgh',10]);
+const T_FAR_TGHT_M  = ()=>cells(['fwy',20],['rgh',14],['sand',2]);
+const T_FAR_TGHT_H  = ()=>cells(['fwy',13],['rgh',16],['sand',7]);
 
-const T_CHIP_NORM_E = ()=>cells(['grn',32],['hole',2],['sand',2]);
-const T_CHIP_NORM_M = ()=>cells(['grn',28],['sand',7],['hole',1]);
-const T_CHIP_NORM_H = ()=>cells(['grn',20],['sand',10],['rgh',6]);
+// bunkerFwy — sand in the fairway landing corridor
+const T_FAR_BFWY_E  = ()=>cells(['fwy',24],['rgh',6],['sand',6]);
+const T_FAR_BFWY_M  = ()=>cells(['fwy',16],['rgh',8],['sand',12]);
+const T_FAR_BFWY_H  = ()=>cells(['fwy',10],['rgh',8],['sand',18]);
 
-const T_SAND_NORM_E = ()=>cells(['grn',28],['chip',8]);
-const T_SAND_NORM_M = ()=>cells(['grn',24],['sand',8],['chip',4]);
-const T_SAND_NORM_H = ()=>cells(['grn',14],['sand',14],['rgh',8]);
+// waterCross — water hazard to carry in the fairway
+const T_FAR_WCRS_E  = ()=>cells(['fwy',27],['rgh',6],['h2o',3]);
+const T_FAR_WCRS_M  = ()=>cells(['fwy',20],['rgh',8],['h2o',5],['sand',3]);
+const T_FAR_WCRS_H  = ()=>cells(['fwy',15],['rgh',10],['h2o',7],['sand',4]);
 
-const T_PUTTING_1 = ()=>cells(['p1',32],['p2',4]); 
-const T_PUTTING_2 = ()=>cells(['p1',20],['p2',14],['p3',2]);
-const T_PUTTING_3 = ()=>cells(['p1',10],['p2',18],['p3',8]);
+// ── APPROACH (80-200 yds from green) ──────────────────────
+const T_APP_OPEN_E  = ()=>cells(['grn',32],['chip',2],['rgh',2]);
+const T_APP_OPEN_M  = ()=>cells(['grn',24],['chip',5],['rgh',5],['sand',2]);
+const T_APP_OPEN_H  = ()=>cells(['grn',16],['chip',6],['rgh',10],['sand',4]);
+
+const T_APP_DOG_E   = ()=>cells(['grn',28],['chip',4],['rgh',4]);
+const T_APP_DOG_M   = ()=>cells(['grn',18],['chip',6],['rgh',10],['sand',2]);
+const T_APP_DOG_H   = ()=>cells(['grn',10],['chip',6],['rgh',14],['sand',6]);
+
+const T_APP_BFWY_E  = ()=>cells(['grn',28],['chip',3],['sand',3],['rgh',2]);
+const T_APP_BFWY_M  = ()=>cells(['grn',20],['chip',4],['sand',8],['rgh',4]);
+const T_APP_BFWY_H  = ()=>cells(['grn',10],['chip',4],['sand',14],['rgh',8]);
+
+const T_APP_BGRN_E  = ()=>cells(['grn',26],['chip',4],['sand',6]);
+const T_APP_BGRN_M  = ()=>cells(['grn',18],['chip',4],['sand',10],['rgh',4]);
+const T_APP_BGRN_H  = ()=>cells(['grn',8],['chip',4],['sand',16],['rgh',8]);
+
+// waterCross approach — past the water, green is clear
+const T_APP_WCRS_E  = ()=>cells(['grn',30],['chip',4],['rgh',2]);
+const T_APP_WCRS_M  = ()=>cells(['grn',22],['chip',6],['rgh',6],['sand',2]);
+const T_APP_WCRS_H  = ()=>cells(['grn',14],['chip',6],['rgh',10],['sand',6]);
+
+// waterApproach — water guards the green on this side
+const T_APP_WAPR_E  = ()=>cells(['grn',28],['chip',6],['h2o',2]);
+const T_APP_WAPR_M  = ()=>cells(['grn',18],['chip',8],['h2o',4],['sand',4],['rgh',2]);
+const T_APP_WAPR_H  = ()=>cells(['grn',11],['chip',8],['h2o',7],['sand',6],['rgh',4]);
+
+const T_APP_CATH_E  = ()=>cells(['grn',22],['chip',6],['rgh',6],['sand',2]);
+const T_APP_CATH_M  = ()=>cells(['grn',14],['chip',6],['rgh',12],['sand',4]);
+const T_APP_CATH_H  = ()=>cells(['grn',6],['chip',4],['rgh',18],['sand',8]);
+
+// ── ROUGH ──────────────────────────────────────────────────
+const T_RGH_FAR_E   = ()=>cells(['fwy',26],['rgh',10]);
+const T_RGH_FAR_M   = ()=>cells(['fwy',16],['rgh',14],['sand',6]);
+const T_RGH_FAR_H   = ()=>cells(['fwy',10],['rgh',18],['sand',8]);
+
+const T_RGH_MID_E   = ()=>cells(['grn',22],['chip',6],['rgh',6],['sand',2]);
+const T_RGH_MID_M   = ()=>cells(['grn',14],['chip',6],['rgh',12],['sand',4]);
+const T_RGH_MID_H   = ()=>cells(['grn',8],['chip',4],['rgh',16],['sand',8]);
+
+// Rough near pin: NO chip cells — breaks chip→rgh-short→chip loop
+const T_RGH_SHORT_E = ()=>cells(['grn',32],['sand',4]);
+const T_RGH_SHORT_M = ()=>cells(['grn',24],['sand',8],['rgh',4]);
+const T_RGH_SHORT_H = ()=>cells(['grn',14],['sand',12],['rgh',10]);
+
+// ── CHIP SHOT — NO chip cells, NO chip→chip loop ──────────
+const T_CHIP_E      = ()=>cells(['grn',34],['hole',2]);
+const T_CHIP_M      = ()=>cells(['grn',28],['rgh',5],['sand',2],['hole',1]);
+const T_CHIP_H      = ()=>cells(['grn',20],['rgh',9],['sand',6],['hole',1]);
+
+// ── SAND ESCAPE — green+chip+hole only; NO rgh/h2o/ob; max 2 sand to prevent loops ──
+const T_SAND_E      = ()=>cells(['grn',31],['chip',4],['hole',1]);
+const T_SAND_M      = ()=>cells(['grn',26],['chip',8],['hole',1],['sand',1]);
+const T_SAND_H      = ()=>cells(['grn',18],['chip',14],['hole',1],['sand',3]);
+
+// ── PUTTING — per hole star × game difficulty ──────────────
+// Easy game: no 3-putts ever, 1-putts dominate
+// Normal: 3-putts only on hard holes (≤3 cells)
+// Hard: 3-putts available, proportional to hole difficulty
+const T_PUTT_1E = ()=>cells(['p1',34],['p2',2]);           // ★ hole, easy game
+const T_PUTT_1N = ()=>cells(['p1',28],['p2',8]);           // ★ hole, normal
+const T_PUTT_1H = ()=>cells(['p1',20],['p2',13],['p3',3]);// ★ hole, hard
+const T_PUTT_2E = ()=>cells(['p1',30],['p2',6]);           // ★★ hole, easy
+const T_PUTT_2N = ()=>cells(['p1',20],['p2',14],['p3',2]);// ★★ hole, normal (2 cells p3)
+const T_PUTT_2H = ()=>cells(['p1',10],['p2',18],['p3',8]);// ★★ hole, hard
+const T_PUTT_3E = ()=>cells(['p1',26],['p2',10]);          // ★★★ hole, easy (still no 3-putt)
+const T_PUTT_3N = ()=>cells(['p1',16],['p2',17],['p3',3]);// ★★★ hole, normal (3 cells max)
+const T_PUTT_3H = ()=>cells(['p1',6], ['p2',18],['p3',12]);// ★★★ hole, hard
 
 // ═══════════════════════════════════════
-// YARDAGE
+// YARDAGE — difficulty-scaled advancement
+// Easy: longer shots (fewer shots needed → easier scoring)
+// Normal: baseline
+// Hard: shorter shots (more shots needed → harder scoring)
 // ═══════════════════════════════════════
-const YDS_RANGE={
-  tee: {min:220,max:280},
-  fwy: {min:170,max:240},
-  rgh: {min:110,max:170},
-  chip:{min:0,  max:0},
-  sand:{min:0,  max:0},
-  grn: {min:0,  max:0},
-  h2o: {min:0,  max:0},
-  ob:  {min:0,  max:0},
-};
 function randYds(zk){
-  const r=YDS_RANGE[zk]||{min:100,max:160};
-  if(r.min===0)return 0;
+  const byDiff=[
+    {tee:{min:230,max:290},fwy:{min:185,max:255},rgh:{min:130,max:190}}, // easy
+    {tee:{min:220,max:280},fwy:{min:170,max:240},rgh:{min:110,max:170}}, // normal
+    {tee:{min:205,max:265},fwy:{min:150,max:215},rgh:{min:90, max:150}}, // hard
+  ];
+  const r=(byDiff[GAME_DIFF-1]||byDiff[1])[zk];
+  if(!r||r.min===0)return 0;
   return Math.round(r.min+Math.random()*(r.max-r.min));
 }
 
@@ -1708,25 +1786,26 @@ function randYds(zk){
 // HOLES (Expanded to 18)
 // ═══════════════════════════════════════
 const HOLES=[
-  {name:'HOLE 1',yards:387,par:4,baseDiff:1,diff:1,hasWater:false},
-  {name:'HOLE 2',yards:512,par:5,baseDiff:3,diff:3,hasWater:true},
-  {name:'HOLE 3',yards:178,par:3,baseDiff:1,diff:1,hasWater:false},
-  {name:'HOLE 4',yards:432,par:4,baseDiff:3,diff:3,hasWater:false},
-  {name:'HOLE 5',yards:603,par:5,baseDiff:3,diff:3,hasWater:true},
-  {name:'HOLE 6',yards:405,par:4,baseDiff:2,diff:2,hasWater:false},
-  {name:'HOLE 7',yards:195,par:3,baseDiff:2,diff:2,hasWater:false},
-  {name:'HOLE 8',yards:545,par:5,baseDiff:2,diff:2,hasWater:true},
-  {name:'HOLE 9',yards:418,par:4,baseDiff:2,diff:2,hasWater:false},
+  // layout: open|doglegs|bunkerFwy|bunkerGreen|waterCross|waterApproach|cathedral
+  {name:'HOLE 1', yards:387,par:4,baseDiff:1,diff:1,layout:'open'},          // Wide opener, gentle introduction
+  {name:'HOLE 2', yards:512,par:5,baseDiff:3,diff:3,layout:'waterApproach'}, // Water guards the green on this long par 5
+  {name:'HOLE 3', yards:178,par:3,baseDiff:1,diff:1,layout:'open'},          // Short open par 3, birdie opportunity
+  {name:'HOLE 4', yards:432,par:4,baseDiff:2,diff:2,layout:'bunkerFwy'},     // Fairway bunker at 200 yds forces decision
+  {name:'HOLE 5', yards:603,par:5,baseDiff:2,diff:2,layout:'waterCross'},    // Must carry water in the fairway corridor
+  {name:'HOLE 6', yards:405,par:4,baseDiff:2,diff:2,layout:'doglegs'},       // Dogleg right, OB punishes big drives
+  {name:'HOLE 7', yards:195,par:3,baseDiff:2,diff:2,layout:'bunkerGreen'},   // Bunkers wrap the green on all sides
+  {name:'HOLE 8', yards:545,par:5,baseDiff:2,diff:2,layout:'waterApproach'}, // Long par 5, water right of the green
+  {name:'HOLE 9', yards:418,par:4,baseDiff:2,diff:2,layout:'cathedral'},     // Tree-lined finish to the front 9
   // BACK 9
-  {name:'HOLE 10',yards:380,par:4,baseDiff:1,diff:1,hasWater:false},
-  {name:'HOLE 11',yards:410,par:4,baseDiff:2,diff:2,hasWater:false},
-  {name:'HOLE 12',yards:175,par:3,baseDiff:2,diff:2,hasWater:true},
-  {name:'HOLE 13',yards:520,par:5,baseDiff:2,diff:2,hasWater:false},
-  {name:'HOLE 14',yards:430,par:4,baseDiff:3,diff:3,hasWater:false},
-  {name:'HOLE 15',yards:395,par:4,baseDiff:2,diff:2,hasWater:false},
-  {name:'HOLE 16',yards:155,par:3,baseDiff:1,diff:1,hasWater:false},
-  {name:'HOLE 17',yards:405,par:4,baseDiff:2,diff:2,hasWater:false},
-  {name:'HOLE 18',yards:460,par:4,baseDiff:3,diff:3,hasWater:true},
+  {name:'HOLE 10',yards:380,par:4,baseDiff:1,diff:1,layout:'open'},          // Gentle re-entry after the turn
+  {name:'HOLE 11',yards:410,par:4,baseDiff:2,diff:2,layout:'doglegs'},       // Dogleg left, OB left side
+  {name:'HOLE 12',yards:175,par:3,baseDiff:2,diff:2,layout:'waterCross'},    // Full carry over water — no bail out
+  {name:'HOLE 13',yards:520,par:5,baseDiff:2,diff:2,layout:'bunkerFwy'},     // Two fairway bunkers test placement
+  {name:'HOLE 14',yards:430,par:4,baseDiff:2,diff:3,layout:'cathedral'},     // Tightest hole on the course
+  {name:'HOLE 15',yards:395,par:4,baseDiff:2,diff:2,layout:'bunkerGreen'},   // Greenside bunkers make the approach hard
+  {name:'HOLE 16',yards:155,par:3,baseDiff:1,diff:1,layout:'open'},          // Shortest hole, easy scoring opportunity
+  {name:'HOLE 17',yards:405,par:4,baseDiff:2,diff:2,layout:'waterApproach'}, // Water right of green, risk/reward approach
+  {name:'HOLE 18',yards:460,par:4,baseDiff:3,diff:3,layout:'waterCross'},    // Dramatic finale, carry water off the tee
 ];
 
 // ═══════════════════════════════════════
@@ -2073,113 +2152,148 @@ function updateTVBanner(){
 }
 
 // ═══════════════════════════════════════
-// GRID SELECTION
+// GRID SELECTION — layout-driven
 // ═══════════════════════════════════════
+
+// Layout → template selectors
+function _teeTmpl(h){
+  const d=h.diff;
+  switch(h.layout){
+    case 'doglegs':      return d===1?T_TEE_DOG_E(): d===2?T_TEE_DOG_M(): T_TEE_DOG_H();
+    case 'bunkerFwy':    return d===1?T_TEE_BFWY_E():d===2?T_TEE_BFWY_M():T_TEE_BFWY_H();
+    case 'waterCross':   return d===1?T_TEE_WCRS_E():d===2?T_TEE_WCRS_M():T_TEE_WCRS_H();
+    case 'cathedral':    return d===1?T_TEE_CATH_E():d===2?T_TEE_CATH_M():T_TEE_CATH_H();
+    default:             return d===1?T_TEE_OPEN_E():d===2?T_TEE_OPEN_M():T_TEE_OPEN_H();
+  }
+}
+function _par3Tmpl(h){
+  const d=h.diff;
+  switch(h.layout){
+    case 'waterCross':   return d===1?T_P3_WCRS_E():d===2?T_P3_WCRS_M():T_P3_WCRS_H();
+    case 'bunkerGreen':  return d===1?T_P3_BGRN_E():d===2?T_P3_BGRN_M():T_P3_BGRN_H();
+    default:             return d===1?T_P3_OPEN_E():d===2?T_P3_OPEN_M():T_P3_OPEN_H();
+  }
+}
+function _appTmpl(h){
+  const d=h.diff;
+  switch(h.layout){
+    case 'doglegs':      return d===1?T_APP_DOG_E(): d===2?T_APP_DOG_M(): T_APP_DOG_H();
+    case 'bunkerFwy':    return d===1?T_APP_BFWY_E():d===2?T_APP_BFWY_M():T_APP_BFWY_H();
+    case 'bunkerGreen':  return d===1?T_APP_BGRN_E():d===2?T_APP_BGRN_M():T_APP_BGRN_H();
+    case 'waterCross':   return d===1?T_APP_WCRS_E():d===2?T_APP_WCRS_M():T_APP_WCRS_H();
+    case 'waterApproach':return d===1?T_APP_WAPR_E():d===2?T_APP_WAPR_M():T_APP_WAPR_H();
+    case 'cathedral':    return d===1?T_APP_CATH_E():d===2?T_APP_CATH_M():T_APP_CATH_H();
+    default:             return d===1?T_APP_OPEN_E():d===2?T_APP_OPEN_M():T_APP_OPEN_H();
+  }
+}
+function _farTmpl(h){
+  const d=h.diff;
+  switch(h.layout){
+    case 'doglegs':
+    case 'cathedral':    return d===1?T_FAR_TGHT_E():d===2?T_FAR_TGHT_M():T_FAR_TGHT_H();
+    case 'bunkerFwy':    return d===1?T_FAR_BFWY_E():d===2?T_FAR_BFWY_M():T_FAR_BFWY_H();
+    case 'waterCross':   return d===1?T_FAR_WCRS_E():d===2?T_FAR_WCRS_M():T_FAR_WCRS_H();
+    default:             return d===1?T_FAR_OPEN_E():d===2?T_FAR_OPEN_M():T_FAR_OPEN_H();
+  }
+}
+function _puttTmpl(h){
+  const bd=h.baseDiff||2, gd=GAME_DIFF||1;
+  const tbl=[[T_PUTT_1E,T_PUTT_1N,T_PUTT_1H],[T_PUTT_2E,T_PUTT_2N,T_PUTT_2H],[T_PUTT_3E,T_PUTT_3N,T_PUTT_3H]];
+  return (tbl[bd-1]||tbl[1])[gd-1]();
+}
+function _chipTmpl(h){ const d=h.diff; return d===1?T_CHIP_E():d===2?T_CHIP_M():T_CHIP_H(); }
+function _sandTmpl(h){
+  const d=h.diff;
+  // Far bunker (>80m) — use approach-style grid so player exits to fwy/rgh, not green
+  if(S.yrdRemain>80) return d===1?T_APP_OPEN_E():d===2?T_APP_OPEN_M():T_APP_OPEN_H();
+  return d===1?T_SAND_E():d===2?T_SAND_M():T_SAND_H();
+}
+
 function buildGrid(){
   // Tutorial override
   if(TUT.active){
-    const tg = tutGetGrid();
+    const tg=tutGetGrid();
     if(tg){
-      S.currentGrid = tg.map(r=>[...r]);
-      document.getElementById('gridTitle').textContent = S.zone==='grn'?'Putting Grid':S.zone==='tee'?'Tee Shot Grid':'Shot Grid';
-      renderGrid(); return;
+      S.currentGrid=tg.map(r=>[...r]);
+      document.getElementById('gridTitle').textContent=S.zone==='grn'?'Putting Grid':S.zone==='tee'?'Tee Shot Grid':'Shot Grid';
+      renderGrid();return;
     }
   }
-  // Versus mode: player 2 uses player 1's base grid (pre-wildcard), then applies own wildcards
-  if(VS.active && VS.currentPlayer === 1){
-    const cached = vsGetCachedGrid();
+  // Versus: player 1 gets base grid, applies own wildcards
+  if(VS.active&&VS.currentPlayer===1){
+    const cached=vsGetCachedGrid();
     if(cached){
-      let tmpl = cached.map(r=>[...r]);
-      if(WCS&&wcEnabled()) tmpl=applyWcGridMods(tmpl);
-      S.currentGrid = tmpl;
-      renderGrid(); return;
+      let tmpl=cached.map(r=>[...r]);
+      if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
+      S.currentGrid=tmpl;renderGrid();return;
     }
   }
-  
+
   const h=HOLES[S.holeIdx];
   const isPar3=h.par===3;
-  const gate=getGate(S.yrdRemain, isPar3);
+  const gate=getGate(S.yrdRemain,isPar3);
   let tmpl;
 
+  const _emit=(title,t)=>{
+    document.getElementById('gridTitle').textContent=title;
+    if(VS.active)vsCacheGrid(t);
+    if(WCS&&wcEnabled())t=applyWcGridMods(t);
+    S.currentGrid=t;renderGrid();
+  };
+
+  // PUTTING
   if(S.zone==='grn'||gate==='green'){
-    tmpl = h.diff===1 ? T_PUTTING_1() : h.diff===2 ? T_PUTTING_2() : T_PUTTING_3();
-    document.getElementById('gridTitle').textContent='Putting Grid';
-    if(VS.active)vsCacheGrid(tmpl);
-    if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;renderGrid();return;
+    return _emit('Putting Grid',_puttTmpl(h));
   }
 
-  if(S.zone==='chip'||(gate==='short'&&S.zone==='chip')||(gate==='nearpin'&&S.zone!=='grn'&&S.zone!=='sand')){
-    tmpl = h.diff===1 ? T_CHIP_NORM_E() : h.diff===2 ? T_CHIP_NORM_M() : T_CHIP_NORM_H();
-    document.getElementById('gridTitle').textContent='Chip Shot Grid';
-    if(VS.active)vsCacheGrid(tmpl);
-    if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;renderGrid();return;
+  // CHIP (no chip cells — chip→chip loop impossible)
+  if(S.zone==='chip'||(gate==='nearpin'&&S.zone!=='grn'&&S.zone!=='sand')){
+    return _emit('Chip Shot Grid',_chipTmpl(h));
   }
 
+  // SAND ESCAPE (max 3 sand cells — sand→sand loop near-impossible)
   if(S.zone==='sand'){
-    tmpl = h.diff===1 ? T_SAND_NORM_E() : h.diff===2 ? T_SAND_NORM_M() : T_SAND_NORM_H();
-    document.getElementById('gridTitle').textContent='Sand Shot Grid';
-    if(VS.active)vsCacheGrid(tmpl);
-    if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;renderGrid();return;
+    return _emit('Sand Shot Grid',_sandTmpl(h));
   }
 
+  // TEE — par 3
   if(S.zone==='tee'&&isPar3){
-    if(h.hasWater) tmpl = h.diff===1 ? T_TEE_P3_H2O_E() : h.diff===2 ? T_TEE_P3_H2O_M() : T_TEE_P3_H2O_H();
-    else tmpl = h.diff===1 ? T_TEE_P3E() : h.diff===2 ? T_TEE_P3M() : T_TEE_P3H();
-    
-    document.getElementById('gridTitle').textContent='Tee Shot Grid';
-    if(VS.active)vsCacheGrid(tmpl);
-    if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;renderGrid();return;
+    return _emit('Tee Shot Grid',_par3Tmpl(h));
   }
 
+  // TEE — par 4/5
   if(S.zone==='tee'){
-    if(h.hasWater) tmpl = h.diff===1 ? T_TEE_H2O_E() : h.diff===2 ? T_TEE_H2O_M() : T_TEE_H2O_H();
-    else tmpl = h.diff===1 ? T_TEE_EASY() : h.diff===2 ? T_TEE_MED() : T_TEE_HARD();
-    
-    document.getElementById('gridTitle').textContent='Tee Shot Grid';
-    if(VS.active)vsCacheGrid(tmpl);
-    if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;renderGrid();return;
+    return _emit('Tee Shot Grid',_teeTmpl(h));
   }
 
+  // FAIRWAY
   if(S.zone==='fwy'){
     if(gate==='short'||gate==='nearpin'){
-      if(h.hasWater) tmpl = h.diff===1 ? T_FWY_MID_H2O_E() : h.diff===2 ? T_FWY_MID_H2O_M() : T_FWY_MID_H2O_H();
-      else tmpl = h.diff===1 ? T_FWY_MID_E() : h.diff===2 ? T_FWY_MID_M() : T_FWY_MID_H();
-      tmpl=tmpl.map(r=>r.map(c=>(c==='fwy'||c==='rgh')?'chip':c));
+      tmpl=_appTmpl(h); // approach templates have no raw fwy cells
     } else if(gate==='mid'){
-      if(h.hasWater) tmpl = h.diff===1 ? T_FWY_MID_H2O_E() : h.diff===2 ? T_FWY_MID_H2O_M() : T_FWY_MID_H2O_H();
-      else tmpl = h.diff===1 ? T_FWY_MID_E() : h.diff===2 ? T_FWY_MID_M() : T_FWY_MID_H();
+      tmpl=_appTmpl(h);
     } else {
-      if(h.hasWater) tmpl = h.diff===1 ? T_FWY_FAR_H2O_E() : h.diff===2 ? T_FWY_FAR_H2O_M() : T_FWY_FAR_H2O_H();
-      else tmpl = h.diff===1 ? T_FWY_FAR_E() : h.diff===2 ? T_FWY_FAR_M() : T_FWY_FAR_H();
+      tmpl=_farTmpl(h);
     }
-    document.getElementById('gridTitle').textContent='Fairway Shot Grid';
-    if(VS.active)vsCacheGrid(tmpl);
-    if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;renderGrid();return;
+    return _emit('Fairway Shot Grid',tmpl);
   }
 
+  // ROUGH
   if(S.zone==='rgh'){
     if(gate==='short'||gate==='nearpin'){
-      tmpl = h.diff===1 ? T_RGH_SHORT_E() : h.diff===2 ? T_RGH_SHORT_M() : T_RGH_SHORT_H();
-      tmpl=tmpl.map(r=>r.map(c=>(c==='fwy'||c==='rgh')?'chip':c));
+      // anti-loop: RGH_SHORT has no chip cells → breaks chip→rgh-short→chip
+      tmpl=h.diff===1?T_RGH_SHORT_E():h.diff===2?T_RGH_SHORT_M():T_RGH_SHORT_H();
     } else if(gate==='far'){
-      tmpl = h.diff===1 ? T_RGH_FAR_E() : h.diff===2 ? T_RGH_FAR_M() : T_RGH_FAR_H();
+      tmpl=h.diff===1?T_RGH_FAR_E():h.diff===2?T_RGH_FAR_M():T_RGH_FAR_H();
     } else {
-      tmpl = h.diff===1 ? T_RGH_MID_E() : h.diff===2 ? T_RGH_MID_M() : T_RGH_MID_H();
+      tmpl=h.diff===1?T_RGH_MID_E():h.diff===2?T_RGH_MID_M():T_RGH_MID_H();
     }
-    document.getElementById('gridTitle').textContent='Rough Shot Grid';
-    if(VS.active)vsCacheGrid(tmpl);
-    if(WCS&&wcEnabled())tmpl=applyWcGridMods(tmpl);
-    S.currentGrid=tmpl;renderGrid();return;
+    return _emit('Rough Shot Grid',tmpl);
   }
 
-  tmpl=T_FWY_FAR_M();
-  if(VS.active) vsCacheGrid(tmpl);
+  // Fallback
+  tmpl=T_FAR_OPEN_M();
+  if(VS.active)vsCacheGrid(tmpl);
   S.currentGrid=tmpl;renderGrid();
 }
 
@@ -2260,7 +2374,7 @@ function advanceYrd(zk){
   }
   const gained=randYds(zk);
   S.yrdRemain=Math.max(0,S.yrdRemain-gained);
-  if((zk==='fwy'||zk==='rgh')&&S.yrdRemain<15)S.yrdRemain=15;
+  if((zk==='fwy'||zk==='rgh')&&S.yrdRemain<5)S.yrdRemain=5;
 }
 
 // ═══════════════════════════════════════
@@ -2514,12 +2628,13 @@ function scrollToGrid() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
     }
+    const gridTitle = document.getElementById('gridTitle');
     const gridSec = document.querySelector('.grid-section');
     const header = document.querySelector('header');
-    if (gridSec) {
+    const target = gridTitle || gridSec;
+    if (target) {
       const headerOffset = header ? header.offsetHeight : 0;
-      // Increased the negative buffer from -10 to -32 to leave breathing room above the grid
-      const y = gridSec.getBoundingClientRect().top + window.scrollY - headerOffset - 32;
+      const y = target.getBoundingClientRect().top + window.scrollY - headerOffset - 8;
       window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
     }
     _scrollGridTimeout = setTimeout(() => { window._disableTutScroll = false; }, 500); // Re-enable tutorial scroll
@@ -4481,6 +4596,7 @@ function applyWildcardEffect(wc){
         addLog('🃏', `Skipped to Chip (${wc.icon} ${wc.name})`, 'chip', 'WC', false, null, null, null, prevZone, prevYrdRemain);
         updateZonePill();updateYrd();
         buildGrid();
+        S._preserveGrid=true; // prevent doNextShot from rebuilding the chip grid
         toastMsg = `⚡ Shortcut activated!`;
       }
       break;
