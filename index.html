@@ -3355,7 +3355,7 @@ function showRoundEnd(){
     const vsToggle = document.getElementById('vsToggleRow');
     if (vsToggle) vsToggle.style.display = 'none';
 
-    statsContainer = document.getElementById('hcVsStats');
+    let statsContainer = document.getElementById('hcVsStats');
     if (!statsContainer) {
         statsContainer = document.createElement('div');
         statsContainer.id = 'hcVsStats';
@@ -6699,27 +6699,6 @@ function vsShowFinal(){
     if (replayTitle) replayTitle.style.display = 'none';
     const logList = document.getElementById('hcLogList');
     if (logList) logList.style.display = 'none';
-
-    let statsContainer = document.getElementById('hcVsStats');
-    if (!statsContainer) {
-        statsContainer = document.createElement('div');
-        statsContainer.id = 'hcVsStats';
-        statsContainer.style.cssText = 'flex-shrink:0; margin-bottom:16px; max-height:160px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none;';
-        document.getElementById('hcLogList').parentNode.insertBefore(statsContainer, document.getElementById('hcLogList'));
-    }
-    statsContainer.style.display = 'block';
-
-    let statsHtml = `<div class="sec-title" style="margin-bottom:12px;">STATISTICS</div>`;
-    stats.forEach(s => {
-        statsHtml += `
-            <div style="display:flex; justify-content:space-between; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,.05); font-family:'Sen',sans-serif; font-size:11px;">
-                <div style="flex:1; text-align:center; color:var(--text); font-weight:bold;">${s.p1}</div>
-                <div style="flex:2; text-align:center; color:var(--muted);">${s.label}</div>
-                <div style="flex:1; text-align:center; color:var(--text); font-weight:bold;">${s.p2}</div>
-            </div>
-        `;
-    });
-    statsContainer.innerHTML = statsHtml;
 
     const scoreboardTitle = Array.from(document.querySelectorAll('#hcScreen .sec-title')).find(t => t.textContent.trim() === 'SCORECARD');
     if (scoreboardTitle) scoreboardTitle.style.display = 'none';
