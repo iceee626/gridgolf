@@ -3061,7 +3061,7 @@ function completeHole(){
   curSc[S.holeIdx] = score;
   curHist[S.holeIdx] = {log:[...S.log], strokes:score, par:h.par, name:h.name, yards:h.yards, diff:h.diff, wcsUsed: [...(S._wcsUsedThisHole||[])]};
 
-  // --- RESTORE SP VIEW (In case VS modified it) ---
+ // --- RESTORE SP VIEW (In case VS modified it) ---
   ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
       const el = document.getElementById(id);
       if(el) el.style.display = '';
@@ -3069,8 +3069,7 @@ function completeHole(){
   const vsContainer = document.getElementById('hcVsContainer');
   if(vsContainer) vsContainer.style.display = 'none';
 
-  const replayTitle = document.querySelector('#hcScreen .sec-title');
-  if(replayTitle) replayTitle.style.display = 'flex';
+  document.querySelectorAll('#hcScreen .sec-title').forEach(t => t.style.display = 'flex');
   
   const logList = document.getElementById('hcLogList');
   if(logList) logList.style.display = 'flex'; // Restore log visibility
@@ -3229,6 +3228,7 @@ function completeHole(){
   } else {
       btn.textContent = `HOLE ${S.holeIdx + 2} →`;
   }
+  btn.onclick = nextHole;
 
   if(S._skipCelebration){
     S._skipCelebration=false;
@@ -6378,8 +6378,8 @@ function vsShowHoleComparison(){
           vsToggle = document.createElement('div');
           vsToggle.id = 'vsToggleRow';
           vsToggle.style.cssText = "display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-shrink:0;";
-          document.getElementById('hcLogList').parentNode.insertBefore(vsToggle, document.getElementById('hcLogList'));
       }
+      document.getElementById('hcLogList').parentNode.insertBefore(vsToggle, document.getElementById('hcLogList'));
       vsToggle.style.display = 'flex';
       vsToggle.innerHTML = `
           <div style="font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" id="vsToggleTitle">SHOT REPLAY</div>
@@ -6643,16 +6643,23 @@ function vsShowFinal(){
     });
     statsContainer.innerHTML = statsHtml;
 
+    const scoreboardTitle = Array.from(document.querySelectorAll('#hcScreen .sec-title')).find(t => t.textContent.trim() === 'SCOREBOARD');
+    if (scoreboardTitle) scoreboardTitle.style.display = 'none';
+
     let vsToggle = document.getElementById('vsToggleRow');
     if (!vsToggle) {
         vsToggle = document.createElement('div');
         vsToggle.id = 'vsToggleRow';
         vsToggle.style.cssText = "display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-shrink:0;";
+    }
+    if (scoreboardTitle) {
+        scoreboardTitle.parentNode.insertBefore(vsToggle, scoreboardTitle.nextSibling);
+    } else {
         document.getElementById('hcLogList').parentNode.insertBefore(vsToggle, statsContainer.nextSibling);
     }
     vsToggle.style.display = 'flex';
     vsToggle.innerHTML = `
-        <div style="font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" id="vsToggleTitle">SCORECARD</div>
+        <div style="font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" id="vsToggleTitle">SCOREBOARD</div>
         <div style="flex:1; height:1px; background:var(--border);"></div>
         <div style="display:flex; gap:6px;">
             <button id="vsPill0" onclick="renderVsReplayAndScoreboard(0)" style="background:var(--c-fwy); color:#fff; border:1px solid var(--c-fwyl); border-radius:14px; padding:6px 12px; font-family:'Sen',sans-serif; font-size:10px; font-weight:bold; cursor:pointer; transition:all 0.2s;">${p1.name.substring(0, 8)}</button>
