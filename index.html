@@ -6310,12 +6310,10 @@ function vsShowHoleComparison(){
   }
 
   if (VS.format === 'stroke') {
-      // --- Use hcScreen for Stroke Play VS ---
       const hcScreen = document.getElementById('hcScreen');
       document.getElementById('hcHoleTitle').textContent = `HOLE ${S.holeIdx + 1} COMPLETE`;
       document.getElementById('hcRndBadge').style.display = 'none';
 
-      // 1. Calculate leads and colors
       const isTie = td1 === td2;
       const p1Leading = td1 < td2;
       const p2Leading = td2 < td1;
@@ -6332,7 +6330,6 @@ function vsShowHoleComparison(){
           leadText = `${p2.name} IS LEADING BY ${diff} STROKE${diff !== 1 ? 'S' : ''}!`;
       }
 
-      // 2. Build the HTML panels
       const p1Html = `
         <div style="font-size:36px;margin-bottom:8px;">${p1.icon}</div>
         <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p1Color};white-space:nowrap;">${p1.name}</div>
@@ -6347,13 +6344,11 @@ function vsShowHoleComparison(){
       `;
 
       const hcCard = document.querySelector('.hc-card');
-      // Safely hide standard Single Player elements
       ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
           const el = document.getElementById(id);
           if(el) el.style.display = 'none';
       });
 
-      // Create or update VS container inside the card
       let vsContainer = document.getElementById('hcVsContainer');
       if (!vsContainer) {
           vsContainer = document.createElement('div');
@@ -6371,15 +6366,13 @@ function vsShowHoleComparison(){
         <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--text);margin-top:16px;text-align:center;letter-spacing:1px;background:rgba(255,255,255,.05);padding:6px;border-radius:8px;">${leadText}</div>
       `;
 
-      // Restore standard log display (in case coming from Final Results)
       const logList = document.getElementById('hcLogList');
       if (logList) logList.style.display = 'flex';
       const statsContainer = document.getElementById('hcVsStats');
       if (statsContainer) statsContainer.style.display = 'none';
 
-      // Add toggle pills above the Shot Log
       const replayTitle = document.querySelector('#hcScreen .sec-title');
-      if(replayTitle) replayTitle.style.display = 'none'; // hide standard 'SHOT REPLAY' title
+      if(replayTitle) replayTitle.style.display = 'none';
       
       let vsToggle = document.getElementById('vsToggleRow');
       if (!vsToggle) {
@@ -6398,7 +6391,6 @@ function vsShowHoleComparison(){
           </div>
       `;
 
-      // Default render P1's log and scorecard
       renderVsReplayAndScoreboard(0);
 
       const btn = document.getElementById('hcBtn');
@@ -6418,9 +6410,7 @@ function vsShowHoleComparison(){
       }
 
       hcScreen.classList.add('show');
-
   } else {
-      // --- Existing Match Play Logic ---
       let p1Leading = VS.matchScore[0] > VS.matchScore[1];
       let p2Leading = VS.matchScore[1] > VS.matchScore[0];
       
@@ -6547,7 +6537,6 @@ function vsShowFinal(){
     document.getElementById('overlay').classList.add('show');
     
   } else {
-    // --- STROKE PLAY NEW FINAL LAYOUT USING hcScreen ---
     const hcScreen = document.getElementById('hcScreen');
     const isTie = t1 === t2;
     const p1Won = t1 < t2;
@@ -6595,7 +6584,6 @@ function vsShowFinal(){
       </div>
     `;
 
-    // Process Statistics
     const stats = [
         { label: 'Total Strokes', p1: 0, p2: 0 },
         { label: 'Hole in One', p1: 0, p2: 0 },
@@ -6629,13 +6617,11 @@ function vsShowFinal(){
         });
     }
 
-    // Hide Shot Replay list
     const replayTitle = document.querySelector('#hcScreen .sec-title');
     if (replayTitle) replayTitle.style.display = 'none';
     const logList = document.getElementById('hcLogList');
     if (logList) logList.style.display = 'none';
 
-    // Create / Setup Statistics Panel
     let statsContainer = document.getElementById('hcVsStats');
     if (!statsContainer) {
         statsContainer = document.createElement('div');
@@ -6657,7 +6643,6 @@ function vsShowFinal(){
     });
     statsContainer.innerHTML = statsHtml;
 
-    // Setup toggle row for the Scoreboard below the stats
     let vsToggle = document.getElementById('vsToggleRow');
     if (!vsToggle) {
         vsToggle = document.createElement('div');
@@ -6675,7 +6660,7 @@ function vsShowFinal(){
         </div>
     `;
 
-    renderVsReplayAndScoreboard(0); // Renders the scoreboard for P1
+    renderVsReplayAndScoreboard(0);
 
     const btn = document.getElementById('hcBtn');
     btn.textContent = 'BACK TO MENU →';
