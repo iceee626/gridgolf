@@ -1765,8 +1765,8 @@ const T_RGH_SHORT_H = ()=>cells(['grn',28],['sand',8]);
 
 // ── CHIP SHOT — green + hole only; NO chip/rgh/fwy/snd ───────────────────
 const T_CHIP_E      = ()=>cells(['grn',33],['hole',3]);
-const T_CHIP_M      = ()=>cells(['grn',34],['hole',2]);
-const T_CHIP_H      = ()=>cells(['grn',35],['hole',1]);
+const T_CHIP_M      = ()=>cells(['grn',32],['hole',2],['sand',2]);
+const T_CHIP_H      = ()=>cells(['grn',32],['hole',1],['sand',3]);
 
 // ── SAND ESCAPE (near green ≤80m) — green+chip+hole; NO rgh/h2o/ob ────────────────
 const T_SAND_E      = ()=>cells(['grn',32],['chip',3],['hole',1]);
@@ -1782,8 +1782,8 @@ const T_SAND_FAR_H  = ()=>cells(['fwy',31],['rgh',4],['sand',1]);
 // Normal: 3-putts only on hard holes (≤3 cells)
 // Hard: 3-putts available, proportional to hole difficulty
 const T_PUTT_1E = ()=>cells(['p1',34],['p2',2]);           // ★ hole, easy game
-const T_PUTT_1N = ()=>cells(['p1',32],['p2',4]);           // ★ hole, normal
-const T_PUTT_1H = ()=>cells(['p1',28],['p2',7],['p3',1]);// ★ hole, hard
+const T_PUTT_1N = ()=>cells(['p1',30],['p2',6]);           // ★ hole, normal
+const T_PUTT_1H = ()=>cells(['p1',26],['p2',9],['p3',1]);// ★ hole, hard
 const T_PUTT_2E = ()=>cells(['p1',30],['p2',6]);           // ★★ hole, easy
 const T_PUTT_2N = ()=>cells(['p1',26],['p2',8],['p3',2]);// ★★ hole, normal 
 const T_PUTT_2H = ()=>cells(['p1',20],['p2',13],['p3',3]);// ★★ hole, hard
@@ -2296,7 +2296,7 @@ function buildGrid(){
   }
 
   // CHIP (no chip cells — chip→chip loop impossible)
-  if(S.zone==='chip'||(gate==='nearpin'&&S.zone!=='grn'&&S.zone!=='sand') || ((S.zone==='fwy'||S.zone==='rgh') && S.yrdRemain <= 25)){
+  if(S.zone==='chip'||(gate==='nearpin'&&S.zone!=='grn'&&S.zone!=='sand') || ((S.zone==='fwy'||S.zone==='rgh') && S.yrdRemain <= 35)){
     return _emit('Chip Shot Grid',_chipTmpl(h));
   }
 
@@ -2454,12 +2454,16 @@ function advanceYrd(zk){
   // 4. Apply distance penalties for landing in hazards
   if (zk === 'rgh' || zk === 'sand' || zk === 'chip') {
     let penalty = 1.0;
+    
+    // Using a +/- 5% variance around your target percentages to keep it organic
+    const variance = (Math.random() * 0.10) - 0.05; 
+    
     if (GAME_DIFF === 1) {
-      penalty = 0.85 + Math.random() * 0.10; // ~10% distance loss on Easy
+      penalty = 0.85 + variance; // ~15% distance loss on Easy
     } else if (GAME_DIFF === 2) {
-      penalty = 0.70 + Math.random() * 0.10; // ~25% distance loss on Normal
+      penalty = 0.70 + variance; // ~30% distance loss on Normal
     } else {
-      penalty = 0.55 + Math.random() * 0.10; // ~40% distance loss on Hard
+      penalty = 0.55 + variance; // ~45% distance loss on Hard
     }
     dist = Math.round(dist * penalty);
   }
@@ -4458,9 +4462,29 @@ const WILDCARDS=[
   {id:'hole_in_one',     icon:'🌟', name:'Hole In One',       desc:'Next Par 3 tee shot: 80% chance of hole-in-one.'},
 ];
 
+function getActiveWcIds() {
+  const ids = [];
+  if(WCS.active) ids.push(WCS.active);
+  if(WCS.goldenPutterActive) ids.push('golden_putter');
+  if(WCS.eagleEyeActive) ids.push('eagle_eye');
+  if(WCS.sandWedgeProActive) ids.push('sand_wedge_pro');
+  if(WCS.birdieBoostActive) ids.push('birdie_boost');
+  if(WCS.holeWallActive) ids.push('hole_wall');
+  if(WCS.hioActive) ids.push('hole_in_one');
+  if(WCS.luckyBounceActive) ids.push('lucky_bounce');
+  if(WCS.ironWillActive) ids.push('iron_will');
+  if(WCS.ferrettActive) ids.push('the_ferrett');
+  if(WCS.greenLightShots > 0) ids.push('green_light');
+  if(WCS.sandCastleActive) ids.push('sand_castle');
+  if(WCS.shortcutActive) ids.push('shortcut');
+  return ids;
+}
+
 function randWildcard(){
   const equippedIds=WCS.equipped.map(w=>w.id);
-  const available=WILDCARDS.filter(w=>!equippedIds.includes(w.id));
+  const activeIds=getActiveWcIds();
+  const excluded=[...equippedIds, ...activeIds]; // Exclude both equipped AND active
+  const available=WILDCARDS.filter(w=>!excluded.includes(w.id));
   const pool=available.length>0?available:WILDCARDS;
   const w=pool[Math.floor(Math.random()*pool.length)];
   return Object.assign({},w);
@@ -4754,6 +4778,20 @@ function applyWildcardEffect(wc){
   let applied = true;
   let toastMsg = `${wc.icon} ${wc.name} applied!`;
   const nextVisible = document.getElementById('nextShotBtn')?.style.display === 'block';
+
+  // Prevent overlapping Eagle Eye and Hole In The Wall, but allow Hole In One to override
+  if ((wc.id === 'eagle_eye' || wc.id === 'hole_wall') && (WCS.eagleEyeActive || WCS.holeWallActive)) {
+      toastMsg = `⚠️ You already have a Par 3 wildcard active!`;
+      applied = false;
+  } else if (wc.id === 'hole_in_one' && WCS.hioActive) {
+      toastMsg = `⚠️ Hole in One is already active!`;
+      applied = false;
+  }
+
+  if (!applied) {
+      showWcToast(toastMsg);
+      return false; // Exit without consuming the card
+  }
 
   switch(wc.id){
     case 'shortcut':
