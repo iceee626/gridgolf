@@ -452,7 +452,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
   align-items: center;
   flex: 1;
   justify-content: center;
-  padding: 0 4px;
+  padding: 4px;
   overflow-x: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -2122,35 +2122,40 @@ function updateTVBanner(){
   totalEl.textContent=totalDiff===0?'E':totalDiff>0?`+${totalDiff}`:`${totalDiff}`;
   totalEl.style.color=totalDiff<0?'#1a1a1a':totalDiff>0?'#5a1a1a':'#1a1a1a';
 
-  const shotsEl=document.getElementById('tvShots');
-  shotsEl.innerHTML='';
   const onGreen=S.zone==='grn';
-  
   const puttScore=h.par-S.strokes-1;
-  let puttClass='';
-  if(onGreen&&!S.holeDone){
-    if(puttScore>=2)       puttClass='putt-eagle';
-    else if(puttScore===1) puttClass='putt-birdie';
-    else if(puttScore===0) puttClass='putt-par';
-    else if(puttScore===-1)puttClass='putt-bogey';
-    else                   puttClass='putt-double';
-  }
 
-  const currentShot=S.holeDone?(S.shotNum-1):S.shotNum;
-  const totalSlots=Math.max(h.par, currentShot);
-  for(let i=1;i<=totalSlots;i++){
-    const sn=document.createElement('div');
-    if(i<currentShot){
-      sn.className='tv-sn past';
-    } else if(i===currentShot){
-      sn.className=`tv-sn current${onGreen&&!S.holeDone?' '+puttClass:''}`;
-    } else {
-      sn.className='tv-sn future';
+  // Freeze the shot tracker rendering when the hole is done to prevent glitches
+  if (!S.holeDone) {
+    const shotsEl=document.getElementById('tvShots');
+    shotsEl.innerHTML='';
+    
+    let puttClass='';
+    if(onGreen){
+      if(puttScore>=2)       puttClass='putt-eagle';
+      else if(puttScore===1) puttClass='putt-birdie';
+      else if(puttScore===0) puttClass='putt-par';
+      else if(puttScore===-1)puttClass='putt-bogey';
+      else                   puttClass='putt-double';
     }
-    sn.textContent=i;
-    shotsEl.appendChild(sn);
+
+    const currentShot=S.shotNum;
+    const totalSlots=Math.max(h.par, currentShot);
+    for(let i=1;i<=totalSlots;i++){
+      const sn=document.createElement('div');
+      if(i<currentShot){
+        sn.className='tv-sn past';
+      } else if(i===currentShot){
+        sn.className=`tv-sn current${onGreen?' '+puttClass:''}`;
+      } else {
+        sn.className='tv-sn future';
+      }
+      sn.textContent=i;
+      shotsEl.appendChild(sn);
+    }
   }
 
+  // Freeze the bottom text strip when the hole is done to prevent layout jumps
   const row2=document.getElementById('tvRow2');
   const puttStatus=document.getElementById('tvPuttStatus');
   if(onGreen){
