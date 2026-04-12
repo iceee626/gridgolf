@@ -2280,7 +2280,7 @@ function buildGrid(){
   }
 
   // CHIP (no chip cells — chip→chip loop impossible)
-  if(S.zone==='chip'||(gate==='nearpin'&&S.zone!=='grn'&&S.zone!=='sand')){
+  if(S.zone==='chip'||(gate==='nearpin'&&S.zone!=='grn'&&S.zone!=='sand') || ((S.zone==='fwy'||S.zone==='rgh') && S.yrdRemain <= 25)){
     return _emit('Chip Shot Grid',_chipTmpl(h));
   }
 
@@ -2743,14 +2743,14 @@ function _showTailwindDieChoice(){
   hidePostShotWcBtn();
   const wrap=document.createElement('div');
   wrap.id='postShotWcBtn';
-  wrap.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7b2f9e,#4a1a6e);border-radius:12px;padding:12px 16px;z-index:80;box-shadow:0 4px 16px rgba(123,47,158,.5);display:flex;flex-direction:column;align-items:center;gap:8px;min-width:240px;';
+  wrap.style.cssText='position:fixed;bottom:130px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7b2f9e,#4a1a6e);border-radius:12px;padding:12px 16px;z-index:80;box-shadow:0 4px 16px rgba(123,47,158,.5);display:flex;flex-direction:column;align-items:center;gap:8px;min-width:240px;';
   wrap.innerHTML='<div style="font-family:Bebas Neue,cursive;font-size:14px;letter-spacing:2px;color:#f0c040;margin-bottom:4px;">💨 RE-ROLL WHICH DIE?</div>';
   const btns=document.createElement('div');
-  btns.style.cssText='display:flex;gap:8px;';
+  btns.style.cssText='display:flex;gap:8px;width:100%;';
   ['ROW','COL'].forEach((label,idx)=>{
     const b=document.createElement('button');
-    b.style.cssText='background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:8px 20px;font-family:Bebas Neue,cursive;font-size:14px;letter-spacing:1px;cursor:pointer;flex:1;';
-    b.textContent=label+' DIE';
+    b.style.cssText='background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:8px 0;font-family:Bebas Neue,cursive;font-size:14px;letter-spacing:1px;cursor:pointer;flex:1;line-height:1.2;';
+    b.innerHTML=`${label}<br>DIE`;
     b.onclick=()=>{
       hidePostShotWcBtn();
       const newVal=Math.ceil(Math.random()*6);
@@ -3133,6 +3133,9 @@ function completeHole(){
   t3.style.background='rgba(0,0,0,.2)';
   t3.style.color = runDiff < 0 ? 'var(--gold)' : runDiff > 0 ? '#e05252' : 'var(--c-fwyl)';
   t3.style.fontWeight = 'bold';
+  t3.style.display = 'flex';
+  t3.style.alignItems = 'center';
+  t3.style.justifyContent = 'center';
   scYou.appendChild(t3);
 
   const colW = activeHoles.length <= 9 ? '1fr' : '34px';
@@ -3382,7 +3385,9 @@ function openSummary(viewRound = S.currentRound){
     
     const d=hist.strokes-hist.par;
     let scoreColor='var(--text)'; let resultLabel='';
-    if(d<=-2){scoreColor='var(--gold)';resultLabel='Eagle';}
+    
+    if(h.par===3 && hist.strokes===1){scoreColor='var(--gold)';resultLabel='Hole in One!';}
+    else if(d<=-2){scoreColor='var(--gold)';resultLabel='Eagle';}
     else if(d===-1){scoreColor='#52c87a';resultLabel='Birdie';}
     else if(d===0){scoreColor='var(--text)';resultLabel='Par';}
     else if(d===1){scoreColor='#ff8c5a';resultLabel='Bogey';}
