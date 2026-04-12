@@ -3071,6 +3071,13 @@ function completeHole(){
 
   const replayTitle = document.querySelector('#hcScreen .sec-title');
   if(replayTitle) replayTitle.style.display = 'flex';
+  
+  const logList = document.getElementById('hcLogList');
+  if(logList) logList.style.display = 'flex'; // Restore log visibility
+
+  const statsContainer = document.getElementById('hcVsStats');
+  if(statsContainer) statsContainer.style.display = 'none'; // Hide VS Stats
+
   const vsToggle = document.getElementById('vsToggleRow');
   if(vsToggle) vsToggle.style.display = 'none';
   // ------------------------------------------------
@@ -6308,17 +6315,33 @@ function vsShowHoleComparison(){
       document.getElementById('hcHoleTitle').textContent = `HOLE ${S.holeIdx + 1} COMPLETE`;
       document.getElementById('hcRndBadge').style.display = 'none';
 
+      // 1. Calculate leads and colors
+      const isTie = td1 === td2;
+      const p1Leading = td1 < td2;
+      const p2Leading = td2 < td1;
+      const p1Color = p1Leading ? 'var(--gold)' : (isTie ? 'var(--text)' : 'var(--muted)');
+      const p2Color = p2Leading ? 'var(--gold)' : (isTie ? 'var(--text)' : 'var(--muted)');
       const getColor = (d) => d < 0 ? 'var(--gold)' : d === 0 ? 'var(--c-fwyl)' : '#e05252';
 
+      let leadText = 'TIED!';
+      if (p1Leading) {
+          const diff = td2 - td1;
+          leadText = `${p1.name} IS LEADING BY ${diff} STROKE${diff !== 1 ? 'S' : ''}!`;
+      } else if (p2Leading) {
+          const diff = td1 - td2;
+          leadText = `${p2.name} IS LEADING BY ${diff} STROKE${diff !== 1 ? 'S' : ''}!`;
+      }
+
+      // 2. Build the HTML panels
       const p1Html = `
         <div style="font-size:36px;margin-bottom:8px;">${p1.icon}</div>
-        <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:var(--text);white-space:nowrap;">${p1.name}</div>
+        <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p1Color};white-space:nowrap;">${p1.name}</div>
         <div style="display:inline-block;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${getColor(td1)};">TOTAL: ${fmtD(td1)}</div>
         <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">H: ${s1} strokes (${fmtD(d1)})</div>
       `;
       const p2Html = `
         <div style="font-size:36px;margin-bottom:8px;">${p2.icon}</div>
-        <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:var(--text);white-space:nowrap;">${p2.name}</div>
+        <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p2Color};white-space:nowrap;">${p2.name}</div>
         <div style="display:inline-block;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${getColor(td2)};">TOTAL: ${fmtD(td2)}</div>
         <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">H: ${s2} strokes (${fmtD(d2)})</div>
       `;
@@ -6345,7 +6368,14 @@ function vsShowHoleComparison(){
             <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--border);">VS</div>
             <div style="flex:1;text-align:center;">${p2Html}</div>
         </div>
+        <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--text);margin-top:16px;text-align:center;letter-spacing:1px;background:rgba(255,255,255,.05);padding:6px;border-radius:8px;">${leadText}</div>
       `;
+
+      // Restore standard log display (in case coming from Final Results)
+      const logList = document.getElementById('hcLogList');
+      if (logList) logList.style.display = 'flex';
+      const statsContainer = document.getElementById('hcVsStats');
+      if (statsContainer) statsContainer.style.display = 'none';
 
       // Add toggle pills above the Shot Log
       const replayTitle = document.querySelector('#hcScreen .sec-title');
@@ -6356,12 +6386,11 @@ function vsShowHoleComparison(){
           vsToggle = document.createElement('div');
           vsToggle.id = 'vsToggleRow';
           vsToggle.style.cssText = "display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-shrink:0;";
-          // Insert it right before the log list
           document.getElementById('hcLogList').parentNode.insertBefore(vsToggle, document.getElementById('hcLogList'));
       }
       vsToggle.style.display = 'flex';
       vsToggle.innerHTML = `
-          <div style="font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;">SHOT REPLAY</div>
+          <div style="font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" id="vsToggleTitle">SHOT REPLAY</div>
           <div style="flex:1; height:1px; background:var(--border);"></div>
           <div style="display:flex; gap:6px;">
               <button id="vsPill0" onclick="renderVsReplayAndScoreboard(0)" style="background:var(--c-fwy); color:#fff; border:1px solid var(--c-fwyl); border-radius:14px; padding:6px 12px; font-family:'Sen',sans-serif; font-size:10px; font-weight:bold; cursor:pointer; transition:all 0.2s;">${p1.name.substring(0, 8)}</button>
@@ -6485,49 +6514,180 @@ function vsShowFinal(){
   if(VS.format === 'match'){
     winner = VS.matchScore[0]>VS.matchScore[1]?p1.name:VS.matchScore[1]>VS.matchScore[0]?p2.name:'TIE';
     winnerIcon = VS.matchScore[0]>VS.matchScore[1]?p1.icon:VS.matchScore[1]>VS.matchScore[0]?p2.icon:'🤝';
-  } else {
-    winner = t1<t2?p1.name:t2<t1?p2.name:'TIE';
-    winnerIcon = t1<t2?p1.icon:t2<t1?p2.icon:'🤝';
-  }
-  
-  document.getElementById('ovEmoji').textContent=winnerIcon;
-  document.getElementById('ovEmoji').style.display='block';
-  document.getElementById('ovTitle').textContent=winner==='TIE'?'IT\'S A TIE!':winner+' WINS!';
-  
-  let p1Html = '';
-  let p2Html = '';
-  
-  if(VS.format === 'match'){
+    
+    document.getElementById('ovEmoji').textContent=winnerIcon;
+    document.getElementById('ovEmoji').style.display='block';
+    document.getElementById('ovTitle').textContent=winner==='TIE'?'IT\'S A TIE!':winner+' WINS!';
+    
     const p1Color = VS.matchScore[0] > VS.matchScore[1] ? 'var(--gold)' : 'var(--text)';
     const p2Color = VS.matchScore[1] > VS.matchScore[0] ? 'var(--gold)' : 'var(--text)';
-    p1Html = `<div style="font-size:28px;">${p1.icon}</div><div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;">${p1.name}</div><div style="font-family:'Bebas Neue',cursive;font-size:42px;color:${p1Color};">${VS.matchScore[0]}</div><div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);">${t1} strokes</div><div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);">TOTAL: ${fmtD(d1)}</div>`;
-    p2Html = `<div style="font-size:28px;">${p2.icon}</div><div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;">${p2.name}</div><div style="font-family:'Bebas Neue',cursive;font-size:42px;color:${p2Color};">${VS.matchScore[1]}</div><div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);">${t2} strokes</div><div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);">TOTAL: ${fmtD(d2)}</div>`;
+    const p1Html = `<div style="font-size:28px;">${p1.icon}</div><div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;">${p1.name}</div><div style="font-family:'Bebas Neue',cursive;font-size:42px;color:${p1Color};">${VS.matchScore[0]}</div><div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);">${t1} strokes</div><div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);">TOTAL: ${fmtD(d1)}</div>`;
+    const p2Html = `<div style="font-size:28px;">${p2.icon}</div><div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;">${p2.name}</div><div style="font-family:'Bebas Neue',cursive;font-size:42px;color:${p2Color};">${VS.matchScore[1]}</div><div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);">${t2} strokes</div><div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);">TOTAL: ${fmtD(d2)}</div>`;
+    
+    document.getElementById('ovNameRow').innerHTML = `
+      <div style="display:flex;justify-content:space-around;width:100%;margin:12px 0;">
+        <div style="text-align:center;">${p1Html}</div>
+        <div style="display:flex;align-items:center;font-family:'Bebas Neue',cursive;font-size:24px;color:var(--muted);">VS</div>
+        <div style="text-align:center;">${p2Html}</div>
+      </div>`;
+    document.getElementById('ovNameRow').style.fontSize='';
+    document.getElementById('ovStatsRow').textContent=`Par ${par}`;
+    
+    const ovBtn=document.getElementById('ovBtn');
+    ovBtn.textContent='BACK TO MENU';
+    ovBtn.style.display='block';
+    ovBtn.onclick=()=>{
+      VS.active=false;
+      clearSavedGame();
+      document.getElementById('overlay').classList.remove('show');
+      returnToMenu();
+    };
+    document.getElementById('ovSummaryBtn').style.display='none';
+    document.getElementById('ovPlayAgainBtn').style.display='none';
+    document.getElementById('overlay').classList.add('show');
+    
   } else {
-    p1Html = `<div style="font-size:28px;">${p1.icon}</div><div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;">${p1.name}</div><div style="font-family:'Bebas Neue',cursive;font-size:36px;color:${d1<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(d1)}</div><div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);">${t1} strokes</div>`;
-    p2Html = `<div style="font-size:28px;">${p2.icon}</div><div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;">${p2.name}</div><div style="font-family:'Bebas Neue',cursive;font-size:36px;color:${d2<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(d2)}</div><div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);">${t2} strokes</div>`;
+    // --- STROKE PLAY NEW FINAL LAYOUT USING hcScreen ---
+    const hcScreen = document.getElementById('hcScreen');
+    const isTie = t1 === t2;
+    const p1Won = t1 < t2;
+    const p2Won = t2 < t1;
+    const winnerText = isTie ? "IT'S A TIE!" : (p1Won ? `${p1.name} WINS!` : `${p2.name} WINS!`);
+    
+    document.getElementById('hcHoleTitle').textContent = 'FINAL RESULTS';
+    document.getElementById('hcRndBadge').style.display = 'none';
+
+    const p1Color = p1Won ? 'var(--gold)' : (isTie ? 'var(--text)' : 'var(--muted)');
+    const p2Color = p2Won ? 'var(--gold)' : (isTie ? 'var(--text)' : 'var(--muted)');
+    const getColor = (d) => d < 0 ? 'var(--gold)' : d === 0 ? 'var(--c-fwyl)' : '#e05252';
+
+    const p1Html = `
+      <div style="font-size:36px;margin-bottom:8px;">${p1.icon}</div>
+      <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p1Color};white-space:nowrap;">${p1.name}</div>
+      <div style="display:inline-block;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${getColor(d1)};">TOTAL: ${fmtD(d1)}</div>
+      <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">${t1} strokes</div>
+    `;
+    const p2Html = `
+      <div style="font-size:36px;margin-bottom:8px;">${p2.icon}</div>
+      <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p2Color};white-space:nowrap;">${p2.name}</div>
+      <div style="display:inline-block;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${getColor(d2)};">TOTAL: ${fmtD(d2)}</div>
+      <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">${t2} strokes</div>
+    `;
+
+    ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.style.display = 'none';
+    });
+
+    let vsContainer = document.getElementById('hcVsContainer');
+    if (!vsContainer) {
+        vsContainer = document.createElement('div');
+        vsContainer.id = 'hcVsContainer';
+        document.querySelector('.hc-card').appendChild(vsContainer);
+    }
+    vsContainer.style.display = 'block';
+    vsContainer.innerHTML = `
+      <div style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--gold);letter-spacing:3px;margin-bottom:24px;">${winnerText}</div>
+      <div style="display:flex;justify-content:space-around;align-items:center;">
+          <div style="flex:1;text-align:center;">${p1Html}</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--border);padding-bottom:20px;">VS</div>
+          <div style="flex:1;text-align:center;">${p2Html}</div>
+      </div>
+    `;
+
+    // Process Statistics
+    const stats = [
+        { label: 'Total Strokes', p1: 0, p2: 0 },
+        { label: 'Hole in One', p1: 0, p2: 0 },
+        { label: 'Eagles+', p1: 0, p2: 0 },
+        { label: 'Birdies', p1: 0, p2: 0 },
+        { label: 'Pars', p1: 0, p2: 0 },
+        { label: 'Bogeys', p1: 0, p2: 0 },
+        { label: 'Double Bogeys+', p1: 0, p2: 0 },
+        { label: 'Penalties', p1: 0, p2: 0 },
+        { label: 'Wildcards Used', p1: 0, p2: 0 }
+    ];
+
+    for (let i = S.startIdx; i <= S.endIdx; i++) {
+        const h = HOLES[i];
+        [0, 1].forEach(pIdx => {
+            const hist = VS.histories[pIdx][i];
+            if (!hist) return;
+            stats[0][pIdx === 0 ? 'p1' : 'p2'] += hist.strokes;
+            
+            const d = hist.strokes - h.par;
+            if (h.par === 3 && hist.strokes === 1) stats[1][pIdx === 0 ? 'p1' : 'p2']++;
+            else if (d <= -2) stats[2][pIdx === 0 ? 'p1' : 'p2']++;
+            else if (d === -1) stats[3][pIdx === 0 ? 'p1' : 'p2']++;
+            else if (d === 0) stats[4][pIdx === 0 ? 'p1' : 'p2']++;
+            else if (d === 1) stats[5][pIdx === 0 ? 'p1' : 'p2']++;
+            else if (d >= 2) stats[6][pIdx === 0 ? 'p1' : 'p2']++;
+            
+            const pens = hist.log.filter(l => l.pen).length;
+            stats[7][pIdx === 0 ? 'p1' : 'p2'] += pens;
+            stats[8][pIdx === 0 ? 'p1' : 'p2'] += (hist.wcsUsed ? hist.wcsUsed.length : 0);
+        });
+    }
+
+    // Hide Shot Replay list
+    const replayTitle = document.querySelector('#hcScreen .sec-title');
+    if (replayTitle) replayTitle.style.display = 'none';
+    const logList = document.getElementById('hcLogList');
+    if (logList) logList.style.display = 'none';
+
+    // Create / Setup Statistics Panel
+    let statsContainer = document.getElementById('hcVsStats');
+    if (!statsContainer) {
+        statsContainer = document.createElement('div');
+        statsContainer.id = 'hcVsStats';
+        statsContainer.style.cssText = 'flex-shrink:0; margin-bottom:16px; max-height:160px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none;';
+        document.getElementById('hcLogList').parentNode.insertBefore(statsContainer, document.getElementById('hcLogList'));
+    }
+    statsContainer.style.display = 'block';
+
+    let statsHtml = `<div class="sec-title" style="margin-bottom:12px;">STATISTICS</div>`;
+    stats.forEach(s => {
+        statsHtml += `
+            <div style="display:flex; justify-content:space-between; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,.05); font-family:'Sen',sans-serif; font-size:11px;">
+                <div style="flex:1; text-align:center; color:var(--text); font-weight:bold;">${s.p1}</div>
+                <div style="flex:2; text-align:center; color:var(--muted);">${s.label}</div>
+                <div style="flex:1; text-align:center; color:var(--text); font-weight:bold;">${s.p2}</div>
+            </div>
+        `;
+    });
+    statsContainer.innerHTML = statsHtml;
+
+    // Setup toggle row for the Scoreboard below the stats
+    let vsToggle = document.getElementById('vsToggleRow');
+    if (!vsToggle) {
+        vsToggle = document.createElement('div');
+        vsToggle.id = 'vsToggleRow';
+        vsToggle.style.cssText = "display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-shrink:0;";
+        document.getElementById('hcLogList').parentNode.insertBefore(vsToggle, statsContainer.nextSibling);
+    }
+    vsToggle.style.display = 'flex';
+    vsToggle.innerHTML = `
+        <div style="font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" id="vsToggleTitle">SCORECARD</div>
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+        <div style="display:flex; gap:6px;">
+            <button id="vsPill0" onclick="renderVsReplayAndScoreboard(0)" style="background:var(--c-fwy); color:#fff; border:1px solid var(--c-fwyl); border-radius:14px; padding:6px 12px; font-family:'Sen',sans-serif; font-size:10px; font-weight:bold; cursor:pointer; transition:all 0.2s;">${p1.name.substring(0, 8)}</button>
+            <button id="vsPill1" onclick="renderVsReplayAndScoreboard(1)" style="background:rgba(255,255,255,.05); color:var(--muted); border:1px solid var(--border); border-radius:14px; padding:6px 12px; font-family:'Sen',sans-serif; font-size:10px; font-weight:bold; cursor:pointer; transition:all 0.2s;">${p2.name.substring(0, 8)}</button>
+        </div>
+    `;
+
+    renderVsReplayAndScoreboard(0); // Renders the scoreboard for P1
+
+    const btn = document.getElementById('hcBtn');
+    btn.textContent = 'BACK TO MENU →';
+    btn.onclick = () => {
+        VS.active = false;
+        clearSavedGame();
+        hcScreen.classList.remove('show');
+        returnToMenu();
+    };
+
+    hcScreen.classList.add('show');
   }
-  
-  document.getElementById('ovNameRow').innerHTML = `
-    <div style="display:flex;justify-content:space-around;width:100%;margin:12px 0;">
-      <div style="text-align:center;">${p1Html}</div>
-      <div style="display:flex;align-items:center;font-family:'Bebas Neue',cursive;font-size:24px;color:var(--muted);">VS</div>
-      <div style="text-align:center;">${p2Html}</div>
-    </div>`;
-  document.getElementById('ovNameRow').style.fontSize='';
-  document.getElementById('ovStatsRow').textContent=`Par ${par}`;
-  
-  const ovBtn=document.getElementById('ovBtn');
-  ovBtn.textContent='BACK TO MENU';
-  ovBtn.style.display='block';
-  ovBtn.onclick=()=>{
-    VS.active=false;
-    clearSavedGame();
-    document.getElementById('overlay').classList.remove('show');
-    returnToMenu();
-  };
-  document.getElementById('ovSummaryBtn').style.display='none';
-  document.getElementById('ovPlayAgainBtn').style.display='none';
-  document.getElementById('overlay').classList.add('show');
 }
 
 function vsGetGridKey(){
