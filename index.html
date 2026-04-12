@@ -3072,10 +3072,13 @@ function completeHole(){
   document.querySelectorAll('#hcScreen .sec-title').forEach(t => t.style.display = 'flex');
   
   const logList = document.getElementById('hcLogList');
-  if(logList) logList.style.display = 'flex'; // Restore log visibility
+  if(logList) logList.style.display = 'flex';
+
+  const scWrap = document.querySelector('#hcScreen .sc-wrap');
+  if (scWrap) scWrap.style.display = ''; // Restore scorecard visibility
 
   const statsContainer = document.getElementById('hcVsStats');
-  if(statsContainer) statsContainer.style.display = 'none'; // Hide VS Stats
+  if(statsContainer) statsContainer.style.display = 'none';
 
   const vsToggle = document.getElementById('vsToggleRow');
   if(vsToggle) vsToggle.style.display = 'none';
@@ -3277,7 +3280,7 @@ function showRoundEnd(){
     const finalTotalStr = globalDiff===0?'E':globalDiff>0?`+${globalDiff}`:`${globalDiff}`;
     
     const hcScreen = document.getElementById('hcScreen');
-    document.getElementById('hcHoleTitle').textContent = 'GAME COMPLETE';
+    document.getElementById('hcHoleTitle').textContent = 'ROUND COMPLETE';
     document.getElementById('hcRndBadge').style.display = 'none';
 
     ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
@@ -3352,6 +3355,8 @@ function showRoundEnd(){
     document.querySelectorAll('#hcScreen .sec-title').forEach(t => t.style.display = 'none');
     const logList = document.getElementById('hcLogList');
     if (logList) logList.style.display = 'none';
+    const scWrap = document.querySelector('#hcScreen .sc-wrap');
+    if (scWrap) scWrap.style.display = 'none'; // Hide the scorecard here
     const vsToggle = document.getElementById('vsToggleRow');
     if (vsToggle) vsToggle.style.display = 'none';
 
@@ -3359,12 +3364,14 @@ function showRoundEnd(){
     if (!statsContainer) {
         statsContainer = document.createElement('div');
         statsContainer.id = 'hcVsStats';
-        statsContainer.style.cssText = 'flex-shrink:0; margin-bottom:16px; max-height:160px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none;';
-        document.getElementById('hcLogList').parentNode.insertBefore(statsContainer, document.getElementById('hcLogList'));
+        document.getElementById('hcLogList').parentNode.appendChild(statsContainer);
     }
+    // Allow the div to grow without cutting off, and keep the scroll behavior active
+    statsContainer.style.cssText = 'flex:1; min-height:0; margin-bottom:16px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; position:relative;';
     statsContainer.style.display = 'block';
 
-    let statsHtml = `<div class="sec-title" style="margin-bottom:12px; display:flex; justify-content:center;">STATISTICS</div>`;
+    // Sticky header for the statistics 
+    let statsHtml = `<div class="sec-title" style="margin-bottom:12px; display:flex; justify-content:center; position:sticky; top:0; background:var(--dark); z-index:5; padding:8px 0;">STATISTICS</div>`;
     stats.forEach(s => {
         statsHtml += `
             <div style="display:flex; justify-content:space-between; padding:8px 32px; border-bottom:1px solid rgba(255,255,255,.05); font-family:'Sen',sans-serif; font-size:11px;">
@@ -3407,7 +3414,11 @@ function showRoundEnd(){
 function openSummary(viewRound = S.currentRound){
   document.getElementById('overlay').classList.remove('show');
   document.getElementById('mainApp').style.display='none';
-  const body=document.getElementById('sumBody'); body.innerHTML='';
+  const body=document.getElementById('sumBody'); 
+  body.innerHTML='';
+  body.style.display = 'flex';
+  body.style.flexDirection = 'column';
+  body.style.minHeight = 'calc(100vh - 80px)'; // Stretches to full height
   
   document.getElementById('sumTitle').textContent=`${PLAYER_NAME}'S SCORECARD`;
 
@@ -3578,7 +3589,7 @@ function openSummary(viewRound = S.currentRound){
   body.appendChild(holeList);
 
   const btnRow=document.createElement('div');
-  btnRow.style.cssText='display:flex;flex-direction:column;gap:8px;margin-top:16px;';
+  btnRow.style.cssText='display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:24px;';
   
   if (S.currentRound < S.totalRounds && viewRound === S.currentRound && S.holeDone) {
     const nextRndBtn=document.createElement('button');
