@@ -3060,6 +3060,20 @@ function completeHole(){
   
   curSc[S.holeIdx] = score;
   curHist[S.holeIdx] = {log:[...S.log], strokes:score, par:h.par, name:h.name, yards:h.yards, diff:h.diff, wcsUsed: [...(S._wcsUsedThisHole||[])]};
+
+  // --- RESTORE SP VIEW (In case VS modified it) ---
+  ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.style.display = '';
+  });
+  const vsContainer = document.getElementById('hcVsContainer');
+  if(vsContainer) vsContainer.style.display = 'none';
+
+  const replayTitle = document.querySelector('#hcScreen .sec-title');
+  if(replayTitle) replayTitle.style.display = 'flex';
+  const vsToggle = document.getElementById('vsToggleRow');
+  if(vsToggle) vsToggle.style.display = 'none';
+  // ------------------------------------------------
   
   S.holeDone=true;
   hideNextShotBtn();hidePostShotWcBtn();
@@ -6178,11 +6192,93 @@ function vsCompleteHole(){
   }
 }
 
+function renderVsReplayAndScoreboard(playerIdx) {
+  // 1. Render Log
+  const logList = document.getElementById('hcLogList');
+  logList.innerHTML = '';
+  const pLog = VS.histories[playerIdx][S.holeIdx]?.log || [];
+  [...pLog].reverse().forEach(e => {
+      const zd = Z[e.zk] || Z.fwy;
+      const item = document.createElement('div');
+      item.className = 'log-entry';
+      item.style.marginBottom = '4px';
+      item.innerHTML = `<div class="log-n">${e.num}</div><div class="log-dot" style="background:${zd.color}"></div><span style="color:var(--text);flex:1">${e.desc}</span>${(e.note&&e.note!=='+1')?`<span class="log-r" style="color:${e.pen?'#e05252':'var(--muted)'}">${e.note}</span>`:''}`;
+      logList.appendChild(item);
+  });
+
+  // 2. Render Scorecard
+  const scHead = document.getElementById('hcScHead');
+  const scPar = document.getElementById('hcScPar');
+  const scYou = document.getElementById('hcScYou');
+  scHead.innerHTML = '<div class="sc-lbl">H</div>';
+  scPar.innerHTML = '<div class="sc-lbl">PAR</div>';
+  scYou.innerHTML = `<div class="sc-lbl">${VS.players[playerIdx].name.substring(0,3)}</div>`;
+
+  const activeHoles = HOLES.slice(S.startIdx, S.endIdx + 1);
+  let runningTot = 0, runningPar = 0;
+  activeHoles.forEach((ah, i) => {
+      const absIdx = S.startIdx + i;
+      const v = VS.scores[playerIdx][absIdx];
+      if (v !== null) { runningTot+=v; runningPar+=ah.par; }
+
+      const d1 = document.createElement('div'); d1.textContent = absIdx + 1; scHead.appendChild(d1);
+      const d2 = document.createElement('div'); d2.textContent = ah.par; scPar.appendChild(d2);
+      const d3 = document.createElement('div');
+      if(v!==null){
+          const diff = v - ah.par;
+          d3.innerHTML = `<span class="sc-sym${diff<=-2?' sc-sym-eagle':diff===-1?' sc-sym-birdie':diff===1?' sc-sym-bogey':diff>=2?' sc-sym-double':''}">${v}</span>`;
+      } else {
+          d3.textContent = '·';
+      }
+      scYou.appendChild(d3);
+  });
+
+  const t1 = document.createElement('div'); t1.textContent = 'TOT'; t1.style.background='rgba(0,0,0,.2)'; scHead.appendChild(t1);
+  const t2 = document.createElement('div'); t2.textContent = runningPar; t2.style.background='rgba(0,0,0,.2)'; scPar.appendChild(t2);
+  const t3 = document.createElement('div');
+  const runDiff = runningTot - runningPar;
+  t3.textContent = runningTot;
+  t3.style.background='rgba(0,0,0,.2)';
+  t3.style.color = runDiff < 0 ? 'var(--gold)' : runDiff > 0 ? '#e05252' : 'var(--c-fwyl)';
+  t3.style.fontWeight = 'bold';
+  t3.style.display = 'flex';
+  t3.style.alignItems = 'center';
+  t3.style.justifyContent = 'center';
+  scYou.appendChild(t3);
+
+  const colW = activeHoles.length <= 9 ? '1fr' : '34px';
+  scHead.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
+  scPar.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
+  scYou.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
+
+  // 3. Update Pills UI
+  const p0 = document.getElementById('vsPill0');
+  const p1 = document.getElementById('vsPill1');
+  if (p0 && p1) {
+      p0.style.background = playerIdx === 0 ? 'var(--c-fwy)' : 'rgba(255,255,255,.05)';
+      p0.style.color = playerIdx === 0 ? '#fff' : 'var(--muted)';
+      p0.style.borderColor = playerIdx === 0 ? 'var(--c-fwyl)' : 'var(--border)';
+      
+      p1.style.background = playerIdx === 1 ? 'var(--c-fwy)' : 'rgba(255,255,255,.05)';
+      p1.style.color = playerIdx === 1 ? '#fff' : 'var(--muted)';
+      p1.style.borderColor = playerIdx === 1 ? 'var(--c-fwyl)' : 'var(--border)';
+  }
+
+  // 4. Auto-scroll scorecard
+  setTimeout(() => {
+      const youCells = scYou.querySelectorAll('div:not(.sc-lbl)');
+      const activeIndex = S.holeIdx - S.startIdx;
+      if (youCells[activeIndex]) {
+          youCells[activeIndex].scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
+      }
+  }, 50);
+}
+  
 function vsShowHoleComparison(){
   const h = HOLES[S.holeIdx];
   const s1 = VS.scores[0][S.holeIdx], s2 = VS.scores[1][S.holeIdx];
   const d1 = s1 - h.par, d2 = s2 - h.par;
-  
+
   let totalP1=0, totalP2=0, totalPar=0;
   for(let i=S.startIdx; i<=S.endIdx; i++){
     if(VS.scores[0][i]!==null){ totalP1+=VS.scores[0][i]; totalPar+=HOLES[i].par; }
@@ -6191,83 +6287,10 @@ function vsShowHoleComparison(){
   const td1=totalP1-totalPar, td2=totalP2-totalPar;
   const p1=VS.players[0], p2=VS.players[1];
   const fmtD=(d)=>d===0?'E':d>0?'+'+d:''+d;
-  
-  let headerText = 'HOLE COMPLETE';
-  let emojiIcon = '⛳';
-  
-  let p1Leading = false;
-  let p2Leading = false;
-  
-  if(VS.format === 'match'){
-    let winner = s1<s2 ? p1.name : s2<s1 ? p2.name : 'TIE';
-    headerText = winner==='TIE' ? 'HOLE TIED!' : winner+' WINS HOLE!';
-    emojiIcon = s1<s2 ? p1.icon : s2<s1 ? p2.icon : '🤝';
-    p1Leading = VS.matchScore[0] > VS.matchScore[1];
-    p2Leading = VS.matchScore[1] > VS.matchScore[0];
-  } else {
-    p1Leading = td1 < td2;
-    p2Leading = td2 < td1;
-  }
-  
-  const p1NameStyle = `font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:${p1Leading ? '22px' : '16px'};color:${p1Leading ? 'var(--gold)' : 'inherit'};white-space:nowrap;`;
-  const p2NameStyle = `font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:${p2Leading ? '22px' : '16px'};color:${p2Leading ? 'var(--gold)' : 'inherit'};white-space:nowrap;`;
 
-  const s1Text = s1 === 1 ? 'Hole in One!' : `H: ${s1} strokes (${fmtD(d1)})`;
-  const s2Text = s2 === 1 ? 'Hole in One!' : `H: ${s2} strokes (${fmtD(d2)})`;
-
-  let p1Html, p2Html;
-  if (VS.format === 'match') {
-      p1Html = `
-        <div style="font-size:24px;margin-bottom:4px;">${p1.icon}</div>
-        <div style="${p1NameStyle}">${p1.name}</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;margin-top:4px;color:${p1Leading ? 'var(--gold)' : 'var(--text)'};">${VS.matchScore[0]}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">${s1Text}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;">TOTAL: ${fmtD(td1)}</div>
-      `;
-      p2Html = `
-        <div style="font-size:24px;margin-bottom:4px;">${p2.icon}</div>
-        <div style="${p2NameStyle}">${p2.name}</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;margin-top:4px;color:${p2Leading ? 'var(--gold)' : 'var(--text)'};">${VS.matchScore[1]}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">${s2Text}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;">TOTAL: ${fmtD(td2)}</div>
-      `;
-  } else {
-      p1Html = `
-        <div style="font-size:24px;margin-bottom:4px;">${p1.icon}</div>
-        <div style="${p1NameStyle}">${p1.name}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;margin-bottom:2px;">TOTAL</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;color:${td1<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(td1)}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">${s1Text}</div>
-      `;
-      p2Html = `
-        <div style="font-size:24px;margin-bottom:4px;">${p2.icon}</div>
-        <div style="${p2NameStyle}">${p2.name}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;margin-bottom:2px;">TOTAL</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;color:${td2<=0?'var(--c-fwyl)':'#e05252'};">${fmtD(td2)}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">${s2Text}</div>
-      `;
-  }
-
-  document.getElementById('ovEmoji').textContent = emojiIcon;
-  document.getElementById('ovEmoji').style.display='block';
-  document.getElementById('ovTitle').textContent = headerText;
-
-  document.getElementById('ovNameRow').innerHTML = `
-    <div style="display:flex;justify-content:space-between;width:100%;font-family:'Sen',sans-serif;font-size:12px;margin:8px 0;">
-      <div style="text-align:center; flex:1; display:flex; flex-direction:column; justify-content:flex-end;">${p1Html}</div>
-      <div style="display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:20px;color:var(--muted);width:30px;">VS</div>
-      <div style="text-align:center; flex:1; display:flex; flex-direction:column; justify-content:flex-end;">${p2Html}</div>
-    </div>`;
-  document.getElementById('ovNameRow').style.fontSize='';
-  document.getElementById('ovStatsRow').textContent=`Par ${h.par}`;
-
-  const ovBtn=document.getElementById('ovBtn');
-  const ovPlayAgainBtn = document.getElementById('ovPlayAgainBtn');
-
-  // Match play early clinch check
   let matchClinched = false;
   if (VS.format === 'match' && S.holeIdx < S.endIdx) {
-    const holesLeft = S.endIdx - S.holeIdx; // holes remaining AFTER this one
+    const holesLeft = S.endIdx - S.holeIdx;
     const lead = VS.matchScore[0] - VS.matchScore[1];
     const absLead = Math.abs(lead);
     if (absLead > holesLeft) {
@@ -6279,29 +6302,173 @@ function vsShowHoleComparison(){
     }
   }
 
-  if (S.holeIdx >= S.endIdx || matchClinched) {
-      ovBtn.textContent = 'FINAL RESULTS →';
-      ovBtn.style.display = 'block';
-      ovBtn.onclick = () => {
-          document.getElementById('overlay').classList.remove('show');
-          vsShowFinal();
-      };
-      ovPlayAgainBtn.style.display = 'none';
-  } else {
-      ovBtn.textContent = `HOLE ${S.holeIdx + 2} →`;
-      ovBtn.style.display = 'block';
-      ovBtn.onclick = () => {
-          document.getElementById('overlay').classList.remove('show');
-          S.holeIdx++;
-          // Removed loadHole() here to prevent premature wildcard triggers on the wrong turn.
-          // vsStartTurn() handles building the hole properly when the next player is ready.
-          vsShowTurnScreen();
-      };
-      ovPlayAgainBtn.style.display = 'none';
-  }
+  if (VS.format === 'stroke') {
+      // --- Use hcScreen for Stroke Play VS ---
+      const hcScreen = document.getElementById('hcScreen');
+      document.getElementById('hcHoleTitle').textContent = `HOLE ${S.holeIdx + 1} COMPLETE`;
+      document.getElementById('hcRndBadge').style.display = 'none';
 
-  document.getElementById('ovSummaryBtn').style.display='none';
-  document.getElementById('overlay').classList.add('show');
+      const getColor = (d) => d < 0 ? 'var(--gold)' : d === 0 ? 'var(--c-fwyl)' : '#e05252';
+
+      const p1Html = `
+        <div style="font-size:36px;margin-bottom:8px;">${p1.icon}</div>
+        <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:var(--text);white-space:nowrap;">${p1.name}</div>
+        <div style="display:inline-block;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${getColor(td1)};">TOTAL: ${fmtD(td1)}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">H: ${s1} strokes (${fmtD(d1)})</div>
+      `;
+      const p2Html = `
+        <div style="font-size:36px;margin-bottom:8px;">${p2.icon}</div>
+        <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:var(--text);white-space:nowrap;">${p2.name}</div>
+        <div style="display:inline-block;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${getColor(td2)};">TOTAL: ${fmtD(td2)}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">H: ${s2} strokes (${fmtD(d2)})</div>
+      `;
+
+      const hcCard = document.querySelector('.hc-card');
+      // Safely hide standard Single Player elements
+      ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
+          const el = document.getElementById(id);
+          if(el) el.style.display = 'none';
+      });
+
+      // Create or update VS container inside the card
+      let vsContainer = document.getElementById('hcVsContainer');
+      if (!vsContainer) {
+          vsContainer = document.createElement('div');
+          vsContainer.id = 'hcVsContainer';
+          hcCard.appendChild(vsContainer);
+      }
+      vsContainer.style.display = 'block';
+      vsContainer.innerHTML = `
+        <div style="font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;">PAR ${h.par} &nbsp; ${starsHTML(h.baseDiff)}</div>
+        <div style="display:flex;justify-content:space-around;align-items:center;">
+            <div style="flex:1;text-align:center;">${p1Html}</div>
+            <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--border);">VS</div>
+            <div style="flex:1;text-align:center;">${p2Html}</div>
+        </div>
+      `;
+
+      // Add toggle pills above the Shot Log
+      const replayTitle = document.querySelector('#hcScreen .sec-title');
+      if(replayTitle) replayTitle.style.display = 'none'; // hide standard 'SHOT REPLAY' title
+      
+      let vsToggle = document.getElementById('vsToggleRow');
+      if (!vsToggle) {
+          vsToggle = document.createElement('div');
+          vsToggle.id = 'vsToggleRow';
+          vsToggle.style.cssText = "display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-shrink:0;";
+          // Insert it right before the log list
+          document.getElementById('hcLogList').parentNode.insertBefore(vsToggle, document.getElementById('hcLogList'));
+      }
+      vsToggle.style.display = 'flex';
+      vsToggle.innerHTML = `
+          <div style="font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;">SHOT REPLAY</div>
+          <div style="flex:1; height:1px; background:var(--border);"></div>
+          <div style="display:flex; gap:6px;">
+              <button id="vsPill0" onclick="renderVsReplayAndScoreboard(0)" style="background:var(--c-fwy); color:#fff; border:1px solid var(--c-fwyl); border-radius:14px; padding:6px 12px; font-family:'Sen',sans-serif; font-size:10px; font-weight:bold; cursor:pointer; transition:all 0.2s;">${p1.name.substring(0, 8)}</button>
+              <button id="vsPill1" onclick="renderVsReplayAndScoreboard(1)" style="background:rgba(255,255,255,.05); color:var(--muted); border:1px solid var(--border); border-radius:14px; padding:6px 12px; font-family:'Sen',sans-serif; font-size:10px; font-weight:bold; cursor:pointer; transition:all 0.2s;">${p2.name.substring(0, 8)}</button>
+          </div>
+      `;
+
+      // Default render P1's log and scorecard
+      renderVsReplayAndScoreboard(0);
+
+      const btn = document.getElementById('hcBtn');
+      if (S.holeIdx >= S.endIdx || matchClinched) {
+          btn.textContent = 'FINAL RESULTS →';
+          btn.onclick = () => {
+              hcScreen.classList.remove('show');
+              vsShowFinal();
+          };
+      } else {
+          btn.textContent = 'NEXT HOLE →';
+          btn.onclick = () => {
+              hcScreen.classList.remove('show');
+              S.holeIdx++;
+              vsShowTurnScreen();
+          };
+      }
+
+      hcScreen.classList.add('show');
+
+  } else {
+      // --- Existing Match Play Logic ---
+      let p1Leading = VS.matchScore[0] > VS.matchScore[1];
+      let p2Leading = VS.matchScore[1] > VS.matchScore[0];
+      
+      let headerText = 'HOLE COMPLETE';
+      let emojiIcon = '⛳';
+      let winner = s1<s2 ? p1.name : s2<s1 ? p2.name : 'TIE';
+      headerText = winner==='TIE' ? 'HOLE TIED!' : winner+' WINS HOLE!';
+      emojiIcon = s1<s2 ? p1.icon : s2<s1 ? p2.icon : '🤝';
+      
+      if (matchClinched) {
+        const clinchWinner = VS.matchScore[0] > VS.matchScore[1] ? p1 : p2;
+        const absLead = Math.abs(VS.matchScore[0] - VS.matchScore[1]);
+        const holesLeft = S.endIdx - S.holeIdx;
+        const clinchNotation = `${absLead}&${holesLeft}`;
+        headerText = `${clinchWinner.name} WINS ${clinchNotation}!`;
+        emojiIcon = clinchWinner.icon;
+      }
+      
+      const p1NameStyle = `font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:${p1Leading ? '22px' : '16px'};color:${p1Leading ? 'var(--gold)' : 'inherit'};white-space:nowrap;`;
+      const p2NameStyle = `font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:${p2Leading ? '22px' : '16px'};color:${p2Leading ? 'var(--gold)' : 'inherit'};white-space:nowrap;`;
+
+      const s1Text = s1 === 1 ? 'Hole in One!' : `H: ${s1} strokes (${fmtD(d1)})`;
+      const s2Text = s2 === 1 ? 'Hole in One!' : `H: ${s2} strokes (${fmtD(d2)})`;
+
+      const p1Html = `
+        <div style="font-size:24px;margin-bottom:4px;">${p1.icon}</div>
+        <div style="${p1NameStyle}">${p1.name}</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;margin-top:4px;color:${p1Leading ? 'var(--gold)' : 'var(--text)'};">${VS.matchScore[0]}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">${s1Text}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;">TOTAL: ${fmtD(td1)}</div>
+      `;
+      const p2Html = `
+        <div style="font-size:24px;margin-bottom:4px;">${p2.icon}</div>
+        <div style="${p2NameStyle}">${p2.name}</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:32px;line-height:1;margin-top:4px;color:${p2Leading ? 'var(--gold)' : 'var(--text)'};">${VS.matchScore[1]}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:8px;white-space:nowrap;">${s2Text}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;">TOTAL: ${fmtD(td2)}</div>
+      `;
+
+      document.getElementById('ovEmoji').textContent = emojiIcon;
+      document.getElementById('ovEmoji').style.display='block';
+      document.getElementById('ovTitle').textContent = headerText;
+
+      document.getElementById('ovNameRow').innerHTML = `
+        <div style="display:flex;justify-content:space-between;width:100%;font-family:'Sen',sans-serif;font-size:12px;margin:8px 0;">
+          <div style="text-align:center; flex:1; display:flex; flex-direction:column; justify-content:flex-end;">${p1Html}</div>
+          <div style="display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:20px;color:var(--muted);width:30px;">VS</div>
+          <div style="text-align:center; flex:1; display:flex; flex-direction:column; justify-content:flex-end;">${p2Html}</div>
+        </div>`;
+      document.getElementById('ovNameRow').style.fontSize='';
+      document.getElementById('ovStatsRow').textContent=`Par ${h.par}`;
+
+      const ovBtn=document.getElementById('ovBtn');
+      const ovPlayAgainBtn = document.getElementById('ovPlayAgainBtn');
+
+      if (S.holeIdx >= S.endIdx || matchClinched) {
+          ovBtn.textContent = 'FINAL RESULTS →';
+          ovBtn.style.display = 'block';
+          ovBtn.onclick = () => {
+              document.getElementById('overlay').classList.remove('show');
+              vsShowFinal();
+          };
+          ovPlayAgainBtn.style.display = 'none';
+      } else {
+          ovBtn.textContent = `HOLE ${S.holeIdx + 2} →`;
+          ovBtn.style.display = 'block';
+          ovBtn.onclick = () => {
+              document.getElementById('overlay').classList.remove('show');
+              S.holeIdx++;
+              vsShowTurnScreen();
+          };
+          ovPlayAgainBtn.style.display = 'none';
+      }
+
+      document.getElementById('ovSummaryBtn').style.display='none';
+      document.getElementById('overlay').classList.add('show');
+  }
 }
 
 function vsShowFinal(){
