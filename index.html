@@ -82,6 +82,8 @@ body{
   box-shadow:0 -2px 16px rgba(0,0,0,.5);
   display:none;
   padding-bottom:env(safe-area-inset-bottom);
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
 }
 /* Full-screen overlays also need top safe area */
 /* Full-screen overlays inherit body safe-area via body padding-top */
@@ -1426,7 +1428,13 @@ async function playSound(name, volume=1.0){
   if(!soundEnabled())return;
   const ctx=getAudioCtx();
   if(!ctx)return;
-  if(ctx.state==="suspended") await ctx.resume();
+  
+  if(ctx.state==="suspended") {
+      try { await ctx.resume(); } catch(e){}
+  }
+  // Drop the sound event immediately if Safari refuses to wake up the AudioContext
+  if(ctx.state==="suspended") return; 
+
   try{
     let buf=_audioCache[name];
     if(!buf){
@@ -2136,6 +2144,14 @@ function updateTVBanner(){
       sn.textContent=i;
       shotsEl.appendChild(sn);
     }
+    
+    // Auto-scroll to center the current shot indicator
+    setTimeout(() => {
+       const activeShot = shotsEl.querySelector('.current');
+       if (activeShot) {
+           activeShot.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+       }
+    }, 50);
   }
 
   // Freeze the bottom text strip when the hole is done to prevent layout jumps
@@ -2335,16 +2351,18 @@ function flipCell(cell, zd){
   cell.dataset.flipping='1';
   cell.style.transition='transform .15s ease';
   cell.style.transform='scaleX(0)';
-  const orig=cell.textContent;
+  
+  // Use innerHTML instead of textContent so we don't destroy the shot markers
+  const origHTML=cell.innerHTML; 
+  
   setTimeout(()=>{
-    cell._origText=orig;
-    cell.textContent=zd.name.toUpperCase();
+    cell.innerHTML=zd.name.toUpperCase();
     cell.style.fontSize='7px';
     cell.style.transform='scaleX(1)';
     setTimeout(()=>{
       cell.style.transform='scaleX(0)';
       setTimeout(()=>{
-        cell.textContent=orig;
+        cell.innerHTML=origHTML;
         cell.style.fontSize='';
         cell.style.transform='scaleX(1)';
         cell.style.transition='';
@@ -2477,7 +2495,25 @@ function doRoll(){
     const td = tutGetDice();
     if(td){ r1=td.r; r2=td.c; }
   }
-  
+
+  // Anti-frustration: Max 2 consecutive hazards (Water/OB)
+  if(!TUT.active && S.currentGrid) {
+    let penCount = 0;
+    for(let i=S.log.length-1; i>=0; i--){
+        if(S.log[i].zk === 'h2o' || S.log[i].zk === 'ob') penCount++;
+        else break;
+    }
+    if(penCount >= 2) {
+        let attempts = 0;
+        // Secretly reroll the dice until they land on a non-penalty cell
+        while((S.currentGrid[r1-1][r2-1] === 'h2o' || S.currentGrid[r1-1][r2-1] === 'ob') && attempts < 50) {
+            r1=Math.ceil(Math.random()*6);
+            r2=Math.ceil(Math.random()*6);
+            attempts++;
+        }
+    }
+  }
+
   const d1=document.getElementById('die1'),d2=document.getElementById('die2');
 
   if(window._diceIdleTimer){clearInterval(window._diceIdleTimer);window._diceIdleTimer=null;}
@@ -3481,6 +3517,8 @@ function renderHistGrid(wrap, snapGrid, log, logIdx) {
   grid.appendChild(corner);
   for(let c=1; c<=6; c++){ const ax = document.createElement('div'); ax.className='hax'; ax.textContent=c; grid.appendChild(ax); }
   
+  const alwaysLabels = getCellLabelMode() === 'always';
+  
   for(let r=0; r<6; r++){
     const rAx = document.createElement('div'); rAx.className='hax'; rAx.textContent=r+1; grid.appendChild(rAx);
     for(let c=0; c<6; c++){
@@ -3489,16 +3527,41 @@ function renderHistGrid(wrap, snapGrid, log, logIdx) {
       const cell = document.createElement('div');
       cell.className = `hcell ${zd.cls}`;
       
-      let shotNum = null;
+      // 1. Apply labels just like the main game grid
+      const abbr={ob:'OB',h2o:'H₂O',hole:'⛳',p1:'1P',p2:'2P',p3:'3P'};
+      const alwaysName={h2o:'WATER',ob:'OB',grn:'GREEN',fwy:'FAIRWAY',rgh:'ROUGH',chip:'CHIP',sand:'SAND',tee:'TEE',hole:'HOLE',p1:'1P',p2:'2P',p3:'3P'};
+      
+      let baseText = '';
+      if(alwaysLabels){
+        baseText = (alwaysName[zk]||zd.name).toUpperCase();
+        cell.style.cssText='font-size:5px;line-height:1.1;text-align:center;padding:1px;word-break:break-word;font-weight:700;';
+      } else if(abbr[zk]){
+        baseText = abbr[zk];
+      }
+      cell.innerHTML = baseText;
+
+      // 2. Make them clickable if labels aren't always showing
+      if(!alwaysLabels){
+        cell.addEventListener('click', () => flipCell(cell, zd));
+      }
+      
+      // 3. Handle multiple shots landing in the same cell
+      let shots = [];
       for(let i=0; i<=logIdx; i++){
         if(log[i].row === r && log[i].col === c) {
-          shotNum = log[i].num;
+          shots.push(log[i].num);
           if (i === logIdx) cell.classList.add('hlit');
         }
       }
-      if (shotNum !== null) {
-        cell.innerHTML = `<span class="shot-marker">${shotNum}</span>`;
+      
+      if (shots.length > 0) {
+        const shotText = shots.join(',');
+        // Shrink the font slightly if there are multiple shots so it fits in the box
+        const fontSize = shots.length > 1 ? '4.5px' : '6px';
+        // Added a semi-transparent background so it's readable over the text labels
+        cell.innerHTML += `<span class="shot-marker" style="font-size:${fontSize}; background:rgba(0,0,0,0.5); padding:1px 2px; border-radius:3px;">${shotText}</span>`;
       }
+      
       grid.appendChild(cell);
     }
   }
@@ -4536,13 +4599,20 @@ function renderWcDrawer(){
 
     activeWcs.forEach(wc => {
       if(!wc) return;
+      
+      let statusText = 'Waiting for trigger...';
+      if (wc.id === 'sand_castle') statusText = 'Active for the entire hole';
+      if (wc.id === 'green_light') statusText = 'Active for next shots';
+      if (wc.id === 'lucky_bounce') statusText = 'Saves next OB/Water';
+      if (wc.id === 'iron_will') statusText = 'Saves next Rough';
+
       const item = document.createElement('div');
       item.style.cssText = 'display:flex;align-items:center;gap:8px;background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.3);border-radius:8px;padding:8px;margin-bottom:6px;';
       item.innerHTML = `
         <div style="font-size:18px;line-height:1;">${wc.icon}</div>
         <div style="flex:1;">
           <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;color:var(--gold);line-height:1;">${wc.name} ${wc.extra||''}</div>
-          <div style="font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);margin-top:2px;">Waiting for trigger...</div>
+          <div style="font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);margin-top:2px;">${statusText}</div>
         </div>
       `;
       activeContainer.appendChild(item);
