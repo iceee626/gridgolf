@@ -1219,7 +1219,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <div style="flex:1; display:flex; flex-direction:column; min-height:0; padding-bottom:12px;">
     <div class="sec-title" style="flex-shrink:0;">SHOT REPLAY</div>
     <div class="hc-log-list" id="hcLogList" style="flex-shrink:0; margin-bottom:16px;"></div>
-    <div class="sec-title" style="flex-shrink:0;">SCOREBOARD</div>
+    <div class="sec-title" style="flex-shrink:0;">SCORECARD</div>
     <div class="sc-wrap" style="margin-bottom:0; flex-shrink:0;">
       <div class="sc-inner">
         <div class="sc-row sc-head" id="hcScHead"></div>
@@ -3271,40 +3271,118 @@ function showRoundEnd(){
     updateProfileAfterRound(roundTotal, roundPar);
     updateProfileStatsAfterRound(roundTotal, roundPar, S._wcUsedThisRound||0);
     
-    document.getElementById('ovEmoji').textContent=roundDiff<0?'🏆':roundDiff===0?'⛳':'🏌️';
-    document.getElementById('ovEmoji').style.display='block';
-    document.getElementById('ovTitle').textContent='FINAL SCORE';
-    
     let globalTotal = 0, globalPar = 0;
     S.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ globalTotal+=s; globalPar+=HOLES[i].par; } }));
     const globalDiff = globalTotal - globalPar;
     const finalTotalStr = globalDiff===0?'E':globalDiff>0?`+${globalDiff}`:`${globalDiff}`;
     
-    document.getElementById('ovNameRow').textContent=finalTotalStr;
-    document.getElementById('ovNameRow').style.fontSize='48px';
-    document.getElementById('ovNameRow').style.fontFamily="'Bebas Neue',cursive";
-    document.getElementById('ovNameRow').style.letterSpacing='4px';
-    document.getElementById('ovNameRow').style.color='var(--c-fwyl)';
-    
+    const hcScreen = document.getElementById('hcScreen');
+    document.getElementById('hcHoleTitle').textContent = 'GAME COMPLETE';
+    document.getElementById('hcRndBadge').style.display = 'none';
+
+    ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.style.display = 'none';
+    });
+
+    let vsContainer = document.getElementById('hcVsContainer');
+    if (!vsContainer) {
+        vsContainer = document.createElement('div');
+        vsContainer.id = 'hcVsContainer';
+        document.querySelector('.hc-card').appendChild(vsContainer);
+    }
+    vsContainer.style.display = 'block';
+
+    let emoji = globalDiff < 0 ? '🏆' : globalDiff === 0 ? '⛳' : '🏌️';
+    let color = globalDiff < 0 ? 'var(--gold)' : globalDiff === 0 ? 'var(--c-fwyl)' : '#e05252';
     const roundsStr = S.totalRounds > 1 ? ` (${S.totalRounds} Rounds)` : '';
-    document.getElementById('ovStatsRow').textContent=`${globalTotal} strokes · par ${globalPar}${roundsStr}`;
-    
-    const pbEl = document.getElementById('ovPbRow'); if (pbEl) pbEl.remove();
+
+    let pbHtml = '';
     if (isNewPB) {
-        const pbRow = document.createElement('div'); pbRow.id = 'ovPbRow';
-        pbRow.textContent = 'NEW PERSONAL BEST!';
-        pbRow.style.cssText = "font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--gold);margin-top:-10px;margin-bottom:14px;animation:pulse 1s infinite alternate;";
+        pbHtml = `<div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--gold);margin-bottom:14px;text-align:center;animation:pulse 1s infinite alternate;">NEW PERSONAL BEST!</div>`;
         if(!document.getElementById('pbStyle')){
             const s = document.createElement('style'); s.id = 'pbStyle';
             s.textContent = '@keyframes pulse { from { opacity: 0.7; transform: scale(0.98); } to { opacity: 1; transform: scale(1.05); } }';
             document.head.appendChild(s);
         }
-        document.getElementById('ovStatsRow').insertAdjacentElement('afterend', pbRow);
     }
 
-    document.getElementById('ovBtn').style.display='none';
-    document.getElementById('ovSummaryBtn').textContent='VIEW SUMMARY';
-    document.getElementById('ovSummaryBtn').style.display='block';
+    vsContainer.innerHTML = `
+        <div style="font-size:56px; margin-bottom:12px; text-align:center; line-height:1;">${emoji}</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--text);letter-spacing:3px;text-align:center;margin-bottom:4px;">FINAL SCORE</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:64px;color:${color};line-height:1;text-align:center;">${finalTotalStr}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);text-align:center;margin-top:8px;margin-bottom:20px;text-transform:uppercase;">${globalTotal} strokes · par ${globalPar}${roundsStr}</div>
+        ${pbHtml}
+    `;
+
+    const stats = [
+        { label: 'Total Strokes', val: 0 },
+        { label: 'Hole in One', val: 0 },
+        { label: 'Eagles+', val: 0 },
+        { label: 'Birdies', val: 0 },
+        { label: 'Pars', val: 0 },
+        { label: 'Bogeys', val: 0 },
+        { label: 'Double Bogeys+', val: 0 },
+        { label: 'Penalties', val: 0 },
+        { label: 'Wildcards Used', val: 0 }
+    ];
+
+    S.scorecards.forEach((sc, rndIdx) => {
+        sc.forEach((score, i) => {
+            if(score === null) return;
+            const h = HOLES[i];
+            const hist = S.histories[rndIdx][i];
+            if (!hist) return;
+
+            stats[0].val += score;
+            const d = score - h.par;
+            if (h.par === 3 && score === 1) stats[1].val++;
+            else if (d <= -2) stats[2].val++;
+            else if (d === -1) stats[3].val++;
+            else if (d === 0) stats[4].val++;
+            else if (d === 1) stats[5].val++;
+            else if (d >= 2) stats[6].val++;
+            
+            const pens = hist.log.filter(l => l.pen).length;
+            stats[7].val += pens;
+            stats[8].val += (hist.wcsUsed ? hist.wcsUsed.length : 0);
+        });
+    });
+
+    document.querySelectorAll('#hcScreen .sec-title').forEach(t => t.style.display = 'none');
+    const logList = document.getElementById('hcLogList');
+    if (logList) logList.style.display = 'none';
+    const vsToggle = document.getElementById('vsToggleRow');
+    if (vsToggle) vsToggle.style.display = 'none';
+
+    let statsContainer = document.getElementById('hcVsStats');
+    if (!statsContainer) {
+        statsContainer = document.createElement('div');
+        statsContainer.id = 'hcVsStats';
+        statsContainer.style.cssText = 'flex-shrink:0; margin-bottom:16px; max-height:160px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none;';
+        document.getElementById('hcLogList').parentNode.insertBefore(statsContainer, document.getElementById('hcLogList'));
+    }
+    statsContainer.style.display = 'block';
+
+    let statsHtml = `<div class="sec-title" style="margin-bottom:12px; display:flex; justify-content:center;">STATISTICS</div>`;
+    stats.forEach(s => {
+        statsHtml += `
+            <div style="display:flex; justify-content:space-between; padding:8px 32px; border-bottom:1px solid rgba(255,255,255,.05); font-family:'Sen',sans-serif; font-size:11px;">
+                <div style="color:var(--muted);">${s.label}</div>
+                <div style="color:var(--text); font-weight:bold;">${s.val}</div>
+            </div>
+        `;
+    });
+    statsContainer.innerHTML = statsHtml;
+
+    const btn = document.getElementById('hcBtn');
+    btn.textContent = 'VIEW SUMMARY →';
+    btn.onclick = () => {
+        hcScreen.classList.remove('show');
+        openSummary();
+    };
+
+    hcScreen.classList.add('show');
   } else {
     updateProfileAfterRound(roundTotal, roundPar);
     updateProfileStatsAfterRound(roundTotal, roundPar, S._wcUsedThisRound||0);
@@ -3319,8 +3397,8 @@ function showRoundEnd(){
     document.getElementById('ovBtn').style.display='none';
     document.getElementById('ovSummaryBtn').textContent='VIEW SUMMARY';
     document.getElementById('ovSummaryBtn').style.display='block';
+    document.getElementById('overlay').classList.add('show');
   }
-  document.getElementById('overlay').classList.add('show');
 }
 
 // ═══════════════════════════════════════
@@ -6643,8 +6721,42 @@ function vsShowFinal(){
     });
     statsContainer.innerHTML = statsHtml;
 
-    const scoreboardTitle = Array.from(document.querySelectorAll('#hcScreen .sec-title')).find(t => t.textContent.trim() === 'SCOREBOARD');
+    const scoreboardTitle = Array.from(document.querySelectorAll('#hcScreen .sec-title')).find(t => t.textContent.trim() === 'SCORECARD');
     if (scoreboardTitle) scoreboardTitle.style.display = 'none';
+
+    let statsContainer = document.getElementById('hcVsStats');
+    if (!statsContainer) {
+        statsContainer = document.createElement('div');
+        statsContainer.id = 'hcVsStats';
+        statsContainer.style.cssText = 'flex-shrink:0; margin-bottom:16px; max-height:160px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none;';
+        document.getElementById('hcLogList').parentNode.insertBefore(statsContainer, document.getElementById('hcLogList'));
+    }
+    statsContainer.style.display = 'block';
+
+    let statsHtml = `<div class="sec-title" style="margin-bottom:12px;">STATISTICS</div>`;
+    stats.forEach(s => {
+        let c1 = 'var(--text)', c2 = 'var(--text)';
+        if (s.p1 !== s.p2) {
+            if (s.label === 'Total Strokes') {
+                c1 = s.p1 < s.p2 ? '#52c87a' : 'var(--muted)';
+                c2 = s.p2 < s.p1 ? '#52c87a' : 'var(--muted)';
+            } else if (['Hole in One', 'Eagles+', 'Birdies', 'Wildcards Used'].includes(s.label)) {
+                c1 = s.p1 > s.p2 ? '#52c87a' : 'var(--muted)';
+                c2 = s.p2 > s.p1 ? '#52c87a' : 'var(--muted)';
+            } else if (['Bogeys', 'Double Bogeys+', 'Penalties'].includes(s.label)) {
+                c1 = s.p1 > s.p2 ? '#e05252' : 'var(--muted)';
+                c2 = s.p2 > s.p1 ? '#e05252' : 'var(--muted)';
+            }
+        }
+        statsHtml += `
+            <div style="display:flex; justify-content:space-between; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,.05); font-family:'Sen',sans-serif; font-size:11px;">
+                <div style="flex:1; text-align:center; color:${c1}; font-weight:bold;">${s.p1}</div>
+                <div style="flex:2; text-align:center; color:var(--muted);">${s.label}</div>
+                <div style="flex:1; text-align:center; color:${c2}; font-weight:bold;">${s.p2}</div>
+            </div>
+        `;
+    });
+    statsContainer.innerHTML = statsHtml;
 
     let vsToggle = document.getElementById('vsToggleRow');
     if (!vsToggle) {
