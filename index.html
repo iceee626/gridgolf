@@ -6690,7 +6690,7 @@ function vsShowFinal(){
       });
   }
 
-  const scoreboardTitle = Array.from(document.querySelectorAll('#hcScreen .sec-title')).find(t => t.textContent.trim() === 'SCOREBOARD');
+  const scoreboardTitle = Array.from(document.querySelectorAll('#hcScreen .sec-title')).find(t => t.textContent.trim() === 'SCORECARD');
   if (scoreboardTitle) scoreboardTitle.style.display = 'none';
 
   const replayTitle = document.querySelector('#hcScreen .sec-title');
@@ -6751,7 +6751,7 @@ function vsShowFinal(){
   }
   vsToggle.style.display = 'flex';
   vsToggle.innerHTML = `
-      <div style="font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" id="vsToggleTitle">SCOREBOARD</div>
+      <div style="font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" id="vsToggleTitle">SCORECARD</div>
       <div style="flex:1; height:1px; background:var(--border);"></div>
       <div style="display:flex; gap:6px;">
           <button id="vsPill0" onclick="renderVsReplayAndScoreboard(0)" style="background:var(--c-fwy); color:#fff; border:1px solid var(--c-fwyl); border-radius:14px; padding:6px 12px; font-family:'Sen',sans-serif; font-size:10px; font-weight:bold; cursor:pointer; transition:all 0.2s;">${p1.name.substring(0, 8)}</button>
