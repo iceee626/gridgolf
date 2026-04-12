@@ -354,7 +354,6 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 @keyframes flip-out{0%{transform:rotateY(180deg)}50%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
 
 /* HOLE RESULT CELEBRATION */
-/* HOLE RESULT CELEBRATION */
 .celebration-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:none;}
 .celebration-badge{font-family:'Bebas Neue',cursive;font-size:48px;letter-spacing:4px;text-align:center;padding:18px 32px;border-radius:16px;animation:celebIn .5s cubic-bezier(.34,1.56,.64,1) forwards, celebOut .3s ease .9s forwards;}@keyframes celebIn{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 @keyframes celebOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(1.1)}}
@@ -874,7 +873,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="menu-logo">GRID<span>GOLF</span></div>
     <div style="font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:20px;">CREATE YOUR PROFILE</div>
     <input class="onboard-input" id="onboardInput" placeholder="ENTER YOUR NAME" maxlength="12" autocomplete="off" spellcheck="false">
-    <button class="menu-btn-play" onclick="createFirstProfile()" style="margin-top:12px;">START PLAYING →</button>
+    <button class="menu-btn-play" onclick="createFirstProfile()" style="margin-top:12px;">START PLAYING</button>
   </div>
 </div>
 
@@ -920,7 +919,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 <div class="tut-overlay" id="tutOverlay">
   <div class="tut-overlay-title" id="tutOverlayTitle"></div>
   <div class="tut-overlay-text" id="tutOverlayText"></div>
-  <button class="tut-overlay-btn" id="tutOverlayBtn" onclick="tutNext()">GOT IT →</button>
+  <button class="tut-overlay-btn" id="tutOverlayBtn" onclick="tutNext()">GOT IT</button>
 </div>
 
 <!-- VERSUS MODE SETUP -->
@@ -983,7 +982,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
       </div>
     </div>
     
-    <button class="menu-btn-play" style="width:100%;font-size:18px;" onclick="vsStartFromOptions()">CHOOSE COURSE →</button>
+    <button class="menu-btn-play" style="width:100%;font-size:18px;" onclick="vsStartFromOptions()">CHOOSE COURSE</button>
   </div>
 </div>
 
@@ -992,7 +991,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <div class="vs-turn-icon" id="vsTurnIcon">🏌️</div>
   <div class="vs-turn-name" id="vsTurnName">PLAYER 1</div>
   <div class="vs-turn-sub" id="vsTurnSub">HOLE 1 · PAR 4</div>
-  <button class="vs-turn-btn" id="vsTurnBtn" onclick="vsStartTurn()">READY →</button>
+  <button class="vs-turn-btn" id="vsTurnBtn" onclick="vsStartTurn()">READY</button>
 </div>
 
 <div class="setup-screen" id="playModeScreen" style="display:none">
@@ -1048,7 +1047,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
       </div>
     </div>
 
-    <button class="menu-btn-play" style="width:100%;font-size:18px;" onclick="navToCourse('custom')">CHOOSE COURSE →</button>
+    <button class="menu-btn-play" style="width:100%;font-size:18px;" onclick="navToCourse('custom')">CHOOSE COURSE</button>
   </div>
 </div>
 
@@ -1086,7 +1085,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
       <button class="diff-btn" id="diff-btn-3" onclick="setDiff(3)" style="padding:16px;font-size:20px;">HARD</button>
     </div>
     
-    <button class="menu-btn-play" style="width:100%;font-size:20px;" onclick="startGame()">TEE OFF →</button>
+    <button class="menu-btn-play" style="width:100%;font-size:20px;" onclick="startGame()">TEE OFF</button>
   </div>
 </div>
 
@@ -1151,7 +1150,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <div class="dc"><div class="dc-lbl">Col</div><div class="die" id="die2"><div class="die-pips" id="dp2"></div></div></div>
   <div class="roll-col" style="display:flex;flex-direction:column;gap:6px;min-height:100%;">
     <button class="btn-roll" id="rollBtn" onclick="doRoll()">⚄ ROLL</button>
-    <button class="btn-roll" id="nextShotBtn" onclick="doNextShot()" style="display:none;background:var(--c-tee);">NEXT SHOT →</button>
+    <button class="btn-roll" id="nextShotBtn" onclick="doNextShot()" style="display:none;background:var(--c-tee);">NEXT SHOT</button>
   </div>
 </div>
 
@@ -1190,7 +1189,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="ov-title" id="ovTitle">HOLE COMPLETE</div>
     <div class="ov-namerow" id="ovNameRow"></div>
     <div class="ov-statsrow" id="ovStatsRow"></div>
-    <button class="ov-btn" id="ovBtn" onclick="nextHole()">CONTINUE →</button>
+    <button class="ov-btn" id="ovBtn" onclick="nextHole()">CONTINUE</button>
     <button class="ov-btn" id="ovSummaryBtn" style="display:none;margin-top:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);" onclick="openSummary()">VIEW SUMMARY</button>
     <button class="ov-btn" id="ovPlayAgainBtn" style="display:none;margin-top:8px;background:var(--c-fwy);" onclick="">PLAY AGAIN</button>
   </div>
@@ -2052,7 +2051,7 @@ function loadHole(){
 
   const nextBtn = document.getElementById('nextShotBtn');
   if(nextBtn){
-     nextBtn.textContent='NEXT SHOT →';
+     nextBtn.textContent='NEXT SHOT';
      nextBtn.style.pointerEvents = '';
      nextBtn.onclick=doNextShot;
   }
@@ -2604,7 +2603,7 @@ function processShot(row,col){
     showNextShotBtn();
     const nextBtn=document.getElementById('nextShotBtn');
     if(nextBtn){
-      nextBtn.textContent='FINISH HOLE →';
+      nextBtn.textContent='FINISH HOLE';
       nextBtn.style.background='var(--c-tee)';
       nextBtn.onclick=()=>{
         const b=document.getElementById('puttWcBtn');if(b)b.remove();
@@ -2615,7 +2614,7 @@ function processShot(row,col){
         if(rollBtn2)rollBtn2.style.display='none';
         updateTVBanner();
         setTimeout(()=>{
-          nextBtn.textContent='NEXT SHOT →';nextBtn.onclick=doNextShot;
+          nextBtn.textContent='NEXT SHOT';nextBtn.onclick=doNextShot;
           completeHole();
         },200);
       };
@@ -2993,7 +2992,7 @@ function completeHole(){
 
     document.getElementById('ovNameRow').style.fontSize='';
     document.getElementById('ovStatsRow').textContent=`Par ${h.par}  ${starsHTML(h.baseDiff)}`;
-    document.getElementById('ovBtn').textContent='CONTINUE →';
+    document.getElementById('ovBtn').textContent='CONTINUE';
     document.getElementById('ovBtn').style.display='block';
     document.getElementById('ovBtn').onclick=()=>vsCompleteHole();
     document.getElementById('ovSummaryBtn').style.display='none';
@@ -3231,12 +3230,12 @@ function completeHole(){
   const btn = document.getElementById('hcBtn');
   if (S.holeIdx === S.endIdx) {
       if (S.currentRound < S.totalRounds) {
-          btn.textContent = `COMPLETE ROUND ${S.currentRound} →`;
+          btn.textContent = `COMPLETE ROUND ${S.currentRound}`;
       } else {
-          btn.textContent = 'FINAL SCORECARD →';
+          btn.textContent = 'FINAL SCORECARD';
       }
   } else {
-      btn.textContent = `HOLE ${S.holeIdx + 2} →`;
+      btn.textContent = 'NEXT HOLE';
   }
   btn.onclick = nextHole;
 
@@ -3390,7 +3389,7 @@ function showRoundEnd(){
     statsContainer.innerHTML = statsHtml;
 
     const btn = document.getElementById('hcBtn');
-    btn.textContent = 'VIEW SUMMARY →';
+    btn.textContent = 'VIEW SUMMARY';
     btn.onclick = () => {
         hcScreen.classList.remove('show');
         openSummary();
@@ -4830,7 +4829,7 @@ function activateWildcard(slotIdx){
       updateFloat();updateYrd();updateZonePill();
     }
     const nextBtn=document.getElementById('nextShotBtn');
-    if(nextBtn){nextBtn.textContent='NEXT SHOT →';nextBtn.onclick=doNextShot;nextBtn.style.display='none';}
+    if(nextBtn){nextBtn.textContent='NEXT SHOT';nextBtn.onclick=doNextShot;nextBtn.style.display='none';}
     const rollBtn2=document.getElementById('rollBtn');
     if(rollBtn2){rollBtn2.style.display='block';rollBtn2.disabled=false;}
 
@@ -5317,7 +5316,7 @@ function continueGame(){
         showNextShotBtn();
         const nextBtn = document.getElementById('nextShotBtn');
         if(nextBtn){
-            nextBtn.textContent='FINISH HOLE →';
+            nextBtn.textContent='FINISH HOLE';
             nextBtn.style.background='var(--c-tee)';
             nextBtn.onclick=()=>{
                 const b=document.getElementById('puttWcBtn');if(b)b.remove();
@@ -5328,7 +5327,7 @@ function continueGame(){
                 if(rollBtn2)rollBtn2.style.display='none';
                 updateTVBanner();
                 setTimeout(()=>{
-                    nextBtn.textContent='NEXT SHOT →';nextBtn.onclick=doNextShot;
+                    nextBtn.textContent='NEXT SHOT';nextBtn.onclick=doNextShot;
                     completeHole();
                 },200);
             };
@@ -5363,7 +5362,7 @@ function continueGame(){
             document.getElementById('ovNameRow').textContent='';
             document.getElementById('ovStatsRow').textContent=`${S.strokes} strokes · par ${HOLES[S.holeIdx].par}`;
             document.getElementById('ovBtn').style.display='block';
-            document.getElementById('ovBtn').textContent = `HOLE ${S.holeIdx + 2} →`;
+            document.getElementById('ovBtn').textContent = 'NEXT HOLE';
             document.getElementById('ovSummaryBtn').style.display='none';
             document.getElementById('ovPlayAgainBtn').style.display='none';
             document.getElementById('overlay').classList.add('show');
@@ -5701,7 +5700,7 @@ function _tutShowTip(title, text, btnLabel, highlight, darken = true, position =
   
   document.getElementById('tutOverlayTitle').textContent = title;
   document.getElementById('tutOverlayText').textContent = text;
-  document.getElementById('tutOverlayBtn').textContent = btnLabel || 'GOT IT →';
+  document.getElementById('tutOverlayBtn').textContent = btnLabel || 'GOT IT';
   ov.classList.add('show');
 }
 
@@ -6534,13 +6533,13 @@ function vsShowHoleComparison(){
 
   const btn = document.getElementById('hcBtn');
   if (S.holeIdx >= S.endIdx || matchClinched) {
-      btn.textContent = 'FINAL RESULTS →';
+      btn.textContent = 'FINAL RESULTS';
       btn.onclick = () => {
           hcScreen.classList.remove('show');
           vsShowFinal();
       };
   } else {
-      btn.textContent = 'NEXT HOLE →';
+      btn.textContent = 'NEXT HOLE';
       btn.onclick = () => {
           hcScreen.classList.remove('show');
           S.holeIdx++;
@@ -6762,7 +6761,7 @@ function vsShowFinal(){
   renderVsReplayAndScoreboard(0);
 
   const btn = document.getElementById('hcBtn');
-  btn.textContent = 'BACK TO MENU →';
+  btn.textContent = 'BACK TO MENU';
   btn.onclick = () => {
       VS.active = false;
       document.getElementById('hcHoleTitle').style.display = '';
@@ -6899,7 +6898,7 @@ function vsGetCachedGrid(){
         <input class="profile-new-input" id="profileNewInput" placeholder="YOUR NAME" maxlength="10" autocomplete="off" spellcheck="false" style="margin-bottom:4px;" oninput="document.getElementById('newNameCount').textContent=this.value.length+'/10'">
         <div id="newNameCount" style="font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);text-align:right;margin-bottom:6px;">0/10</div>
         <div class="profile-new-row">
-          <button class="profile-save-btn" onclick="saveNewProfile()">CREATE →</button>
+          <button class="profile-save-btn" onclick="saveNewProfile()">CREATE</button>
           <button class="profile-cancel-btn" onclick="cancelNewProfile()">CANCEL</button>
         </div>
       </div>
@@ -6977,7 +6976,7 @@ function vsGetCachedGrid(){
 
 <div class="hio-overlay" id="hioOverlay">
   <div class="hio-ball" id="hioBall">⛳</div>
-  <div class="hio-title">THE BALL IS ON THE EDGE!</div>
+  <div class="hio-title">THE BALL IS IN THE AIR!</div>
   <div class="hio-sub" id="hioSub">ROLL DOUBLES TO HOLE IT</div>
   <div class="hio-dice-row">
     <div class="hio-die" id="hioDie1">?</div>
