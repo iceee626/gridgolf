@@ -1784,23 +1784,6 @@ const T_PUTT_3N = ()=>cells(['p1',20],['p2',13],['p3',3]);// ★★★ hole, nor
 const T_PUTT_3H = ()=>cells(['p1',16], ['p2',14],['p3',6]);// ★★★ hole, hard
 
 // ═══════════════════════════════════════
-// YARDAGE — difficulty-scaled advancement
-// Easy: longer shots (fewer shots needed → easier scoring)
-// Normal: baseline
-// Hard: shorter shots (more shots needed → harder scoring)
-// ═══════════════════════════════════════
-function randYds(zk){
-  const byDiff=[
-    {tee:{min:230,max:290},fwy:{min:185,max:255},rgh:{min:130,max:190}}, // easy
-    {tee:{min:220,max:280},fwy:{min:170,max:240},rgh:{min:110,max:170}}, // normal
-    {tee:{min:205,max:265},fwy:{min:150,max:215},rgh:{min:90, max:150}}, // hard
-  ];
-  const r=(byDiff[GAME_DIFF-1]||byDiff[1])[zk];
-  if(!r||r.min===0)return 0;
-  return Math.round(r.min+Math.random()*(r.max-r.min));
-}
-
-// ═══════════════════════════════════════
 // HOLES (Expanded to 18)
 // ═══════════════════════════════════════
 const HOLES=[
@@ -2416,21 +2399,52 @@ function updateYrd(){
 }
 
 function advanceYrd(zk){
-  if(['h2o','ob','grn','p1','p2','p3','hole'].includes(zk))return;
-  // Sand zone: always limited advance regardless of exit zone (bunker = short distance)
-  if(S.zone==='sand'){
-    const advance=Math.round(25+Math.random()*35);
-    S.yrdRemain=Math.max(5,S.yrdRemain-advance);
+  if (['h2o', 'ob', 'grn', 'p1', 'p2', 'p3', 'hole'].includes(zk)) return;
+
+  const isPar3 = HOLES[S.holeIdx].par === 3;
+  const isTee = S.zone === 'tee'; // This is the origin zone of the shot
+
+  // 1. Short escapes (Greenside Bunkers and Chip zones)
+  if (S.zone === 'sand' || S.zone === 'chip') {
+    const advance = Math.round(20 + Math.random() * 30);
+    S.yrdRemain = Math.max(5, S.yrdRemain - advance);
     return;
   }
-  if(zk==='chip'||zk==='sand'){
-    const advance=Math.round(30+Math.random()*30);
-    S.yrdRemain=Math.max(5,S.yrdRemain-advance);
+
+  // 2. Par 3 Tee Shots landing in a hazard (Rough/Sand/Chip)
+  // The ball travels all the way to the greenside area (5-25 yards left).
+  if (isPar3 && isTee) {
+    S.yrdRemain = Math.round(5 + Math.random() * 20);
     return;
   }
-  const gained=randYds(zk);
-  S.yrdRemain=Math.max(0,S.yrdRemain-gained);
-  if((zk==='fwy'||zk==='rgh')&&S.yrdRemain<5)S.yrdRemain=5;
+
+  // 3. Dynamic "Golf Club" Distance Logic
+  let dist = 0;
+  if (isTee) {
+    dist = Math.round(240 + Math.random() * 50); // Driver range (240-290)
+  } else {
+    if (S.yrdRemain > 220) {
+      dist = Math.round(190 + Math.random() * 50); // Wood / Long Iron (190-240)
+    } else if (S.yrdRemain >= 150) {
+      dist = Math.round(140 + Math.random() * 40); // Mid Iron (140-180)
+    } else {
+      // Approach shot (Short Iron/Wedge) - scaled to the distance remaining
+      dist = Math.round(S.yrdRemain * (0.8 + Math.random() * 0.3));
+    }
+  }
+
+  // 4. Apply distance penalties for landing in hazards
+  if (zk === 'rgh' || zk === 'sand' || zk === 'chip') {
+    const penalty = 0.80 + Math.random() * 0.10; // 10% - 20% distance loss
+    dist = Math.round(dist * penalty);
+  }
+
+  S.yrdRemain = Math.max(0, S.yrdRemain - dist);
+
+  // 5. Clamp yardage for hazards so we don't accidentally reach 0 yds (the green)
+  if ((zk === 'fwy' || zk === 'rgh' || zk === 'sand' || zk === 'chip') && S.yrdRemain < 5) {
+    S.yrdRemain = Math.round(5 + Math.random() * 10);
+  }
 }
 
 // ═══════════════════════════════════════
