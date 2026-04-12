@@ -2140,22 +2140,24 @@ function updateTVBanner(){
 
   const row2=document.getElementById('tvRow2');
   const puttStatus=document.getElementById('tvPuttStatus');
-  if(onGreen&&!S.holeDone){
+  if(onGreen){
     row2.classList.add('show');
-    puttStatus.className='tv-putt-status';
-    if(puttScore>=2)       {puttStatus.textContent='FOR EAGLE';puttStatus.classList.add('eagle-c');}
-    else if(puttScore===1) {puttStatus.textContent='FOR BIRDIE';puttStatus.classList.add('birdie-c');}
-    else if(puttScore===0) {puttStatus.textContent='FOR PAR';}
-    else if(puttScore===-1){puttStatus.textContent='FOR BOGEY';puttStatus.classList.add('bogey-c');}
-    else if(puttScore===-2){puttStatus.textContent='FOR DOUBLE BOGEY';puttStatus.classList.add('double-c');}
-    else if(puttScore===-3){puttStatus.textContent='FOR TRIPLE BOGEY';puttStatus.classList.add('double-c');}
-    else if(puttScore===-4){puttStatus.textContent='FOR QUADRUPLE BOGEY';puttStatus.classList.add('double-c');}
-    else if(puttScore===-5){puttStatus.textContent='FOR QUINTUPLE BOGEY';puttStatus.classList.add('double-c');}
-    else                   {puttStatus.textContent=`FOR ${Math.abs(puttScore)}+`;puttStatus.classList.add('double-c');}
+    if(!S.holeDone){
+      puttStatus.className='tv-putt-status';
+      if(puttScore>=2)       {puttStatus.textContent='FOR EAGLE';puttStatus.classList.add('eagle-c');}
+      else if(puttScore===1) {puttStatus.textContent='FOR BIRDIE';puttStatus.classList.add('birdie-c');}
+      else if(puttScore===0) {puttStatus.textContent='FOR PAR';}
+      else if(puttScore===-1){puttStatus.textContent='FOR BOGEY';puttStatus.classList.add('bogey-c');}
+      else if(puttScore===-2){puttStatus.textContent='FOR DOUBLE BOGEY';puttStatus.classList.add('double-c');}
+      else if(puttScore===-3){puttStatus.textContent='FOR TRIPLE BOGEY';puttStatus.classList.add('double-c');}
+      else if(puttScore===-4){puttStatus.textContent='FOR QUADRUPLE BOGEY';puttStatus.classList.add('double-c');}
+      else if(puttScore===-5){puttStatus.textContent='FOR QUINTUPLE BOGEY';puttStatus.classList.add('double-c');}
+      else                   {puttStatus.textContent=`FOR ${Math.abs(puttScore)}+`;puttStatus.classList.add('double-c');}
+    }
+    // If S.holeDone is true, it does nothing and retains the exact text and class it had before the shot
   } else {
     row2.classList.remove('show');
   }
-}
 
 // ═══════════════════════════════════════
 // GRID SELECTION — layout-driven
@@ -3757,6 +3759,9 @@ function saveEditProfile(){
   if(idx===activeIdx){
     PLAYER_NAME=name;
     updateMenuProfileDisplay();
+    // Live update the TV Banner if playing
+    const tvName = document.getElementById('tvName');
+    if (tvName) tvName.textContent = name;
   }
   renderProfileSlots();
   closeEditProfile();
@@ -6278,7 +6283,7 @@ function vsGetCachedGrid(){
         <div id="editProfileIconPreview" style="width:52px;height:52px;border-radius:50%;background:var(--c-tee);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;cursor:pointer;border:2px solid var(--border);" onclick="focusIconPicker()">🏌️</div>
         <div style="flex:1;">
           <div style="font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:5px;">DISPLAY NAME</div>
-         <input class="profile-new-input" id="profileNewInput" placeholder="YOUR NAME" maxlength="10" autocomplete="off" spellcheck="false">
+         <input class="profile-new-input" id="editProfileName" placeholder="YOUR NAME" maxlength="10" autocomplete="off" spellcheck="false">
         </div>
       </div>
       <div style="font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:8px;">CHOOSE ICON</div>
@@ -6300,8 +6305,8 @@ function vsGetCachedGrid(){
     <div class="profile-body">
       <div class="profile-slots" id="profileSlots"></div>
       <div class="profile-new-form" id="profileNewForm">
-        <input class="profile-new-input" id="editProfileName" placeholder="YOUR NAME" maxlength="10" autocomplete="off" spellcheck="false" style="margin-bottom:4px;" oninput="document.getElementById('editNameCount').textContent=this.value.length+'/10'">
-<div id="editNameCount" style="font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);text-align:right;margin-bottom:6px;">0/10</div>
+        <input class="profile-new-input" id="profileNewInput" placeholder="YOUR NAME" maxlength="10" autocomplete="off" spellcheck="false" style="margin-bottom:4px;" oninput="document.getElementById('newNameCount').textContent=this.value.length+'/10'">
+        <div id="newNameCount" style="font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);text-align:right;margin-bottom:6px;">0/10</div>
         <div class="profile-new-row">
           <button class="profile-save-btn" onclick="saveNewProfile()">CREATE →</button>
           <button class="profile-cancel-btn" onclick="cancelNewProfile()">CANCEL</button>
