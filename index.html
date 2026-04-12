@@ -3355,7 +3355,7 @@ function showRoundEnd(){
     const vsToggle = document.getElementById('vsToggleRow');
     if (vsToggle) vsToggle.style.display = 'none';
 
-    let statsContainer = document.getElementById('hcVsStats');
+    statsContainer = document.getElementById('hcVsStats');
     if (!statsContainer) {
         statsContainer = document.createElement('div');
         statsContainer.id = 'hcVsStats';
