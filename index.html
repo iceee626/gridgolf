@@ -3151,7 +3151,6 @@ function completeHole(){
   else totSpan.style.color='#e05252';
 
   // Populate Shot Replay mimicking the Shot Log
-  const logList = document.getElementById('hcLogList');
   logList.innerHTML = '';
   [...S.log].reverse().forEach(e => {
       const zd = Z[e.zk] || Z.fwy;
