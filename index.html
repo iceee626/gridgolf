@@ -6561,7 +6561,7 @@ function vsShowFinal(){
   const fmtD=(d)=>d===0?'E':d>0?'+'+d:''+d;
   const d1=t1-par,d2=t2-par;
   
-  let centerText = '';
+  let winnerText = '';
   let p1Color = 'var(--text)', p2Color = 'var(--text)';
   
   if (VS.format === 'match') {
@@ -6569,31 +6569,31 @@ function vsShowFinal(){
           const lead = VS.matchScore[0] - VS.matchScore[1];
           const holesLeft = Math.max(0, S.endIdx - S.holeIdx);
           if (holesLeft > 0 && lead > holesLeft) {
-              centerText = `${p1.name} WINS ${lead}&${holesLeft}!`;
+              winnerText = `${p1.name} WINS ${lead}&${holesLeft}!`;
           } else {
-              centerText = `${p1.name} WINS!`;
+              winnerText = `${p1.name} WINS!`;
           }
           p1Color = 'var(--gold)';
       } else if (VS.matchScore[1] > VS.matchScore[0]) {
           const lead = VS.matchScore[1] - VS.matchScore[0];
           const holesLeft = Math.max(0, S.endIdx - S.holeIdx);
           if (holesLeft > 0 && lead > holesLeft) {
-              centerText = `${p2.name} WINS ${lead}&${holesLeft}!`;
+              winnerText = `${p2.name} WINS ${lead}&${holesLeft}!`;
           } else {
-              centerText = `${p2.name} WINS!`;
+              winnerText = `${p2.name} WINS!`;
           }
           p2Color = 'var(--gold)';
       } else {
-          centerText = "IT'S A TIE!";
+          winnerText = "IT'S A TIE!";
       }
   } else {
-      if (t1 < t2) { centerText = `${p1.name} WINS!`; p1Color = 'var(--gold)'; }
-      else if (t2 < t1) { centerText = `${p2.name} WINS!`; p2Color = 'var(--gold)'; }
-      else { centerText = "IT'S A TIE!"; }
+      if (t1 < t2) { winnerText = `${p1.name} WINS!`; p1Color = 'var(--gold)'; }
+      else if (t2 < t1) { winnerText = `${p2.name} WINS!`; p2Color = 'var(--gold)'; }
+      else { winnerText = "IT'S A TIE!"; }
   }
   
   const hcScreen = document.getElementById('hcScreen');
-  document.getElementById('hcHoleTitle').style.display = 'none'; // Hide the default text
+  document.getElementById('hcHoleTitle').style.display = 'none';
   document.getElementById('hcRndBadge').style.display = 'none';
 
   const getColor = (d) => d < 0 ? 'var(--gold)' : d === 0 ? 'var(--c-fwyl)' : '#e05252';
@@ -6632,14 +6632,22 @@ function vsShowFinal(){
       document.querySelector('.hc-card').appendChild(vsContainer);
   }
   vsContainer.style.display = 'block';
+
+  // Add the pulse animation style if it doesn't already exist
+  if(!document.getElementById('pulseStyle')){
+      const s = document.createElement('style'); s.id = 'pulseStyle';
+      s.textContent = '@keyframes pulse { from { opacity: 0.7; transform: scale(0.98); } to { opacity: 1; transform: scale(1.05); } }';
+      document.head.appendChild(s);
+  }
+
+  // Notice: The pill text below the VS container has been removed here.
   vsContainer.innerHTML = `
-    <div style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--gold);letter-spacing:3px;margin-bottom:24px;">FINAL RESULTS</div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--gold);letter-spacing:3px;margin-bottom:24px;text-align:center;animation:pulse 1s infinite alternate;">${winnerText}</div>
     <div style="display:flex;justify-content:space-around;align-items:center;">
         <div style="flex:1;text-align:center;">${p1Html}</div>
         <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--border);padding-bottom:20px;">VS</div>
         <div style="flex:1;text-align:center;">${p2Html}</div>
     </div>
-    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--text);margin-top:16px;text-align:center;letter-spacing:1px;background:rgba(255,255,255,.05);padding:6px;border-radius:8px;">${centerText}</div>
   `;
 
   const stats = [
@@ -6682,7 +6690,7 @@ function vsShowFinal(){
       });
   }
 
-  const scoreboardTitle = Array.from(document.querySelectorAll('#hcScreen .sec-title')).find(t => t.textContent.trim() === 'SCORECARD');
+  const scoreboardTitle = Array.from(document.querySelectorAll('#hcScreen .sec-title')).find(t => t.textContent.trim() === 'SCOREBOARD');
   if (scoreboardTitle) scoreboardTitle.style.display = 'none';
 
   const replayTitle = document.querySelector('#hcScreen .sec-title');
@@ -6694,12 +6702,15 @@ function vsShowFinal(){
   if (!statsContainer) {
       statsContainer = document.createElement('div');
       statsContainer.id = 'hcVsStats';
-      statsContainer.style.cssText = 'flex-shrink:0; margin-bottom:16px; max-height:160px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none;';
       document.getElementById('hcLogList').parentNode.insertBefore(statsContainer, document.getElementById('hcLogList'));
   }
+  // Setup container relative positioning to make sticky top header work
+  statsContainer.style.cssText = 'flex-shrink:0; margin-bottom:16px; max-height:160px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; position:relative;';
   statsContainer.style.display = 'block';
 
-  let statsHtml = `<div class="sec-title" style="margin-bottom:12px;">STATISTICS</div>`;
+  // Pinned Header
+  let statsHtml = `<div class="sec-title" style="margin-bottom:12px; display:flex; justify-content:center; position:sticky; top:0; background:var(--dark); z-index:5; padding:8px 0;">STATISTICS</div>`;
+  
   stats.forEach(s => {
       let c1 = 'var(--text)', c2 = 'var(--text)';
       if (s.p1 !== s.p2) {
@@ -6740,7 +6751,7 @@ function vsShowFinal(){
   }
   vsToggle.style.display = 'flex';
   vsToggle.innerHTML = `
-      <div style="font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" id="vsToggleTitle">SCORECARD</div>
+      <div style="font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" id="vsToggleTitle">SCOREBOARD</div>
       <div style="flex:1; height:1px; background:var(--border);"></div>
       <div style="display:flex; gap:6px;">
           <button id="vsPill0" onclick="renderVsReplayAndScoreboard(0)" style="background:var(--c-fwy); color:#fff; border:1px solid var(--c-fwyl); border-radius:14px; padding:6px 12px; font-family:'Sen',sans-serif; font-size:10px; font-weight:bold; cursor:pointer; transition:all 0.2s;">${p1.name.substring(0, 8)}</button>
@@ -6754,7 +6765,7 @@ function vsShowFinal(){
   btn.textContent = 'BACK TO MENU →';
   btn.onclick = () => {
       VS.active = false;
-      document.getElementById('hcHoleTitle').style.display = ''; // Restore header element
+      document.getElementById('hcHoleTitle').style.display = '';
       clearSavedGame();
       hcScreen.classList.remove('show');
       returnToMenu();
