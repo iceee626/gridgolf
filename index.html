@@ -121,8 +121,8 @@ header {
 }
 header .sc-wrap {
   margin-bottom: 0;
-  border-radius: 8px 8px 0 0;
-  border-bottom-color: transparent;
+  border-radius: 10px;
+  overflow: hidden;
 }
 .logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:4px;}
 .logo{font-family:'Bebas Neue',cursive;font-size:clamp(20px, 6vw, 28px);letter-spacing:2px;line-height:1;text-align:center;margin:0;}
@@ -446,7 +446,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .tv-playername{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .tv-holeinfo{font-family:'Sen', sans-serif;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:1px;line-height:1.3;}
 /* Shot number track */
-.tv-shots{display:flex;gap:5px;align-items:center;flex:1;justify-content:center;padding:0 4px;}
+.tv-shots{display:flex;gap:5px;align-items:center;flex:1;justify-content:center;padding:0 4px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;} .tv-shots::-webkit-scrollbar { display:none; }
 .tv-sn{
   width:22px;height:22px;
   display:flex;align-items:center;justify-content:center;
@@ -1999,7 +1999,7 @@ function buildScorecard(){
   pr.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colWidth})`;
   sr.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colWidth})`;
   
-  headRow.innerHTML = '<div class="sc-lbl"></div>';
+  headRow.innerHTML = '<div class="sc-lbl">H</div>';
   activeHoles.forEach((_, i) => {
     const d=document.createElement('div'); d.textContent = S.startIdx + i + 1; headRow.appendChild(d);
   });
@@ -3094,7 +3094,7 @@ function completeHole(){
   const t2 = document.createElement('div'); t2.textContent = runningPar; t2.style.background='rgba(0,0,0,.2)'; scPar.appendChild(t2);
   const t3 = document.createElement('div');
   const runDiff = runningTot - runningPar;
-  t3.textContent = runDiff === 0 ? 'E' : runDiff > 0 ? `+${runDiff}` : `${runDiff}`;
+  t3.textContent = runningTot;
   t3.style.background='rgba(0,0,0,.2)';
   t3.style.color = runDiff < 0 ? 'var(--gold)' : runDiff > 0 ? '#e05252' : 'var(--c-fwyl)';
   t3.style.fontWeight = 'bold';
@@ -3348,8 +3348,8 @@ function openSummary(viewRound = S.currentRound){
     const d=hist.strokes-hist.par;
     let scoreColor='var(--text)'; let resultLabel='';
     if(d<=-2){scoreColor='var(--gold)';resultLabel='Eagle';}
-    else if(d===-1){scoreColor='#ff6b9d';resultLabel='Birdie';}
-    else if(d===0){scoreColor='var(--c-fwyl)';resultLabel='Par';}
+    else if(d===-1){scoreColor='#52c87a';resultLabel='Birdie';}
+    else if(d===0){scoreColor='var(--text)';resultLabel='Par';}
     else if(d===1){scoreColor='#ff8c5a';resultLabel='Bogey';}
     else if(d===2){scoreColor='#e05252';resultLabel='Double';}
     else if(d===3){scoreColor='#e05252';resultLabel='Triple';}
@@ -4695,8 +4695,13 @@ function applyWildcardEffect(wc){
         if(h.par===3&&S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; }
         break;
     case 'the_ferrett':
-        WCS.ferrettActive=true;
-        if(S.zone==='sand' && !nextVisible) { buildGrid(); toastMsg = null; }
+        if (S.zone === 'sand' && S.yrdRemain > 87) {
+            toastMsg = `🦡 The Ferrett only works on greenside bunkers!`;
+            applied = false;
+        } else {
+            WCS.ferrettActive=true;
+            if(S.zone==='sand' && !nextVisible) { buildGrid(); toastMsg = null; }
+        }
         break;
     case 'hole_in_one':
         WCS.hioActive=true;
