@@ -146,7 +146,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .sc-active{background:rgba(58,122,48,.2);color:var(--c-fwyl)!important;}
 .sc-eagle{color:var(--gold)!important;font-weight:700;}
 .sc-birdie{color:#ff6b9d!important;font-weight:700;}
-.sc-bogey{color:#ff8c5a!important;}
+.sc-bogey{color:#e05252!important;}
 .sc-double{color:#e05252!important;}
 .sc-cell-btn{cursor:pointer;border-radius:3px;transition:opacity .15s;}
 .sc-cell-btn:hover{opacity:.7;background:rgba(255,255,255,.08);}
@@ -470,12 +470,9 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 }
 /* Past shots — plain number slightly brighter */
 .tv-sn.past{color:rgba(255,255,255,.7);}
-/* Current shot — circled */
-.tv-sn.current{color:#fff;}
-.tv-sn.current::before{
-  content:'';position:absolute;inset:-1px;
-  border:2px solid #fff;border-radius:50%;
-}
+/* Current shot — white background box */
+.tv-sn.current{color:#1e3a5f;background:#fff;border-radius:4px;}
+.tv-sn.current::before{content:none;}
 /* Future shots — dim */
 .tv-sn.future{color:rgba(255,255,255,.25);}
 /* On green: symbol replaces the circle style */
@@ -515,7 +512,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .tv-putt-status.double-c{color:#ffb0b0;}
 
 /* FINAL SUMMARY SCREEN — full page, no popup */
-.summary-modal{display:none;position:fixed;inset:0;background:var(--dark);z-index:400;overflow-y:auto;padding:0 0 50px;}
+.summary-modal{display:none;position:fixed;inset:0;background:var(--dark);z-index:400;overflow-y:auto;padding:0 0 calc(env(safe-area-inset-bottom) + 80px);}
 .summary-modal.show{display:block;}
 .summary-card{background:transparent;max-width:460px;margin:0 auto;}
 .sum-head{
@@ -1053,7 +1050,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 
 <div class="setup-screen" id="courseScreen" style="display:none">
   <div class="setup-card">
-    <button class="setup-back-btn" onclick="navBack('mode')">← BACK</button>
+    <button class="setup-back-btn" onclick="navBackFromCourse()">← BACK</button>
     <div class="setup-title">SELECT COURSE</div>
     
     <button class="course-btn" onclick="navToDiff()">
@@ -1198,7 +1195,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 <div class="hc-screen" id="hcScreen">
   <div class="hc-header">
     <span id="hcHoleTitle">HOLE 1 COMPLETE</span>
-    <div class="hc-rnd-badge" id="hcRndBadge">RND 1</div>
+    <div class="hc-rnd-badge" id="hcRndBadge">ROUND 1</div>
   </div>
   <div class="hc-card">
     <div class="hc-card-icon" id="hcIcon">🐦</div>
@@ -2133,8 +2130,9 @@ function updateTVBanner(){
       else                   puttClass='putt-double';
     }
 
-    const currentShot=S.shotNum;
-    const totalSlots=Math.max(h.par, currentShot);
+    const nextShotVisible = document.getElementById('nextShotBtn')?.style.display === 'block';
+    const currentShot = nextShotVisible ? S.shotNum - 1 : S.shotNum;
+    const totalSlots=Math.max(h.par, S.shotNum);
     for(let i=1;i<=totalSlots;i++){
       const sn=document.createElement('div');
       if(i<currentShot){
@@ -3135,7 +3133,7 @@ function completeHole(){
 
   const hcScreen = document.getElementById('hcScreen');
   document.getElementById('hcHoleTitle').textContent = `HOLE ${S.holeIdx + 1} COMPLETE`;
-  document.getElementById('hcRndBadge').textContent = `RND ${S.currentRound}`;
+  document.getElementById('hcRndBadge').textContent = `ROUND ${S.currentRound}`;
   document.getElementById('hcRndBadge').style.display = S.totalRounds > 1 ? 'block' : 'none';
 
   document.getElementById('hcIcon').textContent = emoji;
@@ -3400,17 +3398,92 @@ function showRoundEnd(){
     updateProfileAfterRound(roundTotal, roundPar);
     updateProfileStatsAfterRound(roundTotal, roundPar, S._wcUsedThisRound||0);
     saveGameState();
-    document.getElementById('ovEmoji').textContent=roundDiff<0?'🏆':roundDiff===0?'⛳':'🏌️';
-    document.getElementById('ovTitle').textContent=`ROUND ${S.currentRound} COMPLETE`;
-    
+
+    const hcScreen = document.getElementById('hcScreen');
+    document.getElementById('hcHoleTitle').textContent = `ROUND ${S.currentRound} COMPLETE`;
+    document.getElementById('hcRndBadge').style.display = 'none';
+
+    // Show the score card elements (in case VS hid them)
+    ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.style.display = '';
+    });
+    const vsC = document.getElementById('hcVsContainer');
+    if(vsC) vsC.style.display = 'none';
+    const vsT = document.getElementById('vsToggleRow');
+    if(vsT) vsT.style.display = 'none';
+
     const rDiffStr = roundDiff===0?'E':roundDiff>0?`+${roundDiff}`:`${roundDiff}`;
-    document.getElementById('ovNameRow').textContent=`ROUND SCORE: ${rDiffStr}`;
-    document.getElementById('ovStatsRow').textContent=`${roundTotal} strokes · par ${roundPar}`;
-    
-    document.getElementById('ovBtn').style.display='none';
-    document.getElementById('ovSummaryBtn').textContent='VIEW SUMMARY';
-    document.getElementById('ovSummaryBtn').style.display='block';
-    document.getElementById('overlay').classList.add('show');
+    const rEmoji = roundDiff<0?'🏆':roundDiff===0?'⛳':'🏌️';
+    let rColor = roundDiff<0?'var(--gold)':roundDiff===0?'var(--c-fwyl)':'#e05252';
+
+    document.getElementById('hcIcon').textContent = rEmoji;
+    const hcTitle = document.getElementById('hcTitle');
+    hcTitle.textContent = `ROUND ${S.currentRound} COMPLETE`;
+    hcTitle.style.color = rColor;
+    hcTitle.style.fontSize = '36px';
+    document.getElementById('hcSub').textContent = `${roundTotal} STROKES · PAR ${roundPar}`;
+
+    const totSpan = document.getElementById('hcTotSpan');
+    totSpan.textContent = rDiffStr;
+    totSpan.style.color = rColor;
+
+    // Show shot log for the last hole
+    const logList2 = document.getElementById('hcLogList');
+    if(logList2){
+      logList2.style.display = 'flex';
+      logList2.innerHTML = '';
+      [...S.log].reverse().forEach(e => {
+        const zd = Z[e.zk] || Z.fwy;
+        const item = document.createElement('div');
+        item.className = 'log-entry';
+        item.style.marginBottom = '4px';
+        item.innerHTML = `<div class="log-n">${e.num}</div><div class="log-dot" style="background:${zd.color}"></div><span style="color:var(--text);flex:1">${e.desc}</span>${(e.note&&e.note!=='+1')?`<span class="log-r" style="color:${e.pen?'#e05252':'var(--muted)'}">${e.note}</span>`:''}`;
+        logList2.appendChild(item);
+      });
+    }
+
+    // Rebuild mini scorecard
+    const scHead2 = document.getElementById('hcScHead');
+    const scPar2 = document.getElementById('hcScPar');
+    const scYou2 = document.getElementById('hcScYou');
+    scHead2.innerHTML = '<div class="sc-lbl">H</div>';
+    scPar2.innerHTML = '<div class="sc-lbl">PAR</div>';
+    scYou2.innerHTML = '<div class="sc-lbl">YOU</div>';
+    const activeHoles2 = HOLES.slice(S.startIdx, S.endIdx + 1);
+    activeHoles2.forEach((ah, i) => {
+      const absIdx = S.startIdx + i;
+      const v = S.scorecards[S.currentRound-1][absIdx];
+      const d1 = document.createElement('div'); d1.textContent = absIdx + 1; scHead2.appendChild(d1);
+      const d2 = document.createElement('div'); d2.textContent = ah.par; scPar2.appendChild(d2);
+      const d3 = document.createElement('div');
+      if(v!==null){
+        const diff = v - ah.par;
+        d3.innerHTML = `<span class="sc-sym${diff<=-2?' sc-sym-eagle':diff===-1?' sc-sym-birdie':diff===1?' sc-sym-bogey':diff>=2?' sc-sym-double':''}">${v}</span>`;
+      } else { d3.textContent = '•'; d3.style.cssText='display:flex;align-items:center;justify-content:center;'; }
+      scYou2.appendChild(d3);
+    });
+    const colW2 = activeHoles2.length <= 9 ? '1fr' : '34px';
+    const tot1 = document.createElement('div'); tot1.textContent='TOT'; tot1.style.background='rgba(0,0,0,.2)'; scHead2.appendChild(tot1);
+    const tot2 = document.createElement('div'); tot2.textContent=roundPar; tot2.style.background='rgba(0,0,0,.2)'; scPar2.appendChild(tot2);
+    const tot3 = document.createElement('div'); tot3.textContent=roundTotal; tot3.style.background='rgba(0,0,0,.2)'; tot3.style.color=rColor; tot3.style.fontWeight='bold'; tot3.style.cssText+='display:flex;align-items:center;justify-content:center;'; scYou2.appendChild(tot3);
+    scHead2.style.gridTemplateColumns = `40px repeat(${activeHoles2.length}, ${colW2}) 40px`;
+    scPar2.style.gridTemplateColumns = `40px repeat(${activeHoles2.length}, ${colW2}) 40px`;
+    scYou2.style.gridTemplateColumns = `40px repeat(${activeHoles2.length}, ${colW2}) 40px`;
+    const scWrap2 = document.querySelector('#hcScreen .sc-wrap');
+    if(scWrap2) scWrap2.style.display = '';
+    document.querySelectorAll('#hcScreen .sec-title').forEach(t => t.style.display = '');
+    const statsC = document.getElementById('hcVsStats');
+    if(statsC) statsC.style.display = 'none';
+
+    const btn = document.getElementById('hcBtn');
+    btn.textContent = `START ROUND ${S.currentRound + 1} →`;
+    btn.onclick = () => {
+        hcScreen.classList.remove('show');
+        openSummary(S.currentRound);
+    };
+
+    hcScreen.classList.add('show');
   }
 }
 
@@ -5600,7 +5673,6 @@ let _tutHoleKey = 'h1';
 
 function startTutorial(){
   document.getElementById('tutPrompt').classList.remove('show');
-  clearSavedGame();
   TUT.active = true;
   TUT.blocked = true;
   _tutStep = -1;
@@ -6181,6 +6253,15 @@ function vsSetDiff(d){
   [1,2,3].forEach(i=>document.getElementById('vsDiff-'+i)?.classList.toggle('active', i===d));
 }
 
+function navBackFromCourse(){
+  hideScreen('courseScreen');
+  if(_lastMenuScreen === 'vsOptionsScreen'){
+    showScreen('vsOptionsScreen','flex');
+  } else {
+    navBack('mode');
+  }
+}
+  
 function vsStartFromOptions(){
   SETUP.mode = 'custom';
   SETUP.rounds = 1;
@@ -6695,7 +6776,7 @@ function vsShowFinal(){
   const replayTitle = document.querySelector('#hcScreen .sec-title');
   if (replayTitle) replayTitle.style.display = 'none';
   const logList = document.getElementById('hcLogList');
-  if (logList) logList.style.display = 'none';
+  if (logList) logList.style.display = 'flex';
 
   let statsContainer = document.getElementById('hcVsStats');
   if (!statsContainer) {
@@ -6743,11 +6824,8 @@ function vsShowFinal(){
       vsToggle.id = 'vsToggleRow';
       vsToggle.style.cssText = "display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-shrink:0;";
   }
-  if (scoreboardTitle) {
-      scoreboardTitle.parentNode.insertBefore(vsToggle, scoreboardTitle.nextSibling);
-  } else {
-      document.getElementById('hcLogList').parentNode.insertBefore(vsToggle, statsContainer.nextSibling);
-  }
+  // Always insert vsToggle (SCORECARD + player pills) after the statsContainer
+  statsContainer.parentNode.insertBefore(vsToggle, statsContainer.nextSibling);
   vsToggle.style.display = 'flex';
   vsToggle.innerHTML = `
       <div style="font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" id="vsToggleTitle">SCORECARD</div>
@@ -6975,7 +7053,7 @@ function vsGetCachedGrid(){
 </div>
 
 <div class="hio-overlay" id="hioOverlay">
-  <div class="hio-ball" id="hioBall">⛳</div>
+  <div class="hio-ball" id="hioBall"><img src="golf_ball.png" style="width:56px;height:56px;object-fit:contain;"></div>
   <div class="hio-title">THE BALL IS IN THE AIR!</div>
   <div class="hio-sub" id="hioSub">ROLL DOUBLES TO HOLE IT</div>
   <div class="hio-dice-row">
