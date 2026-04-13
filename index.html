@@ -472,6 +472,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .tv-sn.past{color:rgba(255,255,255,.7);}
 /* Current shot — white pill, dark number */
 .tv-sn.current{color:#1e3a5f !important;background:#fff;border-radius:4px;}
+.tv-sn.current.over-par{background:#ffb0b0;color:#5a1a1a !important;}
 .tv-sn.current::before{content:none !important;}
 .tv-sn.current::after{content:none !important;}
 /* Future shots — dim */
@@ -782,7 +783,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .sc-sym { display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; line-height:1; width:18px; height:18px; margin: 2px; }
 .sc-sym-birdie { color:#52c87a; border: 1px solid #52c87a; border-radius: 50%; }
 .sc-sym-eagle { color:var(--gold); border: 1px solid var(--gold); outline: 1px solid var(--gold); outline-offset: 1px; border-radius: 50%; }
-.sc-sym-bogey { color:#ff8c5a; border: 1px solid #ff8c5a; border-radius: 2px; }
+.sc-sym-bogey { color:#e05252; border: 1px solid #e05252; border-radius: 2px; }
 .sc-sym-double { color:#e05252; border: 1px solid #e05252; outline: 1px solid #e05252; outline-offset: 1px; border-radius: 2px; }
 
 /* HOLE IN ONE CONFIRMATION */
@@ -2072,7 +2073,7 @@ function loadHole(){
   }
 
   const h=HOLES[S.holeIdx];
-  S.zone='tee';S.strokes=0;S.shotNum=1;S.shotCount=0;
+  S.zone='tee';S.strokes=0;S.shotNum=1;S._tvShotNum=1;S.shotCount=0;
   S._wcsUsedThisHole=[];S._wcNextShotNote=null;
   S._skipCelebration=false;S._preserveGrid=false;S._forceGrid=false;
   S._mulliganJustFired=false;S._puttWcUsed=false;S._pendingPuttResult=null;
@@ -2135,6 +2136,7 @@ function updateTVBanner(){
     const displayShot = S._tvShotNum || 1;
     const totalSlots = Math.max(h.par, displayShot);
     const showPuttTarget = onGreen && displayShot > S.strokes;
+    const showOverParShot = displayShot > h.par;
 
     // Putt class only applies when we're on the green AND it's the active display shot
     const puttScore = h.par - S.strokes - 1;
@@ -2152,7 +2154,7 @@ function updateTVBanner(){
       if(i < displayShot){
         sn.className='tv-sn past';
       } else if(i === displayShot){
-        sn.className=`tv-sn current${showPuttTarget?' '+puttClass:''}`;
+        sn.className=`tv-sn current${showPuttTarget?' '+puttClass:''}${showOverParShot?' over-par':''}`;
       } else {
         sn.className='tv-sn future';
       }
@@ -3642,6 +3644,9 @@ function openSummary(viewRound = S.currentRound){
 
   const holeList=document.createElement('div');
   holeList.style.cssText='display:flex;flex-direction:column;gap:4px;';
+  const detailHost=document.createElement('div');
+  detailHost.id='summaryInlineDetailHost';
+  detailHost.style.cssText='display:flex;flex-direction:column;gap:6px;margin-top:8px;';
   activeHoles.forEach((h,i)=>{
     const absoluteIdx = S.startIdx + i;
     const hist=histData[absoluteIdx];
@@ -3679,10 +3684,11 @@ function openSummary(viewRound = S.currentRound){
       <span style="display:flex;gap:3px;align-items:center;margin:0 6px;">${zoneDots}</span>
       <span style="font-family:'Bebas Neue',cursive;font-size:18px;color:${scoreColor};min-width:16px;text-align:center;">${hist.strokes}</span>
     `;
-    row.onclick=()=>openHistInline(absoluteIdx, body, viewRound);
+    row.onclick=()=>openHistInline(absoluteIdx, holeList, detailHost, viewRound);
     holeList.appendChild(row);
   });
   body.appendChild(holeList);
+  body.appendChild(detailHost);
 
   const btnRow=document.createElement('div');
   btnRow.style.cssText='display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:24px;padding-bottom:4px;flex-shrink:0;';
@@ -3804,10 +3810,10 @@ function highlightInlineGrid(idx, log, container) {
   if(wrap) renderHistGrid(wrap, log[idx].gridSnap, log, idx);
 }  
 
-function openHistInline(absoluteIdx, summaryBody, roundIdx){
+function openHistInline(absoluteIdx, holeList, detailHost, roundIdx){
   const hist=S.histories[roundIdx-1][absoluteIdx];
   if(!hist)return;
-  const rows=summaryBody.querySelectorAll('[data-hole-idx]');
+  const rows=holeList.querySelectorAll('[data-hole-idx]');
   let targetRow=null;
   rows.forEach(r=>{if(parseInt(r.dataset.holeIdx)===absoluteIdx)targetRow=r;});
 
@@ -3856,10 +3862,11 @@ function openHistInline(absoluteIdx, summaryBody, roundIdx){
   closeBtn.onclick=()=>{ detail.remove(); rows.forEach(r=>r.style.borderColor='var(--border)'); };
   detail.appendChild(closeBtn);
 
-  const parent=targetRow?targetRow.parentNode:summaryBody;
-  if(targetRow&&targetRow.nextSibling) parent.insertBefore(detail, targetRow.nextSibling);
-  else if(targetRow) parent.appendChild(detail);
-  else summaryBody.appendChild(detail);
+  if(detailHost){
+    detailHost.appendChild(detail);
+  } else if(targetRow && targetRow.parentNode){
+    targetRow.parentNode.appendChild(detail);
+  }
   detail.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
@@ -5294,6 +5301,10 @@ function closeWcReveal(){
 // ═══════════════════════════════════════
 function saveGameState(){
   if(!S||S.holeIdx===undefined || TUT.active)return;
+  if(!VS.active && S.holeDone && S.holeIdx >= S.endIdx && S.currentRound >= S.totalRounds){
+    clearSavedGame();
+    return;
+  }
   const save={
     mode:S.mode, totalRounds:S.totalRounds, currentRound:S.currentRound, holesConfig:S.holesConfig,
     startIdx:S.startIdx, endIdx:S.endIdx,
@@ -5331,6 +5342,7 @@ function saveGameState(){
 function hasSavedGame(){
   try{
     const s=JSON.parse(localStorage.getItem('gg_save')||'null');
+    if(s && !s.vsState && s.holeDone && s.holeIdx >= s.endIdx && (s.currentRound||1) >= (s.totalRounds||1)) return false;
     return s && s.scorecards && (s.scorecards[0].some(v=>v!==null) || (s.holeIdx>s.startIdx) || (s.strokes>0&&s.shotNum>1) || s.currentRound > 1);
   }catch{return false;}
 }
@@ -5473,7 +5485,9 @@ function abandonCurrentGame(){
 }
 
 function returnToMenuSave(){
-  if(!TUT.active) saveGameState();
+  const roundFinished = !VS.active && S.holeDone && S.holeIdx >= S.endIdx && S.currentRound >= S.totalRounds;
+  if(roundFinished) clearSavedGame();
+  else if(!TUT.active) saveGameState();
   VS.active = false;
   TUT.active = false;
   document.getElementById('overlay').classList.remove('show');
