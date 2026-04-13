@@ -345,11 +345,12 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .tee-off-btn:hover{background:var(--c-fwyl);}
 
 /* Summary tabs */
-.sum-tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;margin-bottom:12px;border-bottom:1px solid var(--border);align-items:center;}
+.sum-tabs{display:flex;gap:8px;overflow-x:auto;padding:8px 0 10px;margin-bottom:10px;align-items:center;}
 .sum-tab{
-  background:rgba(240,192,64,.08);color:var(--gold);padding:4px 10px;border-radius:12px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:rgba(240,192,64,.08);color:var(--gold);padding:4px 8px;border-radius:12px;
   font-size:10px;border:1px solid rgba(240,192,64,.3);font-family:'Sen',sans-serif;letter-spacing:1px;
-  cursor:pointer;white-space:nowrap;text-transform:uppercase;font-weight:700;
+  cursor:pointer;white-space:nowrap;text-transform:uppercase;font-weight:700;min-height:24px;
 }
 .sum-tab.active{background:rgba(240,192,64,.18);color:var(--gold);border-color:rgba(240,192,64,.45);}
 
@@ -3571,11 +3572,11 @@ function openSummary(viewRound = S.currentRound){
   sc.className = 'sc-table-wrapper';
   sc.style.cssText='display:block;overflow-x:auto;overflow-y:hidden;flex-shrink:0;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;-webkit-overflow-scrolling:touch;';
   const table=document.createElement('table');
-  table.style.cssText=`width:100%;min-width:${Math.max(320, (activeHoles.length + 2) * 42)}px;border-collapse:collapse;font-family:"Sen",sans-serif;font-size:11px;`;
+  table.style.cssText=`width:100%;min-width:${Math.max(320, (activeHoles.length + 2) * 34)}px;border-collapse:collapse;font-family:"Sen",sans-serif;font-size:10px;`;
 
   const td=(txt,styles='',cls='')=>{
     const c=document.createElement('td'); c.textContent=txt;
-    c.style.cssText='padding:6px 4px;text-align:center;border:1px solid var(--border);'+styles;
+    c.style.cssText='padding:5px 3px;text-align:center;border:1px solid var(--border);'+styles;
     if(cls)c.className=cls; return c;
   };
 
@@ -3598,7 +3599,7 @@ function openSummary(viewRound = S.currentRound){
   const scoreCells=[PLAYER_NAME, ...activeHoles.map((h,i)=>scData[S.startIdx+i] !== null ? scData[S.startIdx+i] : '–'), roundTotal];
   scoreCells.forEach((v,i)=>{
     const cell=document.createElement('td');
-    cell.style.cssText='padding:4px 2px;text-align:center;border:1px solid var(--border);font-size:12px;font-weight:700;'+(i===activeHoles.length+1?'background:rgba(0,0,0,.2);':'');
+    cell.style.cssText='padding:3px 2px;text-align:center;border:1px solid var(--border);font-size:11px;font-weight:700;'+(i===activeHoles.length+1?'background:rgba(0,0,0,.2);':'');
     if(i===0){
       cell.textContent=v;
       cell.style.cssText+='text-align:left;padding-left:8px;font-family:"Bebas Neue",cursive;font-size:13px;letter-spacing:1px;';
@@ -3636,7 +3637,7 @@ function openSummary(viewRound = S.currentRound){
     runningDiff+=score-h.par; return runningDiff;
   }),roundDiff].forEach((v,i)=>{
     const cell=document.createElement('td');
-    cell.style.cssText='padding:5px 2px;text-align:center;border:1px solid var(--border);font-family:"Sen",sans-serif;font-size:10px;'+(i===activeHoles.length+1?'background:rgba(0,0,0,.2);font-weight:700;':'')+(i===0?'text-align:left;padding-left:8px;':'');
+    cell.style.cssText='padding:4px 2px;text-align:center;border:1px solid var(--border);font-family:"Sen",sans-serif;font-size:9px;'+(i===activeHoles.length+1?'background:rgba(0,0,0,.2);font-weight:700;':'')+(i===0?'text-align:left;padding-left:8px;':'');
     if(i===0 || v===null){cell.textContent=v===null?'–':'±';cell.style.color='var(--muted)';diffRow.appendChild(cell);return;}
     const txt=v===0?'E':v>0?`+${v}`:`${v}`;
     cell.textContent=txt;
@@ -4427,8 +4428,9 @@ function renderTournamentStatsPanel(selectedKey='overall'){
   const statsContainer = document.getElementById('hcVsStats');
   if(!statsContainer) return;
 
-  const rounds = Array.from({length:S.currentRound}, (_,i)=>i+1);
-  const pills = ['overall', ...rounds];
+  const showRoundPills = (S.totalRounds||1) > 1;
+  const rounds = showRoundPills ? Array.from({length:S.currentRound}, (_,i)=>i+1) : [];
+  const pills = showRoundPills ? ['overall', ...rounds] : [];
   const labelFor = key => key === 'overall' ? 'OVERALL' : `R${key}`;
   const stats = getRoundStats(selectedKey);
 
@@ -4441,7 +4443,7 @@ function renderTournamentStatsPanel(selectedKey='overall'){
   pills.forEach(key => {
     const isActive = key === selectedKey;
     const arg = key === 'overall' ? '&quot;overall&quot;' : key;
-    html += `<button onclick="renderTournamentStatsPanel(${arg})" style="background:${isActive?'var(--c-fwy)':'rgba(255,255,255,.05)'};border:1px solid ${isActive?'var(--c-fwyl)':'var(--border)'};color:${isActive?'#fff':'var(--muted)'};border-radius:8px;padding:6px 12px;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;cursor:pointer;white-space:nowrap;">${labelFor(key)}</button>`;
+    html += `<button onclick="renderTournamentStatsPanel(${arg})" style="background:${isActive?'var(--c-fwy)':'rgba(255,255,255,.05)'};color:${isActive?'#fff':'var(--muted)'};border:1px solid ${isActive?'var(--c-fwyl)':'var(--border)'};border-radius:14px;padding:6px 12px;font-family:'Sen',sans-serif;font-size:10px;font-weight:bold;cursor:pointer;white-space:nowrap;transition:all 0.2s;">${labelFor(key)}</button>`;
   });
   html += `</div></div>`;
 
