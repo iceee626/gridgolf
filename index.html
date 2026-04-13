@@ -6823,7 +6823,6 @@ function vsShowFinal(){
     <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p1Color};white-space:nowrap;">${p1.name}</div>
     <div style="display:inline-flex;align-items:center;justify-content:center;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;min-width:64px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${p1PillColor};">${p1PillContent}</div>
     <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">${t1} strokes</div>
-    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:4px;text-align:center;">DIFFICULTY: ${diffLabel}</div>
     ${VS.format === 'match' ? `<div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:4px;">TOTAL: ${fmtD(d1)}</div>` : ''}
   `;
   
@@ -6832,7 +6831,6 @@ function vsShowFinal(){
     <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p2Color};white-space:nowrap;">${p2.name}</div>
     <div style="display:inline-flex;align-items:center;justify-content:center;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;min-width:64px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${p2PillColor};">${p2PillContent}</div>
     <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">${t2} strokes</div>
-    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:4px;text-align:center;">DIFFICULTY: ${diffLabel}</div>
     ${VS.format === 'match' ? `<div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:4px;">TOTAL: ${fmtD(d2)}</div>` : ''}
   `;
 
@@ -6864,6 +6862,7 @@ function vsShowFinal(){
         <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--border);padding-bottom:20px;">VS</div>
         <div style="flex:1;text-align:center;">${p2Html}</div>
     </div>
+    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:14px;text-align:center;">DIFFICULTY: ${diffLabel}</div>
   `;
 
   let stats = [
@@ -6933,7 +6932,15 @@ function vsShowFinal(){
   
   stats.forEach(s => {
       let c1 = 'var(--text)', c2 = 'var(--text)';
-      if (s.p1 !== s.p2) {
+      if (s.p1 === s.p2) {
+          if (s.p1 === 0 && s.p2 === 0) {
+              c1 = 'var(--muted)';
+              c2 = 'var(--muted)';
+          } else {
+              c1 = '#fff';
+              c2 = '#fff';
+          }
+      } else {
           if (s.label === 'Total Strokes') {
               c1 = s.p1 < s.p2 ? '#52c87a' : 'var(--muted)';
               c2 = s.p2 < s.p1 ? '#52c87a' : 'var(--muted)';
