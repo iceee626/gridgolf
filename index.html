@@ -6542,7 +6542,7 @@ function renderVsReplayAndScoreboard(playerIdx) {
       if(v!==null){
           const diff = v - ah.par;
           d3.innerHTML = `<span class="sc-sym${diff<=-2?' sc-sym-eagle':diff===-1?' sc-sym-birdie':diff===1?' sc-sym-bogey':diff>=2?' sc-sym-double':''}">${v}</span>`;
-      } else {
+      } else if (absIdx <= S.holeIdx) {
           d3.textContent = '•';
           d3.style.display = 'flex';
           d3.style.alignItems = 'center';
@@ -6816,11 +6816,14 @@ function vsShowFinal(){
   let p1PillColor = VS.format === 'match' ? (VS.matchScore[0] > VS.matchScore[1] ? 'var(--gold)' : 'var(--text)') : getColor(d1);
   let p2PillColor = VS.format === 'match' ? (VS.matchScore[1] > VS.matchScore[0] ? 'var(--gold)' : 'var(--text)') : getColor(d2);
 
+  const diffNames = {1:'EASY', 2:'MEDIUM', 3:'HARD'};
+  const diffLabel = diffNames[VS.setup?.diff || GAME_DIFF] || 'MEDIUM';
   const p1Html = `
     <div style="font-size:36px;margin-bottom:8px;">${p1.icon}</div>
     <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p1Color};white-space:nowrap;">${p1.name}</div>
     <div style="display:inline-flex;align-items:center;justify-content:center;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;min-width:64px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${p1PillColor};">${p1PillContent}</div>
     <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">${t1} strokes</div>
+    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:4px;text-align:center;">DIFFICULTY: ${diffLabel}</div>
     ${VS.format === 'match' ? `<div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:4px;">TOTAL: ${fmtD(d1)}</div>` : ''}
   `;
   
@@ -6829,6 +6832,7 @@ function vsShowFinal(){
     <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p2Color};white-space:nowrap;">${p2.name}</div>
     <div style="display:inline-flex;align-items:center;justify-content:center;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;min-width:64px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${p2PillColor};">${p2PillContent}</div>
     <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">${t2} strokes</div>
+    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:4px;text-align:center;">DIFFICULTY: ${diffLabel}</div>
     ${VS.format === 'match' ? `<div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:4px;">TOTAL: ${fmtD(d2)}</div>` : ''}
   `;
 
