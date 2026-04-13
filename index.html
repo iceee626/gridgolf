@@ -513,18 +513,29 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .tv-putt-status.double-c{color:#ffb0b0;}
 
 /* FINAL SUMMARY SCREEN — full page, no popup */
-.summary-modal{display:none;position:fixed;inset:0;background:var(--dark);z-index:400;overflow-y:auto;padding:0 0 calc(env(safe-area-inset-bottom) + 80px);}
+.summary-modal{
+  display:none;position:fixed;inset:0;background:var(--dark);z-index:400;
+  overflow:hidden;overscroll-behavior:none;
+}
 .summary-modal.show{display:block;}
-.summary-card{background:transparent;max-width:460px;margin:0 auto;}
+.summary-card{
+  background:var(--dark);max-width:460px;width:100%;margin:0 auto;
+  min-height:100dvh;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden;
+}
 .sum-head{
   background:linear-gradient(180deg,var(--c-fwy) 0%,rgba(58,122,48,.7) 100%);
   padding:calc(env(safe-area-inset-top) + 12px) 18px 14px;
   display:flex;justify-content:space-between;align-items:center;
-  position:sticky;top:0;z-index:10;
+  position:sticky;top:0;z-index:10;flex-shrink:0;
 }
 .sum-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#fff;}
 .sum-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.sum-body{padding:16px 16px 20px;}
+.sum-body{
+  flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;padding:16px 16px calc(env(safe-area-inset-bottom) + 20px);
+}
+.summary-modal::-webkit-scrollbar,.sum-body::-webkit-scrollbar{display:none;}
+.summary-modal,.sum-body{-ms-overflow-style:none;scrollbar-width:none;}
 .sum-total{display:flex;align-items:center;justify-content:center;gap:16px;padding:14px 0 18px;border-bottom:1px solid var(--border);margin-bottom:14px;}
 .sum-total-score{font-family:'Bebas Neue',cursive;font-size:64px;line-height:1;}
 .sum-total-info{display:flex;flex-direction:column;gap:2px;}
@@ -2123,11 +2134,12 @@ function updateTVBanner(){
     // _tvShotNum is the shot currently highlighted — set externally at the right moments
     const displayShot = S._tvShotNum || 1;
     const totalSlots = Math.max(h.par, displayShot);
+    const showPuttTarget = onGreen && displayShot > S.strokes;
 
     // Putt class only applies when we're on the green AND it's the active display shot
     const puttScore = h.par - S.strokes - 1;
     let puttClass = '';
-    if(onGreen){
+    if(showPuttTarget){
       if(puttScore>=2)       puttClass='putt-eagle';
       else if(puttScore===1) puttClass='putt-birdie';
       else if(puttScore===0) puttClass='putt-par';
@@ -2140,7 +2152,7 @@ function updateTVBanner(){
       if(i < displayShot){
         sn.className='tv-sn past';
       } else if(i === displayShot){
-        sn.className=`tv-sn current${onGreen?' '+puttClass:''}`;
+        sn.className=`tv-sn current${showPuttTarget?' '+puttClass:''}`;
       } else {
         sn.className='tv-sn future';
       }
@@ -2158,7 +2170,7 @@ function updateTVBanner(){
     // Bottom strip
     const row2=document.getElementById('tvRow2');
     const puttStatus=document.getElementById('tvPuttStatus');
-    if(onGreen){
+    if(showPuttTarget){
       row2.classList.add('show');
       puttStatus.className='tv-putt-status';
       if(puttScore>=2)       {puttStatus.textContent='FOR EAGLE';puttStatus.classList.add('eagle-c');}
@@ -2778,6 +2790,7 @@ function doNextShot(){
   else if(S._preserveGrid){S._preserveGrid=false;}
   else{buildGrid();}
   updateZonePill();
+  updateTVBanner();
   setTimeout(()=>startDiceIdle(),100);
   
   if(!TUT.active) scrollToGrid();
@@ -3499,7 +3512,9 @@ function openSummary(viewRound = S.currentRound){
   body.innerHTML='';
   body.style.display = 'flex';
   body.style.flexDirection = 'column';
-  body.style.minHeight = 'calc(100vh - 80px)'; // Stretches to full height
+  body.style.flex = '1';
+  body.style.minHeight = '0';
+  body.scrollTop = 0;
   
   document.getElementById('sumTitle').textContent=`${PLAYER_NAME}'S SCORECARD`;
 
@@ -3670,7 +3685,7 @@ function openSummary(viewRound = S.currentRound){
   body.appendChild(holeList);
 
   const btnRow=document.createElement('div');
-  btnRow.style.cssText='display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:24px;';
+  btnRow.style.cssText='display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:24px;padding-bottom:4px;flex-shrink:0;';
   
   if (S.currentRound < S.totalRounds && viewRound === S.currentRound && S.holeDone) {
     const nextRndBtn=document.createElement('button');
@@ -3708,7 +3723,9 @@ function openSummary(viewRound = S.currentRound){
   }
   
   body.appendChild(btnRow);
-  document.getElementById('summaryModal').classList.add('show');
+  const summaryModal = document.getElementById('summaryModal');
+  summaryModal.scrollTop = 0;
+  summaryModal.classList.add('show');
 }
 
 function closeSummary(){
