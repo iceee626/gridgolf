@@ -886,6 +886,56 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .vs-emoji-picker button{font-size:20px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:4px;cursor:pointer;transition:all .12s;}
 .vs-emoji-picker button.sel{background:rgba(78,158,66,.25);border-color:var(--c-fwyl);}
 .vs-lead-badge{display:inline-block;font-family:'Sen',sans-serif;font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:20px;background:rgba(240,192,64,.2);color:var(--gold);border:1px solid rgba(240,192,64,.3);margin-left:6px;}
+
+/* MODE INFO POPUP */
+.mode-info-btn{
+  position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:16px;
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.7);font-family:'Bebas Neue',cursive;font-size:15px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  z-index:110;transition:background .15s;flex-shrink:0;
+}
+.mode-info-btn:hover{background:rgba(255,255,255,.22);}
+.mode-info-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);
+  z-index:620;align-items:flex-start;justify-content:center;
+  padding:max(20px, 8vh) 20px 20px;overflow-y:auto;
+}
+.mode-info-overlay.show{display:flex;}
+.mode-info-card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  max-width:420px;width:100%;overflow:hidden;
+  animation:popin .3s cubic-bezier(.34,1.56,.64,1);
+}
+.mode-info-head{
+  background:var(--c-fwy);padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.mode-info-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
+.mode-info-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;}
+.mode-info-body{padding:16px;}
+.mode-info-section{margin-bottom:18px;}
+.mode-info-section:last-child{margin-bottom:0;}
+.mode-info-section-title{
+  font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;
+  color:var(--c-fwyl);margin-bottom:8px;display:flex;align-items:center;gap:8px;
+}
+.mode-info-row{
+  display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);
+  align-items:flex-start;
+}
+.mode-info-row:last-child{border-bottom:none;}
+.mode-info-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center;margin-top:1px;}
+.mode-info-text{flex:1;}
+.mode-info-name{font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;color:var(--text);line-height:1.2;}
+.mode-info-desc{font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);line-height:1.5;margin-top:3px;}
+.mode-info-tag{
+  display:inline-block;font-family:'Sen',sans-serif;font-size:8px;letter-spacing:1px;
+  padding:2px 6px;border-radius:20px;margin-top:4px;
+}
+.mode-info-tag.available{background:rgba(78,158,66,.15);color:var(--c-fwyl);border:1px solid rgba(78,158,66,.3);}
+.mode-info-tag.locked{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);}
 </style>
 </head>
 <body>
@@ -947,8 +997,11 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 <!-- VERSUS MODE SETUP -->
 <div class="setup-screen" id="versusSetupScreen" style="display:none">
   <div class="setup-card" style="max-width:380px;">
-    <button class="setup-back-btn" onclick="navBack('menuScreen')">← BACK</button>
-    <div class="setup-title">🆚 VERSUS MODE</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <button class="setup-back-btn" style="margin-bottom:0;" onclick="navBack('menuScreen')">← BACK</button>
+      <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:var(--text);">🆚 VERSUS MODE</div>
+      <button class="mode-info-btn" style="position:static;width:28px;height:28px;font-size:14px;" onclick="openModeInfo('versus')">ℹ</button>
+    </div>
     <div class="vs-setup-players">
       <div class="vs-player-card">
         <div class="vs-player-label">PLAYER 1</div>
@@ -1018,8 +1071,11 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 
 <div class="setup-screen" id="playModeScreen" style="display:none">
   <div class="setup-card">
-    <button class="setup-back-btn" onclick="navBack('menuScreen')">← BACK</button>
-    <div class="setup-title">SELECT MODE</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <button class="setup-back-btn" style="margin-bottom:0;" onclick="navBack('menuScreen')">← BACK</button>
+      <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:var(--text);">SELECT MODE</div>
+      <button class="mode-info-btn" style="position:static;width:28px;height:28px;font-size:14px;" onclick="openModeInfo('play')">ℹ</button>
+    </div>
     <div class="menu-btns">
       <button class="menu-btn-sec" onclick="navToCourse('single')">⛳ SINGLE DAY</button>
       <button class="menu-btn-sec" onclick="navToCourse('tournament')">🏆 TOURNAMENT</button>
@@ -7011,6 +7067,15 @@ function vsGetCachedGrid(){
   if(!VS.active || VS.currentPlayer !== 1) return null;
   return VS.sharedGrids[vsGetGridKey()] || null;
 }
+
+function openModeInfo(type){
+  const id = type === 'play' ? 'playModeInfoOverlay' : 'versusModeInfoOverlay';
+  document.getElementById(id).classList.add('show');
+}
+function closeModeInfo(type){
+  const id = type === 'play' ? 'playModeInfoOverlay' : 'versusModeInfoOverlay';
+  document.getElementById(id).classList.remove('show');
+}
 </script>
 
 <div class="profile-modal" id="settingsModal">
@@ -7241,5 +7306,152 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+<!-- PLAY MODE INFO POPUP -->
+<div class="mode-info-overlay" id="playModeInfoOverlay">
+  <div class="mode-info-card">
+    <div class="mode-info-head">
+      <div class="mode-info-head-title">⛳ PLAY MODES</div>
+      <button class="mode-info-close" onclick="closeModeInfo('play')">✕</button>
+    </div>
+    <div class="mode-info-body">
+      <div class="mode-info-section">
+        <div class="mode-info-section-title">🏌️ SOLO MODES</div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">⛳</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">SINGLE DAY</div>
+            <div class="mode-info-desc">A classic round of golf — choose 18 holes, Front 9, or Back 9 and play straight through. Your score is recorded against par. Perfect for a quick session.</div>
+            <span class="mode-info-tag available">AVAILABLE</span>
+          </div>
+        </div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">🏆</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">TOURNAMENT</div>
+            <div class="mode-info-desc">Compete across multiple rounds (up to 4 days) on the same course. Your cumulative score across all rounds determines your final rank. The full tournament experience.</div>
+            <span class="mode-info-tag available">AVAILABLE</span>
+          </div>
+        </div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">🌎</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">PRO TOUR</div>
+            <div class="mode-info-desc">A season-long competitive format with multiple events, rankings, and progression. Face tougher fields and climb the leaderboard.</div>
+            <span class="mode-info-tag locked">COMING SOON</span>
+          </div>
+        </div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">⚙️</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">CUSTOM GAME</div>
+            <div class="mode-info-desc">Build your own round your way. Mix and match number of rounds (1, 2, or 4 days), holes (18, Front 9, Back 9), and difficulty (Easy / Medium / Hard). Ideal if you want precise control over your experience.</div>
+            <span class="mode-info-tag available">AVAILABLE</span>
+          </div>
+        </div>
+      </div>
+      <div class="mode-info-section">
+        <div class="mode-info-section-title">🎯 DIFFICULTY EXPLAINED</div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">🟢</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">EASY</div>
+            <div class="mode-info-desc">Generous grids with more fairway and green cells. Fewer hazards. Great for learning the game.</div>
+          </div>
+        </div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">🟡</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">MEDIUM</div>
+            <div class="mode-info-desc">Balanced grids with a mix of zones. Water, sand, and rough appear more often. The standard challenge.</div>
+          </div>
+        </div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">🔴</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">HARD</div>
+            <div class="mode-info-desc">Tight grids with plenty of hazards and OB cells. Every roll matters. For seasoned players only.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VERSUS MODE INFO POPUP -->
+<div class="mode-info-overlay" id="versusModeInfoOverlay">
+  <div class="mode-info-card">
+    <div class="mode-info-head" style="background:linear-gradient(135deg,#1a5f8a,#2a3a6e);">
+      <div class="mode-info-head-title">🆚 VERSUS MODE</div>
+      <button class="mode-info-close" onclick="closeModeInfo('versus')">✕</button>
+    </div>
+    <div class="mode-info-body">
+      <div class="mode-info-section">
+        <div class="mode-info-row" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:4px;">
+          <div class="mode-info-text">
+            <div class="mode-info-desc" style="font-size:11px;line-height:1.6;">Versus Mode lets two players compete head-to-head on the same device, taking turns hole by hole. Both players roll on the same shared grids, keeping things fair. Set your names, icons, and game options — then tee off!</div>
+          </div>
+        </div>
+      </div>
+      <div class="mode-info-section">
+        <div class="mode-info-section-title">⚔️ GAME FORMATS</div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">🏆</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">STROKE PLAY</div>
+            <div class="mode-info-desc">The classic format. Both players count every stroke across all holes. Lowest total score at the end wins. A single bad hole won't end the match — keep fighting back.</div>
+          </div>
+        </div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">⚔️</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">MATCH PLAY</div>
+            <div class="mode-info-desc">Win holes, not strokes. Each hole is its own contest — lowest score wins that hole. Lead is tracked as "X Up." A player wins when they lead by more holes than remain. Dramatic comebacks happen!</div>
+          </div>
+        </div>
+      </div>
+      <div class="mode-info-section">
+        <div class="mode-info-section-title">🏌️ HOW IT WORKS</div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">🔄</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">TURN-BASED PLAY</div>
+            <div class="mode-info-desc">Players alternate on each hole — Player 1 plays the full hole, then Player 2 plays the same hole on the same grid layout. A turn screen between players keeps scores hidden until both finish.</div>
+          </div>
+        </div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">🎲</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">SHARED GRIDS</div>
+            <div class="mode-info-desc">Both players face identical grid layouts for fair competition — same zones, same challenge. Only your dice rolls differ.</div>
+          </div>
+        </div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">🃏</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">WILDCARDS</div>
+            <div class="mode-info-desc">Each player has their own independent wildcard hand. Rolling doubles earns a wildcard just for you — use them strategically to gain the edge over your opponent.</div>
+          </div>
+        </div>
+      </div>
+      <div class="mode-info-section">
+        <div class="mode-info-section-title">📋 HOLES & DIFFICULTY</div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">🏌️</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">HOLE SELECTION</div>
+            <div class="mode-info-desc">Choose from a full 18 holes, Front 9 (holes 1–9), or Back 9 (holes 10–18). Both players always play the same selection.</div>
+          </div>
+        </div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">⚙️</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">DIFFICULTY</div>
+            <div class="mode-info-desc">Easy, Medium, or Hard affects the grid hazard distribution for both players equally — the harder the setting, the tighter and more punishing the grids.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
