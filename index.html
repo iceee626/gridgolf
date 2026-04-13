@@ -345,14 +345,17 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .tee-off-btn:hover{background:var(--c-fwyl);}
 
 /* Summary tabs */
-.sum-tabs{display:flex;gap:6px;overflow-x:auto;padding:0 0 12px;margin-bottom:10px;align-items:center;}
+.sum-tabs{
+  display:flex;gap:6px;overflow-x:auto;padding:10px 0 12px;margin-bottom:10px;align-items:center;
+  position:sticky;top:0;background:var(--dark);z-index:6;
+}
 .sum-tab{
   display:inline-flex;align-items:center;justify-content:center;
-  background:rgba(240,192,64,.10);color:var(--gold);padding:5px 10px;border-radius:12px;
-  font-size:10px;line-height:1;border:1px solid rgba(240,192,64,.32);font-family:'Sen',sans-serif;letter-spacing:1px;
-  cursor:pointer;white-space:nowrap;text-transform:uppercase;font-weight:700;
+  background:rgba(240,192,64,.15);color:var(--gold);padding:4px 8px;border-radius:12px;
+  font-size:10px;line-height:1;border:1px solid rgba(240,192,64,.3);font-family:'Sen',sans-serif;letter-spacing:1px;
+  cursor:pointer;white-space:nowrap;text-transform:uppercase;font-weight:700;min-height:22px;
 }
-.sum-tab.active{background:rgba(240,192,64,.20);color:var(--gold);border-color:rgba(240,192,64,.48);}
+.sum-tab.active{background:rgba(240,192,64,.22);color:var(--gold);border-color:rgba(240,192,64,.45);}
 
 /* CELL FLIP ANIMATION */
 .cell{transform-style:preserve-3d;transition:transform .0s;}
@@ -3566,7 +3569,7 @@ function openSummary(viewRound = S.currentRound){
     tournamentTotalBox = document.createElement('div');
     tournamentTotalBox.style.cssText = 'background:rgba(240,192,64,.15);border:1px solid rgba(240,192,64,.3);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;';
     tournamentTotalBox.innerHTML = `
-      <div><div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--gold);letter-spacing:1px;">TOURNAMENT TOTAL</div><div style="font-size:12px;color:var(--text);">${globalTotal} strokes</div></div>
+      <div><div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--gold);letter-spacing:1px;">TOURNAMENT TOTAL</div><div style="font-family:'Sen',sans-serif;font-size:12px;color:var(--text);">${globalTotal} strokes</div></div>
       <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);">${gDiffStr}</div>
     `;
   }
@@ -4439,7 +4442,7 @@ function renderTournamentStatsPanel(selectedKey='overall'){
   const stats = getRoundStats(selectedKey);
 
   let html = `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-shrink:0;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-shrink:0;position:sticky;top:0;background:var(--dark);z-index:5;padding:8px 0;">
       <div style="font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">STATISTICS</div>
       <div style="flex:1;height:1px;background:var(--border);"></div>
       <div style="display:flex;gap:6px;overflow-x:auto;">
