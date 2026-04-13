@@ -3232,7 +3232,7 @@ function completeHole(){
       if (S.currentRound < S.totalRounds) {
           btn.textContent = `COMPLETE ROUND ${S.currentRound}`;
       } else {
-          btn.textContent = 'FINAL SCORECARD';
+          btn.textContent = 'VIEW SUMMARY';
       }
   } else {
       btn.textContent = 'NEXT HOLE';
@@ -3389,7 +3389,7 @@ function showRoundEnd(){
     statsContainer.innerHTML = statsHtml;
 
     const btn = document.getElementById('hcBtn');
-    btn.textContent = 'VIEW SUMMARY';
+    btn.textContent = 'NEXT';
     btn.onclick = () => {
         hcScreen.classList.remove('show');
         openSummary();
