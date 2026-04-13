@@ -2068,11 +2068,6 @@ function buildScorecard(){
   });
   
   // holeBadge removed from header
-  
-  const scInner = document.querySelector('header .sc-inner');
-  if (scInner) {
-      scInner.style.width = activeHoles.length <= 9 ? '100%' : 'max-content';
-  }
 
   setTimeout(()=>{
     const activeCell = sr.querySelector('.sc-active');
