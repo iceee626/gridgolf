@@ -155,22 +155,23 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .sc-cell-btn{cursor:pointer;border-radius:3px;transition:opacity .15s;}
 .sc-cell-btn:hover{opacity:.7;background:rgba(255,255,255,.08);}
 
-/* HOLE INFO */
-.hole-info{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;}
-.hole-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;line-height:1.1;}
-.hole-meta{display:flex;align-items:center;gap:8px;margin-top:3px;}
+/* HOLE HERO */
+.hole-hero{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:14px;}
+.hole-hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
+.hole-hero-copy{flex:1;min-width:0;}
+.hole-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;line-height:1.1;}
+.hole-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;}
 .hole-yards{font-size:11px;color:var(--muted);font-family:'Sen', sans-serif;}
 .stars{font-size:13px;letter-spacing:1px;}
-.par-block{text-align:right;}
-.par-num{font-family:'Bebas Neue',cursive;font-size:36px;color:var(--c-fwyl);line-height:1;}
-.par-lbl{font-size:10px;color:var(--muted);letter-spacing:2px;font-family:'Sen', sans-serif;}
-
-/* YARDAGE BAR */
-.yrd-bar{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;}
-.yrd-track{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
-.yrd-fill{height:100%;background:linear-gradient(90deg,var(--c-fwyl),var(--c-grn));border-radius:3px;transition:width .55s ease;}
-.yrd-num{font-family:'Bebas Neue',cursive;font-size:18px;color:var(--text);line-height:1;white-space:nowrap;min-width:72px;}
-.yrd-lbl{font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);white-space:nowrap;}
+.par-block{display:flex;align-items:flex-end;gap:8px;margin-top:10px;}
+.par-word{font-family:'Bebas Neue',cursive;font-size:46px;letter-spacing:1px;color:#fff;line-height:.9;}
+.par-num{font-family:'Bebas Neue',cursive;font-size:54px;color:var(--c-fwyl);line-height:.82;}
+.hole-hero-distance{font-family:'Bebas Neue',cursive;font-size:58px;letter-spacing:1px;color:var(--c-fwyl);line-height:.86;white-space:nowrap;text-align:right;flex-shrink:0;}
+.hole-hero-bottom{display:flex;align-items:center;gap:12px;}
+.yrd-track{flex:1;height:18px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.25);}
+.yrd-fill{height:100%;background:linear-gradient(90deg,#69bf5a,var(--c-fwyl));border-radius:999px;transition:width .55s ease;}
+.yrd-lbl{font-family:'Sen', sans-serif;font-size:12px;color:var(--muted);white-space:nowrap;}
+.hole-info,.yrd-bar{display:none!important;}
 
 /* ZONE PILL */
 .zone-bar{margin:0 16px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
@@ -197,7 +198,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 
 /* DICE */
 .dice-row{margin:0 16px 10px;display:flex;gap:10px;align-items:stretch;}
-.dc{flex:0 0 34%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;}
+.dc{flex:.78 1 0;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;}
 .dc-lbl{font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
 .die{
   width:58px;height:58px;
@@ -271,7 +272,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .btn-roll:hover{background:var(--c-fwyl);}
 .btn-roll:active{transform:translateY(1px) scale(.96);box-shadow:inset 0 0 14px rgba(0,0,0,.42),0 0 18px rgba(120,220,96,.22);}
 .btn-roll:disabled{opacity:.3;cursor:not-allowed;}
-.roll-col{flex:0 0 32%;display:flex;}
+.roll-col{flex:1.44 1 0;display:flex;min-width:0;}
 #nextShotBtn{letter-spacing:2px;font-size:14px;}
 
 /* RESULT */
@@ -373,7 +374,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .setup-head-row .setup-title{grid-column:2;margin-bottom:0;}
 .setup-head-row .mode-info-btn{justify-self:end;}
 .setup-head-row::before{content:'';display:block;width:36px;height:36px;}
-.menu-content > .menu-btns > #menuPlayBtn{width:calc(50% - 5px);margin:0 auto;}
+.menu-content > .menu-btns > #menuPlayBtn{width:100%;margin:0;min-height:84px;display:flex;align-items:center;justify-content:center;}
 .setup-group{margin-bottom:20px;text-align:left;}
 .setup-lbl{font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;display:block;}
 
@@ -983,7 +984,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .mode-info-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
 .mode-info-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;}
 .mode-info-body{padding:16px;}
-.mode-info-body.compact-top{padding-top:6px;}
+.mode-info-body.compact-top{padding-top:0;}
 .mode-info-section{margin-bottom:18px;}
 .mode-info-section:last-child{margin-bottom:0;}
 .mode-info-section-title{
@@ -1038,7 +1039,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   
   <div class="menu-btns" id="menuBtns">
     <button class="menu-btn-play" id="menuContinueBtn" onclick="continueGame()" style="display:none;background:#1a5f8a;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;padding:12px;"></button>
-    <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()" style="padding:24px 16px; font-size:28px;">⛳ PLAY</button>
+    <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()" style="padding:20px 16px; font-size:28px; min-height:84px;">⛳ PLAY</button>
     <div style="display:flex; gap:10px;">
       <button class="menu-btn-play" id="menuVersusBtn" onclick="navToVersusSetup()" style="flex:1; background:linear-gradient(135deg,#1a5f8a,#2a3a6e);box-shadow:0 4px 20px rgba(30,95,138,.4); font-size:20px; padding:20px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;"><span style="font-size:24px;line-height:1;">🆚</span> VERSUS</button>
       <button class="menu-btn-sec" onclick="openSettings()" style="flex:1; font-size:20px; letter-spacing:2px; padding:20px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; background:rgba(255,255,255,0.05); border-radius:14px;"><span style="font-size:24px;line-height:1;">⚙️</span> SETTINGS</button>
@@ -1289,26 +1290,49 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   </div>
 </header>
 
+<div class="hole-hero">
+  <div class="hole-hero-top">
+    <div class="hole-hero-copy">
+      <div class="hole-title" id="holeName">HOLE 1</div>
+      <div class="hole-meta">
+        <span class="hole-yards" id="holeYards">387 yds</span>
+        <span class="hole-yards" style="color:var(--muted);margin:0 3px;">•</span>
+        <span style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">Difficulty</span>
+        <span class="stars" id="holeStars">☆☆☆</span>
+      </div>
+      <div class="par-block">
+        <div class="par-word">PAR</div>
+        <div class="par-num" id="holePar">4</div>
+      </div>
+    </div>
+    <div class="hole-hero-distance" id="yrdNum">387 yds</div>
+  </div>
+  <div class="hole-hero-bottom">
+    <div class="yrd-track"><div class="yrd-fill" id="yrdFill" style="width:100%"></div></div>
+    <div class="yrd-lbl" id="yrdLbl">to hole</div>
+  </div>
+</div>
+
 <div class="hole-info">
   <div>
-    <div class="hole-title" id="holeName">HOLE 1</div>
+    <div class="hole-title" id="holeNameLegacy">HOLE 1</div>
     <div class="hole-meta">
-          <span class="hole-yards" id="holeYards">387 yds</span>
+          <span class="hole-yards" id="holeYardsLegacy">387 yds</span>
           <span class="hole-yards" style="color:var(--muted);margin:0 3px;">•</span>
           <span style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">Difficulty</span>
-          <span class="stars" id="holeStars">⭐⭐☆</span>
+          <span class="stars" id="holeStarsLegacy">⭐⭐☆</span>
         </div>
   </div>
   <div class="par-block">
-    <div class="par-num" id="holePar">4</div>
+    <div class="par-num" id="holeParLegacy">4</div>
     <div class="par-lbl">PAR</div>
   </div>
 </div>
 
 <div class="yrd-bar">
-  <div class="yrd-num" id="yrdNum">387 yds</div>
-  <div class="yrd-track"><div class="yrd-fill" id="yrdFill" style="width:100%"></div></div>
-  <div class="yrd-lbl" id="yrdLbl">to hole</div>
+  <div class="yrd-num" id="yrdNumLegacy">387 yds</div>
+  <div class="yrd-track"><div class="yrd-fill" id="yrdFillLegacy" style="width:100%"></div></div>
+  <div class="yrd-lbl" id="yrdLblLegacy">to hole</div>
 </div>
 
 <div class="zone-bar">
@@ -2175,6 +2199,7 @@ function buildLegend(){
     d.innerHTML=`<div class="leg-sw" style="background:${z.color}"></div><span>${z.name}</span>`;
     lg.appendChild(d);
   });
+  updateLegendVisibility();
 }
 function starsHTML(d){return'⭐'.repeat(d)+'☆'.repeat(3-d);}
 
@@ -4423,12 +4448,30 @@ function updateMenuProfileDisplay(){
 // LEGEND TOGGLE
 // ═══════════════════════════════════════
 let _legendVisible=true;
+function legendHiddenEnabled(){try{return localStorage.getItem('gg_hide_legend')==='yes';}catch{return false;}}
+function setLegendHiddenEnabled(v){try{localStorage.setItem('gg_hide_legend',v?'yes':'no');}catch{}}
 function toggleLegend(){
+  if(legendHiddenEnabled()) return;
   _legendVisible=!_legendVisible;
+  updateLegendVisibility();
+}
+function updateLegendVisibility(){
   const el=document.getElementById('legend');
+  const btn=document.getElementById('legendToggleBtn');
   const arrow=document.getElementById('legendArrow');
-  if(el)el.style.display=_legendVisible?'grid':'none';
+  const hiddenBySetting=legendHiddenEnabled();
+  if(btn)btn.style.display=hiddenBySetting?'none':'flex';
+  if(el)el.style.display=!hiddenBySetting&&_legendVisible?'grid':'none';
   if(arrow)arrow.textContent=_legendVisible?'▾':'▸';
+}
+function setLegendPref(v){
+  setLegendHiddenEnabled(v);
+  updateLegendSettingUI();
+  updateLegendVisibility();
+}
+function updateLegendSettingUI(){
+  const el=document.getElementById('zoneLegendToggle');
+  if(el)el.classList.toggle('on', legendHiddenEnabled());
 }
 
 // ═══════════════════════════════════════
@@ -4860,6 +4903,8 @@ function updateSettingsUI(){
   _setToggle('shakeToggle',getRollMode()==='haptic');
   updateMetricsUI();
   updateCellLabelUI();
+  updateLegendSettingUI();
+  updateLegendVisibility();
   
   const isGameActive = document.getElementById('mainApp').style.display === 'block';
   
@@ -6133,7 +6178,7 @@ function tutAdvance(){
     }
     if(_tutStep === 8){
       S.yrdRemain = 150; updateYrd(); 
-      _tutShowTip('GREAT TEE SHOT!', 'The yardage bar shows your distance. The closer you get to the hole, the better your grid becomes. Tap NEXT SHOT to continue.', 'GOT IT', '.yrd-bar, #nextShotBtn', true);
+      _tutShowTip('GREAT TEE SHOT!', 'The yardage bar shows your distance. The closer you get to the hole, the better your grid becomes. Tap NEXT SHOT to continue.', 'GOT IT', '.hole-hero, #nextShotBtn', true);
       return;
     }
     if(_tutStep === 9){
@@ -7256,6 +7301,17 @@ function closeModeInfo(type){
           <div class="txt-lbl lbl-r">YES</div>
         </div>
       </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+        <div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">HIDE ZONE LEGEND</div>
+          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Remove the Zone Legend panel from the game screen</div>
+        </div>
+        <div class="txt-toggle" id="zoneLegendToggle" onclick="setLegendPref(!legendHiddenEnabled())">
+          <div class="txt-toggle-knob"></div>
+          <div class="txt-lbl lbl-l">NO</div>
+          <div class="txt-lbl lbl-r">YES</div>
+        </div>
+      </div>
       <div id="settingsTutorialRow" style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📖 TUTORIAL</div>
@@ -7493,9 +7549,9 @@ if ('serviceWorker' in navigator) {
       <div class="mode-info-head-title">🆚 VERSUS MODE</div>
       <button class="mode-info-close" onclick="closeModeInfo('versus')">✕</button>
     </div>
-    <div class="mode-info-body">
+    <div class="mode-info-body compact-top">
       <div class="mode-info-section">
-        <div class="mode-info-row" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:4px;">
+        <div class="mode-info-row" style="border-bottom:1px solid var(--border);padding:0 0 12px;margin-bottom:4px;">
           <div class="mode-info-text">
             <div class="mode-info-desc" style="font-size:11px;line-height:1.6;">Versus Mode lets two players compete head-to-head on the same device, taking turns hole by hole. Both players roll on the same shared grids, keeping things fair. Set your names, icons, and game options — then tee off!</div>
           </div>
