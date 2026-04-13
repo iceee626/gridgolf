@@ -347,7 +347,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 /* Summary tabs */
 .sum-tabs{
   display:flex;gap:6px;overflow-x:auto;padding:10px 0 12px;margin-bottom:10px;align-items:center;
-  position:sticky;top:0;background:var(--dark);z-index:6;
+  flex-shrink:0;
 }
 .sum-tab{
   display:inline-flex;align-items:center;justify-content:center;
@@ -3707,10 +3707,10 @@ function openSummary(viewRound = S.currentRound){
   const btnRow=document.createElement('div');
   btnRow.style.cssText='display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:24px;padding-bottom:4px;flex-shrink:0;';
   
-  if (S.currentRound < S.totalRounds && viewRound === S.currentRound && S.holeDone) {
+  if (S.currentRound < S.totalRounds && S.holeDone) {
     const nextRndBtn=document.createElement('button');
     nextRndBtn.style.cssText='width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
-    nextRndBtn.textContent=`START ROUND ${S.currentRound + 1} →`;
+    nextRndBtn.textContent=`START ROUND ${S.currentRound + 1}`;
     nextRndBtn.onclick=startNextRound;
     
     const returnBtn=document.createElement('button');
@@ -3727,7 +3727,7 @@ function openSummary(viewRound = S.currentRound){
     returnBtn.onclick=()=>{closeSummary();returnToMenu();};
     btnRow.appendChild(returnBtn);
     
-    if (viewRound === S.currentRound && S.currentRound === S.totalRounds && S.holeDone) {
+    if (S.currentRound === S.totalRounds && S.holeDone) {
       const playAgainBtn=document.createElement('button');
       playAgainBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
       playAgainBtn.textContent='PLAY AGAIN';
