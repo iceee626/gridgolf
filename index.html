@@ -470,9 +470,10 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 }
 /* Past shots — plain number slightly brighter */
 .tv-sn.past{color:rgba(255,255,255,.7);}
-/* Current shot — white background box */
-.tv-sn.current{color:#1e3a5f;background:#fff;border-radius:4px;}
-.tv-sn.current::before{content:none;}
+/* Current shot — white pill, dark number */
+.tv-sn.current{color:#1e3a5f !important;background:#fff;border-radius:4px;}
+.tv-sn.current::before{content:none !important;}
+.tv-sn.current::after{content:none !important;}
 /* Future shots — dim */
 .tv-sn.future{color:rgba(255,255,255,.25);}
 /* On green: symbol replaces the circle style */
@@ -1900,7 +1901,7 @@ function resetGameState(){
   S.endIdx = S.holesConfig === 'front' ? 8 : 17;
   S.holeIdx = S.startIdx;
   
-  S.zone='tee'; S.strokes=0; S.shotNum=1; S.log=[];
+  S.zone='tee'; S.strokes=0; S.shotNum=1; S._tvShotNum=1; S.log=[];
   S.scorecards = [Array(18).fill(null)];
   S.histories = [Array(18).fill(null)];
   S.currentGrid=null; S.holeDone=false; S.rolling=false;
@@ -2114,14 +2115,18 @@ function updateTVBanner(){
   totalEl.style.color=totalDiff<0?'#1a1a1a':totalDiff>0?'#5a1a1a':'#1a1a1a';
 
   const onGreen=S.zone==='grn';
-  const puttScore=h.par-S.strokes-1;
 
-  // Freeze the shot tracker rendering when the hole is done to prevent glitches
   if (!S.holeDone) {
     const shotsEl=document.getElementById('tvShots');
     shotsEl.innerHTML='';
-    
-    let puttClass='';
+
+    // _tvShotNum is the shot currently highlighted — set externally at the right moments
+    const displayShot = S._tvShotNum || 1;
+    const totalSlots = Math.max(h.par, displayShot);
+
+    // Putt class only applies when we're on the green AND it's the active display shot
+    const puttScore = h.par - S.strokes - 1;
+    let puttClass = '';
     if(onGreen){
       if(puttScore>=2)       puttClass='putt-eagle';
       else if(puttScore===1) puttClass='putt-birdie';
@@ -2130,14 +2135,11 @@ function updateTVBanner(){
       else                   puttClass='putt-double';
     }
 
-    const nextShotVisible = document.getElementById('nextShotBtn')?.style.display === 'block';
-    const currentShot = nextShotVisible ? S.shotNum - 1 : S.shotNum;
-    const totalSlots=Math.max(h.par, S.shotNum);
     for(let i=1;i<=totalSlots;i++){
       const sn=document.createElement('div');
-      if(i<currentShot){
+      if(i < displayShot){
         sn.className='tv-sn past';
-      } else if(i===currentShot){
+      } else if(i === displayShot){
         sn.className=`tv-sn current${onGreen?' '+puttClass:''}`;
       } else {
         sn.className='tv-sn future';
@@ -2145,22 +2147,19 @@ function updateTVBanner(){
       sn.textContent=i;
       shotsEl.appendChild(sn);
     }
-    
-    // Auto-scroll to center the current shot indicator
+
     setTimeout(() => {
        const activeShot = shotsEl.querySelector('.current');
        if (activeShot) {
            activeShot.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
        }
     }, 50);
-  }
 
-  // Freeze the bottom text strip when the hole is done to prevent layout jumps
-  const row2=document.getElementById('tvRow2');
-  const puttStatus=document.getElementById('tvPuttStatus');
-  if(onGreen){
-    row2.classList.add('show');
-    if(!S.holeDone){
+    // Bottom strip
+    const row2=document.getElementById('tvRow2');
+    const puttStatus=document.getElementById('tvPuttStatus');
+    if(onGreen){
+      row2.classList.add('show');
       puttStatus.className='tv-putt-status';
       if(puttScore>=2)       {puttStatus.textContent='FOR EAGLE';puttStatus.classList.add('eagle-c');}
       else if(puttScore===1) {puttStatus.textContent='FOR BIRDIE';puttStatus.classList.add('birdie-c');}
@@ -2171,9 +2170,9 @@ function updateTVBanner(){
       else if(puttScore===-4){puttStatus.textContent='FOR QUADRUPLE BOGEY';puttStatus.classList.add('double-c');}
       else if(puttScore===-5){puttStatus.textContent='FOR QUINTUPLE BOGEY';puttStatus.classList.add('double-c');}
       else                   {puttStatus.textContent=`FOR ${Math.abs(puttScore)}+`;puttStatus.classList.add('double-c');}
+    } else {
+      document.getElementById('tvRow2').classList.remove('show');
     }
-  } else {
-    row2.classList.remove('show');
   }
 }
 
@@ -2586,7 +2585,8 @@ function processShot(row,col){
     S.strokes+=finalPutts;S.yrdRemain=0;
     S._pendingPuttResult={putts:finalPutts, row, col, snapGrid, prevZone};
     addLog(S.shotNum,`Green → ${finalPutts} putt${finalPutts>1?'s':''}${wcPuttNote}`,outcome,`+${finalPutts}`,false,row,col,snapGrid, prevZone, prevYrdRemain);
-    S.shotNum += finalPutts; 
+    S._tvShotNum = S.shotNum;
+    S.shotNum += finalPutts;
     updateYrd();
     S.holeDone=false;
 
@@ -2666,12 +2666,13 @@ function processShot(row,col){
     S.strokes+=2;
     addLog(S.shotNum,`${Z[prevZone].name} → ${Z[resolvedOutcome].name} — penalty`,resolvedOutcome,'+2 (pen)',true,row,col,snapGrid, prevZone, prevYrdRemain);
     showResult(Z[resolvedOutcome],'Penalty — no advance','pen',`Back in ${Z[prevZone].name} · ${fmtYds(S.yrdRemain)} left`);
-    S.shotNum += 2; 
+    S.shotNum += 2;
+    S._tvShotNum = S.shotNum - 2;
     S._preserveGrid = true;
     updateFloat();updateTVBanner();
     document.getElementById('resultPanel').classList.add('pflash');
     setTimeout(()=>document.getElementById('resultPanel').classList.remove('pflash'),600);
-    setTimeout(()=>{S.rolling=false;showNextShotBtn();updateTVBanner();renderWcDrawer();
+    setTimeout(()=>{S.rolling=false;showNextShotBtn();renderWcDrawer();
       if(TUT.active) tutAfterShot(resolvedOutcome);
     },1100);
     return;
@@ -2723,7 +2724,7 @@ function processShot(row,col){
   addLog(S.shotNum,`${Z[prevZone].name} → ${Z[resolvedOutcome].name}${yrdStr}${wcAppliedNote}`,resolvedOutcome,'+1',false,row,col,snapGrid, prevZone, prevYrdRemain);
   showResult(Z[resolvedOutcome],`${Z[prevZone].name} → ${Z[resolvedOutcome].name}`,'ok',
     S.yrdRemain>0?fmtYds(S.yrdRemain)+' to hole'+wcAppliedNote:'Reached the green'+wcAppliedNote);
-  S.shotNum++;updateFloat();updateYrd();updateTVBanner();
+  S.shotNum++; S._tvShotNum = S.shotNum - 1; updateFloat();updateYrd();updateTVBanner();
 
   setTimeout(()=>{
       S.rolling=false;
@@ -2771,6 +2772,7 @@ function scrollToGrid() {
 function doNextShot(){
   if(S.holeDone)return;
   S._mulliganJustFired=false;
+  S._tvShotNum = S.shotNum;
   hideNextShotBtn();
   if(S._forceGrid){S._forceGrid=false;}
   else if(S._preserveGrid){S._preserveGrid=false;}
@@ -6299,7 +6301,7 @@ function vsStartTurn(){
   const p = VS.players[VS.currentPlayer];
   PLAYER_NAME = p.name;
   
-  S.zone='tee'; S.strokes=0; S.shotNum=1; S.shotCount=0;
+  S.zone='tee'; S.strokes=0; S.shotNum=1; S._tvShotNum=1; S.shotCount=0;
   S.log=[]; S.holeDone=false; S.rolling=false;
   S.fwyVisits=0; S.prevZone=null;
   S._wcsUsedThisHole=[]; S._wcNextShotNote=null;
@@ -6776,7 +6778,7 @@ function vsShowFinal(){
   const replayTitle = document.querySelector('#hcScreen .sec-title');
   if (replayTitle) replayTitle.style.display = 'none';
   const logList = document.getElementById('hcLogList');
-  if (logList) logList.style.display = 'flex';
+  if (logList) logList.style.display = 'none';
 
   let statsContainer = document.getElementById('hcVsStats');
   if (!statsContainer) {
@@ -6839,6 +6841,7 @@ function vsShowFinal(){
   renderVsReplayAndScoreboard(0);
 
   const btn = document.getElementById('hcBtn');
+  btn.style.flexShrink = '0';
   btn.textContent = 'BACK TO MENU';
   btn.onclick = () => {
       VS.active = false;
