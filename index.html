@@ -3191,9 +3191,8 @@ function completeHole(){
   else if(d===0) hcTitle.style.color='var(--c-fwyl)';
   else hcTitle.style.color='#e05252';
 
-  const diffNames = {1:'EASY', 2:'MEDIUM', 3:'HARD'};
-  document.getElementById('hcSub').innerHTML = score === 1 ? `HOLE IN ONE! · PAR ${h.par}  ${starsHTML(h.baseDiff)}<br><span style="display:inline-block;margin-top:4px;">DIFFICULTY: ${diffNames[GAME_DIFF] || 'MEDIUM'}</span>` : `${score} STROKES · PAR ${h.par}  ${starsHTML(h.baseDiff)}<br><span style="display:inline-block;margin-top:4px;">DIFFICULTY: ${diffNames[GAME_DIFF] || 'MEDIUM'}</span>`;
-
+  document.getElementById('hcSub').textContent = score === 1 ? `HOLE IN ONE! · PAR ${h.par}  ${starsHTML(h.baseDiff)}` : `${score} STROKES · PAR ${h.par}  ${starsHTML(h.baseDiff)}`;
+  
   const totSpan = document.getElementById('hcTotSpan');
   totSpan.textContent = totalStr;
   if(totalDiff<0) totSpan.style.color='var(--gold)';
@@ -3465,7 +3464,7 @@ function showRoundEnd(){
     hcTitle.style.color = rColor;
     hcTitle.style.fontSize = '36px';
     const diffNames = {1:'EASY', 2:'MEDIUM', 3:'HARD'};
-    document.getElementById('hcSub').innerHTML = `${roundTotal} STROKES · PAR ${roundPar}<br><span style="display:inline-block;margin-top:4px;">DIFFICULTY: ${diffNames[GAME_DIFF] || 'MEDIUM'}</span>`;
+    document.getElementById('hcSub').textContent = `${roundTotal} STROKES · PAR ${roundPar}`;
 
     const totSpan = document.getElementById('hcTotSpan');
     totSpan.textContent = rDiffStr;
