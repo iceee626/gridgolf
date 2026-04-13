@@ -3562,7 +3562,7 @@ function openSummary(viewRound = S.currentRound){
 
   const sc=document.createElement('div');
   sc.className = 'sc-table-wrapper';
-  sc.style.cssText='display:block;overflow-x:auto;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;';
+  sc.style.cssText='display:block;overflow-x:auto;overflow-y:hidden;min-height:126px;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;-webkit-overflow-scrolling:touch;';
   const table=document.createElement('table');
   table.style.cssText=`width:100%;min-width:${Math.max(320, (activeHoles.length + 2) * 42)}px;border-collapse:collapse;font-family:"Sen",sans-serif;font-size:11px;`;
 
@@ -3647,9 +3647,6 @@ function openSummary(viewRound = S.currentRound){
 
   const holeList=document.createElement('div');
   holeList.style.cssText='display:flex;flex-direction:column;gap:4px;';
-  const detailHost=document.createElement('div');
-  detailHost.id='summaryInlineDetailHost';
-  detailHost.style.cssText='display:flex;flex-direction:column;gap:6px;margin-top:8px;';
   activeHoles.forEach((h,i)=>{
     const absoluteIdx = S.startIdx + i;
     const hist=histData[absoluteIdx];
@@ -3687,11 +3684,10 @@ function openSummary(viewRound = S.currentRound){
       <span style="display:flex;gap:3px;align-items:center;margin:0 6px;">${zoneDots}</span>
       <span style="font-family:'Bebas Neue',cursive;font-size:18px;color:${scoreColor};min-width:16px;text-align:center;">${hist.strokes}</span>
     `;
-    row.onclick=()=>openHistInline(absoluteIdx, holeList, detailHost, viewRound);
+    row.onclick=()=>openHistInline(absoluteIdx, holeList, null, viewRound);
     holeList.appendChild(row);
   });
   body.appendChild(holeList);
-  body.appendChild(detailHost);
 
   const btnRow=document.createElement('div');
   btnRow.style.cssText='display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:24px;padding-bottom:4px;flex-shrink:0;';
@@ -3865,10 +3861,11 @@ function openHistInline(absoluteIdx, holeList, detailHost, roundIdx){
   closeBtn.onclick=()=>{ detail.remove(); rows.forEach(r=>r.style.borderColor='var(--border)'); };
   detail.appendChild(closeBtn);
 
-  if(detailHost){
-    detailHost.appendChild(detail);
-  } else if(targetRow && targetRow.parentNode){
-    targetRow.parentNode.appendChild(detail);
+  const parent = targetRow ? targetRow.parentNode : holeList;
+  if(targetRow && targetRow.nextSibling){
+    parent.insertBefore(detail, targetRow.nextSibling);
+  } else {
+    parent.appendChild(detail);
   }
 }
 
@@ -4427,13 +4424,18 @@ function renderTournamentStatsPanel(selectedKey='overall'){
   const labelFor = key => key === 'overall' ? 'OVERALL' : `R${key}`;
   const stats = getRoundStats(selectedKey);
 
-  let html = `<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--border);">`;
+  let html = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-shrink:0;">
+      <div style="font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">STATISTICS</div>
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+      <div style="display:flex;gap:6px;overflow-x:auto;">
+  `;
   pills.forEach(key => {
     const isActive = key === selectedKey;
     const arg = key === 'overall' ? '&quot;overall&quot;' : key;
     html += `<button onclick="renderTournamentStatsPanel(${arg})" style="background:${isActive?'var(--c-fwy)':'rgba(255,255,255,.05)'};border:1px solid ${isActive?'var(--c-fwyl)':'var(--border)'};color:${isActive?'#fff':'var(--muted)'};border-radius:8px;padding:6px 12px;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;cursor:pointer;white-space:nowrap;">${labelFor(key)}</button>`;
   });
-  html += `</div>`;
+  html += `</div></div>`;
 
   stats.forEach(s => {
     html += `
