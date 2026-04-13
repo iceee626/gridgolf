@@ -272,7 +272,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 }
 .btn-roll:hover{background:var(--c-fwyl);}
 .btn-roll:active{transform:translateY(1px) scale(.96);box-shadow:inset 0 0 14px rgba(0,0,0,.42),0 0 18px rgba(120,220,96,.22);}
-.btn-roll:disabled{opacity:.3;cursor:not-allowed;pointer-events:none;}
+.btn-roll:disabled{opacity:1;cursor:not-allowed;pointer-events:none;filter:brightness(.92);}
 .btn-roll:disabled:active{transform:none;box-shadow:0 6px 18px rgba(58,122,48,.28), inset 0 1px 0 rgba(255,255,255,.05);}
 .roll-col{flex:1.44 1 0;display:flex;min-width:0;}
 #nextShotBtn{letter-spacing:2px;font-size:20px;}
@@ -308,7 +308,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 }
 .menu-screen.visible, .setup-screen.visible { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
 .menu-bg-grass{position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(180deg,transparent 0%,#0d1f0a 100%);pointer-events:none;z-index:0;}
-.menu-content{position:relative;z-index:10;text-align:center;width:100%;max-width:380px;}
+.menu-content{position:relative;z-index:10;text-align:center;width:100%;max-width:380px;min-height:min(78vh,720px);display:flex;flex-direction:column;}
 
 .menu-profile-icon{
   position:absolute; top:calc(env(safe-area-inset-top) + 12px); right:20px;
@@ -318,10 +318,17 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 }
 .menu-profile-icon:hover{background:rgba(255,255,255,.2);}
 
-.menu-logo{font-family:'Bebas Neue',cursive;font-size:52px;letter-spacing:6px;color:var(--text);line-height:1;margin-bottom:4px;}
+.menu-logo{font-family:'Bebas Neue',cursive;font-size:52px;letter-spacing:6px;color:var(--text);line-height:1;margin-top:auto;margin-bottom:0;}
 .menu-logo span{color:var(--c-fwyl);}
 .menu-tagline{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:20px;}
-.menu-btns{display:flex;flex-direction:column;gap:10px;}
+.menu-btns{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-bottom:max(8px, env(safe-area-inset-bottom));}
+.menu-content > br{display:none;}
+#menuContinueBtn{min-height:84px!important;padding:12px 16px!important;border-radius:18px!important;margin-top:auto;}
+#menuPlayBtn{min-height:73.5px!important;padding:18px 16px!important;border-radius:18px!important;}
+#menuVersusBtn{min-height:65px!important;padding:12px 10px!important;border-radius:18px!important;font-size:16px!important;gap:4px!important;}
+#menuVersusBtn span{font-size:18px!important;line-height:1!important;}
+#menuBtns > div:last-child > .menu-btn-sec{min-height:65px!important;padding:12px 10px!important;border-radius:18px!important;font-size:16px!important;gap:4px!important;}
+#menuBtns > div:last-child > .menu-btn-sec span{font-size:18px!important;line-height:1!important;}
 .menu-btn-play,.menu-btn-sec,.ov-btn,.setup-back-btn,.course-btn,.diff-btn,.tee-off-btn,.mode-info-btn,.vs-turn-btn{
   transition:
     transform .22s cubic-bezier(0.22,1,0.36,1),
@@ -991,7 +998,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .mode-info-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
 .mode-info-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;}
 .mode-info-body{padding:16px;}
-.mode-info-body.compact-top{padding-top:0;}
+.mode-info-body.compact-top{padding-top:8px;}
 .mode-info-section{margin-bottom:18px;}
 .mode-info-section:last-child{margin-bottom:0;}
 .mode-info-section-title{
@@ -2866,7 +2873,6 @@ function processShot(row,col){
         const b=document.getElementById('puttWcBtn');if(b)b.remove();
         S._pendingPuttResult=null;
         S.holeDone=true;
-        if(nextBtn)nextBtn.style.display='none';
         const rollBtn2=document.getElementById('rollBtn');
         if(rollBtn2)rollBtn2.style.display='none';
         updateTVBanner();
@@ -5763,7 +5769,6 @@ function continueGame(){
                 const b=document.getElementById('puttWcBtn');if(b)b.remove();
                 S._pendingPuttResult=null;
                 S.holeDone=true;
-                nextBtn.style.display='none';
                 const rollBtn2=document.getElementById('rollBtn');
                 if(rollBtn2)rollBtn2.style.display='none';
                 updateTVBanner();
