@@ -345,9 +345,13 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .tee-off-btn:hover{background:var(--c-fwyl);}
 
 /* Summary tabs */
-.sum-tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--border);}
-.sum-tab{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;cursor:pointer;white-space:nowrap;}
-.sum-tab.active{background:var(--c-fwy);color:#fff;border-color:var(--c-fwyl);}
+.sum-tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;margin-bottom:12px;border-bottom:1px solid var(--border);align-items:center;}
+.sum-tab{
+  background:rgba(240,192,64,.08);color:var(--gold);padding:4px 10px;border-radius:12px;
+  font-size:10px;border:1px solid rgba(240,192,64,.3);font-family:'Sen',sans-serif;letter-spacing:1px;
+  cursor:pointer;white-space:nowrap;text-transform:uppercase;font-weight:700;
+}
+.sum-tab.active{background:rgba(240,192,64,.18);color:var(--gold);border-color:rgba(240,192,64,.45);}
 
 /* CELL FLIP ANIMATION */
 .cell{transform-style:preserve-3d;transition:transform .0s;}
@@ -3455,7 +3459,11 @@ function showRoundEnd(){
       logList2.innerHTML = '';
     }
     const secTitles = document.querySelectorAll('#hcScreen .sec-title');
-    if(secTitles[0]) secTitles[0].textContent = 'STATISTICS';
+    if(secTitles[0]) secTitles[0].style.display = 'none';
+    if(secTitles[1]) {
+      secTitles[1].style.display = 'flex';
+      secTitles[1].textContent = 'SCORECARD';
+    }
 
     // Rebuild mini scorecard
     const scHead2 = document.getElementById('hcScHead');
@@ -3486,7 +3494,6 @@ function showRoundEnd(){
     scYou2.style.gridTemplateColumns = `40px repeat(${activeHoles2.length}, ${colW2}) 40px`;
     const scWrap2 = document.querySelector('#hcScreen .sc-wrap');
     if(scWrap2) scWrap2.style.display = '';
-    document.querySelectorAll('#hcScreen .sec-title').forEach(t => t.style.display = '');
     let statsC = document.getElementById('hcVsStats');
     if(!statsC){
       statsC = document.createElement('div');
@@ -3550,19 +3557,19 @@ function openSummary(viewRound = S.currentRound){
   const globalDiff = globalTotal - globalPar;
   const gDiffStr = globalDiff===0?'E':globalDiff>0?`+${globalDiff}`:`${globalDiff}`;
   
+  let tournamentTotalBox = null;
   if (S.totalRounds > 1) {
-    const gBox = document.createElement('div');
-    gBox.style.cssText = 'background:rgba(240,192,64,.15);border:1px solid rgba(240,192,64,.3);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;';
-    gBox.innerHTML = `
+    tournamentTotalBox = document.createElement('div');
+    tournamentTotalBox.style.cssText = 'background:rgba(240,192,64,.15);border:1px solid rgba(240,192,64,.3);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;';
+    tournamentTotalBox.innerHTML = `
       <div><div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--gold);letter-spacing:1px;">TOURNAMENT TOTAL</div><div style="font-size:12px;color:var(--text);">${globalTotal} strokes</div></div>
       <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);">${gDiffStr}</div>
     `;
-    body.appendChild(gBox);
   }
 
   const sc=document.createElement('div');
   sc.className = 'sc-table-wrapper';
-  sc.style.cssText='display:block;overflow-x:auto;overflow-y:hidden;min-height:126px;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;-webkit-overflow-scrolling:touch;';
+  sc.style.cssText='display:block;overflow-x:auto;overflow-y:hidden;flex-shrink:0;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;-webkit-overflow-scrolling:touch;';
   const table=document.createElement('table');
   table.style.cssText=`width:100%;min-width:${Math.max(320, (activeHoles.length + 2) * 42)}px;border-collapse:collapse;font-family:"Sen",sans-serif;font-size:11px;`;
 
@@ -3639,6 +3646,7 @@ function openSummary(viewRound = S.currentRound){
   table.appendChild(diffRow);
   sc.appendChild(table);
   body.appendChild(sc);
+  if(tournamentTotalBox) body.appendChild(tournamentTotalBox);
 
   const detailSec=document.createElement('div');
   detailSec.style.cssText='font-family:"Sen",sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;';
