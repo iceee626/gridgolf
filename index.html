@@ -347,15 +347,15 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 /* Summary tabs */
 .sum-tabs{
   display:flex;gap:6px;overflow-x:auto;padding:10px 0 12px;margin-bottom:10px;align-items:center;
-  flex-shrink:0;
+  position:sticky;top:0;background:var(--dark);z-index:6;flex-shrink:0;
 }
 .sum-tab{
   display:inline-flex;align-items:center;justify-content:center;
-  background:rgba(240,192,64,.15);color:var(--gold);padding:4px 8px;border-radius:12px;
-  font-size:10px;line-height:1;border:1px solid rgba(240,192,64,.3);font-family:'Sen',sans-serif;letter-spacing:1px;
-  cursor:pointer;white-space:nowrap;text-transform:uppercase;font-weight:700;min-height:22px;
+  background:rgba(255,255,255,.05);color:var(--muted);padding:6px 12px;border-radius:14px;
+  font-size:10px;line-height:1;border:1px solid var(--border);font-family:'Sen',sans-serif;letter-spacing:1px;
+  cursor:pointer;white-space:nowrap;text-transform:uppercase;font-weight:700;transition:all 0.2s;
 }
-.sum-tab.active{background:rgba(240,192,64,.22);color:var(--gold);border-color:rgba(240,192,64,.45);}
+.sum-tab.active{background:var(--c-fwy);color:#fff;border-color:var(--c-fwyl);}
 
 /* CELL FLIP ANIMATION */
 .cell{transform-style:preserve-3d;transition:transform .0s;}
@@ -1234,7 +1234,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     #hcLogList { overscroll-behavior: contain; touch-action: pan-y; overflow-y: auto; -webkit-overflow-scrolling: touch; max-height: 115px; -ms-overflow-style: none; scrollbar-width: none; }
     #hcLogList::-webkit-scrollbar { display: none; }
     /* Horizontal scroll for the scorecard only */
-    #hcScreen .sc-wrap { overscroll-behavior: contain; touch-action: pan-x; overflow-x: auto; -webkit-overflow-scrolling: touch; -ms-overflow-style: none; scrollbar-width: none; }
+    #hcScreen .sc-wrap { overscroll-behavior-x: none; touch-action: pan-x; overflow-x: auto; -webkit-overflow-scrolling: touch; -ms-overflow-style: none; scrollbar-width: none; }
     #hcScreen .sc-wrap::-webkit-scrollbar { display: none; }
   </style>
   <div style="flex:1; display:flex; flex-direction:column; min-height:0; padding-bottom:12px;">
@@ -2060,6 +2060,11 @@ function buildScorecard(){
   });
   
   // holeBadge removed from header
+  
+  const scInner = document.querySelector('header .sc-inner');
+  if (scInner) {
+      scInner.style.width = activeHoles.length <= 9 ? '100%' : 'max-content';
+  }
 
   setTimeout(()=>{
     const activeCell = sr.querySelector('.sc-active');
@@ -3253,6 +3258,11 @@ function completeHole(){
   scHead.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
   scPar.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
   scYou.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
+  
+  const scInner = document.querySelector('#hcScreen .sc-inner');
+  if (scInner) {
+      scInner.style.width = activeHoles.length <= 9 ? '100%' : 'max-content';
+  }
 
   // Auto-scroll the mini scorecard to the current hole
   setTimeout(() => {
@@ -3456,7 +3466,7 @@ function showRoundEnd(){
     totSpan.textContent = rDiffStr;
     totSpan.style.color = rColor;
 
-    // Show tournament statistics instead of shot replay
+    // Show tournament statistics only
     const logList2 = document.getElementById('hcLogList');
     if(logList2){
       logList2.style.display = 'none';
@@ -3464,54 +3474,22 @@ function showRoundEnd(){
     }
     const secTitles = document.querySelectorAll('#hcScreen .sec-title');
     if(secTitles[0]) secTitles[0].style.display = 'none';
-    if(secTitles[1]) {
-      secTitles[1].style.display = 'flex';
-      secTitles[1].textContent = 'SCORECARD';
-    }
+    if(secTitles[1]) secTitles[1].style.display = 'none';
 
-    // Rebuild mini scorecard
-    const scHead2 = document.getElementById('hcScHead');
-    const scPar2 = document.getElementById('hcScPar');
-    const scYou2 = document.getElementById('hcScYou');
-    scHead2.innerHTML = '<div class="sc-lbl">H</div>';
-    scPar2.innerHTML = '<div class="sc-lbl">PAR</div>';
-    scYou2.innerHTML = '<div class="sc-lbl">YOU</div>';
-    const activeHoles2 = HOLES.slice(S.startIdx, S.endIdx + 1);
-    activeHoles2.forEach((ah, i) => {
-      const absIdx = S.startIdx + i;
-      const v = S.scorecards[S.currentRound-1][absIdx];
-      const d1 = document.createElement('div'); d1.textContent = absIdx + 1; scHead2.appendChild(d1);
-      const d2 = document.createElement('div'); d2.textContent = ah.par; scPar2.appendChild(d2);
-      const d3 = document.createElement('div');
-      if(v!==null){
-        const diff = v - ah.par;
-        d3.innerHTML = `<span class="sc-sym${diff<=-2?' sc-sym-eagle':diff===-1?' sc-sym-birdie':diff===1?' sc-sym-bogey':diff>=2?' sc-sym-double':''}">${v}</span>`;
-      } else { d3.textContent = ''; d3.style.cssText='display:flex;align-items:center;justify-content:center;'; }
-      scYou2.appendChild(d3);
-    });
-    const colW2 = activeHoles2.length <= 9 ? '1fr' : '34px';
-    const tot1 = document.createElement('div'); tot1.textContent='TOT'; tot1.style.background='rgba(0,0,0,.2)'; scHead2.appendChild(tot1);
-    const tot2 = document.createElement('div'); tot2.textContent=roundPar; tot2.style.background='rgba(0,0,0,.2)'; scPar2.appendChild(tot2);
-    const tot3 = document.createElement('div'); tot3.textContent=roundTotal; tot3.style.background='rgba(0,0,0,.2)'; tot3.style.color=rColor; tot3.style.fontWeight='bold'; tot3.style.cssText+='display:flex;align-items:center;justify-content:center;'; scYou2.appendChild(tot3);
-    scHead2.style.gridTemplateColumns = `40px repeat(${activeHoles2.length}, ${colW2}) 40px`;
-    scPar2.style.gridTemplateColumns = `40px repeat(${activeHoles2.length}, ${colW2}) 40px`;
-    scYou2.style.gridTemplateColumns = `40px repeat(${activeHoles2.length}, ${colW2}) 40px`;
     const scWrap2 = document.querySelector('#hcScreen .sc-wrap');
-    if(scWrap2) scWrap2.style.display = '';
+    if(scWrap2) scWrap2.style.display = 'none';
+    
     let statsC = document.getElementById('hcVsStats');
     if(!statsC){
       statsC = document.createElement('div');
       statsC.id = 'hcVsStats';
       document.getElementById('hcLogList').parentNode.insertBefore(statsC, secTitles[1] || document.getElementById('hcLogList').nextSibling);
     }
-    if(secTitles[1] && statsC.nextSibling !== secTitles[1]){
-      secTitles[1].parentNode.insertBefore(statsC, secTitles[1]);
-    }
     statsC.style.cssText = 'flex-shrink:0;margin-bottom:16px;max-height:190px;overflow-y:auto;-ms-overflow-style:none;scrollbar-width:none;';
     renderTournamentStatsPanel('overall');
 
     const btn = document.getElementById('hcBtn');
-    btn.textContent = 'VIEW SUMMARY';
+    btn.textContent = 'NEXT';
     btn.onclick = () => {
         hcScreen.classList.remove('show');
         openSummary(S.currentRound);
@@ -3576,10 +3554,11 @@ function openSummary(viewRound = S.currentRound){
 
   const sc=document.createElement('div');
   sc.className = 'sc-table-wrapper';
-  sc.style.cssText='display:block;overflow-x:auto;overflow-y:hidden;flex-shrink:0;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;-webkit-overflow-scrolling:touch;';
+  sc.style.cssText='display:block;overflow-x:auto;overflow-y:hidden;flex-shrink:0;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:none;';
   const table=document.createElement('table');
-  table.style.cssText=`width:100%;min-width:${Math.max(320, (activeHoles.length + 2) * 34)}px;border-collapse:collapse;font-family:"Sen",sans-serif;font-size:10px;`;
-
+  const minW = activeHoles.length <= 9 ? '100%' : `${Math.max(320, (activeHoles.length + 2) * 34)}px`;
+  table.style.cssText=`width:100%;min-width:${minW};border-collapse:collapse;font-family:"Sen",sans-serif;font-size:10px;`;
+  
   const td=(txt,styles='',cls='')=>{
     const c=document.createElement('td'); c.textContent=txt;
     c.style.cssText='padding:5px 3px;text-align:center;border:1px solid var(--border);'+styles;
