@@ -3354,6 +3354,8 @@ function showRoundEnd(){
     let emoji = globalDiff < 0 ? '🏆' : globalDiff === 0 ? '⛳' : '🏌️';
     let color = globalDiff < 0 ? 'var(--gold)' : globalDiff === 0 ? 'var(--c-fwyl)' : '#e05252';
     const roundsStr = S.totalRounds > 1 ? ` (${S.totalRounds} Rounds)` : '';
+    const diffNamesFinal = {1:'EASY', 2:'MEDIUM', 3:'HARD'};
+    const finalDiffLabel = diffNamesFinal[GAME_DIFF] || 'MEDIUM';
 
     let pbHtml = '';
     if (isNewPB) {
@@ -3369,7 +3371,8 @@ function showRoundEnd(){
         <div style="font-size:56px; margin-bottom:12px; text-align:center; line-height:1;">${emoji}</div>
         <div style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--text);letter-spacing:3px;text-align:center;margin-bottom:4px;">FINAL SCORE</div>
         <div style="font-family:'Bebas Neue',cursive;font-size:64px;color:${color};line-height:1;text-align:center;">${finalTotalStr}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);text-align:center;margin-top:8px;margin-bottom:20px;text-transform:uppercase;">${globalTotal} strokes · par ${globalPar}${roundsStr}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);text-align:center;margin-top:8px;margin-bottom:8px;text-transform:uppercase;">${globalTotal} strokes · par ${globalPar}${roundsStr}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);text-align:center;margin-bottom:20px;text-transform:uppercase;">DIFFICULTY: ${finalDiffLabel}</div>
         ${pbHtml}
     `;
 
@@ -3668,7 +3671,7 @@ function openSummary(viewRound = S.currentRound){
     else if(d<=-2){scoreColor='var(--gold)';resultLabel='Eagle';}
     else if(d===-1){scoreColor='#52c87a';resultLabel='Birdie';}
     else if(d===0){scoreColor='var(--text)';resultLabel='Par';}
-    else if(d===1){scoreColor='#ff8c5a';resultLabel='Bogey';}
+    else if(d===1){scoreColor='#e05252';resultLabel='Bogey';}
     else if(d===2){scoreColor='#e05252';resultLabel='Double';}
     else if(d===3){scoreColor='#e05252';resultLabel='Triple';}
     else if(d===4){scoreColor='#e05252';resultLabel='Quad';}
