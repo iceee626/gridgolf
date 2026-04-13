@@ -163,7 +163,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .hole-title{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:1.2px;line-height:1;display:inline;color:var(--muted);white-space:nowrap;flex-shrink:0;}
 .hole-meta{display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap;margin-top:0;margin-left:7px;vertical-align:middle;color:var(--muted);}
 .hole-yards{font-size:10px;color:var(--muted);font-family:'Sen', sans-serif;}
-.stars{font-size:12px;letter-spacing:1px;}
+.stars{font-family:'Sen',sans-serif;font-size:10px;line-height:1;letter-spacing:.5px;display:inline-flex;align-items:center;}
 .par-block{display:flex;align-items:flex-end;gap:4px;margin-top:5px;}
 .par-word{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:#fff;line-height:.95;}
 .par-num{font-family:'Bebas Neue',cursive;font-size:20px;color:var(--c-fwyl);line-height:.95;}
@@ -266,15 +266,17 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
-  transition:transform .18s cubic-bezier(0.22,1,0.36,1),background .15s ease-in-out,box-shadow .15s ease-in-out;
+  transition:transform .18s cubic-bezier(0.22,1,0.36,1),background .15s ease-in-out,box-shadow .15s ease-in-out,opacity .16s ease,filter .15s ease-in-out;
   min-height:52px;
   box-shadow:0 6px 18px rgba(58,122,48,.28), inset 0 1px 0 rgba(255,255,255,.05);
 }
 .btn-roll:hover{background:var(--c-fwyl);}
-.btn-roll:active{transform:translateY(1px) scale(.96);box-shadow:inset 0 0 14px rgba(0,0,0,.42),0 0 18px rgba(120,220,96,.22);}
-.btn-roll:disabled{opacity:1;cursor:not-allowed;pointer-events:none;filter:brightness(.92);}
+.btn-roll:active{transform:translateY(1px) scale(.965);background:#2f6f2f;box-shadow:inset 0 0 16px rgba(0,0,0,.52),0 2px 10px rgba(0,0,0,.28);filter:brightness(.9);}
+.btn-roll:disabled{opacity:1;cursor:not-allowed;pointer-events:none;filter:brightness(.82);}
 .btn-roll:disabled:active{transform:none;box-shadow:0 6px 18px rgba(58,122,48,.28), inset 0 1px 0 rgba(255,255,255,.05);}
+.btn-roll.rolling-state{background:#2f6f2f;box-shadow:inset 0 0 16px rgba(0,0,0,.52),0 2px 10px rgba(0,0,0,.28);filter:brightness(.86);}
 .roll-col{flex:1.44 1 0;display:flex;min-width:0;}
+#rollBtn,#nextShotBtn{transition:opacity .16s ease,transform .16s ease,background .15s ease-in-out,box-shadow .15s ease-in-out,filter .15s ease-in-out;}
 #nextShotBtn{letter-spacing:2px;font-size:20px;}
 
 /* RESULT */
@@ -318,12 +320,20 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 }
 .menu-profile-icon:hover{background:rgba(255,255,255,.2);}
 
-.menu-logo{font-family:'Bebas Neue',cursive;font-size:52px;letter-spacing:6px;color:var(--text);line-height:1;margin-top:auto;margin-bottom:0;}
+.menu-logo{font-family:'Bebas Neue',cursive;font-size:60px;letter-spacing:6px;color:var(--text);line-height:1;margin-top:auto;margin-bottom:0;}
 .menu-logo span{color:var(--c-fwyl);}
 .menu-tagline{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:20px;}
 .menu-btns{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-bottom:max(8px, env(safe-area-inset-bottom));}
 .menu-content > br{display:none;}
 #menuContinueBtn{min-height:84px!important;padding:12px 16px!important;border-radius:18px!important;margin-top:auto;}
+#menuContinueBtn.menu-glow{
+  box-shadow:0 0 0 1px rgba(30,95,138,.35),0 0 16px rgba(30,95,138,.42),0 8px 24px rgba(10,32,52,.45);
+  animation:continueGlow 2s ease-in-out infinite;
+}
+@keyframes continueGlow{
+  0%,100%{box-shadow:0 0 0 1px rgba(30,95,138,.35),0 0 16px rgba(30,95,138,.38),0 8px 24px rgba(10,32,52,.42);}
+  50%{box-shadow:0 0 0 1px rgba(30,95,138,.6),0 0 24px rgba(30,95,138,.62),0 10px 28px rgba(10,32,52,.52);}
+}
 #menuPlayBtn{min-height:73.5px!important;padding:18px 16px!important;border-radius:18px!important;}
 #menuVersusBtn{min-height:65px!important;padding:12px 10px!important;border-radius:18px!important;font-size:16px!important;gap:4px!important;}
 #menuVersusBtn span{font-size:18px!important;line-height:1!important;}
@@ -410,6 +420,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .course-btn:hover{border-color:var(--c-fwyl);}
 .course-btn:active{transform:translateY(1px) scale(0.97);border-color:rgba(120,220,96,.4);box-shadow:inset 0 0 12px rgba(0,0,0,.42), 0 0 14px rgba(120,220,96,.16);}
 .course-btn.locked{opacity:0.4;pointer-events:none;}
+.course-btn.selected{border-color:var(--c-fwyl);background:rgba(78,158,66,.16);box-shadow:0 0 0 1px rgba(78,158,66,.28), inset 0 1px 0 rgba(255,255,255,.03);}
 
 /* diff-btn used for custom options & difficulty */
 .diff-row{display:flex;gap:6px;margin-bottom:10px;}
@@ -1250,7 +1261,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <button class="setup-back-btn" onclick="navBackFromCourse()">← BACK</button>
     <div class="setup-title">SELECT COURSE</div>
     
-    <button class="course-btn" onclick="navToDiff()">
+    <button class="course-btn" id="courseLittlePinesBtn" onclick="navToDiff()">
       <div>
         <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;">LITTLE PINES GC</div>
         <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 72 · WOODLAND</div>
@@ -1265,6 +1276,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
       </div>
       <div style="font-size:24px;">🌊</div>
     </button>
+    <button class="menu-btn-play" id="vsCourseTeeOffBtn" onclick="vsTeeOffFromCourse()" style="display:none;width:100%;font-size:20px;margin-top:12px;">TEE OFF</button>
   </div>
 </div>
 
@@ -1325,28 +1337,6 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="yrd-track"><div class="yrd-fill" id="yrdFill" style="width:100%"></div></div>
     <div class="yrd-lbl" id="yrdLbl">to hole</div>
   </div>
-</div>
-
-<div class="hole-info">
-  <div>
-    <div class="hole-title" id="holeNameLegacy">HOLE 1</div>
-    <div class="hole-meta">
-          <span class="hole-yards" id="holeYardsLegacy">387 yds</span>
-          <span class="hole-yards" style="color:var(--muted);margin:0 3px;">•</span>
-          <span style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">Difficulty</span>
-          <span class="stars" id="holeStarsLegacy">⭐⭐☆</span>
-        </div>
-  </div>
-  <div class="par-block">
-    <div class="par-num" id="holeParLegacy">4</div>
-    <div class="par-lbl">PAR</div>
-  </div>
-</div>
-
-<div class="yrd-bar">
-  <div class="yrd-num" id="yrdNumLegacy">387 yds</div>
-  <div class="yrd-track"><div class="yrd-fill" id="yrdFillLegacy" style="width:100%"></div></div>
-  <div class="yrd-lbl" id="yrdLblLegacy">to hole</div>
 </div>
 
 <div class="grid-section">
@@ -2117,26 +2107,44 @@ function navToCourse(mode) {
   if (mode === 'single') { SETUP.mode = 'single'; SETUP.rounds = 1; SETUP.holesConfig = '18'; setDiff(1); _lastMenuScreen = 'playModeScreen'; }
   if (mode === 'tournament') { SETUP.mode = 'tournament'; SETUP.rounds = 4; SETUP.holesConfig = '18'; setDiff(1); _lastMenuScreen = 'playModeScreen'; }
   if (mode === 'custom') { _lastMenuScreen = 'customScreen'; }
+  if(VS.setup) VS.setup.courseSelected = false;
   hideScreen(_lastMenuScreen); 
   showScreen('courseScreen', 'flex');
+  updateCourseScreenModeUI();
 }
 
 function navToDiff() { 
   forceHideGame();
+  if (VS.active && _lastMenuScreen === 'vsOptionsScreen') {
+    VS.setup.course = 'little-pines';
+    VS.setup.courseSelected = true;
+    updateCourseScreenModeUI();
+    return;
+  }
   if (SETUP.mode === 'custom' || VS.active) {
-    if (VS.active) {
-      setTimeout(()=>{
-        hideScreen('courseScreen');
-        startGame();
-      },150);
-    } else {
-      hideScreen('courseScreen');
-      startGame();
-    }
+    hideScreen('courseScreen');
+    startGame();
   } else {
     hideScreen('courseScreen'); 
     showScreen('diffScreen', 'flex'); 
   }
+}
+
+function updateCourseScreenModeUI(){
+  const tee=document.getElementById('vsCourseTeeOffBtn');
+  const littlePines=document.getElementById('courseLittlePinesBtn');
+  const vsCourseFlow = VS.active && _lastMenuScreen === 'vsOptionsScreen';
+  if(tee) tee.style.display = vsCourseFlow ? 'block' : 'none';
+  if(littlePines){
+    littlePines.classList.toggle('selected', !!(vsCourseFlow && VS.setup && VS.setup.courseSelected));
+  }
+}
+
+function vsTeeOffFromCourse(){
+  if(!(VS.active && _lastMenuScreen === 'vsOptionsScreen')) return;
+  if(!VS.setup.courseSelected) return;
+  hideScreen('courseScreen');
+  startGame();
 }
 
 function setCustomRounds(r) {
@@ -2207,23 +2215,51 @@ function startGame(){
   maybeShowShakeBanner();
 }
 
-function showNextShotBtn(){
+let _holdFinishBtn=false;
+function _setShotBtnState(showNext){
   const roll=document.getElementById('rollBtn');
   const next=document.getElementById('nextShotBtn');
-  if(roll)roll.style.display='none';
-  if(next)next.style.display='block';
+  if(!roll||!next)return;
+
+  if(!showNext && _holdFinishBtn){
+    roll.style.display='none';
+    roll.disabled=true;
+    next.style.display='block';
+    next.style.opacity='1';
+    next.style.transform='translateY(0) scale(1)';
+    next.style.pointerEvents='none';
+    next.disabled=true;
+    return;
+  }
+
+  const show=showNext?next:roll;
+  const hide=showNext?roll:next;
+
+  show.style.display='block';
+  show.style.opacity='0';
+  show.style.transform='translateY(2px) scale(.98)';
+  show.style.pointerEvents='none';
+  if(show===roll){
+    show.disabled=!!S.rolling;
+    show.classList.remove('rolling-state');
+  } else {
+    show.disabled=false;
+  }
+
+  requestAnimationFrame(()=>{
+    show.style.opacity='1';
+    show.style.transform='translateY(0) scale(1)';
+    show.style.pointerEvents='auto';
+  });
+
+  hide.style.opacity='0';
+  hide.style.transform='translateY(2px) scale(.98)';
+  hide.style.pointerEvents='none';
+  setTimeout(()=>{ if(hide.style.opacity==='0') hide.style.display='none'; },130);
 }
 
-function hideNextShotBtn(){
-  const roll=document.getElementById('rollBtn');
-  const next=document.getElementById('nextShotBtn');
-  if(roll){
-    roll.style.display='block';
-    roll.disabled=true;
-    setTimeout(() => { if(!S.rolling) roll.disabled = false; }, 400); // Prevent double tap roll!
-  }
-  if(next)next.style.display='none';
-}
+function showNextShotBtn(){ _setShotBtnState(true); }
+function hideNextShotBtn(){ _setShotBtnState(false); }
 
 // ═══════════════════════════════════════
 // INIT & SCORECARD
@@ -2239,7 +2275,7 @@ function buildLegend(){
   });
   updateLegendVisibility();
 }
-function starsHTML(d){return'⭐'.repeat(d)+'☆'.repeat(3-d);}
+function starsHTML(d){return '★'.repeat(d)+'☆'.repeat(3-d);}
 
 function buildScorecard(){
   const pr=document.getElementById('parRow');
@@ -2313,8 +2349,10 @@ function loadHole(){
   if(nextBtn){
      nextBtn.textContent='NEXT SHOT';
      nextBtn.style.pointerEvents = '';
+     nextBtn.disabled=false;
      nextBtn.onclick=doNextShot;
   }
+  _holdFinishBtn=false;
 
   const abandonBtn = document.getElementById('abandonBtn');
   if(abandonBtn) {
@@ -2764,7 +2802,8 @@ function doRoll(){
   if(S.rolling||S.holeDone)return;
   if(TUT.active && TUT.blocked) return;
   S.rolling=true;
-  document.getElementById('rollBtn').disabled=true;
+  const rollBtn=document.getElementById('rollBtn');
+  if(rollBtn){ rollBtn.disabled=true; rollBtn.classList.add('rolling-state'); }
   let r1=Math.ceil(Math.random()*6),r2=Math.ceil(Math.random()*6);
   
   // Tutorial: use fixed dice
@@ -2873,13 +2912,13 @@ function processShot(row,col){
         const b=document.getElementById('puttWcBtn');if(b)b.remove();
         S._pendingPuttResult=null;
         S.holeDone=true;
+        _holdFinishBtn=true;
+        nextBtn.disabled=true;
+        nextBtn.style.pointerEvents='none';
         const rollBtn2=document.getElementById('rollBtn');
         if(rollBtn2)rollBtn2.style.display='none';
         updateTVBanner();
-        setTimeout(()=>{
-          nextBtn.textContent='NEXT SHOT';nextBtn.onclick=doNextShot;
-          completeHole();
-        },200);
+        setTimeout(()=>{ completeHole(); },200);
       };
     }
     renderWcFab();
@@ -2999,18 +3038,8 @@ function processShot(row,col){
   },600);
 }
 
-function showNextShotBtn(){
-  const roll=document.getElementById('rollBtn');
-  const next=document.getElementById('nextShotBtn');
-  if(roll)roll.style.display='none';
-  if(next)next.style.display='block';
-}
-function hideNextShotBtn(){
-  const roll=document.getElementById('rollBtn');
-  const next=document.getElementById('nextShotBtn');
-  if(roll){roll.style.display='block';roll.disabled=false;}
-  if(next)next.style.display='none';
-}
+function showNextShotBtn(){ _setShotBtnState(true); }
+function hideNextShotBtn(){ _setShotBtnState(false); }
 let _scrollGridTimeout;
 function scrollToGrid() {
   window._disableTutScroll = true; // Tell the tutorial to skip its centering scroll
@@ -5769,13 +5798,13 @@ function continueGame(){
                 const b=document.getElementById('puttWcBtn');if(b)b.remove();
                 S._pendingPuttResult=null;
                 S.holeDone=true;
+                _holdFinishBtn=true;
+                nextBtn.disabled=true;
+                nextBtn.style.pointerEvents='none';
                 const rollBtn2=document.getElementById('rollBtn');
                 if(rollBtn2)rollBtn2.style.display='none';
                 updateTVBanner();
-                setTimeout(()=>{
-                    nextBtn.textContent='NEXT SHOT';nextBtn.onclick=doNextShot;
-                    completeHole();
-                },200);
+                setTimeout(()=>{ completeHole(); },200);
             };
         }
     } else if (waitingForNextShot && !S.holeDone) {
@@ -5847,6 +5876,7 @@ function returnToMenuSave(){
 function updateMenuContinueBtn(){
   const btn=document.getElementById('menuContinueBtn');
   if(!btn)return;
+  btn.classList.remove('menu-glow');
   if(hasSavedGame()){
     const save=JSON.parse(localStorage.getItem('gg_save'));
     
@@ -5857,6 +5887,7 @@ function updateMenuContinueBtn(){
         const format = save.vsState.format === 'match' ? 'MATCH PLAY' : 'STROKE PLAY';
         btn.innerHTML=`<div>▶ CONTINUE VERSUS</div><div style="font-family:'Sen', sans-serif;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:1px;font-weight:normal;margin-top:4px;">${format} · H${holeDisplay} · ${p1} vs ${p2}</div>`;
         btn.style.display='flex';
+        btn.classList.add('menu-glow');
     } else {
         let totalScore = 0; let totalPar = 0;
         if (save.scorecards) {
@@ -5873,6 +5904,7 @@ function updateMenuContinueBtn(){
         
         btn.innerHTML=`<div>▶ CONTINUE</div><div style="font-family:'Sen', sans-serif;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:1px;font-weight:normal;margin-top:4px;">${cName} · R${rnd} · H${holeDisplay} · ${diffStr}</div>`;
         btn.style.display='flex';
+        btn.classList.add('menu-glow');
     }
   } else {
     btn.style.display='none';
@@ -6639,6 +6671,8 @@ function vsSetDiff(d){
 function navBackFromCourse(){
   hideScreen('courseScreen');
   if(_lastMenuScreen === 'vsOptionsScreen'){
+    if(VS.setup) VS.setup.courseSelected=false;
+    updateCourseScreenModeUI();
     showScreen('vsOptionsScreen','flex');
   } else {
     navBack('mode');
@@ -6651,13 +6685,17 @@ function vsStartFromOptions(){
   SETUP.holesConfig = VS.setup.holesConfig;
   GAME_DIFF = VS.setup.diff;
   _lastMenuScreen = 'vsOptionsScreen';
+  VS.setup.courseSelected = false;
+  VS.setup.course = null;
   hideScreen('vsOptionsScreen');
   showScreen('courseScreen','flex');
   VS.active = true;
+  updateCourseScreenModeUI();
 }
 
 function vsStartGame(){
   VS.active = true;
+  if(VS.setup) VS.setup.courseSelected = false;
   VS.currentPlayer = 0;
   VS.scores = [Array(18).fill(null), Array(18).fill(null)];
   VS.histories = [Array(18).fill(null), Array(18).fill(null)];
