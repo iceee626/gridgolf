@@ -345,14 +345,14 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .tee-off-btn:hover{background:var(--c-fwyl);}
 
 /* Summary tabs */
-.sum-tabs{display:flex;gap:8px;overflow-x:auto;padding:8px 0 10px;margin-bottom:10px;align-items:center;}
+.sum-tabs{display:flex;gap:6px;overflow-x:auto;padding:0 0 12px;margin-bottom:10px;align-items:center;}
 .sum-tab{
   display:inline-flex;align-items:center;justify-content:center;
-  background:rgba(240,192,64,.08);color:var(--gold);padding:4px 8px;border-radius:12px;
-  font-size:10px;border:1px solid rgba(240,192,64,.3);font-family:'Sen',sans-serif;letter-spacing:1px;
-  cursor:pointer;white-space:nowrap;text-transform:uppercase;font-weight:700;min-height:24px;
+  background:rgba(240,192,64,.10);color:var(--gold);padding:5px 10px;border-radius:12px;
+  font-size:10px;line-height:1;border:1px solid rgba(240,192,64,.32);font-family:'Sen',sans-serif;letter-spacing:1px;
+  cursor:pointer;white-space:nowrap;text-transform:uppercase;font-weight:700;
 }
-.sum-tab.active{background:rgba(240,192,64,.18);color:var(--gold);border-color:rgba(240,192,64,.45);}
+.sum-tab.active{background:rgba(240,192,64,.20);color:var(--gold);border-color:rgba(240,192,64,.48);}
 
 /* CELL FLIP ANIMATION */
 .cell{transform-style:preserve-3d;transition:transform .0s;}
@@ -3225,7 +3225,7 @@ function completeHole(){
           else if(diff===1){ d3.innerHTML=`<span class="sc-sym sc-sym-bogey">${v}</span>`; }
           else { d3.innerHTML=`<span class="sc-sym sc-sym-double">${v}</span>`; }
       } else {
-          d3.textContent = '•';
+          d3.textContent = '';
           d3.style.display = 'flex';
           d3.style.alignItems = 'center';
           d3.style.justifyContent = 'center';
@@ -3483,7 +3483,7 @@ function showRoundEnd(){
       if(v!==null){
         const diff = v - ah.par;
         d3.innerHTML = `<span class="sc-sym${diff<=-2?' sc-sym-eagle':diff===-1?' sc-sym-birdie':diff===1?' sc-sym-bogey':diff>=2?' sc-sym-double':''}">${v}</span>`;
-      } else { d3.textContent = '•'; d3.style.cssText='display:flex;align-items:center;justify-content:center;'; }
+      } else { d3.textContent = ''; d3.style.cssText='display:flex;align-items:center;justify-content:center;'; }
       scYou2.appendChild(d3);
     });
     const colW2 = activeHoles2.length <= 9 ? '1fr' : '34px';
@@ -3499,13 +3499,16 @@ function showRoundEnd(){
     if(!statsC){
       statsC = document.createElement('div');
       statsC.id = 'hcVsStats';
-      document.getElementById('hcLogList').parentNode.insertBefore(statsC, document.getElementById('hcLogList').nextSibling);
+      document.getElementById('hcLogList').parentNode.insertBefore(statsC, secTitles[1] || document.getElementById('hcLogList').nextSibling);
+    }
+    if(secTitles[1] && statsC.nextSibling !== secTitles[1]){
+      secTitles[1].parentNode.insertBefore(statsC, secTitles[1]);
     }
     statsC.style.cssText = 'flex-shrink:0;margin-bottom:16px;max-height:190px;overflow-y:auto;-ms-overflow-style:none;scrollbar-width:none;';
     renderTournamentStatsPanel('overall');
 
     const btn = document.getElementById('hcBtn');
-    btn.textContent = `START ROUND ${S.currentRound + 1} →`;
+    btn.textContent = 'VIEW SUMMARY';
     btn.onclick = () => {
         hcScreen.classList.remove('show');
         openSummary(S.currentRound);
@@ -4383,7 +4386,7 @@ function updateProfileStatsAfterRound(score,par,wcUsedThisRound){
 }
 
 function getRoundStats(roundIdx){
-  const stats = [
+  let stats = [
     { label: 'Total Strokes', val: 0 },
     { label: 'Hole in One', val: 0 },
     { label: 'Eagles+', val: 0 },
@@ -4421,6 +4424,7 @@ function getRoundStats(roundIdx){
     });
   });
 
+  if(!wcEnabled()) stats = stats.filter(s => s.label !== 'Wildcards Used');
   return stats;
 }
 
@@ -6856,7 +6860,7 @@ function vsShowFinal(){
     </div>
   `;
 
-  const stats = [
+  let stats = [
       { label: 'Total Strokes', p1: 0, p2: 0 },
       { label: 'Hole in One', p1: 0, p2: 0 },
       { label: 'Eagles+', p1: 0, p2: 0 },
@@ -6894,6 +6898,10 @@ function vsShowFinal(){
           stats[sIdx+7][pIdx === 0 ? 'p1' : 'p2'] += pens;
           stats[sIdx+8][pIdx === 0 ? 'p1' : 'p2'] += (hist.wcsUsed ? hist.wcsUsed.length : 0);
       });
+  }
+
+  if(!wcEnabled()){
+      stats = stats.filter(s => s.label !== 'Wildcards Used');
   }
 
   const scoreboardTitle = Array.from(document.querySelectorAll('#hcScreen .sec-title')).find(t => t.textContent.trim() === 'SCORECARD');
