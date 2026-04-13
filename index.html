@@ -158,20 +158,20 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 
 /* HOLE HERO */
 .hole-hero{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:10px 14px 12px;display:flex;flex-direction:column;gap:8px;}
-.hole-hero-top{display:flex;justify-content:space-between;align-items:center;gap:14px;}
-.hole-hero-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
-.hole-title{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:1.2px;line-height:1;display:inline;}
-.hole-meta{display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap;margin-top:0;margin-left:7px;vertical-align:middle;}
+.hole-hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
+.hole-hero-copy{flex:1;min-width:0;display:block;}
+.hole-title{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:1.2px;line-height:1;display:inline;color:var(--muted);white-space:nowrap;flex-shrink:0;}
+.hole-meta{display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap;margin-top:0;margin-left:7px;vertical-align:middle;color:var(--muted);}
 .hole-yards{font-size:10px;color:var(--muted);font-family:'Sen', sans-serif;}
 .stars{font-size:12px;letter-spacing:1px;}
-.par-block{display:flex;align-items:flex-end;gap:5px;margin-top:2px;}
-.par-word{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;color:#fff;line-height:.95;}
-.par-num{font-family:'Bebas Neue',cursive;font-size:22px;color:var(--c-fwyl);line-height:.9;}
-.hole-hero-distance{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1px;color:#fff;line-height:.92;white-space:nowrap;text-align:right;flex-shrink:0;}
+.par-block{display:flex;align-items:flex-end;gap:4px;margin-top:5px;}
+.par-word{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:#fff;line-height:.95;}
+.par-num{font-family:'Bebas Neue',cursive;font-size:20px;color:var(--c-fwyl);line-height:.95;}
+.hole-hero-distance{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:#fff;line-height:.95;white-space:nowrap;text-align:right;flex-shrink:0;padding-top:1px;}
 .hole-hero-bottom{display:flex;align-items:center;gap:10px;}
-.yrd-track{flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.25);}
+.yrd-track{flex:1;height:6px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.25);}
 .yrd-fill{height:100%;background:linear-gradient(90deg,#69bf5a,var(--c-fwyl));border-radius:999px;transition:width .55s ease;}
-.yrd-lbl{font-family:'Sen', sans-serif;font-size:12px;color:var(--muted);white-space:nowrap;}
+.yrd-lbl{font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);white-space:nowrap;}
 .hole-info,.yrd-bar{display:none!important;}
 
 /* ZONE PILL */
@@ -343,7 +343,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
   filter:brightness(.96);
 }
 .menu-btn-sec{
-  background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:14px;
+  background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--border);border-radius:14px;padding:14px;
   font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;
   box-shadow:0 4px 10px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.03);
 }
@@ -2159,7 +2159,7 @@ function returnToMenu(){
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
   const ovBtn = document.getElementById('ovBtn');
   if(ovBtn) ovBtn.onclick = ()=>nextHole();
-  navBack('menuScreen');
+  setTimeout(()=>navBack('menuScreen'),90);
   autoLoadProfile();
 }
 
@@ -5824,7 +5824,7 @@ function returnToMenuSave(){
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
   const ovBtn = document.getElementById('ovBtn');
   if(ovBtn) ovBtn.onclick = ()=>nextHole();
-  navBack('menuScreen');
+  setTimeout(()=>navBack('menuScreen'),90);
   autoLoadProfile();
 }
 
