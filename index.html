@@ -3368,13 +3368,13 @@ function showRoundEnd(){
     }
 
     vsContainer.innerHTML = `
-        <div style="font-size:56px; margin-bottom:12px; text-align:center; line-height:1;">${emoji}</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--text);letter-spacing:3px;text-align:center;margin-bottom:4px;">FINAL SCORE</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:64px;color:${color};line-height:1;text-align:center;">${finalTotalStr}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);text-align:center;margin-top:8px;margin-bottom:8px;text-transform:uppercase;">${globalTotal} strokes · par ${globalPar}${roundsStr}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);text-align:center;margin-bottom:20px;text-transform:uppercase;">DIFFICULTY: ${finalDiffLabel}</div>
-        ${pbHtml}
-    `;
+    <div style="font-size:56px; margin-top:10px; margin-bottom:12px; text-align:center; line-height:1;">${emoji}</div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--text);letter-spacing:3px;text-align:center;margin-bottom:4px;">FINAL SCORE</div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:64px;color:${color};line-height:1;text-align:center;">${finalTotalStr}</div>
+    <div style="font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);text-align:center;margin-top:8px;margin-bottom:8px;text-transform:uppercase;">${globalTotal} strokes · par ${globalPar}${roundsStr}</div>
+    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px;text-transform:uppercase;">DIFFICULTY: ${finalDiffLabel}</div>
+    ${pbHtml}
+`;
 
     const stats = [
         { label: 'Total Strokes', val: 0 },
