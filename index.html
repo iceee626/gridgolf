@@ -197,7 +197,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 
 /* DICE */
 .dice-row{margin:0 16px 10px;display:flex;gap:10px;align-items:stretch;}
-.dc{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.dc{flex:0 0 34%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;}
 .dc-lbl{font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
 .die{
   width:58px;height:58px;
@@ -264,12 +264,14 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
-  transition:background .15s;
+  transition:transform .18s cubic-bezier(0.22,1,0.36,1),background .15s ease-in-out,box-shadow .15s ease-in-out;
   min-height:52px;
+  box-shadow:0 6px 18px rgba(58,122,48,.28), inset 0 1px 0 rgba(255,255,255,.05);
 }
 .btn-roll:hover{background:var(--c-fwyl);}
+.btn-roll:active{transform:translateY(1px) scale(.96);box-shadow:inset 0 0 14px rgba(0,0,0,.42),0 0 18px rgba(120,220,96,.22);}
 .btn-roll:disabled{opacity:.3;cursor:not-allowed;}
-.roll-col{flex:1;display:flex;}
+.roll-col{flex:0 0 32%;display:flex;}
 #nextShotBtn{letter-spacing:2px;font-size:14px;}
 
 /* RESULT */
@@ -299,9 +301,9 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .menu-screen, .setup-screen {
   position:fixed;inset:0;background:var(--dark);z-index:500;display:flex;align-items:center;justify-content:center;overflow-y:auto;
   padding:calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
-  opacity:0;transition:opacity .3s ease; pointer-events:none;
+  opacity:0;transform:translateY(12px) scale(.985);transition:opacity .26s ease,transform .26s cubic-bezier(0.22,1,0.36,1); pointer-events:none;
 }
-.menu-screen.visible, .setup-screen.visible { opacity:1; pointer-events:auto; }
+.menu-screen.visible, .setup-screen.visible { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
 .menu-bg-grass{position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(180deg,transparent 0%,#0d1f0a 100%);pointer-events:none;z-index:0;}
 .menu-content{position:relative;z-index:10;text-align:center;width:100%;max-width:380px;}
 
@@ -356,7 +358,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 
 .setup-card{max-width:360px;width:100%;text-align:center;position:relative;z-index:10;}
 .setup-top-back{display:flex;justify-content:center;margin-bottom:22px;}
-.setup-head-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;text-align:left;}
+.setup-head-row{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:12px;margin-bottom:18px;}
 .setup-back-btn{
   background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:8px 16px;
   font-family:'Sen', sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;margin-bottom:20px;display:inline-flex;align-items:center;justify-content:center;
@@ -367,7 +369,11 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
   border-color:rgba(120,220,96,.35);
   box-shadow:inset 0 0 10px rgba(0,0,0,.42), 0 0 12px rgba(120,220,96,.14);
 }
-.setup-title{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;margin-bottom:20px;color:var(--c-fwyl);}
+.setup-title{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;margin-bottom:20px;color:var(--c-fwyl);text-align:center;}
+.setup-head-row .setup-title{grid-column:2;margin-bottom:0;}
+.setup-head-row .mode-info-btn{justify-self:end;}
+.setup-head-row::before{content:'';display:block;width:36px;height:36px;}
+.menu-content > .menu-btns > #menuPlayBtn{width:calc(50% - 5px);margin:0 auto;}
 .setup-group{margin-bottom:20px;text-align:left;}
 .setup-lbl{font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;display:block;}
 
@@ -977,6 +983,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .mode-info-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
 .mode-info-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;}
 .mode-info-body{padding:16px;}
+.mode-info-body.compact-top{padding-top:6px;}
 .mode-info-section{margin-bottom:18px;}
 .mode-info-section:last-child{margin-bottom:0;}
 .mode-info-section-title{
@@ -1516,6 +1523,11 @@ function setMetricsPref(m){
 function showScreen(id, flexOrBlock='flex'){
   const el=document.getElementById(id);
   if(!el)return;
+  if(!window._screenHideTimers) window._screenHideTimers = {};
+  if(window._screenHideTimers[id]){
+    clearTimeout(window._screenHideTimers[id]);
+    delete window._screenHideTimers[id];
+  }
   el.style.display=flexOrBlock;
   void el.offsetWidth;
   el.classList.add('visible');
@@ -1523,8 +1535,13 @@ function showScreen(id, flexOrBlock='flex'){
 function hideScreen(id){
   const el=document.getElementById(id);
   if(!el)return;
+  if(!window._screenHideTimers) window._screenHideTimers = {};
   el.classList.remove('visible');
-  el.style.display='none'; // Hiding instantly prevents the overlapping crossfade flash
+  if(window._screenHideTimers[id]) clearTimeout(window._screenHideTimers[id]);
+  window._screenHideTimers[id] = setTimeout(()=>{
+    if(!el.classList.contains('visible')) el.style.display='none';
+    delete window._screenHideTimers[id];
+  }, 260);
 }
 
 // ═══════════════════════════════════════
@@ -2665,16 +2682,20 @@ function advanceYrd(zk){
 // ═══════════════════════════════════════
 function startDiceIdle(){
   if(window._diceIdleTimer) clearInterval(window._diceIdleTimer);
-  let _idleTick=0;
-  window._diceIdleTimer=setInterval(()=>{
-    if(S.rolling||S.holeDone){clearInterval(window._diceIdleTimer);window._diceIdleTimer=null;return;}
-    _idleTick++;
+  const renderIdleFaces = (tick) => {
     const faces=[1,2,3,4,5,6];
-    setDie('dp1',faces[_idleTick%6]);
-    setDie('dp2',faces[(_idleTick+3)%6]);
+    setDie('dp1',faces[tick%6]);
+    setDie('dp2',faces[(tick+3)%6]);
     const d1=document.getElementById('die1'),d2=document.getElementById('die2');
     if(d1)d1.classList.add('idle');
     if(d2)d2.classList.add('idle');
+  };
+  let _idleTick=0;
+  renderIdleFaces(_idleTick);
+  window._diceIdleTimer=setInterval(()=>{
+    if(S.rolling||S.holeDone){clearInterval(window._diceIdleTimer);window._diceIdleTimer=null;return;}
+    _idleTick++;
+    renderIdleFaces(_idleTick);
   },500);
 }
 
@@ -6616,7 +6637,6 @@ function vsStartTurn(){
   const tvIcon = document.querySelector('.tv-icon-box');
   if(tvIcon) tvIcon.textContent = p.icon;
   
-  setDie('dp1',0); setDie('dp2',0);
   startDiceIdle();
   hideNextShotBtn();
   buildGrid(); updateZonePill(); updateYrd(); resetResult(); renderLog(); updateFloat();
@@ -7407,7 +7427,7 @@ if ('serviceWorker' in navigator) {
       <div class="mode-info-head-title">⛳ GAME MODES</div>
       <button class="mode-info-close" onclick="closeModeInfo('play')">✕</button>
     </div>
-    <div class="mode-info-body">
+    <div class="mode-info-body compact-top">
       <div class="mode-info-section">
         <div class="mode-info-row">
           <div class="mode-info-icon">⛳</div>
