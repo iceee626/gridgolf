@@ -1884,14 +1884,17 @@ function navToCustom() {
   forceHideGame();
   _lastMenuScreen = 'customScreen'; 
   SETUP.mode = 'custom';
+  setCustomRounds(1);
+  setCustomHoles('18');
+  setCustomDiff(1);
   hideScreen('playModeScreen'); 
   showScreen('customScreen', 'flex'); 
 }
 
 function navToCourse(mode) {
   forceHideGame();
-  if (mode === 'single') { SETUP.mode = 'single'; SETUP.rounds = 1; SETUP.holesConfig = '18'; _lastMenuScreen = 'playModeScreen'; }
-  if (mode === 'tournament') { SETUP.mode = 'tournament'; SETUP.rounds = 4; SETUP.holesConfig = '18'; _lastMenuScreen = 'playModeScreen'; }
+  if (mode === 'single') { SETUP.mode = 'single'; SETUP.rounds = 1; SETUP.holesConfig = '18'; setDiff(1); _lastMenuScreen = 'playModeScreen'; }
+  if (mode === 'tournament') { SETUP.mode = 'tournament'; SETUP.rounds = 4; SETUP.holesConfig = '18'; setDiff(1); _lastMenuScreen = 'playModeScreen'; }
   if (mode === 'custom') { _lastMenuScreen = 'customScreen'; }
   hideScreen(_lastMenuScreen); 
   showScreen('courseScreen', 'flex');
@@ -2018,11 +2021,16 @@ function buildScorecard(){
   const currentSc = S.scorecards[S.currentRound - 1];
   
   // Use stretching columns for 9 holes, fixed 34px columns for 18 holes
-  const colWidth = activeHoles.length <= 9 ? '1fr' : '34px';
+  const colWidth = activeHoles.length <= 9 ? 'minmax(0, 1fr)' : '34px';
   
   headRow.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colWidth})`;
   pr.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colWidth})`;
   sr.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colWidth})`;
+  
+  const scInner = document.querySelector('header .sc-inner');
+  if (scInner) {
+      scInner.style.width = activeHoles.length <= 9 ? '100%' : 'max-content';
+  }
   
   headRow.innerHTML = '<div class="sc-lbl">H</div>';
   activeHoles.forEach((_, i) => {
@@ -3254,11 +3262,11 @@ function completeHole(){
   t3.style.justifyContent = 'center';
   scYou.appendChild(t3);
 
-  const colW = activeHoles.length <= 9 ? '1fr' : '34px';
+  const colW = activeHoles.length <= 9 ? 'minmax(0, 1fr)' : '34px';
   scHead.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
   scPar.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
   scYou.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
-  
+
   const scInner = document.querySelector('#hcScreen .sc-inner');
   if (scInner) {
       scInner.style.width = activeHoles.length <= 9 ? '100%' : 'max-content';
@@ -3460,7 +3468,8 @@ function showRoundEnd(){
     hcTitle.textContent = `ROUND ${S.currentRound} COMPLETE`;
     hcTitle.style.color = rColor;
     hcTitle.style.fontSize = '36px';
-    document.getElementById('hcSub').textContent = `${roundTotal} STROKES · PAR ${roundPar}`;
+    const diffNames = {1:'EASY', 2:'MEDIUM', 3:'HARD'};
+    document.getElementById('hcSub').innerHTML = `${roundTotal} STROKES · PAR ${roundPar}<br><span style="display:inline-block;margin-top:4px;">DIFFICULTY: ${diffNames[GAME_DIFF] || 'MEDIUM'}</span>`;
 
     const totSpan = document.getElementById('hcTotSpan');
     totSpan.textContent = rDiffStr;
@@ -3485,7 +3494,7 @@ function showRoundEnd(){
       statsC.id = 'hcVsStats';
       document.getElementById('hcLogList').parentNode.insertBefore(statsC, secTitles[1] || document.getElementById('hcLogList').nextSibling);
     }
-    statsC.style.cssText = 'flex-shrink:0;margin-bottom:16px;max-height:190px;overflow-y:auto;-ms-overflow-style:none;scrollbar-width:none;';
+    statsC.style.cssText = 'flex-shrink:0;margin-bottom:16px;-ms-overflow-style:none;scrollbar-width:none;';
     renderTournamentStatsPanel('overall');
 
     const btn = document.getElementById('hcBtn');
@@ -3554,7 +3563,7 @@ function openSummary(viewRound = S.currentRound){
 
   const sc=document.createElement('div');
   sc.className = 'sc-table-wrapper';
-  sc.style.cssText='display:block;overflow-x:auto;overflow-y:hidden;flex-shrink:0;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:none;';
+  sc.style.cssText='display:block;overflow-x:auto;overflow-y:hidden;flex-shrink:0;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:none;transform:translateZ(0);';
   const table=document.createElement('table');
   const minW = activeHoles.length <= 9 ? '100%' : `${Math.max(320, (activeHoles.length + 2) * 34)}px`;
   table.style.cssText=`width:100%;min-width:${minW};border-collapse:collapse;font-family:"Sen",sans-serif;font-size:10px;`;
@@ -6549,10 +6558,15 @@ function renderVsReplayAndScoreboard(playerIdx) {
   t3.style.justifyContent = 'center';
   scYou.appendChild(t3);
 
-  const colW = activeHoles.length <= 9 ? '1fr' : '34px';
+  const colW = activeHoles.length <= 9 ? 'minmax(0, 1fr)' : '34px';
   scHead.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
   scPar.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
   scYou.style.gridTemplateColumns = `40px repeat(${activeHoles.length}, ${colW}) 40px`;
+  
+  const scInner = document.querySelector('#hcScreen .sc-inner');
+  if (scInner) {
+      scInner.style.width = activeHoles.length <= 9 ? '100%' : 'max-content';
+  }
 
   // 3. Update Pills UI
   const p0 = document.getElementById('vsPill0');
