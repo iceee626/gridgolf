@@ -1124,14 +1124,14 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
       <button class="menu-btn-sec mode-menu-card" onclick="navToCourse('single')">
         <div class="mode-menu-copy">
           <span class="mode-menu-title">SINGLE DAY</span>
-          <span class="mode-menu-sub">Classic solo round • quick start</span>
+          <span class="mode-menu-sub">Quick  play • 18 holes</span>
         </div>
         <span class="mode-menu-icon">⛳</span>
       </button>
       <button class="menu-btn-sec mode-menu-card" onclick="navToCourse('tournament')">
         <div class="mode-menu-copy">
           <span class="mode-menu-title">TOURNAMENT</span>
-          <span class="mode-menu-sub">Multi-round event • cumulative scoring</span>
+          <span class="mode-menu-sub">Full golf event • 4 rounds</span>
         </div>
         <span class="mode-menu-icon">🏆</span>
       </button>
@@ -1145,7 +1145,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
       <button class="menu-btn-sec mode-menu-card" onclick="navToCustom()">
         <div class="mode-menu-copy">
           <span class="mode-menu-title">CUSTOM GAME</span>
-          <span class="mode-menu-sub">Rounds, holes and difficulty control</span>
+          <span class="mode-menu-sub">Configure your own experience</span>
         </div>
         <span class="mode-menu-icon">⚙️</span>
       </button>
@@ -7378,26 +7378,22 @@ if ('serviceWorker' in navigator) {
 <div class="mode-info-overlay" id="playModeInfoOverlay" onclick="closeModeInfo('play')">
   <div class="mode-info-card" onclick="event.stopPropagation()">
     <div class="mode-info-head">
-      <div class="mode-info-head-title">⛳ PLAY MODES</div>
+      <div class="mode-info-head-title">⛳ GAME MODES</div>
       <button class="mode-info-close" onclick="closeModeInfo('play')">✕</button>
     </div>
     <div class="mode-info-body">
-      <div class="mode-info-section">
-        <div class="mode-info-section-title">🏌️ SOLO MODES</div>
         <div class="mode-info-row">
           <div class="mode-info-icon">⛳</div>
           <div class="mode-info-text">
             <div class="mode-info-name">SINGLE DAY</div>
-            <div class="mode-info-desc">A classic round of golf — choose 18 holes, Front 9, or Back 9 and play straight through. Your score is recorded against par. Perfect for a quick session.</div>
-            <span class="mode-info-tag available">AVAILABLE</span>
+            <div class="mode-info-desc">A classic 18-hole round of golf. Your score is recorded against par. Perfect for a quick session.</div>
           </div>
         </div>
         <div class="mode-info-row">
           <div class="mode-info-icon">🏆</div>
           <div class="mode-info-text">
             <div class="mode-info-name">TOURNAMENT</div>
-            <div class="mode-info-desc">Compete across multiple rounds (up to 4 days) on the same course. Your cumulative score across all rounds determines your final rank. The full tournament experience.</div>
-            <span class="mode-info-tag available">AVAILABLE</span>
+            <div class="mode-info-desc">Compete across 4 rounds on the same course. Every stroke counts. Battle for the lowest cumulative score in a full-length golf event.</div>
           </div>
         </div>
         <div class="mode-info-row">
@@ -7405,25 +7401,23 @@ if ('serviceWorker' in navigator) {
           <div class="mode-info-text">
             <div class="mode-info-name">PRO TOUR</div>
             <div class="mode-info-desc">A season-long competitive format with multiple events, rankings, and progression. Face tougher fields and climb the leaderboard.</div>
-            <span class="mode-info-tag locked">COMING SOON</span>
           </div>
         </div>
         <div class="mode-info-row">
           <div class="mode-info-icon">⚙️</div>
           <div class="mode-info-text">
             <div class="mode-info-name">CUSTOM GAME</div>
-            <div class="mode-info-desc">Build your own round your way. Mix and match number of rounds (1, 2, or 4 days), holes (18, Front 9, Back 9), and difficulty (Easy / Medium / Hard). Ideal if you want precise control over your experience.</div>
-            <span class="mode-info-tag available">AVAILABLE</span>
+            <div class="mode-info-desc">Build your own round your way. Mix and match number of rounds (1, 2, or 4), holes (18, Front 9, Back 9), and difficulty (Easy / Medium / Hard). Ideal if you want precise control over your experience.</div>
           </div>
         </div>
       </div>
       <div class="mode-info-section">
-        <div class="mode-info-section-title">🎯 DIFFICULTY EXPLAINED</div>
+        <div class="mode-info-section-title">🎯 DIFFICULTY</div>
         <div class="mode-info-row">
           <div class="mode-info-icon">🟢</div>
           <div class="mode-info-text">
             <div class="mode-info-name">EASY</div>
-            <div class="mode-info-desc">Generous grids with more fairway and green cells. Fewer hazards. Great for learning the game.</div>
+            <div class="mode-info-desc">Generous grids with more fairway and green cells. Fewer hazards and even fewer bogeys. Great for learning the game and achieving the lowest scores.</div>
           </div>
         </div>
         <div class="mode-info-row">
@@ -7437,7 +7431,7 @@ if ('serviceWorker' in navigator) {
           <div class="mode-info-icon">🔴</div>
           <div class="mode-info-text">
             <div class="mode-info-name">HARD</div>
-            <div class="mode-info-desc">Tight grids with plenty of hazards and OB cells. Every roll matters. For seasoned players only.</div>
+            <div class="mode-info-desc">Tight grids packed with hazards and OB cells. Every roll matters here. Strategic use of Wildcards is essential to navigate the danger and secure a low score. For seasoned players only.</div>
           </div>
         </div>
       </div>
@@ -7466,14 +7460,14 @@ if ('serviceWorker' in navigator) {
           <div class="mode-info-icon">🏆</div>
           <div class="mode-info-text">
             <div class="mode-info-name">STROKE PLAY</div>
-            <div class="mode-info-desc">The classic format. Both players count every stroke across all holes. Lowest total score at the end wins. A single bad hole won't end the match — keep fighting back.</div>
+            <div class="mode-info-desc">The classic format. Both players count every stroke across all holes. Lowest total score at the end wins. A single bad hole won't end the match, keep fighting back!</div>
           </div>
         </div>
         <div class="mode-info-row">
           <div class="mode-info-icon">⚔️</div>
           <div class="mode-info-text">
             <div class="mode-info-name">MATCH PLAY</div>
-            <div class="mode-info-desc">Win holes, not strokes. Each hole is its own contest — lowest score wins that hole. Lead is tracked as "X Up." A player wins when they lead by more holes than remain. Dramatic comebacks happen!</div>
+            <div class="mode-info-desc">Quadruple bogey on a hole won't end your dream of winning! Each hole is its own contest — lowest score wins that hole. Lead is tracked as "X Up." A player wins when they lead by more holes than remain. Dramatic comebacks happen.</div>
           </div>
         </div>
       </div>
@@ -7483,7 +7477,7 @@ if ('serviceWorker' in navigator) {
           <div class="mode-info-icon">🔄</div>
           <div class="mode-info-text">
             <div class="mode-info-name">TURN-BASED PLAY</div>
-            <div class="mode-info-desc">Players alternate on each hole — Player 1 plays the full hole, then Player 2 plays the same hole on the same grid layout. A turn screen between players keeps scores hidden until both finish.</div>
+            <div class="mode-info-desc">Players alternate on each hole: Player 1 plays the full hole, then Player 2 plays the same hole on the same grid layout.</div>
           </div>
         </div>
         <div class="mode-info-row">
@@ -7497,7 +7491,7 @@ if ('serviceWorker' in navigator) {
           <div class="mode-info-icon">🃏</div>
           <div class="mode-info-text">
             <div class="mode-info-name">WILDCARDS</div>
-            <div class="mode-info-desc">Each player has their own independent wildcard hand. Rolling doubles earns a wildcard just for you — use them strategically to gain the edge over your opponent.</div>
+            <div class="mode-info-desc">Each player has their own independent wildcard hand. Rolling doubles earns a wildcard just for you. Use them strategically to gain the edge over your opponent. Of course, unless you want to turn it off in the Settings!</div>
           </div>
         </div>
       </div>
@@ -7507,14 +7501,14 @@ if ('serviceWorker' in navigator) {
           <div class="mode-info-icon">🏌️</div>
           <div class="mode-info-text">
             <div class="mode-info-name">HOLE SELECTION</div>
-            <div class="mode-info-desc">Choose from a full 18 holes, Front 9 (holes 1–9), or Back 9 (holes 10–18). Both players always play the same selection.</div>
+            <div class="mode-info-desc">Choose from a full 18 holes, Front 9 (holes 1–9), or Back 9 (holes 10–18) on a particular course. Then? Tee off!</div>
           </div>
         </div>
         <div class="mode-info-row">
           <div class="mode-info-icon">⚙️</div>
           <div class="mode-info-text">
             <div class="mode-info-name">DIFFICULTY</div>
-            <div class="mode-info-desc">Easy, Medium, or Hard affects the grid hazard distribution for both players equally — the harder the setting, the tighter and more punishing the grids.</div>
+            <div class="mode-info-desc">Easy, Medium, or Hard affects the grid hazard distribution for both players equally. The harder the setting, the tighter and more punishing the grids.</div>
           </div>
         </div>
       </div>
