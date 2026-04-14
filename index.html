@@ -3103,13 +3103,11 @@ function processShot(row,col){
   let resolvedOutcome=outcome;
   let wcAppliedNote='';
   
-  if (WCS.shortcutActive) {
+  if (WCS.shortcutActive && prevZone === 'tee' && HOLES[S.holeIdx].par !== 3) {
       WCS.shortcutActive = false;
-      if (!['grn', 'hole', 'p1', 'p2', 'p3'].includes(resolvedOutcome)) {
-          resolvedOutcome = 'chip';
-          wcAppliedNote = ' (⚡ Shortcut)';
-          showWcToast('⚡ Shortcut activated!');
-      }
+      resolvedOutcome = 'chip';
+      wcAppliedNote = ' (⚡ Shortcut)';
+      showWcToast('⚡ Shortcut activated!');
   }
   if (WCS.luckyBounceActive && (resolvedOutcome === 'ob' || resolvedOutcome === 'h2o')) {
       resolvedOutcome = 'fwy';
@@ -3122,6 +3120,12 @@ function processShot(row,col){
       WCS.ironWillActive = false; 
       wcAppliedNote = ' (🔩 Iron Will)';
       showWcToast('🔩 Iron Will activated!');
+  }
+  if (WCS.mowersRevengeActive && resolvedOutcome === 'rgh') {
+      // Doesn't expire until hole is done
+      resolvedOutcome = 'fwy';
+      wcAppliedNote = ' (🚜 Mower\'s Revenge)';
+      showWcToast('🚜 Mower\'s Revenge activated!');
   }
   if (WCS.magicBackspinActive && prevZone === 'chip' && resolvedOutcome === 'sand') {
       resolvedOutcome = 'grn';
@@ -3177,7 +3181,11 @@ function processShot(row,col){
     } else {
       playShotSound(prevZone,'hole');
       S.strokes+=1;S.yrdRemain=0;
-      addLog(S.shotNum,'⛳ Hole In!','hole','+1',false,row,col,snapGrid, prevZone, prevYrdRemain);
+      
+      let wcNote = S._wcNextShotNote ? S._wcNextShotNote : '';
+      S._wcNextShotNote = null;
+      
+      addLog(S.shotNum,`⛳ Hole In!${wcNote}`,'hole','+1',false,row,col,snapGrid, prevZone, prevYrdRemain);
       showResult(Z.hole,'Hole In!','good',`Row ${row+1} · Col ${col+1}`);
       S.shotNum++;S.holeDone=true;
       hideNextShotBtn();hidePostShotWcBtn();
@@ -3532,7 +3540,7 @@ function completeHole(){
         pPar += HOLES[i].par;
     }
     let diff = pTotal - pPar;
-    if (WCS.pressureCookerShots > 0 && diff <= 0) {
+    if (WCS.pressureCookerShots > 0) {
       WCS.pressureCookerShots--;
   }
     let diffStr = diff === 0 ? 'E' : diff > 0 ? `+${diff}` : `${diff}`;
@@ -3686,7 +3694,7 @@ function completeHole(){
   S.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ totalScore+=s; totalPar+=HOLES[i].par; } }));
   const totalDiff=totalScore-totalPar;
   const totalStr=totalDiff===0?'E':totalDiff>0?`+${totalDiff}`:`${totalDiff}`;
-  if (WCS.pressureCookerShots > 0 && totalDiff <= 0) {
+  if (WCS.pressureCookerShots > 0) {
       WCS.pressureCookerShots--;
   }
   
@@ -5475,7 +5483,10 @@ function openWcInfo(){
   const list=document.getElementById('wcInfoList');
   const title=document.getElementById('wcInfoTitle');
   if(!panel)return;
+  
   title.textContent='ALL WILDCARDS';
+  title.style.color='#fff';
+  document.getElementById('wcInfoBackBtn').onclick = closeWcInfo;
   
   list.innerHTML=`
     <div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.5);padding:6px 0 10px;line-height:1.5;">Wildcards are earned by rolling doubles. Equip up to 3 and use them before rolling. Tap any wildcard for details.</div>
@@ -5518,16 +5529,13 @@ function openWcInfo(){
 function showWcInfoDetail(wc, color){
   const list=document.getElementById('wcInfoList');
   const title=document.getElementById('wcInfoTitle');
-  title.textContent=wc.name;
+  title.textContent=wc.name.toUpperCase();
   title.style.color = color || '#fff';
+  document.getElementById('wcInfoBackBtn').onclick = openWcInfo;
+  
   list.innerHTML=`
-    <div class="setup-head-row" style="margin-bottom:14px;">
-      <button onclick="openWcInfo()" class="setup-back-btn" style="position:static;transform:none;" aria-label="Back">&#8592;</button>
-      <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:${color || '#fff'};text-align:center;flex:1;">${wc.name}</div>
-      <span class="setup-head-spacer"></span>
-    </div>
-    <div style="font-size:40px;text-align:center;margin:10px 0;">${wc.icon}</div>
-    <div style="font-family:'Sen', sans-serif;font-size:11px;color:rgba(255,255,255,.7);text-align:center;line-height:1.5;padding:0 8px;">${wc.desc}</div>
+    <div style="font-size:40px;text-align:center;margin:10px 0 16px;">${wc.icon}</div>
+    <div style="font-family:'Sen', sans-serif;font-size:12px;color:rgba(255,255,255,.8);text-align:center;line-height:1.5;padding:0 12px;">${wc.desc}</div>
   `;
 }
   
@@ -5766,22 +5774,7 @@ function applyWildcardEffect(wc){
   }
 
   switch(wc.id){
-    case 'shortcut':
-      if (h.par === 3 || S.zone === 'tee') {
-        toastMsg = `⚡ Shortcut only works on Par 4/5 after the tee shot!`;
-        applied = false;
-      } else {
-        const prevZone = S.zone;
-        const prevYrdRemain = S.yrdRemain;
-        S.zone='chip';
-        S.yrdRemain=Math.min(S.yrdRemain, Math.round(15+Math.random()*30));
-        addLog('🃏', `Skipped to Chip (${wc.icon} ${wc.name})`, 'chip', 'WC', false, null, null, null, prevZone, prevYrdRemain);
-        updateZonePill();updateYrd();
-        buildGrid();
-        S._preserveGrid=true; 
-        toastMsg = `⚡ Shortcut activated!`;
-      }
-      break;
+    case 'shortcut': WCS.shortcutActive = true; toastMsg = `⚡ ${wc.name} applied!`; break;
     case 'phantom_stroke':
       let hasPenalty = S.log.some(e => e.pen);
       if(hasPenalty) {
@@ -5797,79 +5790,46 @@ function applyWildcardEffect(wc){
         applied = false;
       }
       break;
-    case 'great_escape': 
-        WCS.greatEscapeActive=true; 
-        toastMsg = `🔓 ${wc.name} applied!`;
-        if(S.zone==='rgh' && !nextVisible) { buildGrid(); toastMsg = null; } 
-        break;
-    case 'magic_backspin': WCS.magicBackspinActive=true; toastMsg = `🔄 ${wc.name} applied!`; break;
+    case 'great_escape': WCS.greatEscapeActive = true; toastMsg = `🔓 ${wc.name} applied!`; break;
+    case 'magic_backspin': WCS.magicBackspinActive = true; toastMsg = `🔄 ${wc.name} applied!`; break;
     case 'pressure_cooker': 
-        WCS.pressureCookerShots = 3; 
-        toastMsg = `♨️ ${wc.name} applied!`;
-        if(S.zone==='tee' && !nextVisible) { 
-            let tot = 0, par = 0;
-            S.scorecards.forEach(sc=>sc.forEach((s,i)=>{if(s!==null){tot+=s;par+=HOLES[i].par;}}));
-            if(tot > par) { buildGrid(); toastMsg = null; } 
-        } 
-        break;
-    case 'lily_pad': WCS.lilyPadActive=true; toastMsg = `🪷 ${wc.name} applied!`; break;
-    case 'mowers_revenge': 
-        WCS.mowersRevengeActive=true; 
-        toastMsg = `🚜 ${wc.name} applied!`; 
-        if(S.zone==='rgh' && !nextVisible) { buildGrid(); toastMsg = null; } 
-        break;
+      WCS.pressureCookerShots = 3; 
+      toastMsg = `♨️ ${wc.name} applied!`; 
+      break;
+    case 'lily_pad': WCS.lilyPadActive = true; toastMsg = `🪷 ${wc.name} applied!`; break;
+    case 'mowers_revenge': WCS.mowersRevengeActive = true; toastMsg = `🚜 ${wc.name} applied!`; break;
     case 'fairway_finder': 
-        WCS.fairwayFinderActive=true; 
-        toastMsg = `🔍 ${wc.name} applied!`; 
-        break;
-    case 'cup_magnet': WCS.cupMagnetActive=true; toastMsg = `🧲 ${wc.name} applied!`; break;
-    case 'commercial': 
-        WCS.highlightReelActive=true; 
-        toastMsg = `🎥 ${wc.name} applied!`; 
-        if(S.zone==='chip' && !nextVisible) { buildGrid(); toastMsg = null; } 
-        break;
-    case 'sand_wedge_pro': 
-        WCS.sandWedgeProActive=true; 
-        toastMsg = `🏖️ ${wc.name} applied!`; 
-        if(S.zone==='sand' && !nextVisible) { buildGrid(); toastMsg = null; } 
-        break;
-    case 'lucky_bounce': WCS.luckyBounceActive=true; toastMsg = `🍀 ${wc.name} applied!`; break;
-    case 'iron_will': WCS.ironWillActive=true; toastMsg = `🔩 ${wc.name} applied!`; break;
-    case 'birdie_boost': 
-        WCS.birdieBoostActive=true; 
-        toastMsg = `🚀 ${wc.name} applied!`; 
-        if(['fwy','rgh','sand','chip'].includes(S.zone) && !nextVisible) { buildGrid(); toastMsg = null; } 
-        break;
-    case 'hole_wall': 
-        WCS.holeWallActive=true; 
-        toastMsg = `🕳️ ${wc.name} applied!`; 
-        if(h.par===3&&S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; } 
-        break;
+      if (S.zone !== 'tee') {
+          toastMsg = `🔍 Fairway Finder can only be used on the Tee!`;
+          applied = false;
+      } else {
+          WCS.fairwayFinderActive = true;
+          toastMsg = `🔍 ${wc.name} applied!`;
+      }
+      break;
+    case 'cup_magnet': WCS.cupMagnetActive = true; toastMsg = `🧲 ${wc.name} applied!`; break;
+    case 'commercial': WCS.highlightReelActive = true; toastMsg = `🎥 ${wc.name} applied!`; break;
+    case 'sand_wedge_pro': WCS.sandWedgeProActive = true; toastMsg = `🏖️ ${wc.name} applied!`; break;
+    case 'lucky_bounce': WCS.luckyBounceActive = true; toastMsg = `🍀 ${wc.name} applied!`; break;
+    case 'iron_will': WCS.ironWillActive = true; toastMsg = `🔩 ${wc.name} applied!`; break;
+    case 'birdie_boost': WCS.birdieBoostActive = true; toastMsg = `🚀 ${wc.name} applied!`; break;
+    case 'hole_wall': WCS.holeWallActive = true; toastMsg = `🕳️ ${wc.name} applied!`; break;
     case 'the_ferrett': 
       if (S.zone === 'sand' && S.yrdRemain > 87) {
           toastMsg = `🦡 The Ferrett only works on greenside bunkers!`;
           applied = false;
       } else {
-          WCS.ferrettActive=true;
+          WCS.ferrettActive = true;
           toastMsg = `🦡 ${wc.name} applied!`; 
-          if(S.zone==='sand' && !nextVisible) { buildGrid(); toastMsg = null; }
       }
       break;
-    case 'hole_in_one': 
-        WCS.hioActive=true; 
-        toastMsg = `🌟 ${wc.name} applied!`; 
-        if(h.par===3&&S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; } 
-        break;
-    case 'golden_putter': 
-        WCS.goldenPutterActive=true; 
-        toastMsg = `🥇 ${wc.name} applied!`; 
-        if(S.zone==='grn' && !nextVisible) { buildGrid(); toastMsg = null; } 
-        break;
+    case 'hole_in_one': WCS.hioActive = true; toastMsg = `🌟 ${wc.name} applied!`; break;
+    case 'golden_putter': WCS.goldenPutterActive = true; toastMsg = `🥇 ${wc.name} applied!`; break;
     case 'mulligan':
     case 'tailwind':
     case 'precision_grip':
       WCS.active = wc.id;
-      toastMsg = null; 
+      toastMsg = null;
       break;
   }
   
@@ -5901,22 +5861,27 @@ function applyWcGridMods(grid){
   
   if (WCS.ferrettActive && S.zone === 'sand' && S.yrdRemain <= 87) {
     WCS.ferrettActive = false; 
+    showWcToast('🦡 The Ferrett activated!'); appendWcNote('🦡 The Ferrett');
     grid = grid.map(r=>r.map(()=>Math.random()<.75?'hole':'grn'));
   }
   if (WCS.goldenPutterActive && S.zone === 'grn') {
     WCS.goldenPutterActive = false; 
+    showWcToast('🥇 Golden Putter activated!'); appendWcNote('🥇 Golden Putter');
     grid = grid.map(r=>r.map(()=>'p1'));
   }
   if (WCS.holeWallActive && h.par === 3 && S.zone === 'tee') {
     WCS.holeWallActive = false; 
+    showWcToast('🕳️ Hole In The Wall activated!'); appendWcNote('🕳️ Hole In The Wall');
     grid = grid.map(r=>r.map(c=>(c==='rgh'||c==='sand'||c==='fwy'||c==='ob')?'chip':'grn'));
   }
   if (WCS.hioActive && h.par === 3 && S.zone === 'tee') {
     WCS.hioActive = false; 
+    showWcToast('🌟 Hole In One activated!'); appendWcNote('🌟 Hole In One');
     grid = grid.map(r=>r.map(()=>Math.random()<.80?'hole':'grn'));
   }
   if (WCS.birdieBoostActive && ['fwy','rgh','sand','chip'].includes(S.zone)) {
     WCS.birdieBoostActive = false; 
+    showWcToast('🚀 Birdie Boost activated!'); appendWcNote('🚀 Birdie Boost');
     let eligible = [];
     for(let r=0; r<6; r++) for(let c=0; c<6; c++) if(grid[r][c] !== 'grn' && grid[r][c] !== 'hole') eligible.push({r,c});
     eligible = shuffle(eligible).slice(0, 8);
@@ -5931,22 +5896,20 @@ function applyWcGridMods(grid){
       WCS.greatEscapeActive = false; 
       showWcToast('🔓 The Great Escape activated!'); 
       appendWcNote('🔓 The Great Escape');
-      const targetZone = (S.yrdRemain <= 160 || HOLES[S.holeIdx].par === 3) ? 'grn' : 'fwy';
-      grid = grid.map(r=>r.map(c=> Math.random() < 0.75 ? targetZone : c));
+      const targetZone = (S.yrdRemain <= 160 || h.par === 3) ? 'grn' : 'fwy';
+      grid = grid.map(r=>r.map(c=> (c !== 'hole' && Math.random() < 0.75) ? targetZone : c));
   }
   if (WCS.pressureCookerShots > 0 && S.zone === 'tee') {
       let tot = 0, par = 0;
       S.scorecards.forEach(sc=>sc.forEach((s,i)=>{if(s!==null){tot+=s;par+=HOLES[i].par;}}));
       if (tot > par) {
-          WCS.pressureCookerShots = 0; // Consume it upon activation
+          // Note: We DO NOT set WCS.pressureCookerShots = 0 here anymore! It expires naturally in completeHole.
           showWcToast('♨️ Pressure Cooker activated!'); appendWcNote('♨️ Pressure Cooker');
-          const targetZone = HOLES[S.holeIdx].par === 3 ? 'grn' : 'fwy';
+          const targetZone = h.par === 3 ? 'grn' : 'fwy';
           grid = grid.map(r=>r.map(c=> Math.random() < 0.8 ? targetZone : c));
       }
   }
-  if (WCS.mowersRevengeActive) {
-      grid = grid.map(r=>r.map(c=> c === 'rgh' ? 'fwy' : c));
-  }
+  
   if (WCS.fairwayFinderActive) {
       if (S.shotNum === 2 && S.zone === 'fwy') {
           WCS.fairwayFinderActive = false; 
@@ -5959,7 +5922,8 @@ function applyWcGridMods(grid){
   }
   if (WCS.highlightReelActive && S.zone === 'chip') {
       WCS.highlightReelActive = false; 
-      grid = grid.map(r=>r.map(c=> Math.random() < 0.75 ? 'hole' : c));
+      showWcToast('🎥 Highlight Reel activated!'); appendWcNote('🎥 Highlight Reel');
+      grid = grid.map(r=>r.map(c=> (c !== 'hole' && Math.random() < 0.75) ? 'hole' : c));
   }
 
   return grid;
@@ -6543,12 +6507,14 @@ function clearTutorialUiState(){
 
   const nextBtn = document.getElementById('nextShotBtn');
   if(nextBtn){
-    nextBtn.textContent = 'NEXT SHOT';
-    nextBtn.style.background = 'var(--c-tee)';
-    nextBtn.style.pointerEvents = '';
-    nextBtn.disabled = false;
-    nextBtn.onclick = doNextShot;
+     nextBtn.textContent='NEXT SHOT';
+     nextBtn.style.background='var(--c-tee)';
+     nextBtn.style.pointerEvents = '';
+     nextBtn.disabled=false;
+     nextBtn.onclick=doNextShot;
   }
+  _holdFinishBtn=false;
+  hideNextShotBtn(true);
 }
 
 function startTutorial(){
@@ -7950,7 +7916,7 @@ function closeModeInfo(type){
   <div class="wc-drawer-slots" id="wcDrawerSlots"></div>
   <div class="wc-info-panel" id="wcInfoPanel">
     <div class="wc-info-head">
-      <button onclick="closeWcInfo()" class="setup-back-btn" style="width:28px;height:28px;font-size:16px;" aria-label="Back">&#8592;</button>
+      <button id="wcInfoBackBtn" onclick="closeWcInfo()" class="setup-back-btn" style="width:28px;height:28px;font-size:16px;" aria-label="Back">&#8592;</button>
       <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;" id="wcInfoTitle">ABOUT WILDCARDS</div>
     </div>
     <div class="wc-info-list" id="wcInfoList"></div>
