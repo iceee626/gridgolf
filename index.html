@@ -2134,8 +2134,7 @@ let _lastMenuScreen = 'menuScreen';
 let _courseScreenFlow = 'single';
 
 function forceHideGame() {
-  const app = document.getElementById('mainApp');
-  if (app) app.style.display = 'none';
+  hideMainApp(); // Use your smooth CSS fade function instead of a hard snap
   const tv = document.getElementById('tvBar');
   if (tv) tv.classList.remove('show');
   const fab = document.getElementById('wcFab');
@@ -3021,9 +3020,8 @@ function doRoll(){
       } else {
         processShot(r1-1,r2-1);
       }
-    },180);
+    }, 50); // Dramatically reduced wait time after dice land
   },630);
-}
 
 // ═══════════════════════════════════════
 // SHOT PROCESSING
@@ -3189,12 +3187,13 @@ function processShot(row,col){
     S.yrdRemain>0?fmtYds(S.yrdRemain)+' to hole'+wcAppliedNote:'Reached the green'+wcAppliedNote);
   S.shotNum++; S._tvShotNum = S.shotNum - 1; updateFloat();updateYrd();updateTVBanner();
 
-  setTimeout(()=>{
-      S.rolling=false;
-      showNextShotBtn();
-      updateTVBanner();renderWcFab();renderWcDrawer();
-    if(TUT.active) tutAfterShot(resolvedOutcome);
-  }, 100); // Reduced from 600ms. The button will now smoothly fade in almost immediately after the dice land.
+  // Trigger UI state changes instantly without artificial timeouts
+  S.rolling=false;
+  showNextShotBtn();
+  updateTVBanner();
+  renderWcFab();
+  renderWcDrawer();
+  if(TUT.active) tutAfterShot(resolvedOutcome);
 }
 
 function showNextShotBtn(immediate=false){ _setShotBtnState(true, immediate); }
@@ -6004,7 +6003,7 @@ function continueGame(){
     }
     
     hideScreen('menuScreen');
-    setTimeout(()=>showMainApp(),180);
+    showMainApp(); // Trigger immediately for a perfect CSS crossfade
     buildLegend();buildScorecard();
     const h=HOLES[S.holeIdx];
     document.getElementById('holeName').textContent=h.name;
