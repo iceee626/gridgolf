@@ -878,12 +878,17 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   box-shadow:0 8px 32px rgba(240,192,64,.3);
   padding:20px;gap:10px;
   background:linear-gradient(160deg,#2a0a4e,#1a0a2e);
-  transition: border-color 0.4s ease, box-shadow 0.4s ease;
 }
-.wc-card-front.rarity-common { border-color: #5cd6ff !important; box-shadow: 0 8px 32px rgba(92,214,255,.4) !important; }
-.wc-card-front.rarity-rare { border-color: #b200ff !important; box-shadow: 0 8px 32px rgba(178,0,255,.4) !important; }
-.wc-card-front.rarity-epic { border-color: #ff3b3b !important; box-shadow: 0 8px 32px rgba(255,59,59,.4) !important; }
-.wc-card-front.rarity-legendary { border-color: #ffd700 !important; box-shadow: 0 8px 32px rgba(255,215,0,.6) !important; }
+
+@keyframes wc-pulse-common { 0% {box-shadow: 0 8px 24px rgba(92,214,255,.2); border-color: rgba(92,214,255,.6);} 100% {box-shadow: 0 8px 48px rgba(92,214,255,.8); border-color: rgba(92,214,255,1);} }
+@keyframes wc-pulse-rare { 0% {box-shadow: 0 8px 24px rgba(178,0,255,.2); border-color: rgba(178,0,255,.6);} 100% {box-shadow: 0 8px 48px rgba(178,0,255,.8); border-color: rgba(178,0,255,1);} }
+@keyframes wc-pulse-epic { 0% {box-shadow: 0 8px 24px rgba(255,59,59,.2); border-color: rgba(255,59,59,.6);} 100% {box-shadow: 0 8px 48px rgba(255,59,59,.8); border-color: rgba(255,59,59,1);} }
+@keyframes wc-pulse-legendary { 0% {box-shadow: 0 8px 24px rgba(255,215,0,.2); border-color: rgba(255,215,0,.6);} 100% {box-shadow: 0 8px 48px rgba(255,215,0,.8); border-color: rgba(255,215,0,1);} }
+
+.wc-card-front.rarity-common { animation: wc-pulse-common 1.5s infinite alternate; }
+.wc-card-front.rarity-rare { animation: wc-pulse-rare 1.5s infinite alternate; }
+.wc-card-front.rarity-epic { animation: wc-pulse-epic 1.5s infinite alternate; }
+.wc-card-front.rarity-legendary { animation: wc-pulse-legendary 1.5s infinite alternate; }
 .wc-front-icon{font-size:42px;line-height:1;}
 .wc-front-name{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#f0c040;text-align:center;line-height:1.1;}
 .wc-front-type{display:none;}
@@ -1612,11 +1617,14 @@ function closeHcScreenThen(fn, delay=230){
   setTimeout(()=>{ if(typeof fn==='function') fn(); },delay);
 }
 function openSummaryTransition(viewRound = S.currentRound){
-  document.getElementById('overlay').classList.remove('show');
-  hideMainApp();
   const hc = document.getElementById('hcScreen');
   if (hc) hc.classList.remove('show');
-  openSummary(viewRound); // Trigger immediately to layer the transitions
+  
+  setTimeout(() => {
+      document.getElementById('overlay').classList.remove('show');
+      hideMainApp();
+      openSummary(viewRound);
+  }, 260); // Matches the CSS transition duration to prevent glimpses
 }
 function hideScreen(id){
   const el=document.getElementById(id);
@@ -2495,6 +2503,7 @@ function buildScorecard(){
 }
 
 function loadHole(){
+  S.rolling=false;
   const nr=document.getElementById('ovNameRow');
   if(nr){nr.style.fontSize='';nr.style.fontFamily='';nr.style.letterSpacing='';nr.style.color='';}
 
@@ -5453,23 +5462,43 @@ function openWcInfo(){
   if(!panel)return;
   title.textContent='ALL WILDCARDS';
   list.innerHTML='<div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.5);padding:6px 0 10px;line-height:1.5;">Wildcards are earned by rolling doubles. Equip up to 3 and use them before rolling to gain special advantages. Tap any wildcard for details.</div>';
-  WILDCARDS.forEach(wc=>{
-    const item=document.createElement('div');
-    item.className='wc-info-item';
-    item.innerHTML=`<span style="font-size:24px;flex-shrink:0;margin-right:8px;">${wc.icon}</span><div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;color:#e0c0ff;margin-top:4px;">${wc.name}</div>`;
-    item.onclick=()=>showWcInfoDetail(wc);
-    list.appendChild(item);
+  
+  const groups = [
+    { name: 'COMMON', weight: 50, color: '#5cd6ff' },
+    { name: 'RARE', weight: 30, color: '#b200ff' },
+    { name: 'EPIC', weight: 15, color: '#ff3b3b' },
+    { name: 'LEGENDARY', weight: 5, color: '#ffd700' }
+  ];
+
+  groups.forEach(g => {
+     const groupWcs = WILDCARDS.filter(w => w.weight === g.weight);
+     if (groupWcs.length === 0) return;
+     
+     const header = document.createElement('div');
+     header.style.cssText = `font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;color:${g.color};margin:12px 0 6px;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:4px;`;
+     header.textContent = g.name;
+     list.appendChild(header);
+
+     groupWcs.forEach(wc=>{
+        const item=document.createElement('div');
+        item.className='wc-info-item';
+        item.innerHTML=`<span style="font-size:24px;flex-shrink:0;margin-right:8px;">${wc.icon}</span><div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;color:${g.color};margin-top:4px;">${wc.name}</div>`;
+        item.onclick=()=>showWcInfoDetail(wc, g.color);
+        list.appendChild(item);
+     });
   });
   panel.classList.add('open');
 }
-function showWcInfoDetail(wc){
+
+function showWcInfoDetail(wc, color){
   const list=document.getElementById('wcInfoList');
   const title=document.getElementById('wcInfoTitle');
   title.textContent=wc.name;
+  title.style.color = color || '#fff';
   list.innerHTML=`
     <div class="setup-head-row" style="margin-bottom:14px;">
       <button onclick="openWcInfo()" class="setup-back-btn" style="position:static;transform:none;" aria-label="Back">&#8592;</button>
-      <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;text-align:center;flex:1;">${wc.name}</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:${color || '#fff'};text-align:center;flex:1;">${wc.name}</div>
       <span class="setup-head-spacer"></span>
     </div>
     <div style="font-size:40px;text-align:center;margin:10px 0;">${wc.icon}</div>
@@ -5736,30 +5765,70 @@ function applyWildcardEffect(wc){
         applied = false;
       }
       break;
-    case 'great_escape': WCS.greatEscapeActive=true; if(S.zone==='rgh' && !nextVisible) { buildGrid(); toastMsg = null; } break;
+    case 'great_escape': 
+        WCS.greatEscapeActive=true; 
+        toastMsg = '🔓 The Great Escape activated!'; appendWcNote('🔓 The Great Escape');
+        if(S.zone==='rgh' && !nextVisible) { buildGrid(); toastMsg = null; } 
+        break;
     case 'magic_backspin': WCS.magicBackspinActive=true; break;
-    case 'pressure_cooker': WCS.pressureCookerActive=true; if(S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; } break;
+    case 'pressure_cooker': 
+        WCS.pressureCookerActive=true; 
+        toastMsg = '♨️ Pressure Cooker activated!'; appendWcNote('♨️ Pressure Cooker');
+        if(S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; } 
+        break;
     case 'lily_pad': WCS.lilyPadActive=true; break;
-    case 'mowers_revenge': WCS.mowersRevengeActive=true; if(S.zone==='rgh' && !nextVisible) { buildGrid(); toastMsg = null; } break;
-    case 'fairway_finder': WCS.fairwayFinderActive=true; break;
+    case 'mowers_revenge': 
+        WCS.mowersRevengeActive=true; 
+        toastMsg = '🚜 Mower\'s Revenge activated!'; appendWcNote('🚜 Mower\'s Revenge');
+        if(S.zone==='rgh' && !nextVisible) { buildGrid(); toastMsg = null; } 
+        break;
+    case 'fairway_finder': 
+        WCS.fairwayFinderActive=true; 
+        toastMsg = '🔍 Fairway Finder activated!'; appendWcNote('🔍 Fairway Finder');
+        break;
     case 'cup_magnet': WCS.cupMagnetActive=true; break;
-    case 'commercial': WCS.highlightReelActive=true; if(S.zone==='chip' && !nextVisible) { buildGrid(); toastMsg = null; } break;
-    case 'sand_wedge_pro': WCS.sandWedgeProActive=true; if(S.zone==='sand' && !nextVisible) { buildGrid(); toastMsg = null; } break;
+    case 'commercial': 
+        WCS.highlightReelActive=true; 
+        toastMsg = '🎥 Highlight Reel activated!'; appendWcNote('🎥 Highlight Reel');
+        if(S.zone==='chip' && !nextVisible) { buildGrid(); toastMsg = null; } 
+        break;
+    case 'sand_wedge_pro': 
+        WCS.sandWedgeProActive=true; 
+        toastMsg = '🏖️ Sand Wedge Pro activated!'; appendWcNote('🏖️ Sand Wedge Pro');
+        if(S.zone==='sand' && !nextVisible) { buildGrid(); toastMsg = null; } 
+        break;
     case 'lucky_bounce': WCS.luckyBounceActive=true; break;
     case 'iron_will': WCS.ironWillActive=true; break;
-    case 'birdie_boost': WCS.birdieBoostActive=true; if(['fwy','rgh','sand','chip'].includes(S.zone) && !nextVisible) { buildGrid(); toastMsg = null; } break;
-    case 'hole_wall': WCS.holeWallActive=true; if(h.par===3&&S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; } break;
+    case 'birdie_boost': 
+        WCS.birdieBoostActive=true; 
+        toastMsg = '🚀 Birdie Boost activated!'; appendWcNote('🚀 Birdie Boost');
+        if(['fwy','rgh','sand','chip'].includes(S.zone) && !nextVisible) { buildGrid(); toastMsg = null; } 
+        break;
+    case 'hole_wall': 
+        WCS.holeWallActive=true; 
+        toastMsg = '🕳️ Hole In The Wall activated!'; appendWcNote('🕳️ Hole In The Wall');
+        if(h.par===3&&S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; } 
+        break;
     case 'the_ferrett': 
       if (S.zone === 'sand' && S.yrdRemain > 87) {
           toastMsg = `🦡 The Ferrett only works on greenside bunkers!`;
           applied = false;
       } else {
           WCS.ferrettActive=true;
+          toastMsg = '🦡 The Ferrett activated!'; appendWcNote('🦡 The Ferrett');
           if(S.zone==='sand' && !nextVisible) { buildGrid(); toastMsg = null; }
       }
       break;
-    case 'hole_in_one': WCS.hioActive=true; if(h.par===3&&S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; } break;
-    case 'golden_putter': WCS.goldenPutterActive=true; if(S.zone==='grn' && !nextVisible) { buildGrid(); toastMsg = null; } break;
+    case 'hole_in_one': 
+        WCS.hioActive=true; 
+        toastMsg = '🌟 Hole In One activated!'; appendWcNote('🌟 Hole In One');
+        if(h.par===3&&S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; } 
+        break;
+    case 'golden_putter': 
+        WCS.goldenPutterActive=true; 
+        toastMsg = '🥇 Golden Putter activated!'; appendWcNote('🥇 Golden Putter');
+        if(S.zone==='grn' && !nextVisible) { buildGrid(); toastMsg = null; } 
+        break;
     case 'mulligan':
     case 'tailwind':
     case 'precision_grip':
@@ -5794,34 +5863,34 @@ function applyWcGridMods(grid){
   const h=HOLES[S.holeIdx];
   
   if (WCS.ferrettActive && S.zone === 'sand' && S.yrdRemain <= 87) {
-    WCS.ferrettActive = false; showWcToast('🦡 The Ferrett activated!'); appendWcNote('🦡 The Ferrett');
+    WCS.ferrettActive = false; 
     grid = grid.map(r=>r.map(()=>Math.random()<.75?'hole':'grn'));
   }
   if (WCS.goldenPutterActive && S.zone === 'grn') {
-    WCS.goldenPutterActive = false; showWcToast('🥇 Golden Putter activated!'); appendWcNote('🥇 Golden Putter');
+    WCS.goldenPutterActive = false; 
     grid = grid.map(r=>r.map(()=>'p1'));
   }
   if (WCS.holeWallActive && h.par === 3 && S.zone === 'tee') {
-    WCS.holeWallActive = false; showWcToast('🕳️ Hole In The Wall activated!'); appendWcNote('🕳️ Hole In The Wall');
+    WCS.holeWallActive = false; 
     grid = grid.map(r=>r.map(c=>(c==='rgh'||c==='sand'||c==='fwy'||c==='ob')?'chip':'grn'));
   }
   if (WCS.hioActive && h.par === 3 && S.zone === 'tee') {
-    WCS.hioActive = false; showWcToast('🌟 Hole In One activated!'); appendWcNote('🌟 Hole In One');
+    WCS.hioActive = false; 
     grid = grid.map(r=>r.map(()=>Math.random()<.80?'hole':'grn'));
   }
   if (WCS.birdieBoostActive && ['fwy','rgh','sand','chip'].includes(S.zone)) {
-    WCS.birdieBoostActive = false; showWcToast('🚀 Birdie Boost activated!'); appendWcNote('🚀 Birdie Boost');
+    WCS.birdieBoostActive = false; 
     let eligible = [];
     for(let r=0; r<6; r++) for(let c=0; c<6; c++) if(grid[r][c] !== 'grn' && grid[r][c] !== 'hole') eligible.push({r,c});
     eligible = shuffle(eligible).slice(0, 8);
     eligible.forEach(cell => { grid[cell.r][cell.c] = 'grn'; });
   }
   if (WCS.sandWedgeProActive && S.zone === 'sand') {
-      WCS.sandWedgeProActive = false; showWcToast('🏖️ Sand Wedge Pro activated!'); appendWcNote('🏖️ Sand Wedge Pro');
+      WCS.sandWedgeProActive = false; 
       grid = grid.map(r=>r.map(c=>Math.random() < 0.8 ? 'grn' : c));
   }
   if (WCS.greatEscapeActive && S.zone === 'rgh') {
-      WCS.greatEscapeActive = false; showWcToast('🔓 The Great Escape activated!'); appendWcNote('🔓 The Great Escape');
+      WCS.greatEscapeActive = false; 
       const targetZone = S.yrdRemain < 150 ? 'grn' : 'fwy';
       grid = grid.map(r=>r.map(c=> (c !== 'fwy' && c !== 'grn' && Math.random() < 0.7) ? targetZone : c));
   }
@@ -5830,7 +5899,6 @@ function applyWcGridMods(grid){
       let tot = 0, par = 0;
       S.scorecards.forEach(sc=>sc.forEach((s,i)=>{if(s!==null){tot+=s;par+=HOLES[i].par;}}));
       if (tot > par) {
-          showWcToast('♨️ Pressure Cooker activated!'); appendWcNote('♨️ Pressure Cooker');
           grid = grid.map(r=>r.map(()=> HOLES[S.holeIdx].par === 3 ? 'grn' : 'fwy'));
       }
   }
@@ -5839,14 +5907,14 @@ function applyWcGridMods(grid){
   }
   if (WCS.fairwayFinderActive) {
       if (S.shotNum === 2 && S.zone === 'fwy') {
-          WCS.fairwayFinderActive = false; showWcToast('🔍 Fairway Finder activated!'); appendWcNote('🔍 Fairway Finder');
+          WCS.fairwayFinderActive = false; 
           grid = grid.map(r=>r.map(c=> Math.random() < 0.85 ? 'fwy' : c));
       } else if (S.shotNum > 2) {
           WCS.fairwayFinderActive = false; 
       }
   }
   if (WCS.highlightReelActive && S.zone === 'chip') {
-      WCS.highlightReelActive = false; showWcToast('🎥 Highlight Reel activated!'); appendWcNote('🎥 Highlight Reel');
+      WCS.highlightReelActive = false; 
       grid = grid.map(r=>r.map(c=> Math.random() < 0.75 ? 'hole' : c));
   }
 
