@@ -2365,8 +2365,13 @@ function _setShotBtnState(showNext, immediate=false){
   const setVisible=(btn, visible, disabled)=>{
     btn.classList.toggle('shot-btn-visible', visible);
     btn.classList.toggle('shot-btn-hidden', !visible);
-    btn.disabled = !!disabled;
-    if(!visible) btn.blur();
+    if (visible) {
+        btn.disabled = !!disabled;
+        btn.classList.remove('rolling-state'); // Only clean up when bringing it back
+    } else {
+        btn.disabled = true; // Lock it while it fades out
+        btn.blur();
+    }
   };
 
   if(!showNext && _holdFinishBtn){
@@ -2379,10 +2384,6 @@ function _setShotBtnState(showNext, immediate=false){
   const other = showNext ? roll : next;
   const targetDisabled = showNext ? false : !!S.rolling;
 
-  if(showNext) roll.classList.remove('rolling-state');
-  if(!S.rolling) roll.classList.remove('rolling-state');
-
-  // Immediate swap relies on your CSS transition to crossfade smoothly
   setVisible(other, false, true);
   setVisible(target, true, targetDisabled);
 }
@@ -3214,17 +3215,24 @@ function doNextShot(){
   S._mulliganJustFired=false;
   S._tvShotNum = S.shotNum;
   _holdFinishBtn=false;
-  hideNextShotBtn();
-  if(S._forceGrid){S._forceGrid=false;}
-  else if(S._preserveGrid){S._preserveGrid=false;}
-  else{buildGrid();}
-  updateZonePill();
-  updateTVBanner();
-  setTimeout(()=>startDiceIdle(),100);
   
-  if(!TUT.active && gridFocusEnabled()) scrollToGrid();
-  
-  if(TUT.active) _tutFire('next_shot_clicked');
+  // Instantly trigger button swap
+  hideNextShotBtn(); 
+
+  // Yield to the main thread for a single frame so the button click animation
+  // can start before we block the thread with heavy grid DOM updates
+  setTimeout(() => {
+      if(S._forceGrid){S._forceGrid=false;}
+      else if(S._preserveGrid){S._preserveGrid=false;}
+      else{buildGrid();}
+      
+      updateZonePill();
+      updateTVBanner();
+      startDiceIdle();
+      
+      if(!TUT.active && gridFocusEnabled()) scrollToGrid();
+      if(TUT.active) _tutFire('next_shot_clicked');
+  }, 10);
 }
 
 function showTailwindChoice(){
@@ -3715,16 +3723,17 @@ function nextHole(){
   if(ovBtn) ovBtn.onclick = ()=>nextHole();
 
   if(S.holeIdx >= S.endIdx){
-    hideMainApp();
-    showRoundEnd(); // Instantly update the card to prevent flashing the background
+    showRoundEnd(); 
     return;
   }
-  hideMainApp();
-  closeHcScreenThen(()=>{
-    S.holeIdx++;
-    loadHole();
-    showMainApp();
-  });
+  
+  // Instantly prepare the next hole in the background
+  S.holeIdx++;
+  loadHole(); 
+  
+  // Now just fade out the Hole Complete screen to reveal the new hole underneath
+  const hc = document.getElementById('hcScreen');
+  if (hc) hc.classList.remove('show');
 }
 
 function showRoundEnd(){
