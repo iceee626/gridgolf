@@ -646,6 +646,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
   position:sticky;top:0;z-index:10;flex-shrink:0;
 }
 .sum-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#fff;}
+.sum-head-spacer{width:28px;height:28px;flex-shrink:0;}
 .sum-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .sum-body{
   flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
@@ -817,13 +818,14 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .wc-use-btn:hover{opacity:.85;}
 .wc-use-btn:disabled{opacity:.3;cursor:not-allowed;}
 .wc-use-btn.post{background:linear-gradient(135deg,#2f6a9e,#1a3a6e);}
-.wc-active-item{display:flex;align-items:flex-start;gap:8px;background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.3);border-radius:8px;padding:8px;margin-bottom:6px;cursor:pointer;transition:background-color .15s ease,border-color .15s ease;}
+.wc-active-item{display:flex;align-items:flex-start;gap:8px;background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.3);border-radius:8px;padding:8px;margin-bottom:6px;cursor:pointer;overflow:hidden;transform-origin:top;transition:background-color .28s ease,border-color .28s ease,box-shadow .28s ease,transform .34s cubic-bezier(0.22,1,0.36,1);}
 .wc-active-item:hover{background:rgba(240,192,64,.14);border-color:rgba(240,192,64,.42);}
+.wc-active-item.expanded{box-shadow:0 8px 20px rgba(240,192,64,.08);transform:translateY(-1px);}
 .wc-active-copy{flex:1;min-width:0;}
 .wc-active-name{font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;color:var(--gold);line-height:1;}
 .wc-active-status{font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);margin-top:2px;}
-.wc-active-desc{max-height:0;overflow:hidden;opacity:0;transform:translateY(-4px);transition:max-height .18s ease,opacity .18s ease,transform .18s ease;margin-top:0;font-family:'Sen', sans-serif;font-size:10px;color:rgba(255,255,255,.72);line-height:1.45;}
-.wc-active-item.expanded .wc-active-desc{max-height:84px;opacity:1;transform:translateY(0);margin-top:8px;}
+.wc-active-desc{max-height:0;overflow:hidden;opacity:0;transform:translateY(-8px) scale(.985);transform-origin:top center;transition:max-height .42s cubic-bezier(0.22,1,0.36,1),opacity .3s ease,transform .42s cubic-bezier(0.22,1,0.36,1),margin-top .42s cubic-bezier(0.22,1,0.36,1);margin-top:0;font-family:'Sen', sans-serif;font-size:10px;color:rgba(255,255,255,.72);line-height:1.45;}
+.wc-active-item.expanded .wc-active-desc{max-height:110px;opacity:1;transform:translateY(0) scale(1);margin-top:8px;}
 .wc-discard-btn{
   background:rgba(255,82,82,.15);color:#ff8080;border:1px solid rgba(255,82,82,.3);
   border-radius:7px;padding:7px 10px;font-family:'Sen', sans-serif;font-size:10px;
@@ -1432,7 +1434,9 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <div class="summary-modal" id="summaryModal">
   <div class="summary-card">
     <div class="sum-head">
+      <button class="setup-back-btn" id="sumBackBtn" onclick="summaryGoBack()" style="position:static;transform:none;display:none;" aria-label="Back">&#8592;</button>
       <div class="sum-title" id="sumTitle" style="flex:1;text-align:center;">ROUND SUMMARY</div>
+      <span class="sum-head-spacer" id="sumHeadSpacer"></span>
     </div>
     <div class="sum-body" id="sumBody"></div>
   </div>
@@ -1445,7 +1449,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="ov-namerow" id="ovNameRow"></div>
     <div class="ov-statsrow" id="ovStatsRow"></div>
     <button class="ov-btn" id="ovBtn" onclick="nextHole()">CONTINUE</button>
-    <button class="ov-btn" id="ovSummaryBtn" style="display:none;margin-top:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);" onclick="openSummaryTransition()">VIEW SUMMARY</button>
+    <button class="ov-btn" id="ovSummaryBtn" style="display:none;margin-top:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);" onclick="openSummaryTransition(S.currentRound,'overlay')">VIEW SUMMARY</button>
     <button class="ov-btn" id="ovPlayAgainBtn" style="display:none;margin-top:8px;background:var(--c-fwy);" onclick="">PLAY AGAIN</button>
   </div>
 </div>
@@ -1630,15 +1634,17 @@ function closeHcScreenThen(fn, delay=230){
   hc.classList.remove('show');
   setTimeout(()=>{ if(typeof fn==='function') fn(); },delay);
 }
-function openSummaryTransition(viewRound = S.currentRound){
+let _summaryBackTarget = null;
+
+function openSummaryTransition(viewRound = S.currentRound, backTarget = null){
+  _summaryBackTarget = backTarget;
   document.getElementById('overlay').classList.remove('show');
   hideMainApp();
-  openSummary(viewRound);
-  
-  setTimeout(() => {
-      const hc = document.getElementById('hcScreen');
-      if (hc) hc.classList.remove('show');
-  }, 260); // Wait for the main app fade-out to finish
+  if(backTarget === 'hcScreen'){
+    closeHcScreenThen(()=>openSummary(viewRound, backTarget));
+  } else {
+    setTimeout(()=>openSummary(viewRound, backTarget), 220);
+  }
 }
 function hideScreen(id){
   const el=document.getElementById(id);
@@ -3055,6 +3061,18 @@ function doRoll(){
 // ═══════════════════════════════════════
 // SHOT PROCESSING
 // ═══════════════════════════════════════
+function cupMagnetCanPull(row,col){
+  if(!S.currentGrid || !['p2','p3'].includes(S.currentGrid[row]?.[col])) return false;
+  for(let dr=-1; dr<=1; dr++){
+    for(let dc=-1; dc<=1; dc++){
+      if(dr===0 && dc===0) continue;
+      const nr=row+dr, nc=col+dc;
+      if(nr<0 || nr>5 || nc<0 || nc>5) continue;
+      if(S.currentGrid[nr][nc] === 'p1') return true;
+    }
+  }
+  return false;
+}
 function processShot(row,col){
   S._preserveGrid=false;
   let outcome=S.currentGrid[row][col];
@@ -3157,9 +3175,9 @@ function processShot(row,col){
       wcAppliedNote = ' (🔄 Magic Backspin)';
       showWcToast('🔄 Magic Backspin activated!');
   }
-  if (WCS.cupMagnetActive && S.zone === 'grn' && resolvedOutcome === 'p2') {
+  if (WCS.cupMagnetActive && S.zone === 'grn' && resolvedOutcome !== 'p1' && cupMagnetCanPull(row,col)) {
       resolvedOutcome = 'p1';
-      WCS.cupMagnetActive = false; 
+      WCS.cupMagnetActive = false;
       wcAppliedNote = ' (🧲 Cup Magnet)';
       showWcToast('🧲 Cup Magnet activated!');
   }
@@ -3559,7 +3577,8 @@ function completeHole(){
     }
     let diff = pTotal - pPar;
     if (WCS.pressureCookerShots > 0) {
-      WCS.pressureCookerShots--;
+      if (WCS.pressureCookerFresh) WCS.pressureCookerFresh = false;
+      else WCS.pressureCookerShots--;
   }
     let diffStr = diff === 0 ? 'E' : diff > 0 ? `+${diff}` : `${diff}`;
     
@@ -3713,7 +3732,8 @@ function completeHole(){
   const totalDiff=totalScore-totalPar;
   const totalStr=totalDiff===0?'E':totalDiff>0?`+${totalDiff}`:`${totalDiff}`;
   if (WCS.pressureCookerShots > 0) {
-      WCS.pressureCookerShots--;
+      if (WCS.pressureCookerFresh) WCS.pressureCookerFresh = false;
+      else WCS.pressureCookerShots--;
   }
   
   buildScorecard();
@@ -3985,7 +4005,7 @@ function showRoundEnd(){
     const btn = document.getElementById('hcBtn');
     btn.textContent = 'NEXT';
     btn.onclick = () => {
-        openSummaryTransition();
+        openSummaryTransition(S.currentRound,'hcScreen');
     };
 
     hcScreen.classList.add('show');
@@ -4059,7 +4079,7 @@ function showRoundEnd(){
     const btn = document.getElementById('hcBtn');
     btn.textContent = 'NEXT';
     btn.onclick = () => {
-        closeHcScreenThen(()=>openSummary(S.currentRound));
+        openSummaryTransition(S.currentRound,'hcScreen');
     };
 
     hcScreen.classList.add('show');
@@ -4069,9 +4089,10 @@ function showRoundEnd(){
 // ═══════════════════════════════════════
 // ROUND SUMMARY MODAL
 // ═══════════════════════════════════════
-function openSummary(viewRound = S.currentRound){
+function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget){
   document.getElementById('overlay').classList.remove('show');
   hideMainApp();
+  _summaryBackTarget = backTarget || null;
   const body=document.getElementById('sumBody'); 
   body.innerHTML='';
   body.style.display = 'flex';
@@ -4079,6 +4100,10 @@ function openSummary(viewRound = S.currentRound){
   body.style.flex = '1';
   body.style.minHeight = '0';
   body.scrollTop = 0;
+  const backBtn=document.getElementById('sumBackBtn');
+  const backSpacer=document.getElementById('sumHeadSpacer');
+  if(backBtn) backBtn.style.display = _summaryBackTarget ? 'flex' : 'none';
+  if(backSpacer) backSpacer.style.display = _summaryBackTarget ? 'none' : 'block';
   
   document.getElementById('sumTitle').textContent=`${PLAYER_NAME}'S SCORECARD`;
 
@@ -4091,7 +4116,7 @@ function openSummary(viewRound = S.currentRound){
       const tab = document.createElement('button');
       tab.className = `sum-tab ${r === viewRound ? 'active' : ''}`;
       tab.textContent = `ROUND ${r}`;
-      tab.onclick = () => openSummary(r);
+      tab.onclick = () => openSummary(r, backTarget);
       tabs.appendChild(tab);
     }
     body.appendChild(tabs);
@@ -4291,21 +4316,45 @@ function openSummary(viewRound = S.currentRound){
 
 function closeSummary(){
   document.getElementById('summaryModal').classList.remove('show');
-  if(S.holeIdx >= S.endIdx && S.holeDone && S.currentRound === S.totalRounds){
-    returnToMenu();
-  } else {
-    showMainApp();
-  }
+  _summaryBackTarget = null;
+  setTimeout(()=>{
+    if(S.holeIdx >= S.endIdx && S.holeDone && S.currentRound === S.totalRounds){
+      returnToMenu();
+    } else {
+      showMainApp();
+    }
+  },220);
+}
+
+function summaryGoBack(){
+  const target=_summaryBackTarget;
+  _summaryBackTarget = null;
+  document.getElementById('summaryModal').classList.remove('show');
+  setTimeout(()=>{
+    if(target === 'hcScreen'){
+      const hc=document.getElementById('hcScreen');
+      if(hc) hc.classList.add('show');
+      return;
+    }
+    if(target === 'overlay'){
+      showMainApp();
+      document.getElementById('overlay').classList.add('show');
+      return;
+    }
+    closeSummary();
+  },220);
 }
 
 function summaryReturnToMenu(){
   document.getElementById('summaryModal').classList.remove('show');
-  returnToMenu();
+  _summaryBackTarget = null;
+  setTimeout(()=>returnToMenu(),220);
 }
 
 function summarySaveAndMenu(){
   document.getElementById('summaryModal').classList.remove('show');
-  returnToMenuSave();
+  _summaryBackTarget = null;
+  setTimeout(()=>returnToMenuSave(),220);
 }
 
 function summaryPlayAgain(){
@@ -5369,7 +5418,7 @@ const WILDCARDS=[
   {id:'lucky_bounce',    weight: 50, icon:'🍀', name:'Lucky Bounce',      desc:'Next OOB or Water result treated as Rough (or Sand on Par 3).'},
   {id:'iron_will',       weight: 50, icon:'🔩', name:'Iron Will',         desc:'Next Rough result treated as Fairway.'},
   {id:'tailwind',        weight: 50, icon:'💨', name:'Tailwind',          desc:'Re-roll one die of your choice this hole.'},
-  {id:'magic_backspin',  weight: 50, icon:'🔄', name:'Magic Backspin',    desc:'If you over-shoot the Chip into the Sand, \'spin\' back onto the Green automatically.'},
+  {id:'magic_backspin',  weight: 50, icon:'🔄', name:'Magic Backspin',    desc:'If you overshoot the Chip into the Sand, \'spin\' back onto the Green automatically.'},
   {id:'pressure_cooker', weight: 50, icon:'♨️', name:'Pressure Cooker',   desc:'If you are currently Over Par, your next tee shot is guaranteed to be Fairway (or Green if on Par 3)'},
   
   // RARE (Weight 30) - Solid utility
@@ -5377,12 +5426,12 @@ const WILDCARDS=[
   {id:'precision_grip',  weight: 30, icon:'🧤', name:'Precision Grip',    desc:'Adjust the result of one die by +/- 1 after the roll.'},
   {id:'mowers_revenge',  weight: 30, icon:'🚜', name:'Mower\'s Revenge',  desc:'For the rest of this hole, all Rough is treated as Fairway.'},
   {id:'phantom_stroke',  weight: 30, icon:'👻', name:'Phantom Stroke',    desc:'Remove 1 penalty stroke already taken this hole.'},
-  {id:'fairway_finder',  weight: 30, icon:'🔍', name:'Fairway Finder',    desc:'If your Tee shot is Fairway, your next shot\'s grid is 85% covered in Fairway zones.'},
+  {id:'fairway_finder',  weight: 30, icon:'🔍', name:'Fairway Finder',    desc:'If your Tee shot lands on Fairway, your second shot\'s grid is 85% converted into Fairway.'},
   
   // EPIC (Weight 15) - Very powerful
   {id:'birdie_boost',    weight: 15, icon:'🚀', name:'Birdie Boost',      desc:'Add 8 extra Green cells to next approach grid.'},
   {id:'hole_wall',       weight: 15, icon:'🕳️',  name:'Hole In The Wall',  desc:'Par 3 only: entire grid becomes Chip & Green.'},
-  {id:'sand_wedge_pro',  weight: 15, icon:'🏖️', name:'Sand Wedge Pro',    desc:'Next sand shot converts 80% of grid into Green.'},
+  {id:'sand_wedge_pro',  weight: 15, icon:'🏖️', name:'Sand Wedge Pro',    desc:'Next Sand shot: 80% of grid converted into Green.'},
   {id:'mulligan',        weight: 15, icon:'↩️',  name:'Mulligan',          desc:'Re-roll both dice once, discard previous result.'},
   {id:'cup_magnet',      weight: 15, icon:'🧲', name:'Cup Magnet',        desc:'Next Green roll: If you miss the 1-putt by 1 cell, it \'sucks\' into the hole anyway.'},
   
@@ -5434,7 +5483,7 @@ function randWildcard(){
 }
 
 const WCS={
-  equipped:[], active:null, pressureCookerShots:0,
+  equipped:[], active:null, pressureCookerShots:0, pressureCookerFresh:false,
   luckyBounceActive:false, ironWillActive:false,
   magicBackspinActive:false,
   mowersRevengeActive:false, fairwayFinderActive:false, birdieBoostActive:false,
@@ -5480,7 +5529,7 @@ function swapWcInfoContent(renderFn){
 
 function wcReset(){
   WCS.equipped=[]; WCS.active=null; WCS.pending=null; WCS.pendingRow=null; WCS.pendingCol=null;
-  WCS.pressureCookerShots=0; WCS.luckyBounceActive=false; WCS.ironWillActive=false; 
+  WCS.pressureCookerShots=0; WCS.pressureCookerFresh=false; WCS.luckyBounceActive=false; WCS.ironWillActive=false; 
   WCS.magicBackspinActive=false;
   WCS.mowersRevengeActive=false; WCS.fairwayFinderActive=false; WCS.birdieBoostActive=false;
   WCS.holeWallActive=false; WCS.sandWedgeProActive=false; WCS.cupMagnetActive=false;
@@ -5538,13 +5587,13 @@ function openWcInfo(){
   document.getElementById('wcInfoBackBtn').onclick = closeWcInfo;
   swapWcInfoContent(list=>{
     list.innerHTML=`
-      <div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.5);padding:6px 0 10px;line-height:1.5;">Wildcards are earned by rolling doubles. Equip up to 3 and use them before rolling. Tap any wildcard for details.</div>
-      <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px;margin-bottom:12px;font-family:DM Mono,monospace;font-size:9px;color:rgba(255,255,255,.7);line-height:1.6;">
-        <b style="color:#5cd6ff">COMMON:</b> Frequent situational saves.<br>
-        <b style="color:#b200ff">RARE:</b> Solid utility modifiers.<br>
-        <b style="color:#ff3b3b">EPIC:</b> Very powerful grid changes.<br>
-        <b style="color:#ffd700">LEGENDARY:</b> Game-breaking abilities.<br><br>
-        <i>Note: When you USE a card, it is <b>"Applied"</b> (waiting for the right moment) or <b>"Activated"</b> (taking effect immediately).</i>
+      <div style="font-family:'Sen', sans-serif;font-size:10px;color:rgba(255,255,255,.5);padding:6px 0 10px;line-height:1.5;">Wildcards are earned by rolling doubles. Equip up to 3 and use them to your advantage. Tap any wildcard for more details.</div>
+      <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px;margin-bottom:12px;font-family:'Sen', sans-serif;font-size:9px;color:rgba(255,255,255,.7);line-height:1.6;">
+        <b style="color:#5cd6ff">COMMON:</b> Standard gameplay modifiers.<br>
+        <b style="color:#b200ff">RARE:</b> Enhanced utility and boosts.<br>
+        <b style="color:#ff3b3b">EPIC:</b> Significant grid and shot alterations.<br>
+        <b style="color:#ffd700">LEGENDARY:</b> The most powerful abilities.<br><br>
+        <i>Note: When you USE a card, it is either <b>"Applied"</b> (waiting for the right trigger) or <b>"Activated"</b> (taking effect immediately).</i>
       </div>
     `;
     
@@ -5657,7 +5706,7 @@ function renderWcDrawer(){
       if (wc.id === 'lucky_bounce') statusText = 'Saves next OB/Water';
       if (wc.id === 'iron_will') statusText = 'Saves next Rough';
       if (wc.id === 'pressure_cooker') statusText = `Expires in ${WCS.pressureCookerShots} hole${WCS.pressureCookerShots !== 1 ? 's' : ''}`;
-      if (wc.id === 'magic_backspin') statusText = 'Waiting for overshoot...';
+      if (wc.id === 'magic_backspin') statusText = 'Waiting for trigger...';
       if (wc.id === 'cup_magnet') statusText = 'Waiting for Green...';
 
       const item = document.createElement('div');
@@ -5846,7 +5895,7 @@ function applyWildcardEffect(wc){
         applied = false;
       } else if (S.zone === 'grn' || S._pendingPuttResult) {
         WCS.shortcutActive = true;
-        toastMsg = `⚡ Already on the green. Shortcut saved for your next Par 4/5 tee shot.`;
+        toastMsg = `⚡ Already on the green. Shortcut activates on your next Par 4/5 hole.`;
       } else {
         const prevZone = S.zone;
         const prevYrdRemain = S.yrdRemain;
@@ -5877,9 +5926,10 @@ function applyWildcardEffect(wc){
     case 'magic_backspin': WCS.magicBackspinActive = true; toastMsg = `🔄 ${wc.name} applied!`; break;
     case 'pressure_cooker': 
       WCS.pressureCookerShots = 3; 
+      WCS.pressureCookerFresh = S.zone !== 'tee';
       toastMsg = `♨️ ${wc.name} applied!`; 
       break;
-    case 'mowers_revenge': WCS.mowersRevengeActive = true; toastMsg = `🚜 ${wc.name} activated!`; break;
+    case 'mowers_revenge': WCS.mowersRevengeActive = true; toastMsg = `🚜 ${wc.name} applied!`; break;
     case 'fairway_finder': 
       if (S.zone !== 'tee') {
           toastMsg = `🔍 Fairway Finder can only be used on the Tee!`;
@@ -6009,22 +6059,35 @@ function triggerWcReveal(row, col){
   
   const front = document.querySelector('.wc-card-front');
   front.className = 'wc-card-face wc-card-front';
+  if(rarityEl) rarityEl.style.color='var(--gold)';
   
   if (_pendingWc.weight === 50) {
     front.classList.add('rarity-common');
-    if(rarityEl) rarityEl.textContent='COMMON';
+    if(rarityEl){
+      rarityEl.textContent='COMMON';
+      rarityEl.style.color='#5cd6ff';
+    }
   }
   else if (_pendingWc.weight === 30) {
     front.classList.add('rarity-rare');
-    if(rarityEl) rarityEl.textContent='RARE';
+    if(rarityEl){
+      rarityEl.textContent='RARE';
+      rarityEl.style.color='#b66bff';
+    }
   }
   else if (_pendingWc.weight === 15) {
     front.classList.add('rarity-epic');
-    if(rarityEl) rarityEl.textContent='EPIC';
+    if(rarityEl){
+      rarityEl.textContent='EPIC';
+      rarityEl.style.color='#ff5f8f';
+    }
   }
   else {
     front.classList.add('rarity-legendary');
-    if(rarityEl) rarityEl.textContent='LEGENDARY';
+    if(rarityEl){
+      rarityEl.textContent='LEGENDARY';
+      rarityEl.style.color='var(--gold)';
+    }
   }
 
   document.getElementById('wcCard').classList.remove('revealed');
@@ -6147,6 +6210,7 @@ function saveGameState(){
     wcsLuckyBounce:WCS.luckyBounceActive, wcsIronWill:WCS.ironWillActive, 
     wcsMagicBackspin:WCS.magicBackspinActive,
     wcsPressureCookerShots:WCS.pressureCookerShots,
+    wcsPressureCookerFresh:WCS.pressureCookerFresh,
     wcsMowersRevenge:WCS.mowersRevengeActive, wcsFairwayFinder:WCS.fairwayFinderActive,
     wcsBirdieBoost:WCS.birdieBoostActive, wcsHoleWall:WCS.holeWallActive,
     wcsSandWedgePro:WCS.sandWedgeProActive, wcsCupMagnet:WCS.cupMagnetActive,
@@ -6221,7 +6285,7 @@ function continueGame(){
     WCS.equipped=save.wcsEquipped||[]; WCS.active=save.wcsActive||null;
     WCS.luckyBounceActive=save.wcsLuckyBounce||false; WCS.ironWillActive=save.wcsIronWill||false;
     WCS.magicBackspinActive=save.wcsMagicBackspin||false;
-    WCS.pressureCookerShots=save.wcsPressureCookerShots||0;
+    WCS.pressureCookerShots=save.wcsPressureCookerShots||0; WCS.pressureCookerFresh=save.wcsPressureCookerFresh||false;
     WCS.mowersRevengeActive=save.wcsMowersRevenge||false; WCS.fairwayFinderActive=save.wcsFairwayFinder||false;
     WCS.birdieBoostActive=save.wcsBirdieBoost||false; WCS.holeWallActive=save.wcsHoleWall||false;
     WCS.sandWedgeProActive=save.wcsSandWedgePro||false; WCS.cupMagnetActive=save.wcsCupMagnet||false;
@@ -7238,7 +7302,7 @@ function vsStartGame(){
   VS.histories = [Array(18).fill(null), Array(18).fill(null)];
   VS.matchScore = [0, 0];
   VS.sharedGrids = {};
-  const baseWc = () => ({ equipped:[], active:null, luckyBounceActive:false, ironWillActive:false, magicBackspinActive:false, pressureCookerShots:0, mowersRevengeActive:false, fairwayFinderActive:false, birdieBoostActive:false, holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false, goldenPutterActive:false, ferrettActive:false, hioActive:false, highlightReelActive:false, shortcutActive:false });
+  const baseWc = () => ({ equipped:[], active:null, luckyBounceActive:false, ironWillActive:false, magicBackspinActive:false, pressureCookerShots:0, pressureCookerFresh:false, mowersRevengeActive:false, fairwayFinderActive:false, birdieBoostActive:false, holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false, goldenPutterActive:false, ferrettActive:false, hioActive:false, highlightReelActive:false, shortcutActive:false });
   VS.wcs = [baseWc(), baseWc()];
   vsShowTurnScreen();
 }
@@ -7280,7 +7344,7 @@ function vsStartTurn(){
   WCS.active=null; WCS.greenLightShots=0; WCS.sandCastleActive=false; WCS.luckyBounceActive=false;
   WCS.ironWillActive=false; WCS.ferrettActive=false; WCS.goldenPutterActive=false;
   WCS.eagleEyeActive=false; WCS.sandWedgeProActive=false; WCS.birdieBoostActive=false;
-  WCS.holeWallActive=false; WCS.hioActive=false; WCS.shortcutActive=false;
+  WCS.holeWallActive=false; WCS.hioActive=false;
 
   if (VS.wcs && VS.wcs[VS.currentPlayer]) {
       Object.assign(WCS, VS.wcs[VS.currentPlayer]); // Load persistent buffs
@@ -7323,7 +7387,7 @@ function vsCompleteHole(){
   };
   
   if (!VS.wcs) {
-  const baseWc = () => ({ equipped:[], active:null, luckyBounceActive:false, ironWillActive:false, magicBackspinActive:false, pressureCookerShots:0, mowersRevengeActive:false, fairwayFinderActive:false, birdieBoostActive:false, holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false, goldenPutterActive:false, ferrettActive:false, hioActive:false, highlightReelActive:false, shortcutActive:false });
+  const baseWc = () => ({ equipped:[], active:null, luckyBounceActive:false, ironWillActive:false, magicBackspinActive:false, pressureCookerShots:0, pressureCookerFresh:false, mowersRevengeActive:false, fairwayFinderActive:false, birdieBoostActive:false, holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false, goldenPutterActive:false, ferrettActive:false, hioActive:false, highlightReelActive:false, shortcutActive:false });
    VS.wcs = [baseWc(), baseWc()];
   }
   VS.wcs[VS.currentPlayer] = { ...WCS, equipped: [...WCS.equipped] }; // Save FULL wildcard state for this player
