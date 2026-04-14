@@ -2363,7 +2363,11 @@ function _setShotBtnState(showNext, immediate=false){
   if(!roll||!next)return;
   
   const setVisible=(btn, visible, disabled)=>{
-    if (immediate) btn.style.transition = 'none'; // Skip animations for instant swaps
+    if (immediate) {
+        btn.style.transition = 'none';
+    } else {
+        btn.style.transition = ''; // Ensure CSS handles the smooth crossfade
+    }
     
     btn.classList.toggle('shot-btn-visible', visible);
     btn.classList.toggle('shot-btn-hidden', !visible);
@@ -2377,14 +2381,14 @@ function _setShotBtnState(showNext, immediate=false){
     }
 
     if (immediate) {
-        void btn.offsetWidth; // Force browser to apply the 'none' transition instantly
-        btn.style.transition = ''; // Restore CSS transitions for next time
+        void btn.offsetWidth; // Flush CSS changes
+        btn.style.transition = ''; // Turn transitions back on for the next shot
     }
   };
 
   if(!showNext && _holdFinishBtn){
-    setVisible(roll,false,true, immediate);
-    setVisible(next,true,true, immediate);
+    setVisible(roll, false, true);
+    setVisible(next, true, true);
     return;
   }
 
@@ -2392,8 +2396,8 @@ function _setShotBtnState(showNext, immediate=false){
   const other = showNext ? roll : next;
   const targetDisabled = showNext ? false : !!S.rolling;
 
-  setVisible(other, false, true, immediate);
-  setVisible(target, true, targetDisabled, immediate);
+  setVisible(other, false, true);
+  setVisible(target, true, targetDisabled);
 }
 
 function showNextShotBtn(immediate=false){ _setShotBtnState(true, immediate); }
@@ -3132,7 +3136,7 @@ function processShot(row,col){
     setTimeout(()=>document.getElementById('resultPanel').classList.remove('pflash'),600);
     setTimeout(()=>{S.rolling=false;showNextShotBtn();renderWcDrawer();
       if(TUT.active) tutAfterShot(resolvedOutcome);
-    },1100);
+    }, 400); // Reduced from 1100ms. Gives just enough time to read the penalty text.
     return;
   }
 
@@ -3190,7 +3194,7 @@ function processShot(row,col){
       showNextShotBtn();
       updateTVBanner();renderWcFab();renderWcDrawer();
     if(TUT.active) tutAfterShot(resolvedOutcome);
-  },600);
+  }, 100); // Reduced from 600ms. The button will now smoothly fade in almost immediately after the dice land.
 }
 
 function showNextShotBtn(immediate=false){ _setShotBtnState(true, immediate); }
