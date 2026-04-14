@@ -1609,7 +1609,9 @@ function closeHcScreenThen(fn, delay=230){
 function openSummaryTransition(viewRound = S.currentRound){
   document.getElementById('overlay').classList.remove('show');
   hideMainApp();
-  closeHcScreenThen(()=>openSummary(viewRound));
+  const hc = document.getElementById('hcScreen');
+  if (hc) hc.classList.remove('show');
+  openSummary(viewRound); // Trigger immediately to layer the transitions
 }
 function hideScreen(id){
   const el=document.getElementById(id);
@@ -2318,7 +2320,7 @@ function returnToMenu(){
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
   const ovBtn = document.getElementById('ovBtn');
   if(ovBtn) ovBtn.onclick = ()=>nextHole();
-  setTimeout(()=>navBack('menuScreen'),220);
+  navBack('menuScreen');
   autoLoadProfile();
 }
 
@@ -2359,10 +2361,7 @@ function _setShotBtnState(showNext, immediate=false){
   const roll=document.getElementById('rollBtn');
   const next=document.getElementById('nextShotBtn');
   if(!roll||!next)return;
-  if(_shotBtnSwapTimer){
-    clearTimeout(_shotBtnSwapTimer);
-    _shotBtnSwapTimer=null;
-  }
+  
   const setVisible=(btn, visible, disabled)=>{
     btn.classList.toggle('shot-btn-visible', visible);
     btn.classList.toggle('shot-btn-hidden', !visible);
@@ -2379,25 +2378,13 @@ function _setShotBtnState(showNext, immediate=false){
   const target = showNext ? next : roll;
   const other = showNext ? roll : next;
   const targetDisabled = showNext ? false : !!S.rolling;
-  const alreadyVisible = target.classList.contains('shot-btn-visible') && !other.classList.contains('shot-btn-visible');
 
-  if(showNext){
-    roll.classList.remove('rolling-state');
-  }
+  if(showNext) roll.classList.remove('rolling-state');
   if(!S.rolling) roll.classList.remove('rolling-state');
 
-  if(immediate || alreadyVisible){
-    setVisible(other,false,true);
-    setVisible(target,true,targetDisabled);
-    return;
-  }
-
-  setVisible(roll,false,true);
-  setVisible(next,false,true);
-  _shotBtnSwapTimer=setTimeout(()=>{
-    setVisible(target,true,targetDisabled);
-    _shotBtnSwapTimer=null;
-  },120);
+  // Immediate swap relies on your CSS transition to crossfade smoothly
+  setVisible(other, false, true);
+  setVisible(target, true, targetDisabled);
 }
 
 function showNextShotBtn(immediate=false){ _setShotBtnState(true, immediate); }
@@ -3724,15 +3711,15 @@ function nextHole(){
   if(nr){nr.style.fontSize='';nr.style.fontFamily='';nr.style.letterSpacing='';nr.style.color='';}
   document.getElementById('overlay').classList.remove('show');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
-  // Reset ovBtn onclick safely
   const ovBtn = document.getElementById('ovBtn');
   if(ovBtn) ovBtn.onclick = ()=>nextHole();
 
-  hideMainApp();
   if(S.holeIdx >= S.endIdx){
-    closeHcScreenThen(()=>showRoundEnd());
+    hideMainApp();
+    showRoundEnd(); // Instantly update the card to prevent flashing the background
     return;
   }
+  hideMainApp();
   closeHcScreenThen(()=>{
     S.holeIdx++;
     loadHole();
@@ -4168,23 +4155,21 @@ function openSummary(viewRound = S.currentRound){
 
 function closeSummary(){
   document.getElementById('summaryModal').classList.remove('show');
-  setTimeout(()=>{
-    if(S.holeIdx >= S.endIdx && S.holeDone && S.currentRound === S.totalRounds){
-      returnToMenu();
-    } else {
-      showMainApp();
-    }
-  },220);
+  if(S.holeIdx >= S.endIdx && S.holeDone && S.currentRound === S.totalRounds){
+    returnToMenu();
+  } else {
+    showMainApp();
+  }
 }
 
 function summaryReturnToMenu(){
   document.getElementById('summaryModal').classList.remove('show');
-  setTimeout(()=>returnToMenu(),220);
+  returnToMenu();
 }
 
 function summarySaveAndMenu(){
   document.getElementById('summaryModal').classList.remove('show');
-  setTimeout(()=>returnToMenuSave(),220);
+  returnToMenuSave();
 }
 
 function summaryPlayAgain(){
@@ -6087,7 +6072,7 @@ function returnToMenuSave(){
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
   const ovBtn = document.getElementById('ovBtn');
   if(ovBtn) ovBtn.onclick = ()=>nextHole();
-  setTimeout(()=>navBack('menuScreen'),220);
+  navBack('menuScreen');
   autoLoadProfile();
 }
 
