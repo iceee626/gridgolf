@@ -281,9 +281,9 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .btn-roll:disabled:active{transform:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 0 0 1px rgba(255,255,255,.04), 0 3px 10px rgba(0,0,0,.2);}
 .btn-roll.rolling-state{background:#487a41;color:rgba(255,255,255,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 0 0 1px rgba(255,255,255,.04), 0 3px 10px rgba(0,0,0,.2);filter:saturate(.68) brightness(.92);}
 .roll-col{flex:1.44 1 0;display:grid;min-width:0;position:relative;}
-#rollBtn,#nextShotBtn{grid-area:1/1;transition:opacity .18s ease,visibility 0s linear .18s,background-color .18s ease-in-out,box-shadow .18s ease-in-out,color .18s ease-in-out,filter .18s ease-in-out;}
-.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transition-delay:0s;}
-.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none;}
+#rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:opacity .26s ease,transform .26s cubic-bezier(0.22,1,0.36,1),visibility 0s linear .26s,background-color .2s ease-in-out,box-shadow .2s ease-in-out,color .2s ease-in-out,filter .2s ease-in-out;}
+.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0) scale(1);transition-delay:0s;}
+.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(4px) scale(.985);}
 #nextShotBtn{letter-spacing:2px;font-size:20px;}
 
 /* RESULT */
@@ -484,6 +484,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .ov-title{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:4px;color:var(--c-fwyl);margin-bottom:2px;}
 .ov-namerow{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;}
 .ov-statsrow{font-size:13px;color:var(--muted);font-family:'Sen', sans-serif;letter-spacing:1px;margin-bottom:18px;}
+.ov-statsrow .star,.hc-card-sub .star{font-size:11px;vertical-align:baseline;margin-left:1px;}
 .ov-btn{width:100%;background:var(--c-fwy);color:#fff;border:1px solid rgba(120,220,96,.18);border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 16px rgba(58,122,48,.28), inset 0 1px 0 rgba(255,255,255,.05);}
 .ov-btn:hover{background:var(--c-fwyl);}
 .ov-btn:active{transform:scale(.98);box-shadow:inset 0 0 10px rgba(0,0,0,.35), 0 0 14px rgba(120,220,96,.2);}
@@ -1178,7 +1179,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
       </div>
     </div>
     
-    <button class="menu-btn-play" style="width:100%;font-size:18px;" onclick="vsStartFromOptions()">CHOOSE COURSE</button>
+    <button class="menu-btn-play" style="width:100%;font-size:18px;" onclick="vsStartFromOptions()">NEXT</button>
   </div>
 </div>
 
@@ -1273,7 +1274,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
       </div>
     </div>
 
-    <button class="menu-btn-play" style="width:100%;font-size:18px;" onclick="navToCourse('custom')">CHOOSE COURSE</button>
+    <button class="menu-btn-play" style="width:100%;font-size:18px;" onclick="navToCourse('custom')">NEXT</button>
   </div>
 </div>
 
@@ -1318,7 +1319,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
       <button class="diff-btn" id="diff-btn-3" onclick="setDiff(3)" style="padding:16px;font-size:20px;">HARD</button>
     </div>
     
-    <button class="menu-btn-play" style="width:100%;font-size:20px;" onclick="showCourseAfterDiff()">CHOOSE COURSE</button>
+    <button class="menu-btn-play" style="width:100%;font-size:20px;" onclick="showCourseAfterDiff()">NEXT</button>
   </div>
 </div>
 
@@ -1420,7 +1421,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="ov-namerow" id="ovNameRow"></div>
     <div class="ov-statsrow" id="ovStatsRow"></div>
     <button class="ov-btn" id="ovBtn" onclick="nextHole()">CONTINUE</button>
-    <button class="ov-btn" id="ovSummaryBtn" style="display:none;margin-top:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);" onclick="openSummary()">VIEW SUMMARY</button>
+    <button class="ov-btn" id="ovSummaryBtn" style="display:none;margin-top:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);" onclick="openSummaryTransition()">VIEW SUMMARY</button>
     <button class="ov-btn" id="ovPlayAgainBtn" style="display:none;margin-top:8px;background:var(--c-fwy);" onclick="">PLAY AGAIN</button>
   </div>
 </div>
@@ -1554,7 +1555,6 @@ function updateMetricsUI(){
   const h=HOLES[S.holeIdx];
   if(h){
     document.getElementById('holeYards').textContent=fmtYds(h.yards);
-    document.getElementById('yrdNum').textContent=S.yrdRemain>0?fmtYds(S.yrdRemain):'On green';
   }
 }
 function setMetricsPref(m){
@@ -1564,7 +1564,6 @@ function setMetricsPref(m){
   const h=HOLES[S.holeIdx];
   if(h){
     document.getElementById('holeYards').textContent=fmtYds(h.yards);
-    document.getElementById('yrdNum').textContent=S.yrdRemain>0?fmtYds(S.yrdRemain):'On green';
   }
 }
 
@@ -1606,6 +1605,11 @@ function closeHcScreenThen(fn, delay=230){
   if(!hc){ if(typeof fn==='function') fn(); return; }
   hc.classList.remove('show');
   setTimeout(()=>{ if(typeof fn==='function') fn(); },delay);
+}
+function openSummaryTransition(viewRound = S.currentRound){
+  document.getElementById('overlay').classList.remove('show');
+  hideMainApp();
+  closeHcScreenThen(()=>openSummary(viewRound));
 }
 function hideScreen(id){
   const el=document.getElementById(id);
@@ -2349,10 +2353,16 @@ function isShotBtnShown(id){
   const btn=document.getElementById(id);
   return !!(btn && btn.classList.contains('shot-btn-visible'));
 }
-function _setShotBtnState(showNext){
+let _shotBtnSwapTimer = null;
+
+function _setShotBtnState(showNext, immediate=false){
   const roll=document.getElementById('rollBtn');
   const next=document.getElementById('nextShotBtn');
   if(!roll||!next)return;
+  if(_shotBtnSwapTimer){
+    clearTimeout(_shotBtnSwapTimer);
+    _shotBtnSwapTimer=null;
+  }
   const setVisible=(btn, visible, disabled)=>{
     btn.classList.toggle('shot-btn-visible', visible);
     btn.classList.toggle('shot-btn-hidden', !visible);
@@ -2366,19 +2376,32 @@ function _setShotBtnState(showNext){
     return;
   }
 
+  const target = showNext ? next : roll;
+  const other = showNext ? roll : next;
+  const targetDisabled = showNext ? false : !!S.rolling;
+  const alreadyVisible = target.classList.contains('shot-btn-visible') && !other.classList.contains('shot-btn-visible');
+
   if(showNext){
-    setVisible(roll,false,true);
-    setVisible(next,true,false);
     roll.classList.remove('rolling-state');
-  } else {
-    setVisible(next,false,true);
-    setVisible(roll,true,!!S.rolling);
-    if(!S.rolling) roll.classList.remove('rolling-state');
   }
+  if(!S.rolling) roll.classList.remove('rolling-state');
+
+  if(immediate || alreadyVisible){
+    setVisible(other,false,true);
+    setVisible(target,true,targetDisabled);
+    return;
+  }
+
+  setVisible(roll,false,true);
+  setVisible(next,false,true);
+  _shotBtnSwapTimer=setTimeout(()=>{
+    setVisible(target,true,targetDisabled);
+    _shotBtnSwapTimer=null;
+  },120);
 }
 
-function showNextShotBtn(){ _setShotBtnState(true); }
-function hideNextShotBtn(){ _setShotBtnState(false); }
+function showNextShotBtn(immediate=false){ _setShotBtnState(true, immediate); }
+function hideNextShotBtn(immediate=false){ _setShotBtnState(false, immediate); }
 
 // ═══════════════════════════════════════
 // INIT & SCORECARD
@@ -2474,11 +2497,13 @@ function loadHole(){
   const nextBtn = document.getElementById('nextShotBtn');
   if(nextBtn){
      nextBtn.textContent='NEXT SHOT';
+     nextBtn.style.background='var(--c-tee)';
      nextBtn.style.pointerEvents = '';
      nextBtn.disabled=false;
      nextBtn.onclick=doNextShot;
   }
   _holdFinishBtn=false;
+  hideNextShotBtn(true);
 
   const abandonBtn = document.getElementById('abandonBtn');
   if(abandonBtn) {
@@ -2504,12 +2529,11 @@ function loadHole(){
   document.getElementById('holeStars').innerHTML=starsHTML(h.baseDiff);
   document.getElementById('holePar').textContent=h.par;
   startDiceIdle();
-  hideNextShotBtn();
   buildScorecard();buildGrid();updateZonePill();updateYrd();resetResult();renderLog();updateFloat();
   updateTVBanner();
   if(typeof wcResetHole==='function')wcResetHole();
   
-  if(!TUT.active) scrollToGrid();
+  if(!TUT.active && gridFocusEnabled()) scrollToGrid();
 }
 
 // ═══════════════════════════════════════
@@ -2837,9 +2861,17 @@ function litCell(r,c){
 function updateYrd(){
   const rem=Math.max(0,S.yrdRemain);
   const pct=S.yrdTotal>0?rem/S.yrdTotal:0;
-  document.getElementById('yrdNum').textContent=rem>0?fmtYds(rem):'On green';
+  const putts=S._pendingPuttResult?.putts||0;
+  const puttLabel=`${putts} PUTT${putts===1?'':'S'}`;
+  document.getElementById('yrdNum').textContent=
+    putts>0 ? puttLabel :
+    S.zone==='grn' ? 'ON GREEN' :
+    rem>0 ? fmtYds(rem) : 'On green';
   document.getElementById('yrdFill').style.width=`${Math.round(pct*100)}%`;
-  document.getElementById('yrdLbl').textContent=rem>0?'to hole':'putting';
+  document.getElementById('yrdLbl').textContent=
+    putts>0 ? 'in a hole' :
+    S.zone==='grn' ? 'putting' :
+    rem>0 ? 'to hole' : 'putting';
 }
 
 function advanceYrd(zk){
@@ -3030,7 +3062,6 @@ function processShot(row,col){
       S._skipCelebration=true;
     }
 
-    showNextShotBtn();
     const nextBtn=document.getElementById('nextShotBtn');
     if(nextBtn){
       nextBtn.textContent='FINISH HOLE';
@@ -3047,6 +3078,7 @@ function processShot(row,col){
         setTimeout(()=>{ if(tutorialFinish && !TUT.active) return; completeHole(); },200);
       };
     }
+    showNextShotBtn();
     renderWcFab();
     S._puttWcUsed=false;
     S.rolling=false;
@@ -3165,8 +3197,8 @@ function processShot(row,col){
   },600);
 }
 
-function showNextShotBtn(){ _setShotBtnState(true); }
-function hideNextShotBtn(){ _setShotBtnState(false); }
+function showNextShotBtn(immediate=false){ _setShotBtnState(true, immediate); }
+function hideNextShotBtn(immediate=false){ _setShotBtnState(false, immediate); }
 let _scrollGridTimeout;
 function scrollToGrid() {
   window._disableTutScroll = true; // Tell the tutorial to skip its centering scroll
@@ -3421,7 +3453,7 @@ function completeHole(){
     }
 
     document.getElementById('ovNameRow').style.fontSize='';
-    document.getElementById('ovStatsRow').textContent=`Par ${h.par}  ${starsPlain(h.baseDiff)}`;
+    document.getElementById('ovStatsRow').innerHTML=`Par ${h.par} &nbsp; ${starsHTML(h.baseDiff)}`;
     document.getElementById('ovBtn').textContent='CONTINUE';
     document.getElementById('ovBtn').style.display='block';
     document.getElementById('ovBtn').onclick=()=>vsCompleteHole();
@@ -3468,7 +3500,7 @@ function completeHole(){
     document.getElementById('ovEmoji').style.display='block';
     document.getElementById('ovTitle').textContent=title;
     document.getElementById('ovNameRow').textContent=`TOTAL SCORE: ${tutDiffStr}`;
-    document.getElementById('ovStatsRow').textContent= score === 1 ? `Hole in One! · par ${h.par}  ${starsPlain(h.baseDiff)}` : `${score} strokes · par ${h.par}  ${starsPlain(h.baseDiff)}`;
+    document.getElementById('ovStatsRow').innerHTML= score === 1 ? `Hole in One! · par ${h.par} &nbsp; ${starsHTML(h.baseDiff)}` : `${score} strokes · par ${h.par} &nbsp; ${starsHTML(h.baseDiff)}`;
     
     document.getElementById('ovBtn').style.display='none';
     document.getElementById('ovSummaryBtn').style.display='none';
@@ -3580,7 +3612,7 @@ function completeHole(){
   else if(d===0) hcTitle.style.color='var(--c-fwyl)';
   else hcTitle.style.color='#e05252';
 
-  document.getElementById('hcSub').textContent = score === 1 ? `HOLE IN ONE! · PAR ${h.par}  ${starsPlain(h.baseDiff)}` : `${score} STROKES · PAR ${h.par}  ${starsPlain(h.baseDiff)}`;
+  document.getElementById('hcSub').innerHTML = score === 1 ? `HOLE IN ONE! · PAR ${h.par} &nbsp; ${starsHTML(h.baseDiff)}` : `${score} STROKES · PAR ${h.par} &nbsp; ${starsHTML(h.baseDiff)}`;
   
   const totSpan = document.getElementById('hcTotSpan');
   totSpan.textContent = totalStr;
@@ -3696,10 +3728,15 @@ function nextHole(){
   const ovBtn = document.getElementById('ovBtn');
   if(ovBtn) ovBtn.onclick = ()=>nextHole();
 
-  if(S.holeIdx >= S.endIdx){ showRoundEnd(); return; }
+  hideMainApp();
+  if(S.holeIdx >= S.endIdx){
+    closeHcScreenThen(()=>showRoundEnd());
+    return;
+  }
   closeHcScreenThen(()=>{
     S.holeIdx++;
     loadHole();
+    showMainApp();
   });
 }
 
@@ -3825,7 +3862,7 @@ function showRoundEnd(){
     const btn = document.getElementById('hcBtn');
     btn.textContent = 'NEXT';
     btn.onclick = () => {
-        closeHcScreenThen(()=>openSummary());
+        openSummaryTransition();
     };
 
     hcScreen.classList.add('show');
@@ -5971,7 +6008,6 @@ function continueGame(){
     updateZonePill();updateYrd();renderLog();updateFloat();updateTVBanner();
     
     if (S._pendingPuttResult) {
-        showNextShotBtn();
         const nextBtn = document.getElementById('nextShotBtn');
         if(nextBtn){
             nextBtn.textContent='FINISH HOLE';
@@ -5987,10 +6023,11 @@ function continueGame(){
                 setTimeout(()=>{ completeHole(); },200);
             };
         }
+        showNextShotBtn();
     } else if (waitingForNextShot && !S.holeDone) {
         showNextShotBtn();
     } else {
-        hideNextShotBtn();
+        hideNextShotBtn(true);
         startDiceIdle();
     }
 
