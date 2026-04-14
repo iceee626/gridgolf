@@ -388,9 +388,10 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .setup-top-back{display:none;}
 .setup-head-row{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:12px;margin-bottom:18px;}
 .setup-back-btn{
-  width:36px;height:36px;border-radius:50%;padding:0 0 2px 0;margin:0;
+  width:36px;height:36px;border-radius:50%;padding:0;margin:0;
   background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;
-  font-family:'Sen', sans-serif;font-size:22px;line-height:0;letter-spacing:0;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-family:Arial, sans-serif;font-size:18px;line-height:1;letter-spacing:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
   box-shadow:0 4px 12px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08);
   justify-self:start;
 }
@@ -3128,11 +3129,17 @@ function processShot(row,col){
       wcAppliedNote = ' (🔄 Magic Backspin)';
       showWcToast('🔄 Magic Backspin activated!');
   }
-  if (WCS.lilyPadActive && resolvedOutcome === 'h2o' && (S.yrdRemain < 150 || HOLES[S.holeIdx].par === 3)) {
-      resolvedOutcome = 'chip';
+  if (WCS.lilyPadActive && resolvedOutcome === 'h2o') {
       WCS.lilyPadActive = false; 
-      wcAppliedNote = ' (🪷 Lily Pad)';
-      showWcToast('🪷 Lily Pad activated!');
+      if (S.yrdRemain <= 150 || HOLES[S.holeIdx].par === 3) {
+          resolvedOutcome = 'chip';
+          wcAppliedNote = ' (🪷 Lily Pad)';
+          showWcToast('🪷 Lily Pad activated! (Saved to Chip)');
+      } else {
+          resolvedOutcome = 'rgh';
+          wcAppliedNote = ' (🪷 Lily Pad)';
+          showWcToast('🪷 Lily Pad activated! (Saved to Rough)');
+      }
   }
   if (WCS.cupMagnetActive && S.zone === 'grn' && resolvedOutcome === 'p2') {
       resolvedOutcome = 'p1';
@@ -5343,7 +5350,7 @@ const WILDCARDS=[
   // RARE (Weight 30) - Solid utility
   {id:'shortcut',        weight: 30, icon:'⚡', name:'Shortcut',          desc:'Skip straight to Chip zone (only par 4/5 after tee shot).'},
   {id:'precision_grip',  weight: 30, icon:'🧤', name:'Precision Grip',    desc:'Adjust the result of one die by +/- 1 after the roll.'},
-  {id:'lily_pad',        weight: 30, icon:'🪷', name:'Lily Pad',          desc:'Next Water result lands in Chip zone instead (<150m from hole or Par 3 only).'},
+  {id:'lily_pad',        weight: 30, icon:'🪷', name:'Lily Pad',          desc:'Next Water result treated as Chip (<150m/Par 3) or Rough (>150m).'},
   {id:'mowers_revenge',  weight: 30, icon:'🚜', name:'Mower\'s Revenge',  desc:'For the rest of this hole, all Rough is treated as Fairway.'},
   {id:'phantom_stroke',  weight: 30, icon:'👻', name:'Phantom Stroke',    desc:'Remove 1 penalty stroke already taken this hole.'},
   {id:'fairway_finder',  weight: 30, icon:'🔍', name:'Fairway Finder',    desc:'If your Tee shot is Fairway, your next shot\'s grid is 85% covered in Fairway zones.'},
@@ -5680,13 +5687,14 @@ function activateWildcard(slotIdx){
     if(wc.id==='mulligan'){
       WCS.active=null;
       appendWcNote(`${wc.icon} ${wc.name}`);
+      showWcToast(`↩️ Mulligan activated!`);
       renderWcFab();
       setTimeout(()=>{
-            S.rolling=false;
-            doRoll();
-          },500);
-          return;
-        }
+        S.rolling=false;
+        doRoll();
+      },500);
+      return;
+    }
       }
       
       if (WCS.equipped.length === 0) {
@@ -5860,6 +5868,7 @@ function applyWildcardEffect(wc){
     case 'tailwind':
     case 'precision_grip':
       WCS.active = wc.id;
+      toastMsg = null; 
       break;
   }
   
@@ -5919,8 +5928,10 @@ function applyWcGridMods(grid){
   }
   if (WCS.greatEscapeActive && S.zone === 'rgh') {
       WCS.greatEscapeActive = false; 
-      const targetZone = S.yrdRemain < 150 ? 'grn' : 'fwy';
-      grid = grid.map(r=>r.map(c=> (c !== 'fwy' && c !== 'grn' && Math.random() < 0.7) ? targetZone : c));
+      showWcToast('🔓 The Great Escape activated!'); 
+      appendWcNote('🔓 The Great Escape');
+      const targetZone = (S.yrdRemain <= 160 || HOLES[S.holeIdx].par === 3) ? 'grn' : 'fwy';
+      grid = grid.map(r=>r.map(c=> Math.random() < 0.75 ? targetZone : c));
   }
   if (WCS.pressureCookerShots > 0 && S.zone === 'tee') {
       let tot = 0, par = 0;
@@ -5938,9 +5949,11 @@ function applyWcGridMods(grid){
   if (WCS.fairwayFinderActive) {
       if (S.shotNum === 2 && S.zone === 'fwy') {
           WCS.fairwayFinderActive = false; 
+          showWcToast('🔍 Fairway Finder activated!'); 
+          appendWcNote('🔍 Fairway Finder');
           grid = grid.map(r=>r.map(c=> Math.random() < 0.85 ? 'fwy' : c));
-      } else if (S.shotNum > 2) {
-          WCS.fairwayFinderActive = false; 
+      } else if (S.shotNum >= 2) {
+          WCS.fairwayFinderActive = false; // Expires if you miss the fairway or skip shot 2
       }
   }
   if (WCS.highlightReelActive && S.zone === 'chip') {
