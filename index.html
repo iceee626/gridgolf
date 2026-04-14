@@ -388,9 +388,9 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .setup-top-back{display:none;}
 .setup-head-row{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:12px;margin-bottom:18px;}
 .setup-back-btn{
-  width:36px;height:36px;border-radius:50%;padding:0;margin:0;
+  width:36px;height:36px;border-radius:50%;padding:0 0 2px 0;margin:0;
   background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;
-  font-family:'Sen', sans-serif;font-size:16px;line-height:1;letter-spacing:0;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-family:'Sen', sans-serif;font-size:22px;line-height:0;letter-spacing:0;cursor:pointer;display:flex;align-items:center;justify-content:center;
   box-shadow:0 4px 12px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08);
   justify-self:start;
 }
@@ -5443,6 +5443,7 @@ function openWcDrawer(){
   renderWcDrawer();
   document.getElementById('wcDrawer').classList.add('open');
   document.getElementById('wcBackdrop').classList.add('show');
+  document.body.style.overflow = 'hidden'; // Lock background scroll
   if (TUT.active && _tutWaitEvent === 'wc_used') {
      _tutHighlight('.wc-use-btn', false); 
   }
@@ -5450,6 +5451,7 @@ function openWcDrawer(){
 function closeWcDrawer(){
   document.getElementById('wcDrawer').classList.remove('open');
   document.getElementById('wcBackdrop').classList.remove('show');
+  document.body.style.overflow = ''; // Restore scroll
   closeWcInfo();
   if (TUT.active && _tutWaitEvent === 'wc_used') {
      _tutHighlight('#wcFab', false);
@@ -5461,7 +5463,16 @@ function openWcInfo(){
   const title=document.getElementById('wcInfoTitle');
   if(!panel)return;
   title.textContent='ALL WILDCARDS';
-  list.innerHTML='<div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.5);padding:6px 0 10px;line-height:1.5;">Wildcards are earned by rolling doubles. Equip up to 3 and use them before rolling to gain special advantages. Tap any wildcard for details.</div>';
+  
+  list.innerHTML=`
+    <div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.5);padding:6px 0 10px;line-height:1.5;">Wildcards are earned by rolling doubles. Equip up to 3 and use them before rolling to gain special advantages. Tap any wildcard for details.</div>
+    <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px;margin-bottom:12px;font-family:DM Mono,monospace;font-size:9px;color:rgba(255,255,255,.7);line-height:1.6;">
+      <b style="color:#5cd6ff">COMMON:</b> Frequent situational saves.<br>
+      <b style="color:#b200ff">RARE:</b> Solid utility modifiers.<br>
+      <b style="color:#ff3b3b">EPIC:</b> Very powerful grid changes.<br>
+      <b style="color:#ffd700">LEGENDARY:</b> Game-breaking abilities.
+    </div>
+  `;
   
   const groups = [
     { name: 'COMMON', weight: 50, color: '#5cd6ff' },
@@ -5505,6 +5516,7 @@ function showWcInfoDetail(wc, color){
     <div style="font-family:'Sen', sans-serif;font-size:11px;color:rgba(255,255,255,.7);text-align:center;line-height:1.5;padding:0 8px;">${wc.desc}</div>
   `;
 }
+  
 function closeWcInfo(){
   const panel=document.getElementById('wcInfoPanel');
   if(panel)panel.classList.remove('open');
@@ -5767,46 +5779,46 @@ function applyWildcardEffect(wc){
       break;
     case 'great_escape': 
         WCS.greatEscapeActive=true; 
-        toastMsg = '🔓 The Great Escape activated!'; appendWcNote('🔓 The Great Escape');
+        toastMsg = `🔓 ${wc.name} applied!`;
         if(S.zone==='rgh' && !nextVisible) { buildGrid(); toastMsg = null; } 
         break;
-    case 'magic_backspin': WCS.magicBackspinActive=true; break;
+    case 'magic_backspin': WCS.magicBackspinActive=true; toastMsg = `🔄 ${wc.name} applied!`; break;
     case 'pressure_cooker': 
         WCS.pressureCookerActive=true; 
-        toastMsg = '♨️ Pressure Cooker activated!'; appendWcNote('♨️ Pressure Cooker');
+        toastMsg = `♨️ ${wc.name} applied!`;
         if(S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; } 
         break;
-    case 'lily_pad': WCS.lilyPadActive=true; break;
+    case 'lily_pad': WCS.lilyPadActive=true; toastMsg = `🪷 ${wc.name} applied!`; break;
     case 'mowers_revenge': 
         WCS.mowersRevengeActive=true; 
-        toastMsg = '🚜 Mower\'s Revenge activated!'; appendWcNote('🚜 Mower\'s Revenge');
+        toastMsg = `🚜 ${wc.name} applied!`; 
         if(S.zone==='rgh' && !nextVisible) { buildGrid(); toastMsg = null; } 
         break;
     case 'fairway_finder': 
         WCS.fairwayFinderActive=true; 
-        toastMsg = '🔍 Fairway Finder activated!'; appendWcNote('🔍 Fairway Finder');
+        toastMsg = `🔍 ${wc.name} applied!`; 
         break;
-    case 'cup_magnet': WCS.cupMagnetActive=true; break;
+    case 'cup_magnet': WCS.cupMagnetActive=true; toastMsg = `🧲 ${wc.name} applied!`; break;
     case 'commercial': 
         WCS.highlightReelActive=true; 
-        toastMsg = '🎥 Highlight Reel activated!'; appendWcNote('🎥 Highlight Reel');
+        toastMsg = `🎥 ${wc.name} applied!`; 
         if(S.zone==='chip' && !nextVisible) { buildGrid(); toastMsg = null; } 
         break;
     case 'sand_wedge_pro': 
         WCS.sandWedgeProActive=true; 
-        toastMsg = '🏖️ Sand Wedge Pro activated!'; appendWcNote('🏖️ Sand Wedge Pro');
+        toastMsg = `🏖️ ${wc.name} applied!`; 
         if(S.zone==='sand' && !nextVisible) { buildGrid(); toastMsg = null; } 
         break;
-    case 'lucky_bounce': WCS.luckyBounceActive=true; break;
-    case 'iron_will': WCS.ironWillActive=true; break;
+    case 'lucky_bounce': WCS.luckyBounceActive=true; toastMsg = `🍀 ${wc.name} applied!`; break;
+    case 'iron_will': WCS.ironWillActive=true; toastMsg = `🔩 ${wc.name} applied!`; break;
     case 'birdie_boost': 
         WCS.birdieBoostActive=true; 
-        toastMsg = '🚀 Birdie Boost activated!'; appendWcNote('🚀 Birdie Boost');
+        toastMsg = `🚀 ${wc.name} applied!`; 
         if(['fwy','rgh','sand','chip'].includes(S.zone) && !nextVisible) { buildGrid(); toastMsg = null; } 
         break;
     case 'hole_wall': 
         WCS.holeWallActive=true; 
-        toastMsg = '🕳️ Hole In The Wall activated!'; appendWcNote('🕳️ Hole In The Wall');
+        toastMsg = `🕳️ ${wc.name} applied!`; 
         if(h.par===3&&S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; } 
         break;
     case 'the_ferrett': 
@@ -5815,18 +5827,18 @@ function applyWildcardEffect(wc){
           applied = false;
       } else {
           WCS.ferrettActive=true;
-          toastMsg = '🦡 The Ferrett activated!'; appendWcNote('🦡 The Ferrett');
+          toastMsg = `🦡 ${wc.name} applied!`; 
           if(S.zone==='sand' && !nextVisible) { buildGrid(); toastMsg = null; }
       }
       break;
     case 'hole_in_one': 
         WCS.hioActive=true; 
-        toastMsg = '🌟 Hole In One activated!'; appendWcNote('🌟 Hole In One');
+        toastMsg = `🌟 ${wc.name} applied!`; 
         if(h.par===3&&S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; } 
         break;
     case 'golden_putter': 
         WCS.goldenPutterActive=true; 
-        toastMsg = '🥇 Golden Putter activated!'; appendWcNote('🥇 Golden Putter');
+        toastMsg = `🥇 ${wc.name} applied!`; 
         if(S.zone==='grn' && !nextVisible) { buildGrid(); toastMsg = null; } 
         break;
     case 'mulligan':
@@ -5945,6 +5957,7 @@ function triggerWcReveal(row, col){
   document.getElementById('wcRevealHint').style.display='block';
   document.getElementById('wcRevealActions').style.display='none';
   document.getElementById('wcReveal').classList.add('show');
+  document.body.style.overflow = 'hidden'; // Lock background scroll
   playSound('wildcard', 0.85);
   vibWildcard();
   if(TUT.active) setTimeout(() => _tutFire('wc_revealed'), 100);
@@ -6022,6 +6035,7 @@ function showDiscardChoice(){
 
 function closeWcReveal(){
   document.getElementById('wcReveal').classList.remove('show');
+  document.body.style.overflow = ''; // Restore scroll
   renderWcFab();
   renderWcDrawer();
   if(WCS.pendingRow!==null){
@@ -7889,15 +7903,15 @@ function closeModeInfo(type){
 <div class="wc-drawer" id="wcDrawer">
   <div class="wc-drawer-head">
     <div class="wc-drawer-title">🃏 WILDCARDS</div>
-    <div style="display:flex;gap:6px;">
-      <button onclick="openWcInfo()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;" title="About Wildcards">ℹ</button>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="mode-info-btn" style="position:static;width:28px;height:28px;font-size:14px;margin:0;" onclick="openWcInfo()">&#9432;</button>
       <button class="wc-drawer-close" onclick="closeWcDrawer()">✕</button>
     </div>
   </div>
   <div class="wc-drawer-slots" id="wcDrawerSlots"></div>
   <div class="wc-info-panel" id="wcInfoPanel">
     <div class="wc-info-head">
-      <button onclick="closeWcInfo()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;flex-shrink:0;">←</button>
+      <button onclick="closeWcInfo()" class="setup-back-btn" style="width:28px;height:28px;font-size:16px;" aria-label="Back">&#8592;</button>
       <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;" id="wcInfoTitle">ABOUT WILDCARDS</div>
     </div>
     <div class="wc-info-list" id="wcInfoList"></div>
