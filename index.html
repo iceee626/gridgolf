@@ -780,7 +780,9 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .wc-info-panel.open{right:0;}
 /* wc-info-panel.open handled above */
 .wc-info-head{background:linear-gradient(135deg,#7b2f9e,#4a1a6e);padding:16px;display:flex;align-items:center;gap:10px;min-height:56px;}
-.wc-info-list{flex:1;overflow-y:auto;padding:10px 14px;}
+.wc-info-list{flex:1;overflow-y:auto;padding:10px 14px;transition:opacity .18s ease,transform .18s cubic-bezier(0.22,1,0.36,1);}
+.wc-info-list.swap-out{opacity:0;transform:translateX(10px);}
+.wc-info-list.swap-in{opacity:0;transform:translateX(-10px);}
 .wc-info-item{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .1s;}
 .wc-info-item:hover{background:rgba(255,255,255,.04);border-radius:6px;}
 .wc-detail-panel{padding:14px;display:none;}
@@ -815,6 +817,13 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .wc-use-btn:hover{opacity:.85;}
 .wc-use-btn:disabled{opacity:.3;cursor:not-allowed;}
 .wc-use-btn.post{background:linear-gradient(135deg,#2f6a9e,#1a3a6e);}
+.wc-active-item{display:flex;align-items:flex-start;gap:8px;background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.3);border-radius:8px;padding:8px;margin-bottom:6px;cursor:pointer;transition:background-color .15s ease,border-color .15s ease;}
+.wc-active-item:hover{background:rgba(240,192,64,.14);border-color:rgba(240,192,64,.42);}
+.wc-active-copy{flex:1;min-width:0;}
+.wc-active-name{font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;color:var(--gold);line-height:1;}
+.wc-active-status{font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);margin-top:2px;}
+.wc-active-desc{max-height:0;overflow:hidden;opacity:0;transform:translateY(-4px);transition:max-height .18s ease,opacity .18s ease,transform .18s ease;margin-top:0;font-family:'Sen', sans-serif;font-size:10px;color:rgba(255,255,255,.72);line-height:1.45;}
+.wc-active-item.expanded .wc-active-desc{max-height:84px;opacity:1;transform:translateY(0);margin-top:8px;}
 .wc-discard-btn{
   background:rgba(255,82,82,.15);color:#ff8080;border:1px solid rgba(255,82,82,.3);
   border-radius:7px;padding:7px 10px;font-family:'Sen', sans-serif;font-size:10px;
@@ -2971,7 +2980,7 @@ function startDiceIdle(){
 }
 
 function doRoll(){
-  if(S.rolling||S.holeDone)return;
+  if(S.rolling||S.holeDone||_rerollChoiceActive)return;
   if(TUT.active && TUT.blocked) return;
   if(!TUT.active && gridFocusEnabled()) scrollToGrid();
   S.rolling=true;
@@ -3081,6 +3090,7 @@ function processShot(row,col){
       nextBtn.textContent='FINISH HOLE';
       nextBtn.style.background='var(--c-tee)';
       nextBtn.onclick=()=>{
+        if(_rerollChoiceActive) return;
         const tutorialFinish = TUT.active;
         const b=document.getElementById('puttWcBtn');if(b)b.remove();
         S._pendingPuttResult=null;
@@ -3102,6 +3112,16 @@ function processShot(row,col){
 
   let resolvedOutcome=outcome;
   let wcAppliedNote='';
+  if (WCS.pressureCookerShots > 0 && prevZone === 'tee') {
+      let tot = 0, par = 0;
+      S.scorecards.forEach(sc=>sc.forEach((s,i)=>{if(s!==null){tot+=s;par+=HOLES[i].par;}}));
+      if (tot > par) {
+          WCS.pressureCookerShots = 0;
+          resolvedOutcome = HOLES[S.holeIdx].par === 3 ? 'grn' : 'fwy';
+          wcAppliedNote = ' (♨️ Pressure Cooker)';
+          showWcToast('♨️ Pressure Cooker activated!');
+      }
+  }
   
   if (WCS.shortcutActive && prevZone === 'tee' && HOLES[S.holeIdx].par !== 3) {
       WCS.shortcutActive = false;
@@ -3262,7 +3282,7 @@ function scrollToGrid() {
 }
 
 function doNextShot(){
-  if(S.holeDone)return;
+  if(S.holeDone||_rerollChoiceActive)return;
   S._mulliganJustFired=false;
   S._tvShotNum = S.shotNum;
   _holdFinishBtn=false;
@@ -3322,16 +3342,19 @@ function _showTailwindDieChoice(){
       setTimeout(() => {
         d.classList.remove('rolling');
         setDie(dpId, newVal);
-        d.classList.add('landed');
-        vibDiceLand();
-        showWcToast(`💨 Tailwind activated!`);
-        appendWcNote('💨 Tailwind');
+      d.classList.add('landed');
+      vibDiceLand();
+      showWcToast(`💨 Tailwind activated!`);
+      appendWcNote('💨 Tailwind');
         
         // Flash the new cell on the grid so you see the change before processing
         litCell(newR1-1, newR2-1);
         
         // Wait 900ms before taking the shot so the player can read the grid
-        setTimeout(()=>processShot(newR1-1,newR2-1), 900); 
+        setTimeout(()=>{
+          setRerollChoiceActive(false);
+          processShot(newR1-1,newR2-1);
+        }, 900); 
       }, 550);
       
       renderWcFab();
@@ -3380,7 +3403,10 @@ function _showPrecisionGripChoice(){
           appendWcNote('🧤 Precision Grip');
           
           litCell(newR1-1, newR2-1);
-          setTimeout(()=>processShot(newR1-1,newR2-1), 900); 
+          setTimeout(()=>{
+            setRerollChoiceActive(false);
+            processShot(newR1-1,newR2-1);
+          }, 900); 
           renderWcFab();
         };
         colWrap.appendChild(b);
@@ -5428,6 +5454,40 @@ const WCS={
   goldenPutterActive:false, ferrettActive:false, hioActive:false,
   highlightReelActive:false, shortcutActive:false
 };
+let _expandedActiveWcId = null;
+let _rerollChoiceActive = false;
+
+function setRerollChoiceActive(active){
+  _rerollChoiceActive = !!active;
+  const rollBtn=document.getElementById('rollBtn');
+  const nextBtn=document.getElementById('nextShotBtn');
+  if(rollBtn){
+    rollBtn.disabled = _rerollChoiceActive || !!S.rolling;
+    if(_rerollChoiceActive) rollBtn.classList.remove('rolling-state');
+  }
+  if(nextBtn){
+    nextBtn.disabled = _rerollChoiceActive;
+    nextBtn.style.pointerEvents = _rerollChoiceActive ? 'none' : '';
+  }
+}
+
+function swapWcInfoContent(renderFn){
+  const list=document.getElementById('wcInfoList');
+  if(!list || typeof renderFn !== 'function') return;
+  if(!list.innerHTML.trim()){
+    renderFn(list);
+    list.classList.add('swap-in');
+    requestAnimationFrame(()=>list.classList.remove('swap-in'));
+    return;
+  }
+  list.classList.add('swap-out');
+  setTimeout(()=>{
+    renderFn(list);
+    list.classList.remove('swap-out');
+    list.classList.add('swap-in');
+    requestAnimationFrame(()=>list.classList.remove('swap-in'));
+  },110);
+}
 
 function wcReset(){
   WCS.equipped=[]; WCS.active=null; WCS.pending=null; WCS.pendingRow=null; WCS.pendingCol=null;
@@ -5480,63 +5540,65 @@ function closeWcDrawer(){
 }
 function openWcInfo(){
   const panel=document.getElementById('wcInfoPanel');
-  const list=document.getElementById('wcInfoList');
   const title=document.getElementById('wcInfoTitle');
   if(!panel)return;
   
   title.textContent='ALL WILDCARDS';
   title.style.color='#fff';
   document.getElementById('wcInfoBackBtn').onclick = closeWcInfo;
-  
-  list.innerHTML=`
-    <div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.5);padding:6px 0 10px;line-height:1.5;">Wildcards are earned by rolling doubles. Equip up to 3 and use them before rolling. Tap any wildcard for details.</div>
-    <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px;margin-bottom:12px;font-family:DM Mono,monospace;font-size:9px;color:rgba(255,255,255,.7);line-height:1.6;">
-      <b style="color:#5cd6ff">COMMON:</b> Frequent situational saves.<br>
-      <b style="color:#b200ff">RARE:</b> Solid utility modifiers.<br>
-      <b style="color:#ff3b3b">EPIC:</b> Very powerful grid changes.<br>
-      <b style="color:#ffd700">LEGENDARY:</b> Game-breaking abilities.<br><br>
-      <i>Note: When you USE a card, it is <b>"Applied"</b> (waiting for the right moment) or <b>"Activated"</b> (taking effect immediately).</i>
-    </div>
-  `;
-  
-  const groups = [
-    { name: 'COMMON', weight: 50, color: '#5cd6ff' },
-    { name: 'RARE', weight: 30, color: '#b200ff' },
-    { name: 'EPIC', weight: 15, color: '#ff3b3b' },
-    { name: 'LEGENDARY', weight: 5, color: '#ffd700' }
-  ];
+  swapWcInfoContent(list=>{
+    list.innerHTML=`
+      <div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.5);padding:6px 0 10px;line-height:1.5;">Wildcards are earned by rolling doubles. Equip up to 3 and use them before rolling. Tap any wildcard for details.</div>
+      <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px;margin-bottom:12px;font-family:DM Mono,monospace;font-size:9px;color:rgba(255,255,255,.7);line-height:1.6;">
+        <b style="color:#5cd6ff">COMMON:</b> Frequent situational saves.<br>
+        <b style="color:#b200ff">RARE:</b> Solid utility modifiers.<br>
+        <b style="color:#ff3b3b">EPIC:</b> Very powerful grid changes.<br>
+        <b style="color:#ffd700">LEGENDARY:</b> Game-breaking abilities.<br><br>
+        <i>Note: When you USE a card, it is <b>"Applied"</b> (waiting for the right moment) or <b>"Activated"</b> (taking effect immediately).</i>
+      </div>
+    `;
+    
+    const groups = [
+      { name: 'COMMON', weight: 50, color: '#5cd6ff' },
+      { name: 'RARE', weight: 30, color: '#b200ff' },
+      { name: 'EPIC', weight: 15, color: '#ff3b3b' },
+      { name: 'LEGENDARY', weight: 5, color: '#ffd700' }
+    ];
 
-  groups.forEach(g => {
-     const groupWcs = WILDCARDS.filter(w => w.weight === g.weight);
-     if (groupWcs.length === 0) return;
-     
-     const header = document.createElement('div');
-     header.style.cssText = `font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;color:${g.color};margin:12px 0 6px;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:4px;`;
-     header.textContent = g.name;
-     list.appendChild(header);
+    groups.forEach(g => {
+       const groupWcs = WILDCARDS.filter(w => w.weight === g.weight);
+       if (groupWcs.length === 0) return;
+       
+       const header = document.createElement('div');
+       header.style.cssText = `font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;color:${g.color};margin:12px 0 6px;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:4px;`;
+       header.textContent = g.name;
+       list.appendChild(header);
 
-     groupWcs.forEach(wc=>{
-        const item=document.createElement('div');
-        item.className='wc-info-item';
-        item.innerHTML=`<span style="font-size:24px;flex-shrink:0;margin-right:8px;">${wc.icon}</span><div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;color:${g.color};margin-top:4px;">${wc.name}</div>`;
-        item.onclick=()=>showWcInfoDetail(wc, g.color);
-        list.appendChild(item);
-     });
+       groupWcs.forEach(wc=>{
+          const item=document.createElement('div');
+          item.className='wc-info-item';
+          item.innerHTML=`<span style="font-size:24px;flex-shrink:0;margin-right:8px;">${wc.icon}</span><div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;color:${g.color};margin-top:4px;">${wc.name}</div>`;
+          item.onclick=()=>showWcInfoDetail(wc, g.color);
+          list.appendChild(item);
+       });
+    });
   });
   panel.classList.add('open');
 }
 
 function showWcInfoDetail(wc, color){
-  const list=document.getElementById('wcInfoList');
   const title=document.getElementById('wcInfoTitle');
-  title.textContent=wc.name.toUpperCase();
-  title.style.color = color || '#fff';
+  title.textContent='ALL WILDCARDS';
+  title.style.color = '#fff';
   document.getElementById('wcInfoBackBtn').onclick = openWcInfo;
-  
-  list.innerHTML=`
-    <div style="font-size:40px;text-align:center;margin:10px 0 16px;">${wc.icon}</div>
-    <div style="font-family:'Sen', sans-serif;font-size:12px;color:rgba(255,255,255,.8);text-align:center;line-height:1.5;padding:0 12px;">${wc.desc}</div>
-  `;
+
+  swapWcInfoContent(list=>{
+    list.innerHTML=`
+      <div style="font-size:40px;text-align:center;margin:10px 0 8px;">${wc.icon}</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:${color || '#fff'};text-align:center;margin-bottom:10px;">${wc.name}</div>
+      <div style="font-family:'Sen', sans-serif;font-size:12px;color:rgba(255,255,255,.8);text-align:center;line-height:1.5;padding:0 12px;">${wc.desc}</div>
+    `;
+  });
 }
   
 function closeWcInfo(){
@@ -5607,14 +5669,19 @@ function renderWcDrawer(){
       if (wc.id === 'cup_magnet') statusText = 'Waiting for Green...';
 
       const item = document.createElement('div');
-      item.style.cssText = 'display:flex;align-items:center;gap:8px;background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.3);border-radius:8px;padding:8px;margin-bottom:6px;';
+      item.className = `wc-active-item${_expandedActiveWcId===wc.id?' expanded':''}`;
       item.innerHTML = `
         <div style="font-size:18px;line-height:1;">${wc.icon}</div>
-        <div style="flex:1;">
-          <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;color:var(--gold);line-height:1;">${wc.name}</div>
-          <div style="font-family:'Sen', sans-serif;font-size:9px;color:var(--muted);margin-top:2px;">${statusText}</div>
+        <div class="wc-active-copy">
+          <div class="wc-active-name">${wc.name}</div>
+          <div class="wc-active-status">${statusText}</div>
+          <div class="wc-active-desc">${wc.desc}</div>
         </div>
       `;
+      item.onclick=()=>{
+        _expandedActiveWcId = _expandedActiveWcId === wc.id ? null : wc.id;
+        renderWcDrawer();
+      };
       activeContainer.appendChild(item);
     });
     el.appendChild(activeContainer);
@@ -5646,6 +5713,7 @@ function activateWildcard(slotIdx){
 
   const rerollWcs=['mulligan','tailwind','precision_grip'];
   if(rerollWcs.includes(wc.id)){
+    setRerollChoiceActive(true);
     const wcPuttBtn=document.getElementById('puttWcBtn');
     if(wcPuttBtn) wcPuttBtn.remove();
     
@@ -5673,11 +5741,15 @@ function activateWildcard(slotIdx){
       updateFloat();updateYrd();updateZonePill();
     }
     const nextBtn=document.getElementById('nextShotBtn');
-    if(nextBtn){nextBtn.textContent='NEXT SHOT';nextBtn.onclick=doNextShot;}
+    if(nextBtn){
+      nextBtn.textContent='NEXT SHOT';
+      nextBtn.onclick=doNextShot;
+      nextBtn.style.background='var(--c-tee)';
+    }
     const rollBtn2=document.getElementById('rollBtn');
     if(rollBtn2){rollBtn2.disabled=false;rollBtn2.classList.remove('rolling-state');}
     _holdFinishBtn=false;
-    hideNextShotBtn();
+    hideNextShotBtn(true);
 
     closeWcDrawer(); // Reroll wildcards MUST close the drawer to trigger their mechanics safely
     
@@ -5699,6 +5771,7 @@ function activateWildcard(slotIdx){
       showWcToast(`↩️ Mulligan activated!`);
       renderWcFab();
       setTimeout(()=>{
+        setRerollChoiceActive(false);
         S.rolling=false;
         doRoll();
       },500);
@@ -5748,7 +5821,6 @@ function applyWildcardEffect(wc){
   const h=HOLES[S.holeIdx];
   let applied = true;
   let toastMsg = `${wc.icon} ${wc.name} applied!`;
-  const nextVisible = isShotBtnShown('nextShotBtn');
 
   // Par 3 Wildcard Logic: Hole In One overrides lesser cards.
   const isPar3Wc = ['eagle_eye', 'hole_wall', 'hole_in_one'].includes(wc.id);
@@ -5774,7 +5846,22 @@ function applyWildcardEffect(wc){
   }
 
   switch(wc.id){
-    case 'shortcut': WCS.shortcutActive = true; toastMsg = `⚡ ${wc.name} applied!`; break;
+    case 'shortcut':
+      if (h.par === 3 || S.zone === 'tee') {
+        toastMsg = `⚡ Shortcut only works on Par 4/5 after the tee shot!`;
+        applied = false;
+      } else {
+        const prevZone = S.zone;
+        const prevYrdRemain = S.yrdRemain;
+        S.zone='chip';
+        S.yrdRemain=Math.min(S.yrdRemain, Math.round(15+Math.random()*30));
+        addLog('🃏', `Skipped to Chip (${wc.icon} ${wc.name})`, 'chip', 'WC', false, null, null, null, prevZone, prevYrdRemain);
+        updateZonePill();updateYrd();updateFloat();updateTVBanner();
+        buildGrid();
+        S._preserveGrid=true;
+        toastMsg = `⚡ ${wc.name} activated!`;
+      }
+      break;
     case 'phantom_stroke':
       let hasPenalty = S.log.some(e => e.pen);
       if(hasPenalty) {
@@ -5899,17 +5986,6 @@ function applyWcGridMods(grid){
       const targetZone = (S.yrdRemain <= 160 || h.par === 3) ? 'grn' : 'fwy';
       grid = grid.map(r=>r.map(c=> (c !== 'hole' && Math.random() < 0.75) ? targetZone : c));
   }
-  if (WCS.pressureCookerShots > 0 && S.zone === 'tee') {
-      let tot = 0, par = 0;
-      S.scorecards.forEach(sc=>sc.forEach((s,i)=>{if(s!==null){tot+=s;par+=HOLES[i].par;}}));
-      if (tot > par) {
-          // Note: We DO NOT set WCS.pressureCookerShots = 0 here anymore! It expires naturally in completeHole.
-          showWcToast('♨️ Pressure Cooker activated!'); appendWcNote('♨️ Pressure Cooker');
-          const targetZone = h.par === 3 ? 'grn' : 'fwy';
-          grid = grid.map(r=>r.map(c=> Math.random() < 0.8 ? targetZone : c));
-      }
-  }
-  
   if (WCS.fairwayFinderActive) {
       if (S.shotNum === 2 && S.zone === 'fwy') {
           WCS.fairwayFinderActive = false; 
@@ -6052,6 +6128,7 @@ function saveGameState(){
     clearSavedGame();
     return;
   }
+  const vsTurnPending = !!(VS.active && document.getElementById('vsTurnScreen')?.classList.contains('show'));
   const save={
     mode:S.mode, totalRounds:S.totalRounds, currentRound:S.currentRound, holesConfig:S.holesConfig,
     startIdx:S.startIdx, endIdx:S.endIdx,
@@ -6074,6 +6151,7 @@ function saveGameState(){
     wcsGoldenPutter:WCS.goldenPutterActive, wcsFerrett:WCS.ferrettActive,
     wcsHio:WCS.hioActive, wcsHighlightReel:WCS.highlightReelActive, wcsShortcut:WCS.shortcutActive,
     gameDiff:GAME_DIFF, playerName:PLAYER_NAME, timestamp:Date.now(),
+    vsTurnPending,
     vsState: VS.active ? {
         format: VS.format,
         players: VS.players,
@@ -6183,6 +6261,7 @@ function continueGame(){
             nextBtn.textContent='FINISH HOLE';
             nextBtn.style.background='var(--c-tee)';
             nextBtn.onclick=()=>{
+                if(_rerollChoiceActive) return;
                 const b=document.getElementById('puttWcBtn');if(b)b.remove();
                 S._pendingPuttResult=null;
                 S.holeDone=true;
@@ -6206,7 +6285,10 @@ function continueGame(){
         if(tvIcon) tvIcon.textContent = VS.players[VS.currentPlayer].icon;
         document.getElementById('tvName').textContent = VS.players[VS.currentPlayer].name;
         PLAYER_NAME = VS.players[VS.currentPlayer].name;
-        if (S.holeDone) {
+        if (save.vsTurnPending) {
+            hideNextShotBtn(true);
+            setTimeout(()=>vsShowTurnScreen(),40);
+        } else if (S.holeDone) {
             showNextShotBtn();
             if (VS.currentPlayer === 1) vsShowHoleComparison();
             else vsShowTurnScreen();
@@ -6245,6 +6327,11 @@ function abandonCurrentGame(){
 
 function returnToMenuSave(){
   const roundFinished = !VS.active && S.holeDone && S.holeIdx >= S.endIdx && S.currentRound >= S.totalRounds;
+  const vsTurnPending = !!document.getElementById('vsTurnScreen')?.classList.contains('show');
+  if(VS.active && !vsTurnPending){
+    if(!VS.wcs) VS.wcs = [{}, {}];
+    VS.wcs[VS.currentPlayer] = { ...WCS, equipped:[...WCS.equipped] };
+  }
   if(roundFinished) clearSavedGame();
   else if(!TUT.active) saveGameState();
   VS.active = false;
@@ -6259,6 +6346,7 @@ function returnToMenuSave(){
   if(ovBtn) ovBtn.onclick = ()=>nextHole();
   navBack('menuScreen');
   autoLoadProfile();
+  updateMenuContinueBtn();
 }
 
 function updateMenuContinueBtn(){
@@ -7173,6 +7261,16 @@ function vsStartTurn(){
   S._wcsUsedThisHole=[]; S._wcNextShotNote=null;
   S._skipCelebration=false; S._preserveGrid=false; S._forceGrid=false;
   S._mulliganJustFired=false; S._puttWcUsed=false; S._pendingPuttResult=null;
+  _holdFinishBtn=false;
+  setRerollChoiceActive(false);
+  const nextBtn=document.getElementById('nextShotBtn');
+  if(nextBtn){
+    nextBtn.textContent='NEXT SHOT';
+    nextBtn.onclick=doNextShot;
+    nextBtn.style.background='var(--c-tee)';
+    nextBtn.style.pointerEvents='';
+    nextBtn.disabled=false;
+  }
   
   S.scorecards[0] = [...VS.scores[VS.currentPlayer]]; // Sync scorecard for current player
   
@@ -7204,7 +7302,7 @@ function vsStartTurn(){
   if(tvIcon) tvIcon.textContent = p.icon;
   
   startDiceIdle();
-  hideNextShotBtn();
+  hideNextShotBtn(true);
   buildGrid(); updateZonePill(); updateYrd(); resetResult(); renderLog(); updateFloat();
   updateTVBanner();
   buildScorecard(); // FIX: ensure missing scorecard updates immediately
