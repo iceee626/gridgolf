@@ -283,7 +283,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .roll-col{flex:1.44 1 0;display:grid;min-width:0;position:relative;}
 #rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:opacity .26s ease,transform .26s cubic-bezier(0.22,1,0.36,1),visibility 0s linear .26s,background-color .2s ease-in-out,box-shadow .2s ease-in-out,color .2s ease-in-out,filter .2s ease-in-out;}
 .shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0) scale(1);transition-delay:0s;}
-.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(4px) scale(.985);}
+.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(0) scale(1);}
 #nextShotBtn{letter-spacing:2px;font-size:20px;}
 
 /* RESULT */
@@ -2363,20 +2363,28 @@ function _setShotBtnState(showNext, immediate=false){
   if(!roll||!next)return;
   
   const setVisible=(btn, visible, disabled)=>{
+    if (immediate) btn.style.transition = 'none'; // Skip animations for instant swaps
+    
     btn.classList.toggle('shot-btn-visible', visible);
     btn.classList.toggle('shot-btn-hidden', !visible);
+    
     if (visible) {
         btn.disabled = !!disabled;
-        btn.classList.remove('rolling-state'); // Only clean up when bringing it back
+        btn.classList.remove('rolling-state'); 
     } else {
-        btn.disabled = true; // Lock it while it fades out
+        btn.disabled = true;
         btn.blur();
+    }
+
+    if (immediate) {
+        void btn.offsetWidth; // Force browser to apply the 'none' transition instantly
+        btn.style.transition = ''; // Restore CSS transitions for next time
     }
   };
 
   if(!showNext && _holdFinishBtn){
-    setVisible(roll,false,true);
-    setVisible(next,true,true);
+    setVisible(roll,false,true, immediate);
+    setVisible(next,true,true, immediate);
     return;
   }
 
@@ -2384,8 +2392,8 @@ function _setShotBtnState(showNext, immediate=false){
   const other = showNext ? roll : next;
   const targetDisabled = showNext ? false : !!S.rolling;
 
-  setVisible(other, false, true);
-  setVisible(target, true, targetDisabled);
+  setVisible(other, false, true, immediate);
+  setVisible(target, true, targetDisabled, immediate);
 }
 
 function showNextShotBtn(immediate=false){ _setShotBtnState(true, immediate); }
@@ -3219,20 +3227,21 @@ function doNextShot(){
   // Instantly trigger button swap
   hideNextShotBtn(); 
 
-  // Yield to the main thread for a single frame so the button click animation
-  // can start before we block the thread with heavy grid DOM updates
-  setTimeout(() => {
-      if(S._forceGrid){S._forceGrid=false;}
-      else if(S._preserveGrid){S._preserveGrid=false;}
-      else{buildGrid();}
-      
-      updateZonePill();
-      updateTVBanner();
-      startDiceIdle();
-      
-      if(!TUT.active && gridFocusEnabled()) scrollToGrid();
-      if(TUT.active) _tutFire('next_shot_clicked');
-  }, 10);
+  // Allow Safari to fully paint the button press state before building the heavy grid
+  requestAnimationFrame(() => {
+      setTimeout(() => {
+          if(S._forceGrid){S._forceGrid=false;}
+          else if(S._preserveGrid){S._preserveGrid=false;}
+          else{buildGrid();}
+          
+          updateZonePill();
+          updateTVBanner();
+          startDiceIdle();
+          
+          if(!TUT.active && gridFocusEnabled()) scrollToGrid();
+          if(TUT.active) _tutFire('next_shot_clicked');
+      }, 20); // Small 20ms buffer guarantees UI responsiveness
+  });
 }
 
 function showTailwindChoice(){
@@ -3727,13 +3736,15 @@ function nextHole(){
     return;
   }
   
-  // Instantly prepare the next hole in the background
+  // Instantly load the next hole in the DOM in the background
   S.holeIdx++;
   loadHole(); 
   
-  // Now just fade out the Hole Complete screen to reveal the new hole underneath
-  const hc = document.getElementById('hcScreen');
-  if (hc) hc.classList.remove('show');
+  // Wait exactly long enough for Safari to paint the new layout, then hide the overlay
+  setTimeout(() => {
+      const hc = document.getElementById('hcScreen');
+      if (hc) hc.classList.remove('show');
+  }, 30);
 }
 
 function showRoundEnd(){
