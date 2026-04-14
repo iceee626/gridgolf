@@ -166,7 +166,8 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .hole-yards{font-size:10px;color:var(--muted);font-family:'Sen', sans-serif;}
 .stars{font-family:'Sen',sans-serif;font-size:9px;line-height:1;letter-spacing:0;display:inline-flex;align-items:center;gap:1px;}
 .star{display:inline-block;font-size:9px;line-height:1;}
-.star.fill{transform:scale(.88) translateY(-.2px);transform-origin:center;}
+.star.fill{color:var(--gold);transform:scale(.88) translateY(-.2px);transform-origin:center;}
+.star.empty{color:inherit;}
 .hole-score-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;}
 .par-block{display:flex;align-items:flex-end;gap:4px;margin-top:0;}
 .par-word{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;color:#fff;line-height:.95;}
@@ -333,14 +334,18 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .menu-content > br{display:none;}
 #menuContinueBtn{min-height:84px!important;padding:12px 16px!important;border-radius:18px!important;margin-top:auto;}
 #menuContinueBtn.menu-glow{
-  box-shadow:0 0 0 1px rgba(30,95,138,.45),0 0 24px rgba(30,95,138,.58),0 10px 28px rgba(10,32,52,.52);
+  box-shadow:0 0 0 1px rgba(30,95,138,.62),0 0 42px rgba(30,95,138,.82),0 14px 40px rgba(10,32,52,.66);
   animation:continueGlow 2s ease-in-out infinite;
 }
 @keyframes continueGlow{
-  0%,100%{box-shadow:0 0 0 1px rgba(30,95,138,.45),0 0 24px rgba(30,95,138,.52),0 10px 28px rgba(10,32,52,.5);}
-  50%{box-shadow:0 0 0 1px rgba(30,95,138,.72),0 0 34px rgba(30,95,138,.78),0 12px 34px rgba(10,32,52,.62);}
+  0%,100%{box-shadow:0 0 0 1px rgba(30,95,138,.58),0 0 38px rgba(30,95,138,.72),0 12px 36px rgba(10,32,52,.6);}
+  50%{box-shadow:0 0 0 1px rgba(30,95,138,.88),0 0 56px rgba(30,95,138,.96),0 16px 44px rgba(10,32,52,.74);}
 }
 #menuPlayBtn{min-height:73.5px!important;padding:18px 16px!important;border-radius:18px!important;}
+#menuVersusBtn{min-height:65px!important;padding:12px 10px!important;border-radius:18px!important;font-size:16px!important;gap:4px!important;}
+#menuVersusBtn span{font-size:18px!important;line-height:1!important;}
+#menuBtns > div:last-child > .menu-btn-sec{min-height:65px!important;padding:12px 10px!important;border-radius:18px!important;font-size:16px!important;gap:4px!important;}
+#menuBtns > div:last-child > .menu-btn-sec span{font-size:18px!important;line-height:1!important;}
 .menu-btn-play,.menu-btn-sec,.ov-btn,.setup-back-btn,.course-btn,.diff-btn,.tee-off-btn,.mode-info-btn,.vs-turn-btn{
   transition:
     transform .22s cubic-bezier(0.22,1,0.36,1),
@@ -380,22 +385,25 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .onboard-input::placeholder{color:rgba(255,255,255,.2);}
 
 .setup-card{max-width:360px;width:100%;text-align:center;position:relative;z-index:10;}
-.setup-top-back{display:flex;justify-content:center;margin-bottom:22px;}
+.setup-top-back{display:none;}
 .setup-head-row{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:12px;margin-bottom:18px;}
 .setup-back-btn{
-  background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:8px 16px;
-  font-family:'Sen', sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;margin-bottom:20px;display:inline-flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 10px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.03);
+  width:36px;height:36px;border-radius:50%;padding:0;margin:0;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;
+  font-family:'Sen', sans-serif;font-size:16px;line-height:1;letter-spacing:0;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08);
+  justify-self:start;
 }
 .setup-back-btn:active{
-  transform:translateY(1px) scale(0.955);
-  border-color:rgba(120,220,96,.35);
-  box-shadow:inset 0 0 10px rgba(0,0,0,.42), 0 0 12px rgba(120,220,96,.14);
+  transform:translateY(1px) scale(.92);
+  border-color:rgba(120,220,96,.4);
+  box-shadow:inset 0 0 10px rgba(0,0,0,.42), 0 0 12px rgba(120,220,96,.16);
 }
+.setup-back-btn:hover{background:rgba(255,255,255,.22);}
 .setup-title{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;margin-bottom:20px;color:var(--c-fwyl);text-align:center;}
 .setup-head-row .setup-title{grid-column:2;margin-bottom:0;}
 .setup-head-row .mode-info-btn{justify-self:end;}
-.setup-head-row::before{content:'';display:block;width:36px;height:36px;}
+.setup-head-spacer{display:block;width:36px;height:36px;}
 .menu-content > .menu-btns > #menuPlayBtn{width:100%;margin:0;min-height:73.5px;display:flex;align-items:center;justify-content:center;}
 .setup-group{margin-bottom:20px;text-align:left;}
 .setup-lbl{font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;display:block;}
@@ -1107,12 +1115,10 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 <!-- VERSUS MODE SETUP -->
 <div class="setup-screen" id="versusSetupScreen" style="display:none">
   <div class="setup-card" style="max-width:380px;">
-    <div class="setup-top-back">
-      <button class="setup-back-btn" style="margin-bottom:0;" onclick="navBack('menuScreen')">← BACK</button>
-    </div>
     <div class="setup-head-row">
+      <button class="setup-back-btn" onclick="navBack('menuScreen')" aria-label="Back">&#8592;</button>
       <div class="setup-title" style="margin-bottom:0;">VERSUS MODE</div>
-      <button class="mode-info-btn" style="position:static;width:36px;height:36px;font-size:16px;" onclick="openModeInfo('versus')">ℹ</button>
+      <button class="mode-info-btn" style="position:static;width:36px;height:36px;font-size:16px;" onclick="openModeInfo('versus')">&#9432;</button>
     </div>
     <div class="vs-setup-players">
       <div class="vs-player-card">
@@ -1139,8 +1145,11 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 <!-- VERSUS OPTIONS SCREEN -->
 <div class="setup-screen" id="vsOptionsScreen" style="display:none">
   <div class="setup-card">
-    <button class="setup-back-btn" onclick="navBack('versusSetupScreen')">← BACK</button>
-    <div class="setup-title">GAME OPTIONS</div>
+    <div class="setup-head-row">
+      <button class="setup-back-btn" onclick="navBack('versusSetupScreen')" aria-label="Back">&#8592;</button>
+      <div class="setup-title" style="margin-bottom:0;">GAME OPTIONS</div>
+      <span class="setup-head-spacer"></span>
+    </div>
     
     <div class="setup-group">
       <span class="setup-lbl">FORMAT</span>
@@ -1183,22 +1192,20 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 
 <div class="setup-screen" id="playModeScreen" style="display:none">
   <div class="setup-card">
-    <div class="setup-top-back">
-      <button class="setup-back-btn" style="margin-bottom:0;" onclick="navBack('menuScreen')">← BACK</button>
-    </div>
     <div class="setup-head-row">
+      <button class="setup-back-btn" onclick="navBack('menuScreen')" aria-label="Back">&#8592;</button>
       <div class="setup-title" style="margin-bottom:0;">SELECT MODE</div>
-      <button class="mode-info-btn" style="position:static;width:36px;height:36px;font-size:16px;" onclick="openModeInfo('play')">ℹ</button>
+      <button class="mode-info-btn" style="position:static;width:36px;height:36px;font-size:16px;" onclick="openModeInfo('play')">&#9432;</button>
     </div>
     <div class="mode-menu">
-      <button class="menu-btn-sec mode-menu-card" onclick="navToCourse('single')">
+      <button class="menu-btn-sec mode-menu-card" onclick="navToModeDifficulty('single')">
         <div class="mode-menu-copy">
           <span class="mode-menu-title">SINGLE DAY</span>
           <span class="mode-menu-sub">Quick  play • 18 holes</span>
         </div>
         <span class="mode-menu-icon">⛳</span>
       </button>
-      <button class="menu-btn-sec mode-menu-card" onclick="navToCourse('tournament')">
+      <button class="menu-btn-sec mode-menu-card" onclick="navToModeDifficulty('tournament')">
         <div class="mode-menu-copy">
           <span class="mode-menu-title">TOURNAMENT</span>
           <span class="mode-menu-sub">Full golf event • 4 rounds</span>
@@ -1225,8 +1232,11 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 
 <div class="setup-screen" id="customScreen" style="display:none">
   <div class="setup-card">
-    <button class="setup-back-btn" onclick="navBack('playModeScreen')">← BACK</button>
-    <div class="setup-title">CUSTOM GAME</div>
+    <div class="setup-head-row">
+      <button class="setup-back-btn" onclick="navBack('playModeScreen')" aria-label="Back">&#8592;</button>
+      <div class="setup-title" style="margin-bottom:0;">CUSTOM GAME</div>
+      <span class="setup-head-spacer"></span>
+    </div>
     
     <div class="setup-group">
       <span class="setup-lbl">ROUNDS</span>
@@ -1269,10 +1279,13 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 
 <div class="setup-screen" id="courseScreen" style="display:none">
   <div class="setup-card">
-    <button class="setup-back-btn" onclick="navBackFromCourse()">← BACK</button>
-    <div class="setup-title">SELECT COURSE</div>
+    <div class="setup-head-row">
+      <button class="setup-back-btn" onclick="navBackFromCourse()" aria-label="Back">&#8592;</button>
+      <div class="setup-title" style="margin-bottom:0;">SELECT COURSE</div>
+      <span class="setup-head-spacer"></span>
+    </div>
     
-    <button class="course-btn" id="courseLittlePinesBtn" onclick="navToDiff()">
+    <button class="course-btn" id="courseLittlePinesBtn" onclick="selectCourse('little-pines')">
       <div>
         <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;">LITTLE PINES GC</div>
         <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 72 · WOODLAND</div>
@@ -1287,14 +1300,17 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
       </div>
       <div style="font-size:24px;">🌊</div>
     </button>
-    <button class="menu-btn-play" id="vsCourseTeeOffBtn" onclick="vsTeeOffFromCourse()" style="display:none;width:100%;font-size:20px;margin-top:12px;">TEE OFF</button>
+    <button class="menu-btn-play" id="vsCourseTeeOffBtn" onclick="teeOffFromCourse()" style="display:none;width:100%;font-size:20px;margin-top:12px;">TEE OFF</button>
   </div>
 </div>
 
 <div class="setup-screen" id="diffScreen" style="display:none">
   <div class="setup-card">
-    <button class="setup-back-btn" onclick="navBack('courseScreen')">← BACK</button>
-    <div class="setup-title">DIFFICULTY</div>
+    <div class="setup-head-row">
+      <button class="setup-back-btn" onclick="navBack('playModeScreen')" aria-label="Back">&#8592;</button>
+      <div class="setup-title" style="margin-bottom:0;">DIFFICULTY</div>
+      <span class="setup-head-spacer"></span>
+    </div>
     
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
       <button class="diff-btn active" id="diff-btn-1" onclick="setDiff(1)" style="padding:16px;font-size:20px;">EASY</button>
@@ -1302,7 +1318,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
       <button class="diff-btn" id="diff-btn-3" onclick="setDiff(3)" style="padding:16px;font-size:20px;">HARD</button>
     </div>
     
-    <button class="menu-btn-play" style="width:100%;font-size:20px;" onclick="startGame()">TEE OFF</button>
+    <button class="menu-btn-play" style="width:100%;font-size:20px;" onclick="showCourseAfterDiff()">CHOOSE COURSE</button>
   </div>
 </div>
 
@@ -2087,6 +2103,10 @@ const HOLES=[
   {name:'HOLE 17',yards:405,par:4,baseDiff:2,diff:2,layout:'waterApproach'}, // Water right of green, risk/reward approach
   {name:'HOLE 18',yards:460,par:4,baseDiff:3,diff:3,layout:'waterCross'},    // Dramatic finale, carry water off the tee
 ];
+const BASE_HOLES=HOLES.map(h=>({...h}));
+function restoreBaseHoles(){
+  BASE_HOLES.forEach((h,i)=>{ HOLES[i]={...h}; });
+}
 
 // ═══════════════════════════════════════
 // STATE & CONFIG
@@ -2134,11 +2154,36 @@ function navToPlayMode() {
   showScreen('playModeScreen', 'flex');
 }
 
+function navToModeDifficulty(mode){
+  forceHideGame();
+  VS.active = false;
+  _courseScreenFlow = mode;
+  if(VS.setup){ VS.setup.courseSelected = false; VS.setup.course = null; }
+  SETUP.courseSelected = false;
+  SETUP.course = null;
+  if(mode === 'single'){
+    SETUP.mode = 'single';
+    SETUP.rounds = 1;
+    SETUP.holesConfig = '18';
+  }
+  if(mode === 'tournament'){
+    SETUP.mode = 'tournament';
+    SETUP.rounds = 4;
+    SETUP.holesConfig = '18';
+  }
+  setDiff(1);
+  _lastMenuScreen = 'playModeScreen';
+  hideScreen('playModeScreen');
+  showScreen('diffScreen', 'flex');
+}
+
 function navToCustom() { 
   forceHideGame();
   VS.active = false;
   _courseScreenFlow = 'custom';
   if(VS.setup){ VS.setup.courseSelected = false; VS.setup.course = null; }
+  SETUP.courseSelected = false;
+  SETUP.course = null;
   _lastMenuScreen = 'customScreen'; 
   SETUP.mode = 'custom';
   setCustomRounds(1);
@@ -2150,12 +2195,14 @@ function navToCustom() {
 
 function navToCourse(mode) {
   forceHideGame();
-  _courseScreenFlow = mode === 'custom' ? 'custom' : 'single';
+  _courseScreenFlow = mode;
   VS.active = false;
   if(VS.setup){
     VS.setup.courseSelected = false;
     VS.setup.course = null;
   }
+  SETUP.courseSelected = false;
+  SETUP.course = null;
   if (mode === 'single') { SETUP.mode = 'single'; SETUP.rounds = 1; SETUP.holesConfig = '18'; setDiff(1); _lastMenuScreen = 'playModeScreen'; }
   if (mode === 'tournament') { SETUP.mode = 'tournament'; SETUP.rounds = 4; SETUP.holesConfig = '18'; setDiff(1); _lastMenuScreen = 'playModeScreen'; }
   if (mode === 'custom') { _lastMenuScreen = 'customScreen'; }
@@ -2174,28 +2221,55 @@ function navToDiff() {
     updateCourseScreenModeUI();
     return;
   }
-  if (SETUP.mode === 'custom') {
-    hideScreen('courseScreen');
-    startGame();
-  } else {
-    hideScreen('courseScreen'); 
-    showScreen('diffScreen', 'flex'); 
-  }
+  hideScreen('courseScreen'); 
+  showScreen('diffScreen', 'flex'); 
+}
+
+function showCourseAfterDiff(){
+  SETUP.courseSelected = false;
+  SETUP.course = null;
+  hideScreen('diffScreen');
+  showScreen('courseScreen', 'flex');
+  updateCourseScreenModeUI();
 }
 
 function updateCourseScreenModeUI(){
   const tee=document.getElementById('vsCourseTeeOffBtn');
   const littlePines=document.getElementById('courseLittlePinesBtn');
-  const vsCourseFlow = _courseScreenFlow === 'versus';
-  if(tee) tee.style.display = vsCourseFlow ? 'block' : 'none';
+  const courseFlowActive = ['versus','custom','single','tournament'].includes(_courseScreenFlow);
+  const selected = _courseScreenFlow === 'versus'
+    ? !!(VS.setup && VS.setup.courseSelected)
+    : !!SETUP.courseSelected;
+  if(tee) tee.style.display = courseFlowActive ? 'block' : 'none';
+  if(tee) tee.disabled = !selected;
+  if(tee) tee.style.opacity = selected ? '1' : '.45';
+  if(tee) tee.style.pointerEvents = selected ? 'auto' : 'none';
   if(littlePines){
-    littlePines.classList.toggle('selected', !!(vsCourseFlow && VS.setup && VS.setup.courseSelected));
+    littlePines.classList.toggle('selected', selected);
   }
 }
 
-function vsTeeOffFromCourse(){
-  if(_courseScreenFlow !== 'versus') return;
-  if(!VS.setup.courseSelected) return;
+function selectCourse(courseId){
+  if(_courseScreenFlow === 'versus'){
+    if(VS.setup){
+      VS.setup.course = courseId;
+      VS.setup.courseSelected = true;
+    }
+  } else {
+    SETUP.course = courseId;
+    SETUP.courseSelected = true;
+  }
+  updateCourseScreenModeUI();
+}
+
+function teeOffFromCourse(){
+  if(_courseScreenFlow === 'versus'){
+    if(!VS.setup.courseSelected) return;
+    hideScreen('courseScreen');
+    startGame();
+    return;
+  }
+  if(!SETUP.courseSelected) return;
   hideScreen('courseScreen');
   startGame();
 }
@@ -2231,7 +2305,7 @@ function resetGameState(){
 function returnToMenu(){
   VS.active = false;
   _courseScreenFlow = 'single';
-  TUT.active = false;
+  clearTutorialUiState();
   document.getElementById('overlay').classList.remove('show');
   const hc = document.getElementById('hcScreen'); if(hc) hc.classList.remove('show');
   document.getElementById('summaryModal').classList.remove('show');
@@ -2251,6 +2325,7 @@ function startGame(){
   _skipGridScrollOnce = true;
   clearSavedGame();
   resetGameState();
+  restoreBaseHoles();
   const p=getActiveProfile();
   PLAYER_NAME=p?p.name.toUpperCase():'PLAYER';
   const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };
@@ -2320,9 +2395,13 @@ function buildLegend(){
   updateLegendVisibility();
 }
 function starsHTML(d){
-  return Array.from({length:3},(_,i)=>`<span class="star ${i<d?'fill':'empty'}">${i<d?'★':'☆'}</span>`).join('');
+  return Array.from({length:3},(_,i)=>`<span class="star ${i<d?'fill':'empty'}">${i<d?'&#9733;':'&#9734;'}</span>`).join('');
 }
-function starsPlain(d){return '★'.repeat(d)+'☆'.repeat(3-d);}
+function starsPlain(d){
+  const full=String.fromCharCode(9733);
+  const empty=String.fromCharCode(9734);
+  return full.repeat(d)+empty.repeat(3-d);
+}
 
 function buildScorecard(){
   const pr=document.getElementById('parRow');
@@ -2957,6 +3036,7 @@ function processShot(row,col){
       nextBtn.textContent='FINISH HOLE';
       nextBtn.style.background='var(--c-tee)';
       nextBtn.onclick=()=>{
+        const tutorialFinish = TUT.active;
         const b=document.getElementById('puttWcBtn');if(b)b.remove();
         S._pendingPuttResult=null;
         S.holeDone=true;
@@ -2964,7 +3044,7 @@ function processShot(row,col){
         nextBtn.disabled=true;
         nextBtn.style.pointerEvents='none';
         updateTVBanner();
-        setTimeout(()=>{ completeHole(); },200);
+        setTimeout(()=>{ if(tutorialFinish && !TUT.active) return; completeHole(); },200);
       };
     }
     renderWcFab();
@@ -3040,7 +3120,8 @@ function processShot(row,col){
       S.shotNum++;S.holeDone=true;
       hideNextShotBtn();hidePostShotWcBtn();
       updateYrd();
-      setTimeout(()=>completeHole(),950);
+      const tutorialHoleIn = TUT.active;
+      setTimeout(()=>{ if(tutorialHoleIn && !TUT.active) return; completeHole(); },950);
     }
     return;
   }
@@ -5242,9 +5323,12 @@ function showWcInfoDetail(wc){
   const title=document.getElementById('wcInfoTitle');
   title.textContent=wc.name;
   list.innerHTML=`
-    <button onclick="openWcInfo()" style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);border-radius:6px;padding:6px 12px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;margin-bottom:14px;">← BACK</button>
+    <div class="setup-head-row" style="margin-bottom:14px;">
+      <button onclick="openWcInfo()" class="setup-back-btn" style="position:static;transform:none;" aria-label="Back">&#8592;</button>
+      <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;text-align:center;flex:1;">${wc.name}</div>
+      <span class="setup-head-spacer"></span>
+    </div>
     <div style="font-size:40px;text-align:center;margin:10px 0;">${wc.icon}</div>
-    <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#f0c040;text-align:center;margin-bottom:8px;">${wc.name}</div>
     <div style="font-family:'Sen', sans-serif;font-size:11px;color:rgba(255,255,255,.7);text-align:center;line-height:1.5;padding:0 8px;">${wc.desc}</div>
   `;
 }
@@ -5817,6 +5901,13 @@ function continueGame(){
     const save=JSON.parse(localStorage.getItem('gg_save')||'null');
     if(!save)return;
     _skipGridScrollOnce = true;
+    clearTutorialUiState();
+    restoreBaseHoles();
+    resetResult();
+    document.getElementById('overlay').classList.remove('show');
+    document.getElementById('summaryModal').classList.remove('show');
+    const hc=document.getElementById('hcScreen'); if(hc) hc.classList.remove('show');
+    document.querySelectorAll('.celebration-overlay').forEach(el=>el.remove());
     PLAYER_NAME=save.playerName||PLAYER_NAME;
     GAME_DIFF=save.gameDiff||1;
     const diffMap={ 1: [1, 1, 2], 2: [1, 2, 3], 3: [2, 3, 3] };
@@ -6067,7 +6158,9 @@ function resolveHio(r1, r2){
       if(profiles[idx])profiles[idx].holeInOnes=(profiles[idx].holeInOnes||0)+1;
       saveProfiles(profiles);
     }
+    const tutorialHio = TUT.active;
     setTimeout(()=>{
+      if(tutorialHio && !TUT.active) return;
       document.getElementById('hioOverlay').classList.remove('show');
       const snapGrid=_hioSnap;
       S.strokes+=1; S.yrdRemain=0;
@@ -6078,7 +6171,7 @@ function resolveHio(r1, r2){
       S.shotNum++;S.holeDone=true;
       hideNextShotBtn();hidePostShotWcBtn();
       updateYrd();
-      setTimeout(()=>completeHole(),900);
+      setTimeout(()=>{ if(tutorialHio && !TUT.active) return; completeHole(); },900);
     },2200);
   } else {
     resultEl.textContent='SO CLOSE...';
@@ -6175,6 +6268,45 @@ const TUT_GRIDS = {
 TUT = { active:false, step:0, blocked:true };
 let _tutStep = -1;
 let _tutHoleKey = 'h1';
+
+function clearTutorialUiState(){
+  TUT.active = false;
+  TUT.blocked = false;
+  _tutStep = -1;
+  _tutHoleKey = 'h1';
+  _tutWaitEvent = null;
+  _tutWaitCallback = null;
+  _holdFinishBtn = false;
+  window._disableTutScroll = false;
+
+  const tutPrompt = document.getElementById('tutPrompt');
+  if(tutPrompt) tutPrompt.classList.remove('show');
+
+  const tutOverlay = document.getElementById('tutOverlay');
+  if(tutOverlay) tutOverlay.classList.remove('show');
+
+  const tutBackdrop = document.getElementById('tutBackdrop');
+  if(tutBackdrop) tutBackdrop.classList.remove('show');
+
+  document.querySelectorAll('.tut-pulse').forEach(el=>{
+    el.classList.remove('tut-pulse','tut-elevate','tut-relative');
+    el.style.zIndex = '';
+    el.style.position = '';
+    if(el.id === 'rollBtn') el.style.opacity = '';
+  });
+
+  const header = document.querySelector('header');
+  if(header) header.style.zIndex = '100';
+
+  const nextBtn = document.getElementById('nextShotBtn');
+  if(nextBtn){
+    nextBtn.textContent = 'NEXT SHOT';
+    nextBtn.style.background = 'var(--c-tee)';
+    nextBtn.style.pointerEvents = '';
+    nextBtn.disabled = false;
+    nextBtn.onclick = doNextShot;
+  }
+}
 
 function startTutorial(){
   document.getElementById('tutPrompt').classList.remove('show');
@@ -6656,8 +6788,7 @@ function tutGetGrid(){
 function tutComplete(isAbandon = false){
   _tutHideTip();
   _tutBlockInput(false);
-  TUT.active = false;
-  TUT.blocked = false;
+  clearTutorialUiState();
   tutMarkDone();
   
   // ONLY award the achievement if they successfully finished it
@@ -6671,12 +6802,8 @@ function tutComplete(isAbandon = false){
       }
   }
 
-  const origHoles = [
-    {name:'HOLE 1',yards:387,par:4,baseDiff:1,diff:1,hasWater:false},
-    {name:'HOLE 2',yards:512,par:5,baseDiff:3,diff:3,hasWater:true},
-    {name:'HOLE 3',yards:178,par:3,baseDiff:1,diff:1,hasWater:false},
-  ];
-  origHoles.forEach((h,i)=>{ HOLES[i] = h; });
+  restoreBaseHoles();
+  resetResult();
   document.getElementById('overlay').classList.remove('show');
   returnToMenu();
 }
@@ -6776,8 +6903,16 @@ function navBackFromCourse(){
     if(VS.setup) VS.setup.courseSelected=false;
     updateCourseScreenModeUI();
     showScreen('vsOptionsScreen','flex');
+  } else if(_courseScreenFlow === 'custom'){
+    SETUP.courseSelected = false;
+    SETUP.course = null;
+    updateCourseScreenModeUI();
+    showScreen('customScreen','flex');
   } else {
-    navBack('mode');
+    SETUP.courseSelected = false;
+    SETUP.course = null;
+    updateCourseScreenModeUI();
+    showScreen('diffScreen','flex');
   }
 }
   
@@ -7800,3 +7935,5 @@ if ('serviceWorker' in navigator) {
 </div>
 </body>
 </html>
+
+
