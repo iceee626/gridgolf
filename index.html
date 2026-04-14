@@ -642,11 +642,11 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .sum-head{
   background:linear-gradient(180deg,var(--c-fwy) 0%,rgba(58,122,48,.7) 100%);
   padding:calc(env(safe-area-inset-top) + 12px) 18px 14px;
-  display:flex;justify-content:space-between;align-items:center;
+  display:grid;grid-template-columns:36px minmax(0,1fr) 36px;align-items:center;column-gap:10px;
   position:sticky;top:0;z-index:10;flex-shrink:0;
 }
-.sum-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#fff;}
-.sum-head-spacer{width:28px;height:28px;flex-shrink:0;}
+.sum-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#fff;text-align:center;}
+.sum-head-spacer{width:36px;height:36px;display:block;}
 .sum-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .sum-body{
   flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
@@ -1615,6 +1615,7 @@ function showMainApp(){
   if(!app)return;
   if(window._mainAppHideTimer){clearTimeout(window._mainAppHideTimer);window._mainAppHideTimer=null;}
   app.style.display='block';
+  app.style.visibility='visible';
   void app.offsetWidth;
   app.classList.add('visible');
 }
@@ -1628,6 +1629,11 @@ function hideMainApp(){
     window._mainAppHideTimer=null;
   },260);
 }
+function setMainAppConcealed(concealed){
+  const app=document.getElementById('mainApp');
+  if(!app)return;
+  app.style.visibility = concealed ? 'hidden' : 'visible';
+}
 function closeHcScreenThen(fn, delay=230){
   const hc=document.getElementById('hcScreen');
   if(!hc){ if(typeof fn==='function') fn(); return; }
@@ -1639,6 +1645,7 @@ let _summaryBackTarget = null;
 function openSummaryTransition(viewRound = S.currentRound, backTarget = null){
   _summaryBackTarget = backTarget;
   document.getElementById('overlay').classList.remove('show');
+  setMainAppConcealed(true);
   hideMainApp();
   if(backTarget === 'hcScreen'){
     closeHcScreenThen(()=>openSummary(viewRound, backTarget));
@@ -2905,6 +2912,17 @@ function updateYrd(){
     putts>0 ? 'in a hole' :
     S.zone==='grn' ? 'putting' :
     rem>0 ? 'to hole' : 'putting';
+}
+
+function getOverallScoreDiff(){
+  let total = 0, par = 0;
+  S.scorecards.forEach(sc => sc.forEach((score, i) => {
+    if(score !== null){
+      total += score;
+      par += HOLES[i].par;
+    }
+  }));
+  return total - par;
 }
 
 function advanceYrd(zk){
@@ -4321,6 +4339,7 @@ function closeSummary(){
     if(S.holeIdx >= S.endIdx && S.holeDone && S.currentRound === S.totalRounds){
       returnToMenu();
     } else {
+      setMainAppConcealed(false);
       showMainApp();
     }
   },220);
@@ -4337,6 +4356,7 @@ function summaryGoBack(){
       return;
     }
     if(target === 'overlay'){
+      setMainAppConcealed(false);
       showMainApp();
       document.getElementById('overlay').classList.add('show');
       return;
@@ -5705,7 +5725,12 @@ function renderWcDrawer(){
       if (wc.id === 'fairway_finder') statusText = 'Active for your next shot';
       if (wc.id === 'lucky_bounce') statusText = 'Saves next OB/Water';
       if (wc.id === 'iron_will') statusText = 'Saves next Rough';
-      if (wc.id === 'pressure_cooker') statusText = `Expires in ${WCS.pressureCookerShots} hole${WCS.pressureCookerShots !== 1 ? 's' : ''}`;
+      if (wc.id === 'pressure_cooker') {
+        const readyForNextTee = getOverallScoreDiff() > 0 && (S.holeDone || S.zone === 'tee');
+        statusText = readyForNextTee
+          ? 'Active for your tee shot'
+          : `Expires in ${WCS.pressureCookerShots} hole${WCS.pressureCookerShots !== 1 ? 's' : ''}`;
+      }
       if (wc.id === 'magic_backspin') statusText = 'Waiting for trigger...';
       if (wc.id === 'cup_magnet') statusText = 'Waiting for Green...';
 
@@ -8247,7 +8272,7 @@ if ('serviceWorker' in navigator) {
         </div>
       </div>
       <div class="mode-info-section">
-        <div class="mode-info-section-title">⚔️ GAME FORMATS</div>
+        <div class="mode-info-section-title">'golf_ball.png' GAME FORMATS</div>
         <div class="mode-info-row">
           <div class="mode-info-icon">🏆</div>
           <div class="mode-info-text">
@@ -8290,7 +8315,7 @@ if ('serviceWorker' in navigator) {
       <div class="mode-info-section">
         <div class="mode-info-section-title">📋 HOLES & DIFFICULTY</div>
         <div class="mode-info-row">
-          <div class="mode-info-icon">🏌️</div>
+          <div class="mode-info-icon">⛳</div>
           <div class="mode-info-text">
             <div class="mode-info-name">HOLE SELECTION</div>
             <div class="mode-info-desc">Choose from a full 18 holes, Front 9 (holes 1–9), or Back 9 (holes 10–18) on a particular course. Then? Tee off!</div>
