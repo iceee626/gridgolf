@@ -1617,14 +1617,14 @@ function closeHcScreenThen(fn, delay=230){
   setTimeout(()=>{ if(typeof fn==='function') fn(); },delay);
 }
 function openSummaryTransition(viewRound = S.currentRound){
-  const hc = document.getElementById('hcScreen');
-  if (hc) hc.classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+  hideMainApp();
+  openSummary(viewRound);
   
   setTimeout(() => {
-      document.getElementById('overlay').classList.remove('show');
-      hideMainApp();
-      openSummary(viewRound);
-  }, 260); // Matches the CSS transition duration to prevent glimpses
+      const hc = document.getElementById('hcScreen');
+      if (hc) hc.classList.remove('show');
+  }, 260); // Wait for the main app fade-out to finish
 }
 function hideScreen(id){
   const el=document.getElementById(id);
@@ -3280,7 +3280,7 @@ function _showTailwindDieChoice(){
   hidePostShotWcBtn();
   const wrap=document.createElement('div');
   wrap.id='postShotWcBtn';
-  wrap.style.cssText='position:fixed;bottom:130px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7b2f9e,#4a1a6e);border-radius:12px;padding:12px 16px;z-index:80;box-shadow:0 4px 16px rgba(123,47,158,.5);display:flex;flex-direction:column;align-items:center;gap:8px;min-width:240px;';
+  wrap.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7b2f9e,#4a1a6e);border-radius:12px;padding:12px 16px;z-index:80;box-shadow:0 4px 16px rgba(123,47,158,.5);display:flex;flex-direction:column;align-items:center;gap:8px;min-width:240px;';
   wrap.innerHTML='<div style="font-family:Bebas Neue,cursive;font-size:14px;letter-spacing:2px;color:#f0c040;margin-bottom:4px;">💨 RE-ROLL WHICH DIE?</div>';
   const btns=document.createElement('div');
   btns.style.cssText='display:flex;gap:8px;width:100%;';
@@ -3331,7 +3331,7 @@ function _showPrecisionGripChoice(){
   hidePostShotWcBtn();
   const wrap=document.createElement('div');
   wrap.id='postShotWcBtn';
-  wrap.style.cssText='position:fixed;bottom:130px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7b2f9e,#4a1a6e);border-radius:12px;padding:12px 16px;z-index:80;box-shadow:0 4px 16px rgba(123,47,158,.5);display:flex;flex-direction:column;align-items:center;gap:8px;min-width:240px;';
+  wrap.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7b2f9e,#4a1a6e);border-radius:12px;padding:12px 16px;z-index:80;box-shadow:0 4px 16px rgba(123,47,158,.5);display:flex;flex-direction:column;align-items:center;gap:8px;min-width:240px;';
   wrap.innerHTML='<div style="font-family:Bebas Neue,cursive;font-size:14px;letter-spacing:2px;color:#f0c040;margin-bottom:4px;">🧤 ADJUST WHICH DIE?</div>';
   const btns=document.createElement('div');
   btns.style.cssText='display:flex;gap:8px;width:100%;';
@@ -3525,6 +3525,9 @@ function completeHole(){
         pPar += HOLES[i].par;
     }
     let diff = pTotal - pPar;
+    if (WCS.pressureCookerShots > 0 && diff <= 0) {
+      WCS.pressureCookerShots--;
+  }
     let diffStr = diff === 0 ? 'E' : diff > 0 ? `+${diff}` : `${diff}`;
     
     if (VS.format === 'stroke') {
@@ -3676,6 +3679,9 @@ function completeHole(){
   S.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ totalScore+=s; totalPar+=HOLES[i].par; } }));
   const totalDiff=totalScore-totalPar;
   const totalStr=totalDiff===0?'E':totalDiff>0?`+${totalDiff}`:`${totalDiff}`;
+  if (WCS.pressureCookerShots > 0 && totalDiff <= 0) {
+      WCS.pressureCookerShots--;
+  }
   
   buildScorecard();
 
@@ -5363,7 +5369,7 @@ function getActiveWcIds() {
   if(WCS.ironWillActive) ids.push('iron_will');
   if(WCS.greatEscapeActive) ids.push('great_escape');
   if(WCS.magicBackspinActive) ids.push('magic_backspin');
-  if(WCS.pressureCookerActive) ids.push('pressure_cooker');
+  if(WCS.pressureCookerShots > 0) ids.push('pressure_cooker');
   if(WCS.lilyPadActive) ids.push('lily_pad');
   if(WCS.mowersRevengeActive) ids.push('mowers_revenge');
   if(WCS.fairwayFinderActive) ids.push('fairway_finder');
@@ -5399,9 +5405,9 @@ function randWildcard(){
 }
 
 const WCS={
-  equipped:[], active:null,
+  equipped:[], active:null, pressureCookerShots:0,
   luckyBounceActive:false, ironWillActive:false, greatEscapeActive:false,
-  magicBackspinActive:false, pressureCookerActive:false, lilyPadActive:false,
+  magicBackspinActive:false, lilyPadActive:false,
   mowersRevengeActive:false, fairwayFinderActive:false, birdieBoostActive:false,
   holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false,
   goldenPutterActive:false, ferrettActive:false, hioActive:false,
@@ -5410,8 +5416,8 @@ const WCS={
 
 function wcReset(){
   WCS.equipped=[]; WCS.active=null; WCS.pending=null; WCS.pendingRow=null; WCS.pendingCol=null;
-  WCS.luckyBounceActive=false; WCS.ironWillActive=false; WCS.greatEscapeActive=false;
-  WCS.magicBackspinActive=false; WCS.pressureCookerActive=false; WCS.lilyPadActive=false;
+  WCS.pressureCookerShots=0; WCS.luckyBounceActive=false; WCS.ironWillActive=false; 
+  WCS.greatEscapeActive=false; WCS.magicBackspinActive=false; WCS.lilyPadActive=false;
   WCS.mowersRevengeActive=false; WCS.fairwayFinderActive=false; WCS.birdieBoostActive=false;
   WCS.holeWallActive=false; WCS.sandWedgeProActive=false; WCS.cupMagnetActive=false;
   WCS.goldenPutterActive=false; WCS.ferrettActive=false; WCS.hioActive=false;
@@ -5578,6 +5584,11 @@ function renderWcDrawer(){
       if (wc.id === 'fairway_finder') statusText = 'Active for your next shot';
       if (wc.id === 'lucky_bounce') statusText = 'Saves next OB/Water';
       if (wc.id === 'iron_will') statusText = 'Saves next Rough';
+      if (wc.id === 'pressure_cooker') statusText = `Expires in ${WCS.pressureCookerShots} hole${WCS.pressureCookerShots !== 1 ? 's' : ''}`;
+      if (wc.id === 'great_escape') statusText = 'Waiting for Rough...';
+      if (wc.id === 'magic_backspin') statusText = 'Waiting for overshoot...';
+      if (wc.id === 'lily_pad') statusText = 'Saves next Water';
+      if (wc.id === 'cup_magnet') statusText = 'Waiting for Green...';
 
       const item = document.createElement('div');
       item.style.cssText = 'display:flex;align-items:center;gap:8px;background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.3);border-radius:8px;padding:8px;margin-bottom:6px;';
@@ -5784,9 +5795,13 @@ function applyWildcardEffect(wc){
         break;
     case 'magic_backspin': WCS.magicBackspinActive=true; toastMsg = `🔄 ${wc.name} applied!`; break;
     case 'pressure_cooker': 
-        WCS.pressureCookerActive=true; 
+        WCS.pressureCookerShots = 3; 
         toastMsg = `♨️ ${wc.name} applied!`;
-        if(S.zone==='tee' && !nextVisible) { buildGrid(); toastMsg = null; } 
+        if(S.zone==='tee' && !nextVisible) { 
+            let tot = 0, par = 0;
+            S.scorecards.forEach(sc=>sc.forEach((s,i)=>{if(s!==null){tot+=s;par+=HOLES[i].par;}}));
+            if(tot > par) { buildGrid(); toastMsg = null; } 
+        } 
         break;
     case 'lily_pad': WCS.lilyPadActive=true; toastMsg = `🪷 ${wc.name} applied!`; break;
     case 'mowers_revenge': 
@@ -5899,6 +5914,7 @@ function applyWcGridMods(grid){
   }
   if (WCS.sandWedgeProActive && S.zone === 'sand') {
       WCS.sandWedgeProActive = false; 
+      showWcToast('🏖️ Sand Wedge Pro activated!'); appendWcNote('🏖️ Sand Wedge Pro');
       grid = grid.map(r=>r.map(c=>Math.random() < 0.8 ? 'grn' : c));
   }
   if (WCS.greatEscapeActive && S.zone === 'rgh') {
@@ -5906,12 +5922,14 @@ function applyWcGridMods(grid){
       const targetZone = S.yrdRemain < 150 ? 'grn' : 'fwy';
       grid = grid.map(r=>r.map(c=> (c !== 'fwy' && c !== 'grn' && Math.random() < 0.7) ? targetZone : c));
   }
-  if (WCS.pressureCookerActive && S.zone === 'tee') {
-      WCS.pressureCookerActive = false;
+  if (WCS.pressureCookerShots > 0 && S.zone === 'tee') {
       let tot = 0, par = 0;
       S.scorecards.forEach(sc=>sc.forEach((s,i)=>{if(s!==null){tot+=s;par+=HOLES[i].par;}}));
       if (tot > par) {
-          grid = grid.map(r=>r.map(()=> HOLES[S.holeIdx].par === 3 ? 'grn' : 'fwy'));
+          WCS.pressureCookerShots = 0; // Consume it upon activation
+          showWcToast('♨️ Pressure Cooker activated!'); appendWcNote('♨️ Pressure Cooker');
+          const targetZone = HOLES[S.holeIdx].par === 3 ? 'grn' : 'fwy';
+          grid = grid.map(r=>r.map(c=> Math.random() < 0.8 ? targetZone : c));
       }
   }
   if (WCS.mowersRevengeActive) {
@@ -6068,12 +6086,15 @@ function saveGameState(){
     _waitingForNextShot:isShotBtnShown('nextShotBtn'),
     _pendingPuttResult:S._pendingPuttResult||null,
     currentGrid:S.currentGrid,
-    wcsEquipped:WCS.equipped, wcsActive:WCS.active, 
-    wcsGreenLightShots:WCS.greenLightShots, wcsSandCastle:WCS.sandCastleActive, wcsLuckyBounce:WCS.luckyBounceActive,
-    wcsIronWill:WCS.ironWillActive, wcsFerrett:WCS.ferrettActive,
-    wcsGoldenPutter:WCS.goldenPutterActive, wcsEagleEye:WCS.eagleEyeActive, wcsSandWedgePro:WCS.sandWedgeProActive,
-    wcsBirdieBoost:WCS.birdieBoostActive, wcsHoleWall:WCS.holeWallActive, wcsHio:WCS.hioActive,
-    wcsShortcut:WCS.shortcutActive,
+    wcsEquipped:WCS.equipped, wcsActive:WCS.active,
+    wcsLuckyBounce:WCS.luckyBounceActive, wcsIronWill:WCS.ironWillActive, 
+    wcsGreatEscape:WCS.greatEscapeActive, wcsMagicBackspin:WCS.magicBackspinActive,
+    wcsPressureCookerShots:WCS.pressureCookerShots, wcsLilyPad:WCS.lilyPadActive,
+    wcsMowersRevenge:WCS.mowersRevengeActive, wcsFairwayFinder:WCS.fairwayFinderActive,
+    wcsBirdieBoost:WCS.birdieBoostActive, wcsHoleWall:WCS.holeWallActive,
+    wcsSandWedgePro:WCS.sandWedgeProActive, wcsCupMagnet:WCS.cupMagnetActive,
+    wcsGoldenPutter:WCS.goldenPutterActive, wcsFerrett:WCS.ferrettActive,
+    wcsHio:WCS.hioActive, wcsHighlightReel:WCS.highlightReelActive, wcsShortcut:WCS.shortcutActive,
     gameDiff:GAME_DIFF, playerName:PLAYER_NAME, timestamp:Date.now(),
     vsState: VS.active ? {
         format: VS.format,
@@ -6140,10 +6161,14 @@ function continueGame(){
     const waitingForNextShot=save._waitingForNextShot||false;
     
     WCS.equipped=save.wcsEquipped||[]; WCS.active=save.wcsActive||null;
-    WCS.greenLightShots=save.wcsGreenLightShots||0; WCS.sandCastleActive=save.wcsSandCastle||false;
-    WCS.luckyBounceActive=save.wcsLuckyBounce||false; WCS.ironWillActive=save.wcsIronWill||false; WCS.ferrettActive=save.wcsFerrett||false;
-    WCS.goldenPutterActive=save.wcsGoldenPutter||false; WCS.eagleEyeActive=save.wcsEagleEye||false; WCS.sandWedgeProActive=save.wcsSandWedgePro||false;
-    WCS.birdieBoostActive=save.wcsBirdieBoost||false; WCS.holeWallActive=save.wcsHoleWall||false; WCS.hioActive=save.wcsHio||false;
+    WCS.luckyBounceActive=save.wcsLuckyBounce||false; WCS.ironWillActive=save.wcsIronWill||false;
+    WCS.greatEscapeActive=save.wcsGreatEscape||false; WCS.magicBackspinActive=save.wcsMagicBackspin||false;
+    WCS.pressureCookerShots=save.wcsPressureCookerShots||0; WCS.lilyPadActive=save.wcsLilyPad||false;
+    WCS.mowersRevengeActive=save.wcsMowersRevenge||false; WCS.fairwayFinderActive=save.wcsFairwayFinder||false;
+    WCS.birdieBoostActive=save.wcsBirdieBoost||false; WCS.holeWallActive=save.wcsHoleWall||false;
+    WCS.sandWedgeProActive=save.wcsSandWedgePro||false; WCS.cupMagnetActive=save.wcsCupMagnet||false;
+    WCS.goldenPutterActive=save.wcsGoldenPutter||false; WCS.ferrettActive=save.wcsFerrett||false;
+    WCS.hioActive=save.wcsHio||false; WCS.highlightReelActive=save.wcsHighlightReel||false;
     WCS.shortcutActive=save.wcsShortcut||false;
     
     if(save.vsState) {
@@ -7143,7 +7168,7 @@ function vsStartGame(){
   VS.histories = [Array(18).fill(null), Array(18).fill(null)];
   VS.matchScore = [0, 0];
   VS.sharedGrids = {};
-  const baseWc = () => ({ equipped:[], active:null, greenLightShots:0, sandCastleActive:false, luckyBounceActive:false, ironWillActive:false, ferrettActive:false, goldenPutterActive:false, eagleEyeActive:false, sandWedgeProActive:false, birdieBoostActive:false, holeWallActive:false, hioActive:false, shortcutActive:false });
+  const baseWc = () => ({ equipped:[], active:null, luckyBounceActive:false, ironWillActive:false, greatEscapeActive:false, magicBackspinActive:false, pressureCookerShots:0, lilyPadActive:false, mowersRevengeActive:false, fairwayFinderActive:false, birdieBoostActive:false, holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false, goldenPutterActive:false, ferrettActive:false, hioActive:false, highlightReelActive:false, shortcutActive:false }); 
   VS.wcs = [baseWc(), baseWc()];
   vsShowTurnScreen();
 }
@@ -7218,8 +7243,8 @@ function vsCompleteHole(){
   };
   
   if (!VS.wcs) {
-    const baseWc = () => ({ equipped:[], active:null, greenLightShots:0, sandCastleActive:false, luckyBounceActive:false, ironWillActive:false, ferrettActive:false, goldenPutterActive:false, eagleEyeActive:false, sandWedgeProActive:false, birdieBoostActive:false, holeWallActive:false, hioActive:false, shortcutActive:false });
-    VS.wcs = [baseWc(), baseWc()];
+   const baseWc = () => ({ equipped:[], active:null, luckyBounceActive:false, ironWillActive:false, greatEscapeActive:false, magicBackspinActive:false, pressureCookerShots:0, lilyPadActive:false, mowersRevengeActive:false, fairwayFinderActive:false, birdieBoostActive:false, holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false, goldenPutterActive:false, ferrettActive:false, hioActive:false, highlightReelActive:false, shortcutActive:false });
+   VS.wcs = [baseWc(), baseWc()];
   }
   VS.wcs[VS.currentPlayer] = { ...WCS, equipped: [...WCS.equipped] }; // Save FULL wildcard state for this player
   
@@ -8139,5 +8164,3 @@ if ('serviceWorker' in navigator) {
 </div>
 </body>
 </html>
-
-
