@@ -132,8 +132,22 @@ header .sc-wrap {
   overscroll-behavior: contain;
 }
 .logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:4px;}
-.logo{font-family:'Bebas Neue',cursive;font-size:clamp(20px, 6vw, 28px);letter-spacing:2px;line-height:1;text-align:center;margin:0;}
+.logo{display:flex;align-items:center;justify-content:center;min-width:0;margin:0;overflow:hidden;}
 .logo span{color:var(--c-fwyl);}
+.brand-logo-img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  transform:scale(1.08);
+  transform-origin:center center;
+  pointer-events:none;
+}
+.logo .brand-logo-img{
+  width:auto;
+  height:34px;
+  max-width:min(52vw, 190px);
+}
 .hole-badge{background:var(--c-tee);color:#fff;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;padding:4px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
 /* Hide Scrollbars */
 html::-webkit-scrollbar, body::-webkit-scrollbar, .sc-wrap::-webkit-scrollbar, .sum-tabs::-webkit-scrollbar, .sc-table-wrapper::-webkit-scrollbar { display: none; }
@@ -327,8 +341,20 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 }
 .menu-profile-icon:hover{background:rgba(255,255,255,.2);}
 
-.menu-logo{font-family:'Bebas Neue',cursive;font-size:60px;letter-spacing:6px;color:var(--text);line-height:1;margin-top:auto;margin-bottom:0;}
+.menu-logo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:auto;
+  margin-bottom:0;
+  overflow:hidden;
+}
 .menu-logo span{color:var(--c-fwyl);}
+.menu-logo .brand-logo-img{
+  width:min(100%, 320px);
+  height:auto;
+  max-height:92px;
+}
 .menu-tagline{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:20px;}
 .menu-btns{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-bottom:max(8px, env(safe-area-inset-bottom));}
 .menu-content > br{display:none;}
@@ -1100,7 +1126,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 <div class="menu-screen" id="onboardScreen" style="display:none;">
   <div class="menu-bg-grass"></div>
   <div class="menu-content">
-    <div class="menu-logo">GRID<span>GOLF</span></div>
+    <div class="menu-logo"><img class="brand-logo-img" src="dicegolf-logo.png" alt="Dice Golf"></div>
     <div style="font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:20px;">CREATE YOUR PROFILE</div>
     <input class="onboard-input" id="onboardInput" placeholder="ENTER YOUR NAME" maxlength="12" autocomplete="off" spellcheck="false">
     <button class="menu-btn-play" onclick="createFirstProfile()" style="margin-top:12px;">START PLAYING</button>
@@ -1117,7 +1143,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   </button>
   
   <div class="menu-content">
-  <div class="menu-logo">GRID<span>GOLF</span></div>
+  <div class="menu-logo"><img class="brand-logo-img" src="dicegolf-logo.png" alt="Dice Golf"></div>
   <div id="menuActiveProfile" style="display:none;"></div>
   <br>
   
@@ -1366,7 +1392,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 <header>
   <div class="logo-row">
     <button class="menu-mini-btn" onclick="if(TUT.active){tutMenuIntercept();}else{returnToMenuSave();}">MENU</button>
-    <div class="logo">GRID<span>GOLF</span></div>
+    <div class="logo"><img class="brand-logo-img" src="dicegolf-logo.png" alt="Dice Golf"></div>
     <div style="display:flex;align-items:center;gap:4px;">
       <button onclick="openSettings()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;width:26px;height:26px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;" title="Settings">⚙️</button>
       <button id="abandonBtn" onclick="abandonCurrentGame()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;width:26px;height:26px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;" title="Abandon Game">❎</button>
