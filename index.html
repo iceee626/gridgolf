@@ -4410,8 +4410,13 @@ function summaryGoBack(){
   _summaryBackTarget = null;
   if(target === 'hcScreen'){
     const hc=document.getElementById('hcScreen');
-    if(hc) hc.classList.add('show');
-    setTimeout(()=>document.getElementById('summaryModal').classList.remove('show'),220);
+    if(hc){
+      hc.classList.add('show');
+      void hc.offsetWidth;
+    }
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>document.getElementById('summaryModal').classList.remove('show'));
+    });
     return;
   }
   if(target === 'overlay'){
