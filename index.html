@@ -1668,10 +1668,10 @@ function openSummaryTransition(viewRound = S.currentRound, backTarget = null){
   concealMainApp();
   openSummary(viewRound, backTarget);
   if(backTarget === 'hcScreen'){
-    requestAnimationFrame(()=>{
+    setTimeout(()=>{
       const hc=document.getElementById('hcScreen');
       if(hc) hc.classList.remove('show');
-    });
+    },220);
   }
 }
 function hideScreen(id){
@@ -2187,7 +2187,7 @@ let S={
   currentGrid:null, holeDone:false, rolling:false,
   yrdRemain:0, yrdTotal:0, fwyVisits:0, prevZone:null, shotCount:0,
   _wcUsedThisRound:0, _skipCelebration:false, _preserveGrid:false, _forceGrid:false,
-  _mulliganJustFired:false, _puttWcUsed:false, _pendingPuttResult:null
+  _mulliganJustFired:false, _puttWcUsed:false, _pendingPuttResult:null, _pendingHoleFinish:null
 };
 
 // ── Menu Navigation ──
@@ -2366,6 +2366,7 @@ function resetGameState(){
   S.yrdRemain=0; S.yrdTotal=0; S.fwyVisits=0; S.prevZone=null; S.shotCount=0;
   S._wcUsedThisRound=0;
   S._wcDiscardedThisRound=0;
+  S._pendingPuttResult=null; S._pendingHoleFinish=null;
   if(typeof wcReset==='function')wcReset();
 }
 
@@ -2579,7 +2580,7 @@ function loadHole(){
   S.zone='tee';S.strokes=0;S.shotNum=1;S._tvShotNum=1;S.shotCount=0;
   S._wcsUsedThisHole=[];S._wcNextShotNote=null;
   S._skipCelebration=false;S._preserveGrid=false;S._forceGrid=false;
-  S._mulliganJustFired=false;S._puttWcUsed=false;S._pendingPuttResult=null;
+  S._mulliganJustFired=false;S._puttWcUsed=false;S._pendingPuttResult=null;S._pendingHoleFinish=null;
   S.zoneHistory=[];
   S.log=[];S.holeDone=false;S.rolling=false;S._skipCelebration=false;
   S.fwyVisits=0;S.prevZone=null;S._wcUsedThisRound=S._wcUsedThisRound||0;
@@ -2925,14 +2926,17 @@ function litCell(r,c){
 function updateYrd(){
   const rem=Math.max(0,S.yrdRemain);
   const pct=S.yrdTotal>0?rem/S.yrdTotal:0;
+  const pendingHoleFinish=!!S._pendingHoleFinish;
   const putts=S._pendingPuttResult?.putts||0;
   const puttLabel=`${putts} PUTT${putts===1?'':'S'}`;
   document.getElementById('yrdNum').textContent=
+    pendingHoleFinish ? 'IN HOLE' :
     putts>0 ? puttLabel :
     S.zone==='grn' ? 'ON GREEN' :
     rem>0 ? fmtYds(rem) : 'On green';
   document.getElementById('yrdFill').style.width=`${Math.round(pct*100)}%`;
   document.getElementById('yrdLbl').textContent=
+    pendingHoleFinish ? 'ready to finish' :
     putts>0 ? 'in a hole' :
     S.zone==='grn' ? 'putting' :
     rem>0 ? 'to hole' : 'putting';
@@ -3158,6 +3162,7 @@ function processShot(row,col){
         const tutorialFinish = TUT.active;
         const b=document.getElementById('puttWcBtn');if(b)b.remove();
         S._pendingPuttResult=null;
+        S._pendingHoleFinish=null;
         S.holeDone=true;
         _holdFinishBtn=true;
         nextBtn.disabled=true;
@@ -3256,14 +3261,36 @@ function processShot(row,col){
       showHoleInConfirmation(row, col, snapGrid);
     } else {
       playShotSound(prevZone,'hole');
-      S.strokes+=1;S.yrdRemain=0;
+      S.strokes+=1;S.yrdRemain=0;S.zone='hole';
       addLog(S.shotNum,`⛳ Hole In!${wcAppliedNote}`,'hole','+1',false,row,col,snapGrid, prevZone, prevYrdRemain);
       showResult(Z.hole,'Hole In!','good',`Row ${row+1} · Col ${col+1}`);
-      S.shotNum++;S.holeDone=true;
-      hideNextShotBtn();hidePostShotWcBtn();
-      updateYrd();
-      const tutorialHoleIn = TUT.active;
-      setTimeout(()=>{ if(tutorialHoleIn && !TUT.active) return; completeHole(); },950);
+      S._pendingHoleFinish={row,col,snapGrid,prevZone};
+      S._tvShotNum = S.shotNum;
+      S.shotNum++;
+      S.holeDone=false;
+      hidePostShotWcBtn();
+      updateFloat();updateYrd();updateTVBanner();
+      S.rolling=false;
+      const nextBtn=document.getElementById('nextShotBtn');
+      if(nextBtn){
+        nextBtn.textContent='FINISH HOLE';
+        nextBtn.style.background='var(--c-tee)';
+        nextBtn.onclick=()=>{
+          if(_rerollChoiceActive) return;
+          const tutorialFinish = TUT.active;
+          const b=document.getElementById('puttWcBtn');if(b)b.remove();
+          S._pendingPuttResult=null;
+          S._pendingHoleFinish=null;
+          S.holeDone=true;
+          _holdFinishBtn=true;
+          nextBtn.disabled=true;
+          nextBtn.style.pointerEvents='none';
+          updateTVBanner();
+          setTimeout(()=>{ if(tutorialFinish && !TUT.active) return; completeHole(); },200);
+        };
+      }
+      showNextShotBtn();
+      renderWcFab();
     }
     return;
   }
@@ -5163,9 +5190,9 @@ function renderTournamentStatsPanel(selectedKey='overall'){
 
   stats.forEach(s => {
     html += `
-      <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);font-family:'Sen',sans-serif;font-size:11px;">
-        <div style="color:var(--muted);">${s.label}</div>
-        <div style="color:var(--text);font-weight:bold;">${s.val}</div>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;column-gap:12px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);font-family:'Sen',sans-serif;font-size:11px;">
+        <div style="color:var(--muted);min-width:0;">${s.label}</div>
+        <div style="color:var(--text);font-weight:bold;text-align:center;">${s.val}</div>
       </div>
     `;
   });
@@ -5854,6 +5881,7 @@ function activateWildcard(slotIdx){
     if(S._pendingPuttResult){
       S._preserveGrid=true;
       S._pendingPuttResult=null;
+      S._pendingHoleFinish=null;
       S._puttWcUsed=true;
       S._skipCelebration=false; 
     } else {
@@ -6294,6 +6322,7 @@ function saveGameState(){
     _wcsUsedThisHole:S._wcsUsedThisHole||[], _wcNextShotNote:S._wcNextShotNote||null,
     _waitingForNextShot:isShotBtnShown('nextShotBtn'),
     _pendingPuttResult:S._pendingPuttResult||null,
+    _pendingHoleFinish:S._pendingHoleFinish||null,
     currentGrid:S.currentGrid,
     wcsEquipped:WCS.equipped, wcsActive:WCS.active,
     wcsLuckyBounce:WCS.luckyBounceActive, wcsIronWill:WCS.ironWillActive, 
@@ -6369,6 +6398,7 @@ function continueGame(){
     S._wcDiscardedThisRound=save._wcDiscardedThisRound||0; 
     S._wcsUsedThisHole=save._wcsUsedThisHole||[]; S._wcNextShotNote=save._wcNextShotNote||null;
     S._pendingPuttResult=save._pendingPuttResult||null;
+    S._pendingHoleFinish=save._pendingHoleFinish||null;
     const waitingForNextShot=save._waitingForNextShot||false;
     
     WCS.equipped=save.wcsEquipped||[]; WCS.active=save.wcsActive||null;
@@ -6412,7 +6442,7 @@ function continueGame(){
     
     updateZonePill();updateYrd();renderLog();updateFloat();updateTVBanner();
     
-    if (S._pendingPuttResult) {
+    if (S._pendingPuttResult || S._pendingHoleFinish) {
         const nextBtn = document.getElementById('nextShotBtn');
         if(nextBtn){
             nextBtn.textContent='FINISH HOLE';
@@ -6421,6 +6451,7 @@ function continueGame(){
                 if(_rerollChoiceActive) return;
                 const b=document.getElementById('puttWcBtn');if(b)b.remove();
                 S._pendingPuttResult=null;
+                S._pendingHoleFinish=null;
                 S.holeDone=true;
                 _holdFinishBtn=true;
                 nextBtn.disabled=true;
@@ -7421,7 +7452,7 @@ function vsStartTurn(){
   S.fwyVisits=0; S.prevZone=null;
   S._wcsUsedThisHole=[]; S._wcNextShotNote=null;
   S._skipCelebration=false; S._preserveGrid=false; S._forceGrid=false;
-  S._mulliganJustFired=false; S._puttWcUsed=false; S._pendingPuttResult=null;
+  S._mulliganJustFired=false; S._puttWcUsed=false; S._pendingPuttResult=null; S._pendingHoleFinish=null;
   _holdFinishBtn=false;
   setRerollChoiceActive(false);
   const nextBtn=document.getElementById('nextShotBtn');
