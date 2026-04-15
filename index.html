@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Grid Golf">
+<meta name="apple-mobile-web-app-title" content="DiceGolf">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0d1117">
-<title>Grid Golf</title>
+<title>DiceGolf</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sen:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
@@ -145,8 +145,8 @@ header .sc-wrap {
 }
 .logo .brand-logo-img{
   width:auto;
-  height:34px;
-  max-width:min(52vw, 190px);
+  height:40px;
+  max-width:min(56vw, 220px);
 }
 .hole-badge{background:var(--c-tee);color:#fff;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;padding:4px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
 /* Hide Scrollbars */
@@ -351,9 +351,9 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 }
 .menu-logo span{color:var(--c-fwyl);}
 .menu-logo .brand-logo-img{
-  width:min(100%, 320px);
+  width:min(100%, 360px);
   height:auto;
-  max-height:92px;
+  max-height:104px;
 }
 .menu-tagline{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:20px;}
 .menu-btns{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-bottom:max(8px, env(safe-area-inset-bottom));}
@@ -1163,7 +1163,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <div class="tut-prompt-card">
     <div style="font-size:48px;margin-bottom:12px;">⛳</div>
     <div class="tut-prompt-title">PLAY TUTORIAL?</div>
-    <div class="tut-prompt-desc">New to Grid Golf? We recommend playing a short 3-hole tutorial to learn the basics — zones, dice rolls, penalties, wildcards, and putting. It only takes a few minutes!</div>
+    <div class="tut-prompt-desc">New to DiceGolf? We recommend playing a short 3-hole tutorial to learn the basics — zones, dice rolls, penalties, wildcards, and putting. It only takes a few minutes!</div>
     <div class="tut-prompt-btns">
       <button style="background:var(--c-fwy);color:#fff;" onclick="startTutorial()">YES, LET'S GO</button>
       <button style="background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--border);" onclick="skipTutorial()">NO THANKS</button>
@@ -3213,12 +3213,14 @@ function processShot(row,col){
     S._wcNextShotNote = null;
     return note;
   };
+  let pressureCookerApplied = false;
   if (WCS.pressureCookerShots > 0 && prevZone === 'tee') {
       let tot = 0, par = 0;
       S.scorecards.forEach(sc=>sc.forEach((s,i)=>{if(s!==null){tot+=s;par+=HOLES[i].par;}}));
       if (tot > par) {
           WCS.pressureCookerShots = 0;
           resolvedOutcome = HOLES[S.holeIdx].par === 3 ? 'grn' : 'fwy';
+          pressureCookerApplied = true;
           addAppliedNote(' (♨️ Pressure Cooker)');
           showWcToast('♨️ Pressure Cooker activated!');
       }
@@ -3230,18 +3232,18 @@ function processShot(row,col){
       addAppliedNote(' (⚡ Shortcut)');
       showWcToast('⚡ Shortcut activated!');
   }
-  if (WCS.luckyBounceActive && (rawOutcome === 'ob' || rawOutcome === 'h2o')) {
+  if (!pressureCookerApplied && WCS.luckyBounceActive && (rawOutcome === 'ob' || rawOutcome === 'h2o')) {
       resolvedOutcome = HOLES[S.holeIdx].par === 3 ? 'sand' : 'rgh';
       WCS.luckyBounceActive = false; 
       addAppliedNote(' (🍀 Lucky Bounce)');
       showWcToast('🍀 Lucky Bounce activated!');
   }
-  if (WCS.mowersRevengeActive && rawOutcome === 'rgh') {
+  if (!pressureCookerApplied && WCS.mowersRevengeActive && rawOutcome === 'rgh') {
       resolvedOutcome = 'fwy';
       addAppliedNote(' (🚜 Mower\'s Revenge)');
       showWcToast('🚜 Mower\'s Revenge activated!');
   }
-  else if (WCS.ironWillActive && rawOutcome === 'rgh') {
+  else if (!pressureCookerApplied && WCS.ironWillActive && rawOutcome === 'rgh') {
       resolvedOutcome = 'fwy';
       WCS.ironWillActive = false; 
       addAppliedNote(' (🔩 Iron Will)');
@@ -3584,6 +3586,11 @@ function addLog(num,desc,zk,note,pen,row,col,gridSnap,prevZone,prevYrdRemain){
   S.log.push({num,desc,zk,note,pen,row,col,gridSnap,prevZone,prevYrdRemain});
   renderLog();
   saveGameState();
+}
+function getNetPenaltyCount(entries=S.log){
+  const penaltyAdds = (entries||[]).filter(e=>e.pen).length;
+  const penaltyRemovals = (entries||[]).filter(e=>String(e.desc||'').startsWith('Penalty removed (')).length;
+  return Math.max(0, penaltyAdds - penaltyRemovals);
 }
 
 function renderLog(targetEl,data){
@@ -5232,9 +5239,14 @@ function startNextRound() {
   S.holeIdx = S.startIdx;
   S._wcUsedThisRound = 0;
   S._wcDiscardedThisRound = 0; 
-  saveGameState();
-  closeSummary();
+  _summaryBackTarget = null;
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('summaryModal').classList.remove('show');
+  const hc=document.getElementById('hcScreen');
+  if(hc) hc.classList.remove('show');
+  revealMainApp();
   loadHole();
+  saveGameState();
   showWcToast(`⛳ ROUND ${S.currentRound} STARTED!`);
 }
 
@@ -6036,8 +6048,8 @@ function applyWildcardEffect(wc){
       }
       break;
     case 'phantom_stroke':
-      let hasPenalty = S.log.some(e => e.pen);
-      if(hasPenalty) {
+      const removablePenalties = getNetPenaltyCount(S.log);
+      if(removablePenalties > 0) {
         const prevZone = S.zone;
         const prevYrdRemain = S.yrdRemain;
         S.strokes=Math.max(0,S.strokes-1);
@@ -6952,7 +6964,7 @@ function tutAdvance(){
   
   if(hi === 0){
     if(_tutStep === 0){
-      _tutShowTip('WELCOME TO GRID GOLF!', 'The goal of golf is simple: finish each hole in as few strokes as possible. Every shot you take counts as 1 stroke. Each hole has a target called "Par" — the number of shots a good player is expected to need. This first hole is a Par 4, meaning reaching the hole in 4 strokes is the goal. In the game you will have a chance to play on par 3 (short) and par 5 (long) holes as well.', 'GOT IT', null);
+      _tutShowTip('WELCOME TO DICEGOLF!', 'The goal of golf is simple: finish each hole in as few strokes as possible. Every shot you take counts as 1 stroke. Each hole has a target called "Par" — the number of shots a good player is expected to need. This first hole is a Par 4, meaning reaching the hole in 4 strokes is the goal. In the game you will have a chance to play on par 3 (short) and par 5 (long) holes as well.', 'GOT IT', null);
       return;
     }
     if(_tutStep === 1){
@@ -8166,7 +8178,7 @@ function closeModeInfo(type){
       <div id="settingsTutorialRow" style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📖 TUTORIAL</div>
-          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Learn how to play Grid Golf</div>
+<div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Learn how to play DiceGolf</div>
         </div>
         <button onclick="closeSettings(startTutorialFromSettings)" style="background:rgba(255,255,255,.1);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-family:'Sen', sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;min-width:52px;">PLAY</button>
       </div>
