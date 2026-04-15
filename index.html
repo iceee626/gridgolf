@@ -149,8 +149,9 @@ header .sc-wrap {
   max-width:min(56vw, 220px);
 }
 .logo .brand-logo-img.brand-logo-game{
-  height:42px;
-  max-width:min(58vw, 230px);
+  height:24px;
+  max-width:min(40vw, 140px);
+  transform:scale(1);
 }
 .hole-badge{background:var(--c-tee);color:#fff;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;padding:4px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
 /* Hide Scrollbars */
@@ -338,6 +339,14 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .menu-content{position:relative;z-index:10;text-align:center;width:100%;max-width:380px;min-height:min(78vh,720px);display:flex;flex-direction:column;}
 .onboard-content{max-width:360px;min-height:auto;justify-content:center;}
 .onboard-content .menu-logo{margin-top:0;margin-bottom:18px;}
+.onboard-content.locked-focus{
+  position:absolute;
+  left:50%;
+  top:var(--onboard-lock-top, 50%);
+  transform:translateX(-50%);
+  width:min(360px, calc(100vw - 48px));
+  margin:0;
+}
 
 .menu-profile-icon{
   position:absolute; top:calc(env(safe-area-inset-top) + 12px); right:20px;
@@ -1698,6 +1707,24 @@ function closeHcScreenThen(fn, delay=230){
   setTimeout(()=>{ if(typeof fn==='function') fn(); },delay);
 }
 let _summaryBackTarget = null;
+let _onboardFocusLockCount = 0;
+
+function lockOnboardPosition(){
+  const screen = document.getElementById('onboardScreen');
+  const content = screen?.querySelector('.onboard-content');
+  if(!screen || !content) return;
+  const top = content.getBoundingClientRect().top;
+  screen.style.setProperty('--onboard-lock-top', `${Math.max(24, Math.round(top))}px`);
+  content.classList.add('locked-focus');
+}
+
+function unlockOnboardPosition(){
+  const screen = document.getElementById('onboardScreen');
+  const content = screen?.querySelector('.onboard-content');
+  if(!screen || !content) return;
+  content.classList.remove('locked-focus');
+  screen.style.removeProperty('--onboard-lock-top');
+}
 
 function openSummaryTransition(viewRound = S.currentRound, backTarget = null){
   _summaryBackTarget = backTarget;
@@ -1882,7 +1909,19 @@ window.addEventListener('DOMContentLoaded', function(){
   applyRollMode(getRollMode());
   initFloatingEntities();
   const oi=document.getElementById('onboardInput');
-  if(oi) oi.addEventListener('keydown',e=>{if(e.key==='Enter')createFirstProfile();});
+  if(oi){
+    oi.addEventListener('keydown',e=>{if(e.key==='Enter')createFirstProfile();});
+    oi.addEventListener('focus', ()=>{
+      _onboardFocusLockCount++;
+      lockOnboardPosition();
+    });
+    oi.addEventListener('blur', ()=>{
+      _onboardFocusLockCount = Math.max(0, _onboardFocusLockCount - 1);
+      if(_onboardFocusLockCount === 0){
+        setTimeout(()=>{ if(_onboardFocusLockCount === 0) unlockOnboardPosition(); }, 120);
+      }
+    });
+  }
   const pni=document.getElementById('profileNewInput');
   if(pni) pni.addEventListener('keydown',e=>{if(e.key==='Enter')saveNewProfile();});
   const hm=document.getElementById('histModal');
