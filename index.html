@@ -1071,6 +1071,12 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;
   color:var(--c-fwyl);margin-bottom:8px;display:flex;align-items:center;gap:8px;
 }
+.mode-info-section-title-icon{
+  width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.mode-info-section-title-icon img{
+  width:100%;height:100%;object-fit:contain;display:block;
+}
 .mode-info-row{
   display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);
   align-items:flex-start;
@@ -1618,6 +1624,14 @@ function showScreen(id, flexOrBlock='flex'){
   }
   el.style.display=flexOrBlock;
   void el.offsetWidth;
+  if(window._instantScreenSwap){
+    const prevTransition = el.style.transition;
+    el.style.transition='none';
+    el.classList.add('visible');
+    void el.offsetWidth;
+    el.style.transition=prevTransition;
+    return;
+  }
   el.classList.add('visible');
 }
 function showMainApp(){
@@ -1627,6 +1641,14 @@ function showMainApp(){
   app.style.display='block';
   app.style.visibility='visible';
   void app.offsetWidth;
+  if(window._instantScreenSwap){
+    const prevTransition = app.style.transition;
+    app.style.transition='none';
+    app.classList.add('visible');
+    void app.offsetWidth;
+    app.style.transition=prevTransition;
+    return;
+  }
   app.classList.add('visible');
 }
 function hideMainApp(){
@@ -1644,7 +1666,7 @@ function setMainAppConcealed(concealed){
   if(!app)return;
   app.style.visibility = concealed ? 'hidden' : 'visible';
 }
-function runScreenTransition(fn, actionDelay=110, revealDelay=220){
+function runScreenTransition(fn, actionDelay=20, revealDelay=110){
   const mask=document.getElementById('screenTransitionMask');
   if(!mask){
     if(typeof fn==='function') fn();
@@ -1655,8 +1677,10 @@ function runScreenTransition(fn, actionDelay=110, revealDelay=220){
   window._screenTransitionTimers.length = 0;
   mask.classList.add('show');
   window._screenTransitionTimers.push(setTimeout(()=>{
+    window._instantScreenSwap = true;
     if(typeof fn==='function') fn();
     window._screenTransitionTimers.push(setTimeout(()=>{
+      window._instantScreenSwap = false;
       mask.classList.remove('show');
     }, revealDelay));
   }, actionDelay));
@@ -4358,6 +4382,14 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
   body.appendChild(btnRow);
   const summaryModal = document.getElementById('summaryModal');
   summaryModal.scrollTop = 0;
+  if(window._instantScreenSwap){
+    const prevTransition = summaryModal.style.transition;
+    summaryModal.style.transition='none';
+    summaryModal.classList.add('show');
+    void summaryModal.offsetWidth;
+    summaryModal.style.transition=prevTransition;
+    return;
+  }
   summaryModal.classList.add('show');
 }
 
@@ -4381,13 +4413,34 @@ function summaryGoBack(){
     document.getElementById('summaryModal').classList.remove('show');
     if(target === 'hcScreen'){
       const hc=document.getElementById('hcScreen');
-      if(hc) hc.classList.add('show');
+      if(hc){
+        if(window._instantScreenSwap){
+          const prevTransition = hc.style.transition;
+          hc.style.transition='none';
+          hc.classList.add('show');
+          void hc.offsetWidth;
+          hc.style.transition=prevTransition;
+        } else {
+          hc.classList.add('show');
+        }
+      }
       return;
     }
     if(target === 'overlay'){
       setMainAppConcealed(false);
       showMainApp();
-      document.getElementById('overlay').classList.add('show');
+      const overlay=document.getElementById('overlay');
+      if(overlay){
+        if(window._instantScreenSwap){
+          const prevTransition = overlay.style.transition;
+          overlay.style.transition='none';
+          overlay.classList.add('show');
+          void overlay.offsetWidth;
+          overlay.style.transition=prevTransition;
+        } else {
+          overlay.classList.add('show');
+        }
+      }
       return;
     }
     if(S.holeIdx >= S.endIdx && S.holeDone && S.currentRound === S.totalRounds){
@@ -5144,7 +5197,8 @@ function renderTournamentStatsPanel(selectedKey='overall'){
   const stats = getRoundStats(selectedKey);
 
   let html = `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-shrink:0;position:sticky;top:0;background:var(--dark);z-index:5;padding:8px 0;">
+    <div style="display:flex;flex-direction:column;min-height:0;height:100%;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-shrink:0;padding:8px 0 0;">
       <div style="font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">STATISTICS</div>
       <div style="flex:1;height:1px;background:var(--border);"></div>
       <div style="display:flex;gap:6px;overflow-x:auto;">
@@ -5154,7 +5208,7 @@ function renderTournamentStatsPanel(selectedKey='overall'){
     const arg = key === 'overall' ? '&quot;overall&quot;' : key;
     html += `<button onclick="renderTournamentStatsPanel(${arg})" style="background:${isActive?'var(--c-fwy)':'rgba(255,255,255,.05)'};color:${isActive?'#fff':'var(--muted)'};border:1px solid ${isActive?'var(--c-fwyl)':'var(--border)'};border-radius:14px;padding:6px 12px;font-family:'Sen',sans-serif;font-size:10px;font-weight:bold;cursor:pointer;white-space:nowrap;transition:all 0.2s;">${labelFor(key)}</button>`;
   });
-  html += `</div></div>`;
+  html += `</div></div><div style="flex:1;min-height:0;overflow-y:auto;-ms-overflow-style:none;scrollbar-width:none;" class="tournament-stats-list">`;
 
   stats.forEach(s => {
     html += `
@@ -5165,6 +5219,7 @@ function renderTournamentStatsPanel(selectedKey='overall'){
     `;
   });
 
+  html += `</div></div>`;
   statsContainer.innerHTML = html;
   statsContainer.style.display = 'block';
 }
@@ -8324,8 +8379,7 @@ if ('serviceWorker' in navigator) {
         </div>
       </div>
       <div class="mode-info-section">
-        <div class="mode-info-section-title"><img src="golf_ball.png" style="width:30px; height:30px; vertical-align:middle; margin-right:8px; object-fit:contain;"> 
-    GAME FORMATS</div>
+        <div class="mode-info-section-title"><span class="mode-info-section-title-icon"><img src="golf_ball.png" alt=""></span>GAME FORMATS</div>
         <div class="mode-info-row">
           <div class="mode-info-icon">🏆</div>
           <div class="mode-info-text">
