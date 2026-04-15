@@ -629,21 +629,12 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 
 /* FINAL SUMMARY SCREEN — full page, no popup */
 .summary-modal{
-  display:block;position:fixed;inset:0;background:var(--dark);z-index:400;
+  display:block;position:fixed;inset:0;background:var(--dark);z-index:460;
   overflow:hidden;overscroll-behavior:none;
   opacity:0;visibility:hidden;pointer-events:none;transform:translateY(12px) scale(.985);
   transition:opacity .26s ease,transform .26s cubic-bezier(0.22,1,0.36,1),visibility 0s linear .26s;
 }
 .summary-modal.show{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0) scale(1);transition:opacity .26s ease,transform .26s cubic-bezier(0.22,1,0.36,1),visibility 0s;}
-.screen-transition-mask{
-  position:fixed;inset:0;background:var(--dark);z-index:500;
-  opacity:0;visibility:hidden;pointer-events:none;
-  transition:opacity .18s ease,visibility 0s linear .18s;
-}
-.screen-transition-mask.show{
-  opacity:1;visibility:visible;
-  transition:opacity .18s ease,visibility 0s;
-}
 .summary-card{
   background:var(--dark);max-width:460px;width:100%;margin:0 auto;
   min-height:100dvh;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden;
@@ -1456,7 +1447,6 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="sum-body" id="sumBody"></div>
   </div>
 </div>
-<div class="screen-transition-mask" id="screenTransitionMask"></div>
 
 <div class="overlay" id="overlay">
   <div class="ov">
@@ -1624,14 +1614,6 @@ function showScreen(id, flexOrBlock='flex'){
   }
   el.style.display=flexOrBlock;
   void el.offsetWidth;
-  if(window._instantScreenSwap){
-    const prevTransition = el.style.transition;
-    el.style.transition='none';
-    el.classList.add('visible');
-    void el.offsetWidth;
-    el.style.transition=prevTransition;
-    return;
-  }
   el.classList.add('visible');
 }
 function showMainApp(){
@@ -1641,14 +1623,6 @@ function showMainApp(){
   app.style.display='block';
   app.style.visibility='visible';
   void app.offsetWidth;
-  if(window._instantScreenSwap){
-    const prevTransition = app.style.transition;
-    app.style.transition='none';
-    app.classList.add('visible');
-    void app.offsetWidth;
-    app.style.transition=prevTransition;
-    return;
-  }
   app.classList.add('visible');
 }
 function hideMainApp(){
@@ -1666,24 +1640,8 @@ function setMainAppConcealed(concealed){
   if(!app)return;
   app.style.visibility = concealed ? 'hidden' : 'visible';
 }
-function runScreenTransition(fn, actionDelay=20, revealDelay=110){
-  const mask=document.getElementById('screenTransitionMask');
-  if(!mask){
-    if(typeof fn==='function') fn();
-    return;
-  }
-  if(!window._screenTransitionTimers) window._screenTransitionTimers = [];
-  window._screenTransitionTimers.forEach(clearTimeout);
-  window._screenTransitionTimers.length = 0;
-  mask.classList.add('show');
-  window._screenTransitionTimers.push(setTimeout(()=>{
-    window._instantScreenSwap = true;
-    if(typeof fn==='function') fn();
-    window._screenTransitionTimers.push(setTimeout(()=>{
-      window._instantScreenSwap = false;
-      mask.classList.remove('show');
-    }, revealDelay));
-  }, actionDelay));
+function runScreenTransition(fn){
+  if(typeof fn==='function') fn();
 }
 function closeHcScreenThen(fn, delay=230){
   const hc=document.getElementById('hcScreen');
@@ -1698,13 +1656,13 @@ function openSummaryTransition(viewRound = S.currentRound, backTarget = null){
   document.getElementById('overlay').classList.remove('show');
   setMainAppConcealed(true);
   hideMainApp();
-  runScreenTransition(()=>{
-    if(backTarget === 'hcScreen'){
+  openSummary(viewRound, backTarget);
+  if(backTarget === 'hcScreen'){
+    requestAnimationFrame(()=>{
       const hc=document.getElementById('hcScreen');
       if(hc) hc.classList.remove('show');
-    }
-    openSummary(viewRound, backTarget);
-  });
+    });
+  }
 }
 function hideScreen(id){
   const el=document.getElementById(id);
@@ -2400,13 +2358,14 @@ function resetGameState(){
   if(typeof wcReset==='function')wcReset();
 }
 
-function returnToMenu(){
+function returnToMenu(opts={}){
+  const preserveSummary = !!opts.preserveSummary;
   VS.active = false;
   _courseScreenFlow = 'single';
   clearTutorialUiState();
   document.getElementById('overlay').classList.remove('show');
   const hc = document.getElementById('hcScreen'); if(hc) hc.classList.remove('show');
-  document.getElementById('summaryModal').classList.remove('show');
+  if(!preserveSummary) document.getElementById('summaryModal').classList.remove('show');
   hideMainApp();
   document.getElementById('vsTurnScreen').classList.remove('show');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
@@ -4067,8 +4026,10 @@ function showRoundEnd(){
         statsContainer.id = 'hcVsStats';
         document.getElementById('hcLogList').parentNode.appendChild(statsContainer);
     }
-    // Allow the div to grow without cutting off, and keep the scroll behavior active
-    statsContainer.style.cssText = 'flex:1 1 0; min-height:0; max-height:min(100%, 280px); margin-bottom:16px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; position:relative;';
+    const tournamentStatsLayout = S.mode === 'tournament';
+    statsContainer.style.cssText = tournamentStatsLayout
+      ? 'flex:1 1 0; min-height:0; max-height:min(100%, 280px); margin-bottom:16px; overflow:hidden; position:relative;'
+      : 'flex-shrink:0; margin-bottom:16px; overflow:visible; position:relative;';
     statsContainer.style.display = 'block';
 
     renderTournamentStatsPanel('overall');
@@ -4144,7 +4105,7 @@ function showRoundEnd(){
       statsC.id = 'hcVsStats';
       document.getElementById('hcLogList').parentNode.insertBefore(statsC, secTitles[1] || document.getElementById('hcLogList').nextSibling);
     }
-    statsC.style.cssText = 'flex:1 1 0; min-height:0; max-height:min(100%, 280px); margin-bottom:16px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; position:relative;';
+    statsC.style.cssText = 'flex:1 1 0; min-height:0; max-height:min(100%, 280px); margin-bottom:16px; overflow:hidden; position:relative;';
     renderTournamentStatsPanel('overall');
 
     const btn = document.getElementById('hcBtn');
@@ -4382,14 +4343,6 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
   body.appendChild(btnRow);
   const summaryModal = document.getElementById('summaryModal');
   summaryModal.scrollTop = 0;
-  if(window._instantScreenSwap){
-    const prevTransition = summaryModal.style.transition;
-    summaryModal.style.transition='none';
-    summaryModal.classList.add('show');
-    void summaryModal.offsetWidth;
-    summaryModal.style.transition=prevTransition;
-    return;
-  }
   summaryModal.classList.add('show');
 }
 
@@ -4409,63 +4362,41 @@ function closeSummary(){
 function summaryGoBack(){
   const target=_summaryBackTarget;
   _summaryBackTarget = null;
-  runScreenTransition(()=>{
-    document.getElementById('summaryModal').classList.remove('show');
-    if(target === 'hcScreen'){
-      const hc=document.getElementById('hcScreen');
-      if(hc){
-        if(window._instantScreenSwap){
-          const prevTransition = hc.style.transition;
-          hc.style.transition='none';
-          hc.classList.add('show');
-          void hc.offsetWidth;
-          hc.style.transition=prevTransition;
-        } else {
-          hc.classList.add('show');
-        }
-      }
-      return;
-    }
-    if(target === 'overlay'){
-      setMainAppConcealed(false);
-      showMainApp();
-      const overlay=document.getElementById('overlay');
-      if(overlay){
-        if(window._instantScreenSwap){
-          const prevTransition = overlay.style.transition;
-          overlay.style.transition='none';
-          overlay.classList.add('show');
-          void overlay.offsetWidth;
-          overlay.style.transition=prevTransition;
-        } else {
-          overlay.classList.add('show');
-        }
-      }
-      return;
-    }
+  if(target === 'hcScreen'){
+    const hc=document.getElementById('hcScreen');
+    if(hc) hc.classList.add('show');
+    requestAnimationFrame(()=>document.getElementById('summaryModal').classList.remove('show'));
+    return;
+  }
+  if(target === 'overlay'){
+    setMainAppConcealed(false);
+    showMainApp();
+    const overlay=document.getElementById('overlay');
+    if(overlay) overlay.classList.add('show');
+    requestAnimationFrame(()=>document.getElementById('summaryModal').classList.remove('show'));
+    return;
+  }
+  document.getElementById('summaryModal').classList.remove('show');
+  setTimeout(()=>{
     if(S.holeIdx >= S.endIdx && S.holeDone && S.currentRound === S.totalRounds){
       returnToMenu();
     } else {
       setMainAppConcealed(false);
       showMainApp();
     }
-  });
+  },220);
 }
 
 function summaryReturnToMenu(){
   _summaryBackTarget = null;
-  runScreenTransition(()=>{
-    document.getElementById('summaryModal').classList.remove('show');
-    returnToMenu();
-  });
+  returnToMenu({preserveSummary:true});
+  requestAnimationFrame(()=>document.getElementById('summaryModal').classList.remove('show'));
 }
 
 function summarySaveAndMenu(){
   _summaryBackTarget = null;
-  runScreenTransition(()=>{
-    document.getElementById('summaryModal').classList.remove('show');
-    returnToMenuSave();
-  });
+  returnToMenuSave({preserveSummary:true});
+  requestAnimationFrame(()=>document.getElementById('summaryModal').classList.remove('show'));
 }
 
 function summaryPlayAgain(){
@@ -5190,14 +5121,15 @@ function renderTournamentStatsPanel(selectedKey='overall'){
   const statsContainer = document.getElementById('hcVsStats');
   if(!statsContainer) return;
 
-  const showRoundPills = (S.totalRounds||1) > 1;
+  const showRoundPills = S.mode === 'tournament' && (S.totalRounds||1) > 1;
+  const scrollStats = S.mode === 'tournament';
   const rounds = showRoundPills ? Array.from({length:S.currentRound}, (_,i)=>i+1) : [];
   const pills = showRoundPills ? ['overall', ...rounds] : [];
   const labelFor = key => key === 'overall' ? 'OVERALL' : `R${key}`;
   const stats = getRoundStats(selectedKey);
 
   let html = `
-    <div style="display:flex;flex-direction:column;min-height:0;height:100%;">
+    <div style="display:flex;flex-direction:column;min-height:0;${scrollStats?'height:100%;':''}">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-shrink:0;padding:8px 0 0;">
       <div style="font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">STATISTICS</div>
       <div style="flex:1;height:1px;background:var(--border);"></div>
@@ -5208,7 +5140,10 @@ function renderTournamentStatsPanel(selectedKey='overall'){
     const arg = key === 'overall' ? '&quot;overall&quot;' : key;
     html += `<button onclick="renderTournamentStatsPanel(${arg})" style="background:${isActive?'var(--c-fwy)':'rgba(255,255,255,.05)'};color:${isActive?'#fff':'var(--muted)'};border:1px solid ${isActive?'var(--c-fwyl)':'var(--border)'};border-radius:14px;padding:6px 12px;font-family:'Sen',sans-serif;font-size:10px;font-weight:bold;cursor:pointer;white-space:nowrap;transition:all 0.2s;">${labelFor(key)}</button>`;
   });
-  html += `</div></div><div style="flex:1;min-height:0;overflow-y:auto;-ms-overflow-style:none;scrollbar-width:none;" class="tournament-stats-list">`;
+  html += `</div></div>`;
+  if(scrollStats){
+    html += `<div style="flex:1;min-height:0;overflow-y:auto;-ms-overflow-style:none;scrollbar-width:none;" class="tournament-stats-list">`;
+  }
 
   stats.forEach(s => {
     html += `
@@ -5219,7 +5154,8 @@ function renderTournamentStatsPanel(selectedKey='overall'){
     `;
   });
 
-  html += `</div></div>`;
+  if(scrollStats) html += `</div>`;
+  html += `</div>`;
   statsContainer.innerHTML = html;
   statsContainer.style.display = 'block';
 }
@@ -6523,7 +6459,8 @@ function abandonCurrentGame(){
   });
 }
 
-function returnToMenuSave(){
+function returnToMenuSave(opts={}){
+  const preserveSummary = !!opts.preserveSummary;
   const roundFinished = !VS.active && S.holeDone && S.holeIdx >= S.endIdx && S.currentRound >= S.totalRounds;
   const vsTurnPending = !!document.getElementById('vsTurnScreen')?.classList.contains('show');
   if(VS.active && !vsTurnPending){
@@ -6537,6 +6474,7 @@ function returnToMenuSave(){
   TUT.active = false;
   document.getElementById('overlay').classList.remove('show');
   const hc = document.getElementById('hcScreen'); if(hc) hc.classList.remove('show');
+  if(!preserveSummary) document.getElementById('summaryModal').classList.remove('show');
   hideMainApp();
   document.getElementById('vsTurnScreen').classList.remove('show');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
