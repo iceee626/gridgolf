@@ -635,6 +635,15 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
   transition:opacity .26s ease,transform .26s cubic-bezier(0.22,1,0.36,1),visibility 0s linear .26s;
 }
 .summary-modal.show{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0) scale(1);transition:opacity .26s ease,transform .26s cubic-bezier(0.22,1,0.36,1),visibility 0s;}
+.screen-transition-mask{
+  position:fixed;inset:0;background:var(--dark);z-index:500;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .18s ease,visibility 0s linear .18s;
+}
+.screen-transition-mask.show{
+  opacity:1;visibility:visible;
+  transition:opacity .18s ease,visibility 0s;
+}
 .summary-card{
   background:var(--dark);max-width:460px;width:100%;margin:0 auto;
   min-height:100dvh;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden;
@@ -1431,7 +1440,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 <div class="legend" id="legend" style="display:grid;">
 </div>
 </div>
-  <div class="summary-modal" id="summaryModal">
+<div class="summary-modal" id="summaryModal">
   <div class="summary-card">
     <div class="sum-head">
       <button class="setup-back-btn" id="sumBackBtn" onclick="summaryGoBack()" style="position:static;transform:none;display:none;" aria-label="Back">&#8592;</button>
@@ -1441,6 +1450,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="sum-body" id="sumBody"></div>
   </div>
 </div>
+<div class="screen-transition-mask" id="screenTransitionMask"></div>
 
 <div class="overlay" id="overlay">
   <div class="ov">
@@ -1634,6 +1644,23 @@ function setMainAppConcealed(concealed){
   if(!app)return;
   app.style.visibility = concealed ? 'hidden' : 'visible';
 }
+function runScreenTransition(fn, actionDelay=110, revealDelay=220){
+  const mask=document.getElementById('screenTransitionMask');
+  if(!mask){
+    if(typeof fn==='function') fn();
+    return;
+  }
+  if(!window._screenTransitionTimers) window._screenTransitionTimers = [];
+  window._screenTransitionTimers.forEach(clearTimeout);
+  window._screenTransitionTimers.length = 0;
+  mask.classList.add('show');
+  window._screenTransitionTimers.push(setTimeout(()=>{
+    if(typeof fn==='function') fn();
+    window._screenTransitionTimers.push(setTimeout(()=>{
+      mask.classList.remove('show');
+    }, revealDelay));
+  }, actionDelay));
+}
 function closeHcScreenThen(fn, delay=230){
   const hc=document.getElementById('hcScreen');
   if(!hc){ if(typeof fn==='function') fn(); return; }
@@ -1647,11 +1674,13 @@ function openSummaryTransition(viewRound = S.currentRound, backTarget = null){
   document.getElementById('overlay').classList.remove('show');
   setMainAppConcealed(true);
   hideMainApp();
-  if(backTarget === 'hcScreen'){
-    closeHcScreenThen(()=>openSummary(viewRound, backTarget));
-  } else {
-    setTimeout(()=>openSummary(viewRound, backTarget), 220);
-  }
+  runScreenTransition(()=>{
+    if(backTarget === 'hcScreen'){
+      const hc=document.getElementById('hcScreen');
+      if(hc) hc.classList.remove('show');
+    }
+    openSummary(viewRound, backTarget);
+  });
 }
 function hideScreen(id){
   const el=document.getElementById(id);
@@ -2568,10 +2597,10 @@ function loadHole(){
   document.getElementById('holeYards').textContent=fmtYds(h.yards);
   document.getElementById('holeStars').innerHTML=starsHTML(h.baseDiff);
   document.getElementById('holePar').textContent=h.par;
+  if(typeof wcResetHole==='function')wcResetHole();
   startDiceIdle();
   buildScorecard();buildGrid();updateZonePill();updateYrd();resetResult();renderLog();updateFloat();
   updateTVBanner();
-  if(typeof wcResetHole==='function')wcResetHole();
   
   if(!TUT.active && gridFocusEnabled()) scrollToGrid();
 }
@@ -3152,13 +3181,21 @@ function processShot(row,col){
 
   let resolvedOutcome=outcome;
   let wcAppliedNote='';
+  const rawOutcome = outcome;
+  const addAppliedNote = note => { if(note) wcAppliedNote += note; };
+  const consumeNextShotNote = () => {
+    if (!S._wcNextShotNote) return '';
+    const note = S._wcNextShotNote;
+    S._wcNextShotNote = null;
+    return note;
+  };
   if (WCS.pressureCookerShots > 0 && prevZone === 'tee') {
       let tot = 0, par = 0;
       S.scorecards.forEach(sc=>sc.forEach((s,i)=>{if(s!==null){tot+=s;par+=HOLES[i].par;}}));
       if (tot > par) {
           WCS.pressureCookerShots = 0;
           resolvedOutcome = HOLES[S.holeIdx].par === 3 ? 'grn' : 'fwy';
-          wcAppliedNote = ' (♨️ Pressure Cooker)';
+          addAppliedNote(' (♨️ Pressure Cooker)');
           showWcToast('♨️ Pressure Cooker activated!');
       }
   }
@@ -3166,44 +3203,40 @@ function processShot(row,col){
   if (WCS.shortcutActive && prevZone === 'tee' && HOLES[S.holeIdx].par !== 3) {
       WCS.shortcutActive = false;
       resolvedOutcome = 'chip';
-      wcAppliedNote = ' (⚡ Shortcut)';
+      addAppliedNote(' (⚡ Shortcut)');
       showWcToast('⚡ Shortcut activated!');
   }
-  if (WCS.luckyBounceActive && (resolvedOutcome === 'ob' || resolvedOutcome === 'h2o')) {
+  if (WCS.luckyBounceActive && (rawOutcome === 'ob' || rawOutcome === 'h2o')) {
       resolvedOutcome = HOLES[S.holeIdx].par === 3 ? 'sand' : 'rgh';
       WCS.luckyBounceActive = false; 
-      wcAppliedNote = ' (🍀 Lucky Bounce)';
+      addAppliedNote(' (🍀 Lucky Bounce)');
       showWcToast('🍀 Lucky Bounce activated!');
   }
-  if (WCS.ironWillActive && resolvedOutcome === 'rgh') {
+  if (WCS.mowersRevengeActive && rawOutcome === 'rgh') {
       resolvedOutcome = 'fwy';
-      WCS.ironWillActive = false; 
-      wcAppliedNote = ' (🔩 Iron Will)';
-      showWcToast('🔩 Iron Will activated!');
-  }
-  if (WCS.mowersRevengeActive && resolvedOutcome === 'rgh') {
-      // Doesn't expire until hole is done
-      resolvedOutcome = 'fwy';
-      wcAppliedNote = ' (🚜 Mower\'s Revenge)';
+      addAppliedNote(' (🚜 Mower\'s Revenge)');
       showWcToast('🚜 Mower\'s Revenge activated!');
   }
-  if (WCS.magicBackspinActive && prevZone === 'chip' && resolvedOutcome === 'sand') {
+  else if (WCS.ironWillActive && rawOutcome === 'rgh') {
+      resolvedOutcome = 'fwy';
+      WCS.ironWillActive = false; 
+      addAppliedNote(' (🔩 Iron Will)');
+      showWcToast('🔩 Iron Will activated!');
+  }
+  if (WCS.magicBackspinActive && prevZone === 'chip' && rawOutcome === 'sand') {
       resolvedOutcome = 'grn';
       WCS.magicBackspinActive = false; 
-      wcAppliedNote = ' (🔄 Magic Backspin)';
+      addAppliedNote(' (🔄 Magic Backspin)');
       showWcToast('🔄 Magic Backspin activated!');
   }
   if (WCS.cupMagnetActive && S.zone === 'grn' && resolvedOutcome !== 'p1' && cupMagnetCanPull(row,col)) {
       resolvedOutcome = 'p1';
       WCS.cupMagnetActive = false;
-      wcAppliedNote = ' (🧲 Cup Magnet)';
+      addAppliedNote(' (🧲 Cup Magnet)');
       showWcToast('🧲 Cup Magnet activated!');
   }
 
-  if (S._wcNextShotNote) {
-      wcAppliedNote += S._wcNextShotNote;
-      S._wcNextShotNote = null;
-  }
+  addAppliedNote(consumeNextShotNote());
 
   if(resolvedOutcome==='h2o'||resolvedOutcome==='ob'){
     playShotSound(prevZone, resolvedOutcome);
@@ -3229,11 +3262,7 @@ function processShot(row,col){
     } else {
       playShotSound(prevZone,'hole');
       S.strokes+=1;S.yrdRemain=0;
-      
-      let wcNote = S._wcNextShotNote ? S._wcNextShotNote : '';
-      S._wcNextShotNote = null;
-      
-      addLog(S.shotNum,`⛳ Hole In!${wcNote}`,'hole','+1',false,row,col,snapGrid, prevZone, prevYrdRemain);
+      addLog(S.shotNum,`⛳ Hole In!${wcAppliedNote}`,'hole','+1',false,row,col,snapGrid, prevZone, prevYrdRemain);
       showResult(Z.hole,'Hole In!','good',`Row ${row+1} · Col ${col+1}`);
       S.shotNum++;S.holeDone=true;
       hideNextShotBtn();hidePostShotWcBtn();
@@ -3410,7 +3439,7 @@ function _showPrecisionGripChoice(){
     title.textContent = label;
     colWrap.appendChild(title);
 
-    ['+1','-1'].forEach(adj=>{
+    ['-1','+1'].forEach(adj=>{
         const b=document.createElement('button');
         b.style.cssText='background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 0;font-family:Bebas Neue,cursive;font-size:16px;cursor:pointer;width:100%;';
         b.textContent=adj;
@@ -4015,7 +4044,7 @@ function showRoundEnd(){
         document.getElementById('hcLogList').parentNode.appendChild(statsContainer);
     }
     // Allow the div to grow without cutting off, and keep the scroll behavior active
-    statsContainer.style.cssText = 'flex:1; min-height:0; margin-bottom:16px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; position:relative;';
+    statsContainer.style.cssText = 'flex:1 1 0; min-height:0; max-height:min(100%, 280px); margin-bottom:16px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; position:relative;';
     statsContainer.style.display = 'block';
 
     renderTournamentStatsPanel('overall');
@@ -4091,7 +4120,7 @@ function showRoundEnd(){
       statsC.id = 'hcVsStats';
       document.getElementById('hcLogList').parentNode.insertBefore(statsC, secTitles[1] || document.getElementById('hcLogList').nextSibling);
     }
-    statsC.style.cssText = 'flex-shrink:0;margin-bottom:16px;-ms-overflow-style:none;scrollbar-width:none;';
+    statsC.style.cssText = 'flex:1 1 0; min-height:0; max-height:min(100%, 280px); margin-bottom:16px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; position:relative;';
     renderTournamentStatsPanel('overall');
 
     const btn = document.getElementById('hcBtn');
@@ -4348,8 +4377,8 @@ function closeSummary(){
 function summaryGoBack(){
   const target=_summaryBackTarget;
   _summaryBackTarget = null;
-  document.getElementById('summaryModal').classList.remove('show');
-  setTimeout(()=>{
+  runScreenTransition(()=>{
+    document.getElementById('summaryModal').classList.remove('show');
     if(target === 'hcScreen'){
       const hc=document.getElementById('hcScreen');
       if(hc) hc.classList.add('show');
@@ -4361,20 +4390,29 @@ function summaryGoBack(){
       document.getElementById('overlay').classList.add('show');
       return;
     }
-    closeSummary();
-  },220);
+    if(S.holeIdx >= S.endIdx && S.holeDone && S.currentRound === S.totalRounds){
+      returnToMenu();
+    } else {
+      setMainAppConcealed(false);
+      showMainApp();
+    }
+  });
 }
 
 function summaryReturnToMenu(){
-  document.getElementById('summaryModal').classList.remove('show');
   _summaryBackTarget = null;
-  setTimeout(()=>returnToMenu(),220);
+  runScreenTransition(()=>{
+    document.getElementById('summaryModal').classList.remove('show');
+    returnToMenu();
+  });
 }
 
 function summarySaveAndMenu(){
-  document.getElementById('summaryModal').classList.remove('show');
   _summaryBackTarget = null;
-  setTimeout(()=>returnToMenuSave(),220);
+  runScreenTransition(()=>{
+    document.getElementById('summaryModal').classList.remove('show');
+    returnToMenuSave();
+  });
 }
 
 function summaryPlayAgain(){
@@ -5482,6 +5520,12 @@ function getActiveWcIds() {
   if(WCS.shortcutActive) ids.push('shortcut');
   return ids;
 }
+function fairwayFinderCanAffectCurrentHole(){
+  const h=HOLES[S.holeIdx];
+  if(!h || h.par === 3) return false;
+  if(S.zone === 'tee' && S.shotNum === 1) return true;
+  return S.shotNum === 2 && S.prevZone === 'tee';
+}
 
 function randWildcard(){
   const equippedIds=WCS.equipped.map(w=>w.id);
@@ -5506,7 +5550,7 @@ const WCS={
   equipped:[], active:null, pressureCookerShots:0, pressureCookerFresh:false,
   luckyBounceActive:false, ironWillActive:false,
   magicBackspinActive:false,
-  mowersRevengeActive:false, fairwayFinderActive:false, birdieBoostActive:false,
+  mowersRevengeActive:false, fairwayFinderActive:false, fairwayFinderQueued:false, birdieBoostActive:false,
   holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false,
   goldenPutterActive:false, ferrettActive:false, hioActive:false,
   highlightReelActive:false, shortcutActive:false
@@ -5551,7 +5595,7 @@ function wcReset(){
   WCS.equipped=[]; WCS.active=null; WCS.pending=null; WCS.pendingRow=null; WCS.pendingCol=null;
   WCS.pressureCookerShots=0; WCS.pressureCookerFresh=false; WCS.luckyBounceActive=false; WCS.ironWillActive=false; 
   WCS.magicBackspinActive=false;
-  WCS.mowersRevengeActive=false; WCS.fairwayFinderActive=false; WCS.birdieBoostActive=false;
+  WCS.mowersRevengeActive=false; WCS.fairwayFinderActive=false; WCS.fairwayFinderQueued=false; WCS.birdieBoostActive=false;
   WCS.holeWallActive=false; WCS.sandWedgeProActive=false; WCS.cupMagnetActive=false;
   WCS.goldenPutterActive=false; WCS.ferrettActive=false; WCS.hioActive=false;
   WCS.highlightReelActive=false; WCS.shortcutActive=false;
@@ -5559,7 +5603,8 @@ function wcReset(){
 }
 function wcResetHole(){
   WCS.active=null; WCS.pending=null; WCS.pendingRow=null; WCS.pendingCol=null;
-  WCS.mowersRevengeActive=false; WCS.fairwayFinderActive=false;
+  WCS.mowersRevengeActive=false;
+  if(!WCS.fairwayFinderQueued) WCS.fairwayFinderActive=false;
   renderWcFab(); renderWcDrawer();
 }
 
@@ -5722,7 +5767,7 @@ function renderWcDrawer(){
       
       let statusText = 'Waiting for trigger...';
       if (wc.id === 'mowers_revenge') statusText = 'Active for the entire hole';
-      if (wc.id === 'fairway_finder') statusText = 'Active for your next shot';
+      if (wc.id === 'fairway_finder') statusText = WCS.fairwayFinderQueued ? 'Queued for next Par 4/5 tee shot' : 'Waiting for a Fairway tee shot';
       if (wc.id === 'lucky_bounce') statusText = 'Saves next OB/Water';
       if (wc.id === 'iron_will') statusText = 'Saves next Rough';
       if (wc.id === 'pressure_cooker') {
@@ -5956,12 +6001,13 @@ function applyWildcardEffect(wc){
       break;
     case 'mowers_revenge': WCS.mowersRevengeActive = true; toastMsg = `🚜 ${wc.name} applied!`; break;
     case 'fairway_finder': 
-      if (S.zone !== 'tee') {
-          toastMsg = `🔍 Fairway Finder can only be used on the Tee!`;
-          applied = false;
-      } else {
-          WCS.fairwayFinderActive = true;
+      WCS.fairwayFinderActive = true;
+      if (fairwayFinderCanAffectCurrentHole()) {
+          WCS.fairwayFinderQueued = false;
           toastMsg = `🔍 ${wc.name} applied!`;
+      } else {
+          WCS.fairwayFinderQueued = true;
+          toastMsg = `🔍 ${wc.name} queued for your next Par 4/5 tee shot!`;
       }
       break;
     case 'cup_magnet': WCS.cupMagnetActive = true; toastMsg = `🧲 ${wc.name} applied!`; break;
@@ -6051,13 +6097,19 @@ function applyWcGridMods(grid){
       grid = grid.map(r=>r.map(c=>Math.random() < 0.8 ? 'grn' : c));
   }
   if (WCS.fairwayFinderActive) {
-      if (S.shotNum === 2 && S.zone === 'fwy') {
+      const onEligibleTee = h.par !== 3 && S.zone === 'tee' && S.shotNum === 1;
+      const afterTeeShot = S.shotNum === 2 && S.prevZone === 'tee';
+      if (WCS.fairwayFinderQueued && onEligibleTee) {
+          WCS.fairwayFinderQueued = false;
+      }
+      if (!WCS.fairwayFinderQueued && h.par !== 3 && afterTeeShot && S.zone === 'fwy') {
           WCS.fairwayFinderActive = false; 
+          WCS.fairwayFinderQueued = false;
           showWcToast('🔍 Fairway Finder activated!'); 
           appendWcNote('🔍 Fairway Finder');
           grid = grid.map(r=>r.map(c=> Math.random() < 0.85 ? 'fwy' : c));
-      } else if (S.shotNum >= 2) {
-          WCS.fairwayFinderActive = false; // Expires if you miss the fairway or skip shot 2
+      } else if (!WCS.fairwayFinderQueued && afterTeeShot && S.zone !== 'fwy') {
+          WCS.fairwayFinderActive = false;
       }
   }
   if (WCS.highlightReelActive && S.zone === 'chip') {
@@ -6236,7 +6288,7 @@ function saveGameState(){
     wcsMagicBackspin:WCS.magicBackspinActive,
     wcsPressureCookerShots:WCS.pressureCookerShots,
     wcsPressureCookerFresh:WCS.pressureCookerFresh,
-    wcsMowersRevenge:WCS.mowersRevengeActive, wcsFairwayFinder:WCS.fairwayFinderActive,
+    wcsMowersRevenge:WCS.mowersRevengeActive, wcsFairwayFinder:WCS.fairwayFinderActive, wcsFairwayFinderQueued:WCS.fairwayFinderQueued,
     wcsBirdieBoost:WCS.birdieBoostActive, wcsHoleWall:WCS.holeWallActive,
     wcsSandWedgePro:WCS.sandWedgeProActive, wcsCupMagnet:WCS.cupMagnetActive,
     wcsGoldenPutter:WCS.goldenPutterActive, wcsFerrett:WCS.ferrettActive,
@@ -6311,7 +6363,7 @@ function continueGame(){
     WCS.luckyBounceActive=save.wcsLuckyBounce||false; WCS.ironWillActive=save.wcsIronWill||false;
     WCS.magicBackspinActive=save.wcsMagicBackspin||false;
     WCS.pressureCookerShots=save.wcsPressureCookerShots||0; WCS.pressureCookerFresh=save.wcsPressureCookerFresh||false;
-    WCS.mowersRevengeActive=save.wcsMowersRevenge||false; WCS.fairwayFinderActive=save.wcsFairwayFinder||false;
+    WCS.mowersRevengeActive=save.wcsMowersRevenge||false; WCS.fairwayFinderActive=save.wcsFairwayFinder||false; WCS.fairwayFinderQueued=save.wcsFairwayFinderQueued||false;
     WCS.birdieBoostActive=save.wcsBirdieBoost||false; WCS.holeWallActive=save.wcsHoleWall||false;
     WCS.sandWedgeProActive=save.wcsSandWedgePro||false; WCS.cupMagnetActive=save.wcsCupMagnet||false;
     WCS.goldenPutterActive=save.wcsGoldenPutter||false; WCS.ferrettActive=save.wcsFerrett||false;
@@ -7327,7 +7379,7 @@ function vsStartGame(){
   VS.histories = [Array(18).fill(null), Array(18).fill(null)];
   VS.matchScore = [0, 0];
   VS.sharedGrids = {};
-  const baseWc = () => ({ equipped:[], active:null, luckyBounceActive:false, ironWillActive:false, magicBackspinActive:false, pressureCookerShots:0, pressureCookerFresh:false, mowersRevengeActive:false, fairwayFinderActive:false, birdieBoostActive:false, holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false, goldenPutterActive:false, ferrettActive:false, hioActive:false, highlightReelActive:false, shortcutActive:false });
+  const baseWc = () => ({ equipped:[], active:null, luckyBounceActive:false, ironWillActive:false, magicBackspinActive:false, pressureCookerShots:0, pressureCookerFresh:false, mowersRevengeActive:false, fairwayFinderActive:false, fairwayFinderQueued:false, birdieBoostActive:false, holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false, goldenPutterActive:false, ferrettActive:false, hioActive:false, highlightReelActive:false, shortcutActive:false });
   VS.wcs = [baseWc(), baseWc()];
   vsShowTurnScreen();
 }
@@ -7412,7 +7464,7 @@ function vsCompleteHole(){
   };
   
   if (!VS.wcs) {
-  const baseWc = () => ({ equipped:[], active:null, luckyBounceActive:false, ironWillActive:false, magicBackspinActive:false, pressureCookerShots:0, pressureCookerFresh:false, mowersRevengeActive:false, fairwayFinderActive:false, birdieBoostActive:false, holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false, goldenPutterActive:false, ferrettActive:false, hioActive:false, highlightReelActive:false, shortcutActive:false });
+  const baseWc = () => ({ equipped:[], active:null, luckyBounceActive:false, ironWillActive:false, magicBackspinActive:false, pressureCookerShots:0, pressureCookerFresh:false, mowersRevengeActive:false, fairwayFinderActive:false, fairwayFinderQueued:false, birdieBoostActive:false, holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false, goldenPutterActive:false, ferrettActive:false, hioActive:false, highlightReelActive:false, shortcutActive:false });
    VS.wcs = [baseWc(), baseWc()];
   }
   VS.wcs[VS.currentPlayer] = { ...WCS, equipped: [...WCS.equipped] }; // Save FULL wildcard state for this player
