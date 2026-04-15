@@ -4411,7 +4411,7 @@ function summaryGoBack(){
   if(target === 'hcScreen'){
     const hc=document.getElementById('hcScreen');
     if(hc) hc.classList.add('show');
-    requestAnimationFrame(()=>document.getElementById('summaryModal').classList.remove('show'));
+    setTimeout(()=>document.getElementById('summaryModal').classList.remove('show'),220);
     return;
   }
   if(target === 'overlay'){
