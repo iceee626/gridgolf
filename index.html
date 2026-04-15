@@ -3133,13 +3133,16 @@ function doRoll(){
 // ═══════════════════════════════════════
 function cupMagnetCanPull(row,col){
   if(!S.currentGrid || !['p2','p3'].includes(S.currentGrid[row]?.[col])) return false;
-  for(let dr=-1; dr<=1; dr++){
-    for(let dc=-1; dc<=1; dc++){
-      if(dr===0 && dc===0) continue;
-      const nr=row+dr, nc=col+dc;
-      if(nr<0 || nr>5 || nc<0 || nc>5) continue;
-      if(S.currentGrid[nr][nc] === 'p1') return true;
-    }
+  const orthogonalNeighbors = [
+    [-1,0],
+    [1,0],
+    [0,-1],
+    [0,1]
+  ];
+  for(const [dr, dc] of orthogonalNeighbors){
+    const nr=row+dr, nc=col+dc;
+    if(nr<0 || nr>5 || nc<0 || nc>5) continue;
+    if(S.currentGrid[nr][nc] === 'p1') return true;
   }
   return false;
 }
@@ -3158,6 +3161,12 @@ function processShot(row,col){
     if (S._wcNextShotNote) {
         wcPuttNote = S._wcNextShotNote;
         S._wcNextShotNote = null;
+    }
+    if (WCS.cupMagnetActive && ['p2','p3'].includes(outcome) && cupMagnetCanPull(row,col)) {
+        finalPutts = 1;
+        WCS.cupMagnetActive = false;
+        wcPuttNote += ' (🧲 Cup Magnet)';
+        showWcToast('🧲 Cup Magnet activated!');
     }
 
     playShotSound('grn', outcome);
@@ -3472,6 +3481,8 @@ function _showTailwindDieChoice(){
 
 function _showPrecisionGripChoice(){
   hidePostShotWcBtn();
+  const rowVal = getDieVal('dp1');
+  const colVal = getDieVal('dp2');
   const wrap=document.createElement('div');
   wrap.id='postShotWcBtn';
   wrap.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7b2f9e,#4a1a6e);border-radius:12px;padding:12px 16px;z-index:80;box-shadow:0 4px 16px rgba(123,47,158,.5);display:flex;flex-direction:column;align-items:center;gap:8px;min-width:240px;';
@@ -3489,15 +3500,20 @@ function _showPrecisionGripChoice(){
 
     ['-1','+1'].forEach(adj=>{
         const b=document.createElement('button');
-        b.style.cssText='background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 0;font-family:Bebas Neue,cursive;font-size:16px;cursor:pointer;width:100%;';
+        const delta = parseInt(adj, 10);
+        const currentVal = idx===0 ? rowVal : colVal;
+        const disabled = (currentVal === 1 && delta < 0) || (currentVal === 6 && delta > 0);
+        b.style.cssText=`background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 0;font-family:Bebas Neue,cursive;font-size:16px;cursor:${disabled?'not-allowed':'pointer'};width:100%;opacity:${disabled?'0.35':'1'};`;
         b.textContent=adj;
+        b.disabled = disabled;
         b.onclick=()=>{
+          if(disabled) return;
           hidePostShotWcBtn();
           const r1=getDieVal('dp1');
           const r2=getDieVal('dp2');
-          let newVal = (idx===0 ? r1 : r2) + parseInt(adj);
-          if(newVal > 6) newVal = 1;
-          if(newVal < 1) newVal = 6;
+          let newVal = (idx===0 ? r1 : r2) + delta;
+          if(newVal > 6) newVal = 6;
+          if(newVal < 1) newVal = 1;
 
           const newR1=idx===0?newVal:r1;
           const newR2=idx===1?newVal:r2;
@@ -4013,6 +4029,8 @@ function showRoundEnd(){
     document.getElementById('hcHoleTitle').style.display = '';
     document.getElementById('hcHoleTitle').textContent = 'ROUND COMPLETE';
     document.getElementById('hcRndBadge').style.display = 'none';
+    const hcDiffSub = document.getElementById('hcDiffSub');
+    if (hcDiffSub) hcDiffSub.style.display = 'none';
 
     ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
         const el = document.getElementById(id);
