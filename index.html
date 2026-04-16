@@ -86,8 +86,7 @@ body{
   border-radius: 16px 16px 0 0;
   overflow: hidden;
 }
-/* Full-screen overlays also need top safe area */
-/* Full-screen overlays inherit body safe-area via body padding-top */
+/* Full-screen overlays also need top safe area and inherit body safe-area via body padding-top */
 .menu-screen,.diff-screen{
   padding-top:env(safe-area-inset-top);
 }
@@ -860,6 +859,10 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   border-radius:12px;padding:10px;min-height:60px;
   display:flex;flex-direction:column;gap:5px;position:relative;
 }
+.wc-slot.rarity-common{border-color:#5cd6ff;box-shadow:0 0 0 1px rgba(92,214,255,.18);}
+.wc-slot.rarity-rare{border-color:#b200ff;box-shadow:0 0 0 1px rgba(178,0,255,.18);}
+.wc-slot.rarity-epic{border-color:#ff3b3b;box-shadow:0 0 0 1px rgba(255,59,59,.18);}
+.wc-slot.rarity-legendary{border-color:#ffd700;box-shadow:0 0 0 1px rgba(255,215,0,.18);}
 .wc-slot.empty{border-style:dashed;opacity:.25;align-items:center;justify-content:center;padding:6px 8px;min-height:36px;}
 .wc-slot-empty-txt{font-family:'Sen', sans-serif;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:1px;}
 .wc-slot-header{display:flex;align-items:flex-start;gap:8px;}
@@ -984,7 +987,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .wc-equip-btn:hover{opacity:.85;}
 .wc-discard-outline-btn{
   width:100%;background:transparent;color:#ff8080;border:1px solid rgba(255,82,82,.42);
-  border-radius:10px;padding:10px 12px;font-family:'Bebas Neue',cursive;font-size:16px;
+  border-radius:10px;padding:10px 12px;font-family:'Bebas Neue',cursive;font-size:18px;
   letter-spacing:2px;cursor:pointer;transition:all .15s;min-height:52px;height:52px;
   display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.05;
 }
@@ -1083,7 +1086,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .tut-overlay.top.show{transform:translate(-50%, 0);}
 .tut-overlay.middle{bottom:auto; top:35%; transform:translate(-50%, -30px);}
 .tut-overlay.middle.show{transform:translate(-50%, 0);}
-.tut-overlay-title{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:var(--c-fwyl);margin-bottom:6px;}.tut-overlay-text{font-family:'Sen',sans-serif;font-size:11px;color:rgba(255,255,255,.85);line-height:1.5;margin-bottom:10px;}
+.tut-overlay-title{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:var(--c-fwyl);margin-bottom:6px;}.tut-overlay-text{font-family:'Sen',sans-serif;font-size:12px;color:rgba(255,255,255,.85);line-height:1.5;margin-bottom:10px;}
 .tut-overlay-text strong{font-weight:700;color:#fff;}
 .tut-overlay-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:10px;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;cursor:pointer;}
 .tut-overlay-btn:hover{background:var(--c-fwyl);}
@@ -1171,7 +1174,9 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .mode-info-diff-dot.hard{background:radial-gradient(circle at 30% 30%, #ff8f9f 0%, #e05252 58%, #a5283c 100%);}
 .mode-info-text{flex:1;}
 .mode-info-name{font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;color:var(--text);line-height:1.2;}
-.mode-info-desc{font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);line-height:1.5;margin-top:3px;}
+.mode-info-desc{font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px;}
+.vs-turn-screen.single-round-start .vs-turn-name{font-size:28px;letter-spacing:2px;color:#fff;}
+.vs-turn-screen.single-round-start .vs-turn-sub{font-family:'Bebas Neue',cursive;font-size:38px;letter-spacing:3px;color:var(--c-fwyl);}
 .mode-info-tag{
   display:inline-block;font-family:'Sen',sans-serif;font-size:8px;letter-spacing:1px;
   padding:2px 6px;border-radius:20px;margin-top:4px;
@@ -2562,20 +2567,24 @@ function showSingleRoundSplash(){
   if(TUT.active) return;
   const p = getActiveProfile();
   const icon = p ? getProfileIcon(p, getActiveProfileIdx()) : '🏌️';
-  const h = HOLES[S.holeIdx];
-  const roundPrefix = S.totalRounds > 1 ? `ROUND ${S.currentRound} · ` : '';
+  const screen = document.getElementById('roundStartScreen');
   const rsIcon = document.getElementById('rsTurnIcon');
   const rsName = document.getElementById('rsTurnName');
   const rsSub = document.getElementById('rsTurnSub');
   if(rsIcon) rsIcon.textContent = icon;
-  if(rsName) rsName.textContent = `${PLAYER_NAME}'S TURN`;
-  if(rsSub) rsSub.textContent = `${roundPrefix}HOLE ${S.holeIdx + 1} · PAR ${h.par}`;
+  if(screen) screen.classList.add('single-round-start');
+  if(rsName) rsName.textContent = 'Please welcome...';
+  if(rsSub) rsSub.textContent = `${PLAYER_NAME}!`;
   setMainAppConcealed(true);
   document.getElementById('roundStartScreen').classList.add('show');
 }
 
 function startSingleRoundFromSplash(){
-  document.getElementById('roundStartScreen').classList.remove('show');
+  const screen=document.getElementById('roundStartScreen');
+  if(screen){
+    screen.classList.remove('show');
+    screen.classList.remove('single-round-start');
+  }
   revealMainApp();
   maybeShowShakeBanner();
 }
@@ -5776,6 +5785,14 @@ function randWildcard(){
   return Object.assign({}, pool[pool.length - 1]);
 }
 
+function getWildcardRarityMeta(wc){
+  const weight = wc?.weight || 0;
+  if(weight === 50) return { key:'common', color:'#5cd6ff' };
+  if(weight === 30) return { key:'rare', color:'#b200ff' };
+  if(weight === 15) return { key:'epic', color:'#ff3b3b' };
+  return { key:'legendary', color:'#ffd700' };
+}
+
 const WCS={
   equipped:[], active:null, pressureCookerShots:0, pressureCookerFresh:false,
   luckyBounceActive:false, ironWillActive:false,
@@ -5882,8 +5899,8 @@ function openWcInfo(){
   document.getElementById('wcInfoBackBtn').onclick = closeWcInfo;
   swapWcInfoContent(list=>{
     list.innerHTML=`
-      <div style="font-family:'Sen', sans-serif;font-size:10px;color:rgba(255,255,255,.5);padding:6px 0 10px;line-height:1.5;">Wildcards are earned by rolling doubles. Equip up to 3 and use them to your advantage. Tap any wildcard for more details.</div>
-      <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px;margin-bottom:12px;font-family:'Sen', sans-serif;font-size:9px;color:rgba(255,255,255,.7);line-height:1.6;">
+      <div style="font-family:'Sen', sans-serif;font-size:12px;color:rgba(255,255,255,.5);padding:6px 0 10px;line-height:1.5;">Wildcards are earned by rolling doubles. Equip up to 3 and use them to your advantage. Tap any wildcard for more details.</div>
+      <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px;margin-bottom:12px;font-family:'Sen', sans-serif;font-size:12px;color:rgba(255,255,255,.7);line-height:1.6;">
         <b style="color:#5cd6ff">COMMON:</b> Standard gameplay modifiers.<br>
         <b style="color:#b200ff">RARE:</b> Enhanced utility and boosts.<br>
         <b style="color:#ff3b3b">EPIC:</b> Significant grid and shot alterations.<br>
@@ -5957,6 +5974,8 @@ function renderWcDrawer(){
     if(!wc){
       slot.innerHTML='<div class="wc-slot-empty-txt">EMPTY SLOT</div>';
     } else {
+      const rarityMeta = getWildcardRarityMeta(wc);
+      slot.classList.add(`rarity-${rarityMeta.key}`);
       const puttPending=!!document.getElementById('puttWcBtn');
       const rerollPending=WCS.active==='mulligan'||WCS.active==='tailwind';
       const isRerollCard=wc.id==='mulligan'||wc.id==='tailwind'||wc.id==='precision_grip';
@@ -6423,7 +6442,7 @@ function revealWcCard(){
     if(WCS.equipped.length>=3){
       const fullBtn=document.createElement('button');
       fullBtn.className='wc-equip-btn';
-      fullBtn.style.fontSize='12px';
+      fullBtn.style.fontSize='16px';
       fullBtn.style.letterSpacing='1px';
       fullBtn.textContent='FULL — CHOOSE ONE TO REPLACE';
       fullBtn.onclick=showDiscardChoice;
@@ -6479,8 +6498,11 @@ function showDiscardChoice(){
   const replaceGrid=document.createElement('div');
   replaceGrid.className='wc-replace-grid';
   WCS.equipped.forEach((wc,i)=>{
+    const rarityMeta = getWildcardRarityMeta(wc);
     const b=document.createElement('button');
     b.className='wc-replace-btn';
+    b.style.borderColor = rarityMeta.color;
+    b.style.boxShadow = `0 0 0 1px ${rarityMeta.color}33`;
     b.innerHTML=`<span class="wc-replace-icon">${wc.icon}</span><span class="wc-replace-name">${wc.name}</span>`;
     b.onclick=()=>{
       WCS.equipped.splice(i,1);
@@ -6492,7 +6514,7 @@ function showDiscardChoice(){
   actions.appendChild(replaceGrid);
   const keepBtn=document.createElement('button');
   keepBtn.className='wc-discard-outline-btn';
-  keepBtn.style.cssText='width:100%;margin-top:0;font-size:13px;';
+  keepBtn.style.cssText='width:100%;margin-top:0;font-size:18px;';
   keepBtn.textContent='DISCARD';
   if(TUT.active){
     keepBtn.disabled=true;
@@ -8732,7 +8754,7 @@ if ('serviceWorker' in navigator) {
       <div class="mode-info-section">
         <div class="mode-info-row" style="border-bottom:1px solid var(--border);padding:0 0 12px;margin-bottom:4px;">
           <div class="mode-info-text">
-            <div class="mode-info-desc" style="font-size:11px;line-height:1.6;">Versus Mode lets two players compete head-to-head on the same device, taking turns hole by hole. Both players roll on the same shared grids, keeping things fair. Set your names, icons, and game options — then tee off!</div>
+            <div class="mode-info-desc" style="font-size:12px;line-height:1.6;">Versus Mode lets two players compete head-to-head on the same device, taking turns hole by hole. Both players roll on the same shared grids, keeping things fair. Set your names, icons, and game options — then tee off!</div>
           </div>
         </div>
       </div>
