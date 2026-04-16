@@ -2720,13 +2720,14 @@ function bindHorizontalScrollerClamp(el){
 }
 
 function buildScorecard(){
+  if(VS.active) vsSyncScorecardMirror();
   const pr=document.getElementById('parRow');
   const sr=document.getElementById('scoreRow');
   const headRow = document.getElementById('scHeadRow');
   if(!pr||!sr||!headRow)return;
   
   const activeHoles = HOLES.slice(S.startIdx, S.endIdx + 1);
-  const currentSc = S.scorecards[S.currentRound - 1];
+  const currentSc = S.scorecards[S.currentRound - 1] || Array(18).fill(null);
   
   // Use stretching columns for 9 holes, fixed 34px columns for 18 holes
   const colWidth = activeHoles.length <= 9 ? 'minmax(0, 1fr)' : '34px';
@@ -5296,7 +5297,7 @@ const ACHIEVEMENTS=[
 ];
 
 function checkAndAwardAchievements(){
-  if (TUT.active) return;
+  if (!isAchievementContextEligible()) return;
   const profiles=loadProfiles();
   const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
   const p=profiles[idx];if(!p)return;
@@ -5315,6 +5316,12 @@ function checkAndAwardAchievements(){
     saveProfiles(profiles);
     newlyEarned.forEach((a,i)=>setTimeout(()=>showAchievementPopup(a),i*2000));
   }
+}
+
+function isAchievementContextEligible(){
+  if (TUT.active) return false;
+  if (VS.active) return false;
+  return true;
 }
 
 function showAchievementPopup(a){
@@ -6726,12 +6733,19 @@ function continueGame(){
           ...(save.vsState.setup || {}),
           rounds: (save.vsState.setup && save.vsState.setup.rounds) ? save.vsState.setup.rounds : 1
         };
+        VS.lastStrokeRounds = (save.vsState.format === 'stroke' && VS.setup.rounds > 1) ? VS.setup.rounds : (VS.lastStrokeRounds || 1);
         VS.wcs = save.vsState.wcs;
+        if(VS.format === 'match'){
+          VS.setup.rounds = 1;
+          S.totalRounds = 1;
+          S.currentRound = 1;
+        }
     } else {
         VS.active = false;
     }
     const resumeIntoOverlay = S.holeDone || !!save.vsTurnPending;
     
+    if(VS.active) vsSyncScorecardMirror(VS.currentPlayer);
     hideScreen('menuScreen');
     showMainApp(); // Trigger immediately for a perfect CSS crossfade
     setMainAppConcealed(resumeIntoOverlay);
@@ -7661,6 +7675,7 @@ let VS = {
   matchScore: [0, 0], // holes won for match play
   sharedGrids: {},
   setup: { rounds:1, holesConfig:'18', diff:1 },
+  lastStrokeRounds: 1,
   wcs: [null, null],
 };
 
@@ -7720,6 +7735,15 @@ function vsSetFormat(f){
   VS.format = f;
   document.getElementById('vsFormatStroke').classList.toggle('active', f==='stroke');
   document.getElementById('vsFormatMatch').classList.toggle('active', f==='match');
+  if(f==='match'){
+    if((VS.setup.rounds||1) > 1) VS.lastStrokeRounds = VS.setup.rounds;
+    vsSetRoundsAvailability(true);
+    vsSetRounds(1, true);
+  } else {
+    vsSetRoundsAvailability(false);
+    const restored = [1,2,3,4].includes(VS.lastStrokeRounds) ? VS.lastStrokeRounds : (VS.setup.rounds || 1);
+    vsSetRounds(restored, true);
+  }
   const desc = document.getElementById('vsFormatDesc');
   if(desc) desc.textContent = f==='stroke' ? 'Lowest total score wins. Every stroke counts!' : 'Win individual holes. Most holes won = winner!';
 }
@@ -7727,13 +7751,23 @@ function vsSetHoles(h){
   VS.setup.holesConfig = h;
   ['18','front','back'].forEach(k=>document.getElementById('vsH-'+k)?.classList.toggle('active', k===h));
 }
-function vsSetRounds(r){
+function vsSetRounds(r, force=false){
+  if(VS.format==='match' && r!==1 && !force) return;
   VS.setup.rounds = r;
+  if(VS.format==='stroke') VS.lastStrokeRounds = r;
   [1,2,3,4].forEach(i=>document.getElementById(`vsR-${i}`)?.classList.toggle('active', i===r));
 }
 function vsSetDiff(d){
   VS.setup.diff = d;
   [1,2,3].forEach(i=>document.getElementById('vsDiff-'+i)?.classList.toggle('active', i===d));
+}
+
+function vsSetRoundsAvailability(lockToOne){
+  [1,2,3,4].forEach(i=>{
+    const btn = document.getElementById(`vsR-${i}`);
+    if(!btn) return;
+    btn.disabled = lockToOne && i!==1;
+  });
 }
 
 function navBackFromCourse(){
@@ -7756,6 +7790,7 @@ function navBackFromCourse(){
 }
   
 function vsStartFromOptions(){
+  if(VS.format === 'match') VS.setup.rounds = 1;
   SETUP.mode = 'custom';
   SETUP.rounds = VS.setup.rounds || 1;
   SETUP.holesConfig = VS.setup.holesConfig;
@@ -7773,6 +7808,11 @@ function vsStartFromOptions(){
 function vsStartGame(){
   VS.active = true;
   if(VS.setup) VS.setup.courseSelected = false;
+  if(VS.format === 'match'){
+    VS.setup.rounds = 1;
+    S.totalRounds = 1;
+    S.currentRound = 1;
+  }
   VS.currentPlayer = 0;
   const makeRounds = () => Array.from({length:S.totalRounds}, ()=>Array(18).fill(null));
   VS.scores = [makeRounds(), makeRounds()];
@@ -7798,6 +7838,19 @@ function vsRoundHistories(playerIdx, roundIdx = vsRoundIdx()){
   const store = VS.histories[playerIdx] || [];
   if(Array.isArray(store[0])) return store[roundIdx] || Array(18).fill(null);
   return store;
+}
+
+function vsSyncScorecardMirror(playerIdx = VS.currentPlayer){
+  if(!VS.active) return;
+  const rounds = Math.max(1, S.totalRounds || VS.setup?.rounds || 1);
+  if(!Array.isArray(S.scorecards)) S.scorecards = [];
+  if(!Array.isArray(S.histories)) S.histories = [];
+  while(S.scorecards.length < rounds) S.scorecards.push(Array(18).fill(null));
+  while(S.histories.length < rounds) S.histories.push(Array(18).fill(null));
+  for(let r=0; r<rounds; r++){
+    S.scorecards[r] = [...vsRoundScores(playerIdx, r)];
+    S.histories[r] = [...vsRoundHistories(playerIdx, r)];
+  }
 }
 
 function vsGetScore(playerIdx, holeIdx, roundIdx = vsRoundIdx()){
@@ -7874,7 +7927,7 @@ function vsStartTurn(){
     nextBtn.disabled=false;
   }
   
-  S.scorecards[0] = [...vsRoundScores(VS.currentPlayer)]; // Sync scorecard for current player
+  vsSyncScorecardMirror(VS.currentPlayer);
   
   // Wipe all active wildcard states cleanly before switching turns
   WCS.active=null; WCS.greenLightShots=0; WCS.sandCastleActive=false; WCS.luckyBounceActive=false;
@@ -8226,6 +8279,7 @@ function vsStartNextRound(){
   if(hcScreen) hcScreen.classList.remove('show');
   S.currentRound++;
   S.holeIdx = S.startIdx;
+  vsSyncScorecardMirror(VS.currentPlayer);
   showWcToast(`⛳ ROUND ${S.currentRound} STARTED!`);
   saveGameState();
   vsShowTurnScreen();
