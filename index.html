@@ -372,7 +372,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .menu-tagline{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:20px;}
 .menu-btns{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-bottom:max(8px, env(safe-area-inset-bottom));}
 .menu-content > br{display:none;}
-#menuContinueBtn{min-height:84px!important;padding:12px 16px!important;border-radius:18px!important;margin-top:auto;}
+#menuContinueBtn{min-height:84px!important;padding:12px 16px!important;border-radius:18px!important;}
 #menuContinueBtn.menu-glow{
   box-shadow:0 0 0 1px rgba(30,95,138,.62),0 0 42px rgba(30,95,138,.82),0 14px 40px rgba(10,32,52,.66);
   animation:continueGlow 2s ease-in-out infinite;
@@ -798,6 +798,13 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .profile-new-row{display:flex;gap:8px;}
 .profile-save-btn{flex:1;background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:10px;font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;cursor:pointer;}
 .profile-cancel-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 14px;font-family:'Sen', sans-serif;font-size:11px;cursor:pointer;}
+#settingsModal{align-items:flex-start;padding:calc(env(safe-area-inset-top) + 16px) 20px 20px;overflow-y:auto;}
+#settingsModal .profile-card{max-height:calc(100vh - env(safe-area-inset-top) - 36px);display:flex;flex-direction:column;}
+#settingsModal .profile-body{overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.settings-section-title{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.settings-row.no-divider{border-bottom:none;}
+.settings-row-desc{font-family:'Sen', sans-serif;font-size:12px;color:var(--muted);margin-top:2px;}
 
 /* ═══ WILDCARD SYSTEM ═══════════════════════════════════ */
 
@@ -1107,8 +1114,8 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .vs-turn-btn:active{transform:translateY(1px) scale(0.955);box-shadow:inset 0 0 14px rgba(0,0,0,.42), 0 0 18px rgba(120,220,96,.22);}
 .vs-setup-players{display:flex;flex-direction:column;gap:16px;margin-bottom:20px;}
 .vs-player-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px;}
-.vs-player-label{font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:8px;}
-.vs-player-row{display:flex;gap:10px;align-items:center;}
+.vs-player-label{font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);margin:0 0 8px 54px;width:calc(100% - 54px);text-align:center;}
+.vs-player-row{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center;}
 .vs-player-row input{flex:1;}
 .vs-icon-btn{width:44px;height:44px;border-radius:50%;background:var(--c-tee);border:2px solid var(--border);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s;}
 .vs-icon-btn:hover{border-color:var(--c-fwyl);}
@@ -8449,59 +8456,59 @@ function closeModeInfo(type){
       <button class="profile-close" onclick="closeSettings()">✕</button>
     </div>
     <div class="profile-body">
-      <div style="font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">APPEARANCE</div>
+      <div class="settings-section-title">APPEARANCE</div>
       <div style="display:flex;gap:6px;margin-bottom:16px;">
         <button id="themeBtn-dark" onclick="setTheme('dark')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">🌙 DARK</button>
         <button id="themeBtn-light" onclick="setTheme('light')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">☀️ LIGHT</button>
         <button id="themeBtn-system" onclick="setTheme('system')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">🔄 SYSTEM</button>
       </div>
-      <div style="font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">GAME OPTIONS</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div class="settings-section-title">GAME OPTIONS</div>
+      <div class="settings-row">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🔊 SOUND</div>
-          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Shot sound effects</div>
+          <div class="settings-row-desc">Shot sound effects</div>
         </div>
         <div class="toggle-switch" id="soundToggle" onclick="setSoundPref(!soundEnabled())"><div class="toggle-knob"></div></div>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div class="settings-row">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📳 VIBRATIONS</div>
-          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Haptic feedback on shots &amp; events</div>
+          <div class="settings-row-desc">Haptic feedback on shots &amp; events</div>
         </div>
         <div class="toggle-switch" id="vibToggle" onclick="setVibPref(!vibEnabled())"><div class="toggle-knob"></div></div>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div class="settings-row">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📳 SHAKE TO ROLL</div>
-          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Shake your phone to roll the dice</div>
+          <div class="settings-row-desc">Shake your phone to roll the dice</div>
         </div>
         <div class="toggle-switch" id="shakeToggle" onclick="setRollMode(getRollMode()==='haptic'?'classic':'haptic')"><div class="toggle-knob"></div></div>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div class="settings-row">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🃏 WILDCARDS</div>
-          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Roll doubles to earn wildcard cards</div>
+          <div class="settings-row-desc">Roll doubles to earn wildcard cards</div>
         </div>
         <div class="toggle-switch" id="wcToggle" onclick="setWcPref(!wcEnabled())"><div class="toggle-knob"></div></div>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div class="settings-row">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">&#x1F3AF; FOCUS ON GRID</div>
-          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Automatically focus on shot grid every roll</div>
+          <div class="settings-row-desc">Automatically focus on shot grid every roll</div>
         </div>
         <div class="toggle-switch" id="gridFocusToggle" onclick="setGridFocusPref(!gridFocusEnabled())"><div class="toggle-knob"></div></div>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div class="settings-row">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">&#x1F7E8; HIDE ZONE LEGEND</div>
-          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Remove the panel from the game</div>
+          <div class="settings-row-desc">Remove the panel from the game</div>
         </div>
         <div class="toggle-switch" id="zoneLegendToggle" onclick="setLegendPref(!legendHiddenEnabled())"><div class="toggle-knob"></div></div>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div class="settings-row">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📏 DISTANCE</div>
-          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Unit of measurement</div>
+          <div class="settings-row-desc">Unit of measurement</div>
         </div>
         <div class="txt-toggle" id="metricsToggle" onclick="setMetricsPref(getMetrics()==='yards'?'meters':'yards')">
           <div class="txt-toggle-knob"></div>
@@ -8509,10 +8516,10 @@ function closeModeInfo(type){
           <div class="txt-lbl lbl-r">M</div>
         </div>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div class="settings-row no-divider">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🏷️ CELL LABELS</div>
-          <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Show zone name always</div>
+          <div class="settings-row-desc">Show zone name always</div>
         </div>
         <div class="txt-toggle" id="labelsToggle" onclick="setCellLabelModeDirect(getCellLabelMode()==='tap'?'always':'tap')">
           <div class="txt-toggle-knob"></div>
@@ -8520,10 +8527,11 @@ function closeModeInfo(type){
           <div class="txt-lbl lbl-r">YES</div>
         </div>
       </div>
-      <div id="settingsTutorialRow" style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div class="settings-section-title">TUTORIAL</div>
+      <div id="settingsTutorialRow" class="settings-row">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📖 TUTORIAL</div>
-<div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);margin-top:2px;">Learn how to play DiceGolf</div>
+<div class="settings-row-desc">Learn how to play DiceGolf</div>
         </div>
         <button onclick="closeSettings(startTutorialFromSettings)" style="background:rgba(255,255,255,.1);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-family:'Sen', sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;min-width:52px;">PLAY</button>
       </div>
