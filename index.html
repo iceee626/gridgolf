@@ -2368,7 +2368,9 @@ let S={
   _wcUsedThisRound:0, _skipCelebration:false, _preserveGrid:false, _forceGrid:false,
   _mulliganJustFired:false, _puttWcUsed:false, _pendingPuttResult:null, _pendingHoleFinish:null,
   _eyesClosedArmed:false, _landscaperRoughFixes:0, _rocketApproachPending:false,
-  _ferrettArmedShot:false, _highlightReelArmedShot:false
+  _ferrettArmedShot:false, _highlightReelArmedShot:false,
+  _roundWaterHits:0, _roundSandHits:0, _roundRoughHits:0,
+  _roundPrevWasDoubleOrWorse:false, _roundIceTriggered:false
 };
 
 // ── Menu Navigation ──
@@ -2550,6 +2552,8 @@ function resetGameState(){
   S._pendingPuttResult=null; S._pendingHoleFinish=null;
   S._eyesClosedArmed=false; S._landscaperRoughFixes=0; S._rocketApproachPending=false;
   S._ferrettArmedShot=false; S._highlightReelArmedShot=false;
+  S._roundWaterHits=0; S._roundSandHits=0; S._roundRoughHits=0;
+  S._roundPrevWasDoubleOrWorse=false; S._roundIceTriggered=false;
   if(typeof wcReset==='function')wcReset();
 }
 
@@ -3492,6 +3496,7 @@ function processShot(row,col){
   handleShotAchievementOutcome(resolvedOutcome, prevZone);
 
   if(resolvedOutcome==='h2o'||resolvedOutcome==='ob'){
+    trackImmediateRoundAchievementProgress(resolvedOutcome, true);
     playShotSound(prevZone, resolvedOutcome);
     S.strokes+=2;
     addLog(S.shotNum,`${Z[prevZone].name} → ${Z[resolvedOutcome].name} — penalty`,resolvedOutcome,'+2 (pen)',true,row,col,snapGrid, prevZone, prevYrdRemain);
@@ -3507,6 +3512,8 @@ function processShot(row,col){
     }, 400); // Reduced from 1100ms. Gives just enough time to read the penalty text.
     return;
   }
+
+  trackImmediateRoundAchievementProgress(resolvedOutcome, false);
 
   if(resolvedOutcome==='hole'){
     const h=HOLES[S.holeIdx];
@@ -4037,6 +4044,11 @@ function completeHole(){
   
   const d=score-h.par;
   const isHoleInOne=(h.par===3&&score===1);
+  if(S._roundPrevWasDoubleOrWorse && d <= -1){
+    unlockAchievement('ice_veins');
+    S._roundIceTriggered = true;
+  }
+  S._roundPrevWasDoubleOrWorse = d >= 2;
   if(S._eyesClosedArmed && d <= -1){
     unlockAchievement('eyes_closed');
   }
@@ -5244,12 +5256,12 @@ function showProfileStats(i){
   const total=ACHIEVEMENTS.length;
   const count=ACHIEVEMENTS.filter(a=>earned.includes(a.id)).length;
 
-  const statsHTML=rows.map(([label,val])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-family:DM Mono,monospace;font-size:11px;"><span style="color:var(--muted);">${label}</span><span style="color:var(--text);font-weight:600;">${val}</span></div>`).join('');
+  const statsHTML=rows.map(([label,val])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-family:'Sen',sans-serif;font-size:12px;"><span style="color:var(--muted);">${label}</span><span style="color:var(--text);font-weight:600;">${val}</span></div>`).join('');
   const achListHTML=ACHIEVEMENTS.map(a=>{
     const yes=earned.includes(a.id);
     return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);opacity:${yes?1:.35};">
       <span style="font-size:16px;flex-shrink:0;">${a.icon}</span>
-      <div style="flex:1;min-width:0;"><div style="font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:1px;color:${yes?'var(--gold)':'var(--muted)'};">${a.name}</div><div style="font-family:'Sen', sans-serif;font-size:8px;color:var(--muted);">${a.desc}</div></div>
+      <div style="flex:1;min-width:0;"><div style="font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:1px;color:${yes?'var(--gold)':'var(--muted)'};">${a.name}</div><div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">${a.desc}</div></div>
       <span style="font-size:11px;">${yes?'✅':'🔒'}</span>
     </div>`;
   }).join('');
@@ -5266,7 +5278,7 @@ function showProfileStats(i){
       <span>ACHIEVEMENTS — ${count}/${total} (${Math.round(count/total*100)}%)</span><span id="achToggleArrow">▾</span>
     </button>`+
     `<div id="achList" style="display:block;">${achListHTML}</div>`+
-    `<div style="margin-top:10px;"><button onclick="resetProfileStats(${i})" style="width:100%;background:rgba(255,82,82,.12);color:#ff8080;border:1px solid rgba(255,82,82,.3);border-radius:7px;padding:7px;font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;cursor:pointer;">RESET STATS</button></div>`;
+    `<div style="margin-top:10px;"><button onclick="resetProfileStats(${i})" style="width:100%;background:rgba(255,82,82,.12);color:#ff8080;border:1px solid rgba(255,82,82,.3);border-radius:7px;padding:7px;font-family:'Sen',sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;">RESET STATS</button></div>`;
   
   slotsContainer.parentNode.insertBefore(panel, slotsContainer.nextSibling);
 }
@@ -5476,6 +5488,25 @@ function unlockAchievement(id){
 function maybeUnlockHoarder(){
   if(Array.isArray(WCS.equipped) && WCS.equipped.length >= 3){
     unlockAchievement('hoarder');
+  }
+}
+
+function trackImmediateRoundAchievementProgress(resolvedOutcome, isPenalty){
+  if(isPenalty){
+    if(resolvedOutcome === 'h2o'){
+      S._roundWaterHits = (S._roundWaterHits || 0) + 1;
+      if(S._roundWaterHits >= 2) unlockAchievement('scuba_diver');
+    }
+    return;
+  }
+  if(resolvedOutcome === 'sand'){
+    S._roundSandHits = (S._roundSandHits || 0) + 1;
+    if(S._roundSandHits >= 5) unlockAchievement('beach_bum');
+    return;
+  }
+  if(resolvedOutcome === 'rgh'){
+    S._roundRoughHits = (S._roundRoughHits || 0) + 1;
+    if(S._roundRoughHits >= 10) unlockAchievement('lumberjack');
   }
 }
 
@@ -5733,6 +5764,11 @@ function startNextRound() {
   S.holeIdx = S.startIdx;
   S._wcUsedThisRound = 0;
   S._wcDiscardedThisRound = 0; 
+  S._roundWaterHits = 0;
+  S._roundSandHits = 0;
+  S._roundRoughHits = 0;
+  S._roundPrevWasDoubleOrWorse = false;
+  S._roundIceTriggered = false;
   _summaryBackTarget = null;
   document.getElementById('overlay').classList.remove('show');
   document.getElementById('summaryModal').classList.remove('show');
@@ -6904,6 +6940,11 @@ function saveGameState(){
     _rocketApproachPending:!!S._rocketApproachPending,
     _ferrettArmedShot:!!S._ferrettArmedShot,
     _highlightReelArmedShot:!!S._highlightReelArmedShot,
+    _roundWaterHits:S._roundWaterHits||0,
+    _roundSandHits:S._roundSandHits||0,
+    _roundRoughHits:S._roundRoughHits||0,
+    _roundPrevWasDoubleOrWorse:!!S._roundPrevWasDoubleOrWorse,
+    _roundIceTriggered:!!S._roundIceTriggered,
     _waitingForNextShot:isShotBtnShown('nextShotBtn'),
     _pendingPuttResult:S._pendingPuttResult||null,
     _pendingHoleFinish:S._pendingHoleFinish||null,
@@ -6989,6 +7030,11 @@ function continueGame(){
     S._rocketApproachPending=!!save._rocketApproachPending;
     S._ferrettArmedShot=!!save._ferrettArmedShot;
     S._highlightReelArmedShot=!!save._highlightReelArmedShot;
+    S._roundWaterHits=save._roundWaterHits||0;
+    S._roundSandHits=save._roundSandHits||0;
+    S._roundRoughHits=save._roundRoughHits||0;
+    S._roundPrevWasDoubleOrWorse=!!save._roundPrevWasDoubleOrWorse;
+    S._roundIceTriggered=!!save._roundIceTriggered;
     S._pendingPuttResult=save._pendingPuttResult||null;
     S._pendingHoleFinish=save._pendingHoleFinish||null;
     const waitingForNextShot=save._waitingForNextShot||false;
