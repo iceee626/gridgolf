@@ -1102,6 +1102,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .vs-turn-icon{font-size:56px;animation:celebIn .5s cubic-bezier(.34,1.56,.64,1);}
 .vs-turn-name{font-family:'Bebas Neue',cursive;font-size:38px;letter-spacing:4px;color:var(--c-fwyl);animation:celebIn .5s cubic-bezier(.34,1.56,.64,1) .1s both;}
 .vs-turn-sub{font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);letter-spacing:2px;animation:celebIn .5s cubic-bezier(.34,1.56,.64,1) .2s both;}
+.vs-turn-meta{font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);letter-spacing:2px;animation:celebIn .5s cubic-bezier(.34,1.56,.64,1) .25s both;}
 .vs-turn-btn{background:var(--c-fwy);color:#fff;border:none;border-radius:16px;padding:14px 40px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;cursor:pointer;animation:celebIn .5s cubic-bezier(.34,1.56,.64,1) .3s both;margin-top:10px;min-height:56px;}
 .vs-turn-btn:active{transform:translateY(1px) scale(0.955);box-shadow:inset 0 0 14px rgba(0,0,0,.42), 0 0 18px rgba(120,220,96,.22);}
 .vs-setup-players{display:flex;flex-direction:column;gap:16px;margin-bottom:20px;}
@@ -1175,8 +1176,10 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .mode-info-text{flex:1;}
 .mode-info-name{font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;color:var(--text);line-height:1.2;}
 .mode-info-desc{font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px;}
-.vs-turn-screen.single-round-start .vs-turn-name{font-size:28px;letter-spacing:2px;color:#fff;}
-.vs-turn-screen.single-round-start .vs-turn-sub{font-family:'Bebas Neue',cursive;font-size:38px;letter-spacing:3px;color:var(--c-fwyl);}
+.vs-turn-screen.single-round-start{gap:10px;}
+.vs-turn-screen.single-round-start .vs-turn-name{font-size:24px;letter-spacing:2px;color:#fff;text-align:center;}
+.vs-turn-screen.single-round-start .vs-turn-sub{font-family:'Bebas Neue',cursive;font-size:38px;letter-spacing:3px;color:var(--c-fwyl);line-height:1;}
+.vs-turn-screen.single-round-start .vs-turn-meta{margin-top:-2px;}
 .mode-info-tag{
   display:inline-block;font-family:'Sen',sans-serif;font-size:8px;letter-spacing:1px;
   padding:2px 6px;border-radius:20px;margin-top:4px;
@@ -1333,6 +1336,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <div class="vs-turn-icon" id="rsTurnIcon">🏌️</div>
   <div class="vs-turn-name" id="rsTurnName">PLAYER</div>
   <div class="vs-turn-sub" id="rsTurnSub">HOLE 1 · PAR 4</div>
+  <div class="vs-turn-meta" id="rsTurnMeta">HOLE 1 · PAR 4</div>
   <button class="vs-turn-btn" onclick="startSingleRoundFromSplash()">READY</button>
 </div>
 
@@ -2567,14 +2571,18 @@ function showSingleRoundSplash(){
   if(TUT.active) return;
   const p = getActiveProfile();
   const icon = p ? getProfileIcon(p, getActiveProfileIdx()) : '🏌️';
+  const h = HOLES[S.holeIdx];
+  const roundPrefix = S.totalRounds > 1 ? `ROUND ${S.currentRound} · ` : '';
   const screen = document.getElementById('roundStartScreen');
   const rsIcon = document.getElementById('rsTurnIcon');
   const rsName = document.getElementById('rsTurnName');
   const rsSub = document.getElementById('rsTurnSub');
+  const rsMeta = document.getElementById('rsTurnMeta');
   if(rsIcon) rsIcon.textContent = icon;
   if(screen) screen.classList.add('single-round-start');
   if(rsName) rsName.textContent = 'Please welcome...';
   if(rsSub) rsSub.textContent = `${PLAYER_NAME}!`;
+  if(rsMeta) rsMeta.textContent = `${roundPrefix}HOLE ${S.holeIdx + 1} · PAR ${h.par}`;
   setMainAppConcealed(true);
   document.getElementById('roundStartScreen').classList.add('show');
 }
