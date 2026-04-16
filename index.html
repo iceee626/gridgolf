@@ -370,6 +370,17 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
   height:auto;
   max-height:104px;
 }
+#menuScreen .menu-content{
+  justify-content:flex-start;
+  padding-top:clamp(118px, 18vh, 168px);
+}
+#menuScreen .menu-logo{
+  margin-top:0;
+  flex-shrink:0;
+}
+#menuScreen #menuBtns{
+  margin-top:auto;
+}
 .menu-tagline{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:20px;}
 .menu-btns{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-bottom:max(8px, env(safe-area-inset-bottom));}
 .menu-content > br{display:none;}
