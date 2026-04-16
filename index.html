@@ -372,10 +372,15 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 }
 #menuScreen .menu-content{
   justify-content:flex-start;
-  padding-top:clamp(76px, 12vh, 118px);
+  padding-top:0;
 }
 #menuScreen .menu-logo{
-  margin-top:0;
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:min(100%, 360px);
+  margin:0;
   flex-shrink:0;
 }
 #menuScreen #menuBtns{
