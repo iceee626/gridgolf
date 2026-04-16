@@ -974,17 +974,19 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .wc-reveal-hint{font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);animation:wc-blink 1.2s ease infinite;}
 @keyframes wc-blink{0%,100%{opacity:.4}50%{opacity:.9}}
 .wc-reveal-actions{display:flex;flex-direction:column;gap:10px;width:220px;align-items:stretch;}
-.wc-reveal-action-zone{min-height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;margin-top:10px;}
+.wc-reveal-action-zone{height:126px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;margin-top:10px;}
 .wc-equip-btn{
   width:100%;background:linear-gradient(135deg,#7b2f9e,#4a1a6e);color:#fff;border:none;
-  border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:18px;
-  letter-spacing:2px;cursor:pointer;transition:opacity .15s;
+  border-radius:10px;padding:10px 12px;font-family:'Bebas Neue',cursive;font-size:18px;
+  letter-spacing:2px;cursor:pointer;transition:opacity .15s;min-height:52px;height:52px;
+  display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.05;
 }
 .wc-equip-btn:hover{opacity:.85;}
 .wc-discard-outline-btn{
   width:100%;background:transparent;color:#ff8080;border:1px solid rgba(255,82,82,.42);
-  border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:16px;
-  letter-spacing:2px;cursor:pointer;transition:all .15s;
+  border-radius:10px;padding:10px 12px;font-family:'Bebas Neue',cursive;font-size:16px;
+  letter-spacing:2px;cursor:pointer;transition:all .15s;min-height:52px;height:52px;
+  display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.05;
 }
 .wc-discard-outline-btn:hover{background:rgba(255,82,82,.12);}
 .wc-discard-outline-btn:disabled,.wc-discard-outline-btn.disabled{
@@ -5374,9 +5376,12 @@ function renderTournamentStatsPanel(selectedKey='overall'){
     html += `<div style="flex:1;min-height:0;overflow-y:auto;-ms-overflow-style:none;scrollbar-width:none;" class="tournament-stats-list">`;
   }
 
-  stats.forEach(s => {
+  const hideLastDivider = S.mode === 'single';
+  stats.forEach((s, idx) => {
+    const isLast = idx === stats.length - 1;
+    const rowBorder = hideLastDivider && isLast ? 'none' : '1px solid rgba(255,255,255,.05)';
     html += `
-      <div style="display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;column-gap:12px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);font-family:'Sen',sans-serif;font-size:11px;">
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;column-gap:12px;padding:8px 12px;border-bottom:${rowBorder};font-family:'Sen',sans-serif;font-size:11px;">
         <div style="color:var(--muted);min-width:0;">${s.label}</div>
         <div style="color:var(--text);font-weight:bold;text-align:center;">${s.val}</div>
       </div>
@@ -6418,7 +6423,7 @@ function revealWcCard(){
     if(WCS.equipped.length>=3){
       const fullBtn=document.createElement('button');
       fullBtn.className='wc-equip-btn';
-      fullBtn.style.fontSize='14px';
+      fullBtn.style.fontSize='12px';
       fullBtn.style.letterSpacing='1px';
       fullBtn.textContent='FULL — CHOOSE ONE TO REPLACE';
       fullBtn.onclick=showDiscardChoice;
@@ -6470,7 +6475,7 @@ function discardAndProceed(){
 
 function showDiscardChoice(){
   const actions=document.getElementById('wcRevealActions');
-  actions.innerHTML='<div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.6);text-align:center;width:100%;margin-bottom:2px;">DISCARD WHICH?</div>';
+  actions.innerHTML='';
   const replaceGrid=document.createElement('div');
   replaceGrid.className='wc-replace-grid';
   WCS.equipped.forEach((wc,i)=>{
