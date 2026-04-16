@@ -543,7 +543,9 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .hist-card{background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:440px;margin:0 auto;overflow:hidden;animation:popin .3s cubic-bezier(.34,1.56,.64,1);}
 .hist-head{background:var(--c-fwy);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;}
 .hist-htitle{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
-.hist-close{background:rgba(255,255,255,.08);border:1px solid var(--border);color:#fff;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.hist-close{background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:#ffd7d7;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.hist-close:hover{background:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
+.hist-close:active{transform:translateY(1px) scale(.95);}
 .hist-body{padding:14px;}
 .hist-stats{display:flex;gap:8px;margin-bottom:12px;}
 .hstat{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center;}
@@ -698,7 +700,9 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 }
 .sum-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#fff;text-align:center;}
 .sum-head-spacer{width:36px;height:36px;display:block;}
-.sum-close{background:rgba(255,255,255,.08);border:1px solid var(--border);color:#fff;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.sum-close{background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:#ffd7d7;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.sum-close:hover{background:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
+.sum-close:active{transform:translateY(1px) scale(.95);}
 .sum-body{
   flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;padding:16px 16px calc(env(safe-area-inset-bottom) + 20px);
@@ -761,7 +765,9 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .profile-modal.show .profile-card{transform:translateY(0) scale(1);opacity:1;}
 .profile-head{background:var(--c-fwy);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;}
 .profile-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
-.profile-close{background:rgba(255,255,255,.08);border:1px solid var(--border);color:#fff;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.profile-close{background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:#ffd7d7;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.profile-close:hover{background:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
+.profile-close:active{transform:translateY(1px) scale(.95);}
 .profile-body{padding:14px;}
 .profile-slots{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
 .profile-slot{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;}
@@ -844,7 +850,9 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   padding:16px;display:flex;align-items:center;justify-content:space-between;
 }
 .wc-drawer-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
-.wc-drawer-close{background:rgba(255,255,255,.08);border:1px solid var(--border);color:#fff;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.wc-drawer-close{background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:#ffd7d7;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.wc-drawer-close:hover{background:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
+.wc-drawer-close:active{transform:translateY(1px) scale(.95);}
 .wc-drawer-sub{font-family:'Sen', sans-serif;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px;padding:10px 16px 0;}
 .wc-drawer-slots{display:flex;flex-direction:column;gap:8px;padding:8px 16px 16px;}
 .wc-slot{
@@ -966,6 +974,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .wc-reveal-hint{font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);animation:wc-blink 1.2s ease infinite;}
 @keyframes wc-blink{0%,100%{opacity:.4}50%{opacity:.9}}
 .wc-reveal-actions{display:flex;flex-direction:column;gap:10px;width:220px;align-items:stretch;}
+.wc-reveal-action-zone{min-height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;margin-top:10px;}
 .wc-equip-btn{
   width:100%;background:linear-gradient(135deg,#7b2f9e,#4a1a6e);color:#fff;border:none;
   border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:18px;
@@ -978,6 +987,22 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   letter-spacing:2px;cursor:pointer;transition:all .15s;
 }
 .wc-discard-outline-btn:hover{background:rgba(255,82,82,.12);}
+.wc-discard-outline-btn:disabled,.wc-discard-outline-btn.disabled{
+  opacity:.45;cursor:not-allowed;pointer-events:none;background:rgba(255,82,82,.12);
+}
+.wc-replace-grid{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}
+.wc-replace-btn{
+  background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);
+  border-radius:10px;min-height:64px;padding:6px 4px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  transition:all .12s;
+}
+.wc-replace-btn:hover{border-color:var(--c-fwyl);background:rgba(78,158,66,.1);}
+.wc-replace-icon{font-size:18px;line-height:1;}
+.wc-replace-name{
+  width:100%;font-family:'Sen',sans-serif;font-size:9px;line-height:1.1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;
+}
 .wc-discard-all-btn{
   background:rgba(255,82,82,.15);color:#ff8080;border:1px solid rgba(255,82,82,.3);
   border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:14px;
@@ -1115,7 +1140,9 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   display:flex;align-items:center;justify-content:space-between;
 }
 .mode-info-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
-.mode-info-close{background:rgba(255,255,255,.08);border:1px solid var(--border);color:#fff;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;}
+.mode-info-close{background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:#ffd7d7;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.mode-info-close:hover{background:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
+.mode-info-close:active{transform:translateY(1px) scale(.95);}
 .mode-info-body{padding:16px;}
 .mode-info-body.compact-top{padding-top:8px;}
 .mode-info-section{margin-bottom:18px;}
@@ -1252,18 +1279,8 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
         <button class="diff-btn active" id="vsFormatStroke" onclick="vsSetFormat('stroke')">🏆 STROKE PLAY</button>
         <button class="diff-btn" id="vsFormatMatch" onclick="vsSetFormat('match')">⚔️ MATCH PLAY</button>
       </div>
-      <div style="font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);line-height:1.4;margin-top:-4px;margin-bottom:10px;" id="vsFormatDesc">Lowest total score wins. Every stroke counts!</div>
     </div>
     
-    <div class="setup-group">
-      <span class="setup-lbl">HOLES</span>
-      <div class="diff-row">
-        <button class="diff-btn active" id="vsH-18" onclick="vsSetHoles('18')">18 HOLES</button>
-        <button class="diff-btn" id="vsH-front" onclick="vsSetHoles('front')">FRONT 9</button>
-        <button class="diff-btn" id="vsH-back" onclick="vsSetHoles('back')">BACK 9</button>
-      </div>
-    </div>
-
     <div class="setup-group">
       <span class="setup-lbl">ROUNDS</span>
       <div class="diff-row">
@@ -1271,6 +1288,15 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
         <button class="diff-btn" id="vsR-2" onclick="vsSetRounds(2)">TWO</button>
         <button class="diff-btn" id="vsR-3" onclick="vsSetRounds(3)">THREE</button>
         <button class="diff-btn" id="vsR-4" onclick="vsSetRounds(4)">FOUR</button>
+      </div>
+    </div>
+
+    <div class="setup-group">
+      <span class="setup-lbl">HOLES</span>
+      <div class="diff-row">
+        <button class="diff-btn active" id="vsH-18" onclick="vsSetHoles('18')">18 HOLES</button>
+        <button class="diff-btn" id="vsH-front" onclick="vsSetHoles('front')">FRONT 9</button>
+        <button class="diff-btn" id="vsH-back" onclick="vsSetHoles('back')">BACK 9</button>
       </div>
     </div>
     
@@ -1520,9 +1546,9 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 <div class="profile-modal" id="gameMenuModal" style="z-index:700;">
   <div class="profile-card" style="max-width:320px;">
     <div class="profile-body" style="padding:20px;">
-      <div style="font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:2px;color:var(--c-fwyl);text-align:center;margin-bottom:14px;">What would you like to do?</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:1px;color:#fff;text-align:center;margin-bottom:14px;white-space:nowrap;">What would you like to do?</div>
       <div style="display:flex;flex-direction:column;gap:8px;">
-        <button onclick="resumeGameScreenMenu()" style="width:100%;background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;">RESUME</button>
+        <button onclick="resumeGameScreenMenu()" style="width:100%;background:#1a5f8a;color:#fff;border:1px solid rgba(30,95,138,.7);border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 14px rgba(30,95,138,.35), inset 0 1px 0 rgba(255,255,255,.06);">RESUME</button>
         <button onclick="saveAndMenuFromGameScreen()" style="width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;">SAVE &amp; MENU</button>
         <button onclick="abandonFromGameScreenMenu()" style="width:100%;background:transparent;color:#ff8080;border:1px solid rgba(255,82,82,.35);border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;">ABANDON</button>
       </div>
@@ -6399,7 +6425,12 @@ function revealWcCard(){
       const discardNewBtn=document.createElement('button');
       discardNewBtn.className='wc-discard-outline-btn';
       discardNewBtn.textContent='DISCARD';
-      discardNewBtn.onclick=discardAndProceed;
+      if(TUT.active){
+        discardNewBtn.disabled=true;
+        discardNewBtn.classList.add('disabled');
+      } else {
+        discardNewBtn.onclick=discardAndProceed;
+      }
       actions.appendChild(fullBtn);
       actions.appendChild(discardNewBtn);
     } else {
@@ -6411,7 +6442,12 @@ function revealWcCard(){
       const discardBtn=document.createElement('button');
       discardBtn.className='wc-discard-outline-btn';
       discardBtn.textContent='DISCARD';
-      discardBtn.onclick=discardAndProceed;
+      if(TUT.active){
+        discardBtn.disabled=true;
+        discardBtn.classList.add('disabled');
+      } else {
+        discardBtn.onclick=discardAndProceed;
+      }
       actions.appendChild(equipBtn);
       actions.appendChild(discardBtn);
     }
@@ -6434,26 +6470,32 @@ function discardAndProceed(){
 
 function showDiscardChoice(){
   const actions=document.getElementById('wcRevealActions');
-  actions.innerHTML='<div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.6);text-align:center;width:100%;margin-bottom:8px;">DISCARD WHICH?</div>';
+  actions.innerHTML='<div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.6);text-align:center;width:100%;margin-bottom:2px;">DISCARD WHICH?</div>';
+  const replaceGrid=document.createElement('div');
+  replaceGrid.className='wc-replace-grid';
   WCS.equipped.forEach((wc,i)=>{
     const b=document.createElement('button');
-    b.className='wc-discard-btn';
-    b.style.cssText='flex:1;margin:2px;padding:6px;font-size:11px;';
-    b.textContent=`${wc.icon} ${wc.name}`;
+    b.className='wc-replace-btn';
+    b.innerHTML=`<span class="wc-replace-icon">${wc.icon}</span><span class="wc-replace-name">${wc.name}</span>`;
     b.onclick=()=>{
       WCS.equipped.splice(i,1);
       WCS.equipped.push(_pendingWc);
       closeWcReveal();
     };
-    actions.appendChild(b);
+    replaceGrid.appendChild(b);
   });
+  actions.appendChild(replaceGrid);
   const keepBtn=document.createElement('button');
   keepBtn.className='wc-discard-outline-btn';
-  keepBtn.style.cssText='width:100%;margin-top:6px;font-size:13px;';
-  keepBtn.textContent='DISCARD NEW CARD';
-  keepBtn.onclick=discardAndProceed;
+  keepBtn.style.cssText='width:100%;margin-top:0;font-size:13px;';
+  keepBtn.textContent='DISCARD';
+  if(TUT.active){
+    keepBtn.disabled=true;
+    keepBtn.classList.add('disabled');
+  } else {
+    keepBtn.onclick=discardAndProceed;
+  }
   actions.appendChild(keepBtn);
-  actions.style.flexWrap='nowrap';
 }
 
 function closeWcReveal(){
@@ -6526,7 +6568,10 @@ function hasSavedGame(){
   try{
     const s=JSON.parse(localStorage.getItem('gg_save')||'null');
     if(s && !s.vsState && s.holeDone && s.holeIdx >= s.endIdx && (s.currentRound||1) >= (s.totalRounds||1)) return false;
-    return s && s.scorecards && (s.scorecards[0].some(v=>v!==null) || (s.holeIdx>s.startIdx) || (s.strokes>0&&s.shotNum>1) || s.currentRound > 1);
+    if(!s || !s.scorecards) return false;
+    const firstRound = Array.isArray(s.scorecards[0]) ? s.scorecards[0] : [];
+    const isFreshStartedRound = !s.holeDone && s.holeIdx===s.startIdx && (s.strokes||0)===0 && (s.shotNum||1)===1;
+    return !!s.vsState || isFreshStartedRound || firstRound.some(v=>v!==null) || (s.holeIdx>s.startIdx) || ((s.strokes||0)>0&&(s.shotNum||1)>1) || (s.currentRound||1) > 1;
   }catch{return false;}
 }
 
@@ -8540,7 +8585,7 @@ function closeModeInfo(type){
       </div>
     </div>
   </div>
-  <div style="height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;margin-top:16px;">
+  <div class="wc-reveal-action-zone">
     <div class="wc-reveal-hint" id="wcRevealHint">TAP CARD TO REVEAL</div>
     <div class="wc-reveal-actions" id="wcRevealActions" style="display:none;">
       <button class="wc-equip-btn" id="wcEquipBtn" onclick="equipWildcard()">EQUIP</button>
