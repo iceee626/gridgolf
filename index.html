@@ -128,7 +128,8 @@ header .sc-wrap {
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x;
-  overscroll-behavior: contain;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: contain;
 }
 .logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:4px;}
 .logo{display:flex;align-items:center;justify-content:center;min-width:0;margin:0;overflow:hidden;}
@@ -157,7 +158,7 @@ header .sc-wrap {
 html::-webkit-scrollbar, body::-webkit-scrollbar, .sc-wrap::-webkit-scrollbar, .sum-tabs::-webkit-scrollbar, .sc-table-wrapper::-webkit-scrollbar { display: none; }
 html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; scrollbar-width: none; }
 /* Sc-wrap allows scrolling */
-.sc-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow-x:auto;overflow-y:hidden;margin-bottom:12px;-webkit-overflow-scrolling:touch;touch-action:pan-x;overscroll-behavior:contain;}
+.sc-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow-x:auto;overflow-y:hidden;margin-bottom:12px;-webkit-overflow-scrolling:touch;touch-action:pan-x;overscroll-behavior-x:none;overscroll-behavior-y:contain;}
 .sc-inner{display:flex;flex-direction:column;min-width:100%;width:max-content;}
 .sc-row{display:grid;font-family:'Sen', sans-serif;font-size:10px;}
 .sc-head{background:var(--c-fwy);}
@@ -802,6 +803,8 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 #settingsModal .profile-card{max-height:calc(100vh - env(safe-area-inset-top) - 36px);display:flex;flex-direction:column;}
 #settingsModal .profile-body{overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .settings-section-title{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
+.settings-section-title.tight{margin-bottom:8px;}
+.settings-section-title.spaced-top{margin-top:18px;}
 .settings-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
 .settings-row.no-divider{border-bottom:none;}
 .settings-row-desc{font-family:'Sen', sans-serif;font-size:12px;color:var(--muted);margin-top:2px;}
@@ -1140,23 +1143,25 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .mode-info-overlay{
   display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);
   z-index:620;align-items:flex-start;justify-content:center;
-  padding:max(20px, 8vh) 20px 20px;overflow-y:auto;
+  padding:calc(env(safe-area-inset-top) + 16px) 20px 20px;overflow:hidden;
 }
 .mode-info-overlay.show{display:flex;}
 .mode-info-card{
   background:var(--card);border:1px solid var(--border);border-radius:16px;
-  max-width:420px;width:100%;overflow:hidden;
+  max-width:420px;width:100%;max-height:calc(100vh - env(safe-area-inset-top) - 36px);overflow:hidden;
+  display:flex;flex-direction:column;
   animation:popin .3s cubic-bezier(.34,1.56,.64,1);
 }
 .mode-info-head{
   background:var(--c-fwy);padding:14px 18px;
   display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:2;flex-shrink:0;
 }
 .mode-info-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
 .mode-info-close{background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:#ffd7d7;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
 .mode-info-close:hover{background:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
 .mode-info-close:active{transform:translateY(1px) scale(.95);}
-.mode-info-body{padding:16px;}
+.mode-info-body{padding:16px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;}
 .mode-info-body.compact-top{padding-top:8px;}
 .mode-info-section{margin-bottom:18px;}
 .mode-info-section:last-child{margin-bottom:0;}
@@ -2680,6 +2685,24 @@ function starsPlain(d){
   return full.repeat(d)+empty.repeat(3-d);
 }
 
+function clampHorizontalScroller(el){
+  if(!el) return;
+  const maxScroll=Math.max(0,el.scrollWidth-el.clientWidth);
+  if(el.scrollLeft<0) el.scrollLeft=0;
+  else if(el.scrollLeft>maxScroll) el.scrollLeft=maxScroll;
+}
+
+function bindHorizontalScrollerClamp(el){
+  if(!el || el.dataset.clampBound==='1') return;
+  const clamp=()=>clampHorizontalScroller(el);
+  el.addEventListener('scroll', clamp, {passive:true});
+  el.addEventListener('touchend', clamp, {passive:true});
+  el.addEventListener('mouseup', clamp);
+  el.addEventListener('mouseleave', clamp);
+  el.dataset.clampBound='1';
+  clamp();
+}
+
 function buildScorecard(){
   const pr=document.getElementById('parRow');
   const sr=document.getElementById('scoreRow');
@@ -2700,6 +2723,9 @@ function buildScorecard(){
   if (scInner) {
       scInner.style.width = activeHoles.length <= 9 ? '100%' : 'max-content';
   }
+  const scWrap=document.querySelector('header .sc-wrap');
+  bindHorizontalScrollerClamp(scWrap);
+  if(scWrap) requestAnimationFrame(()=>clampHorizontalScroller(scWrap));
   
   headRow.innerHTML = '<div class="sc-lbl">H</div>';
   activeHoles.forEach((_, i) => {
@@ -6762,6 +6788,8 @@ function continueGame(){
             document.getElementById('ovPlayAgainBtn').style.display='none';
             document.getElementById('overlay').classList.add('show');
         }
+    } else {
+        renderWcFab();
     }
     maybeShowShakeBanner();
   }catch(e){console.error('Continue failed:',e);}
@@ -8462,7 +8490,7 @@ function closeModeInfo(type){
         <button id="themeBtn-light" onclick="setTheme('light')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">☀️ LIGHT</button>
         <button id="themeBtn-system" onclick="setTheme('system')" style="flex:1;border-radius:8px;padding:9px 4px;font-family:'Sen', sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);transition:all .15s;">🔄 SYSTEM</button>
       </div>
-      <div class="settings-section-title">GAME OPTIONS</div>
+      <div class="settings-section-title tight">GAME OPTIONS</div>
       <div class="settings-row">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🔊 SOUND</div>
@@ -8527,7 +8555,7 @@ function closeModeInfo(type){
           <div class="txt-lbl lbl-r">YES</div>
         </div>
       </div>
-      <div class="settings-section-title">TUTORIAL</div>
+      <div class="settings-section-title tight spaced-top">TUTORIAL</div>
       <div id="settingsTutorialRow" class="settings-row">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📖 TUTORIAL</div>
