@@ -428,13 +428,13 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 
 .setup-card{max-width:360px;width:100%;text-align:center;position:relative;z-index:10;}
 .setup-top-back{display:none;}
-.setup-head-row{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:12px;margin-bottom:18px;}
+.setup-head-row{display:grid;grid-template-columns:32px 1fr 32px;align-items:center;gap:12px;margin-bottom:18px;}
 .setup-back-btn{
-  width:36px;height:36px;border-radius:50%;padding:0;margin:0;
+  width:32px;height:32px;border-radius:8px;padding:0;margin:0;
   background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;
-  font-family:Arial, sans-serif;font-size:18px;line-height:1;letter-spacing:0;cursor:pointer;
+  font-family:Arial, sans-serif;font-size:16px;line-height:1;letter-spacing:0;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 12px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08);
+  box-shadow:0 2px 8px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08);
   justify-self:start;
 }
 .setup-back-btn:active{
@@ -446,7 +446,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .setup-title{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;margin-bottom:20px;color:var(--c-fwyl);text-align:center;}
 .setup-head-row .setup-title{grid-column:2;margin-bottom:0;}
 .setup-head-row .mode-info-btn{justify-self:end;}
-.setup-head-spacer{display:block;width:36px;height:36px;}
+.setup-head-spacer{display:block;width:32px;height:32px;}
 .menu-content > .menu-btns > #menuPlayBtn{width:100%;margin:0;min-height:73.5px;display:flex;align-items:center;justify-content:center;}
 .setup-group{margin-bottom:20px;text-align:left;}
 .setup-lbl{font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;display:block;}
@@ -477,7 +477,12 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 
 /* diff-btn used for custom options & difficulty */
 .diff-row{display:flex;gap:6px;margin-bottom:10px;}
-.diff-btn{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;padding:12px 6px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:var(--text);cursor:pointer;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.03);}
+.diff-btn{
+  flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;padding:12px 6px;
+  font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:var(--text);cursor:pointer;text-align:center;
+  box-shadow:0 4px 10px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.03);
+  min-height:50px;display:flex;align-items:center;justify-content:center;line-height:1;
+}
 .diff-btn.active{border-color:var(--c-fwyl);background:rgba(78,158,66,.2);color:var(--c-fwyl);}
 .diff-btn:active{transform:translateY(1px) scale(0.955);border-color:rgba(120,220,96,.45);box-shadow:inset 0 0 12px rgba(0,0,0,.42), 0 0 14px rgba(120,220,96,.18);}
 .diff-btn:disabled{opacity:0.3;cursor:not-allowed;pointer-events:none;}
@@ -538,7 +543,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .hist-card{background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:440px;margin:0 auto;overflow:hidden;animation:popin .3s cubic-bezier(.34,1.56,.64,1);}
 .hist-head{background:var(--c-fwy);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;}
 .hist-htitle{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
-.hist-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.hist-close{background:rgba(255,255,255,.08);border:1px solid var(--border);color:#fff;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .hist-body{padding:14px;}
 .hist-stats{display:flex;gap:8px;margin-bottom:12px;}
 .hstat{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center;}
@@ -577,7 +582,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .name-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;cursor:pointer;transition:background .15s;}
 .name-btn:hover{background:var(--c-fwyl);}
 .diff-row{display:flex;gap:6px;margin-bottom:14px;}
-.diff-btn{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;padding:10px 6px;cursor:pointer;text-align:center;}
+.diff-btn{min-height:50px;}
 .diff-btn:hover{border-color:var(--c-fwyl);background:rgba(78,158,66,.1);}
 .diff-btn.active{border-color:var(--c-fwyl);background:rgba(78,158,66,.2);}
 .diff-icon{font-size:20px;margin-bottom:3px;}
@@ -693,7 +698,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 }
 .sum-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#fff;text-align:center;}
 .sum-head-spacer{width:36px;height:36px;display:block;}
-.sum-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.sum-close{background:rgba(255,255,255,.08);border:1px solid var(--border);color:#fff;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .sum-body{
   flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;padding:16px 16px calc(env(safe-area-inset-bottom) + 20px);
@@ -756,7 +761,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .profile-modal.show .profile-card{transform:translateY(0) scale(1);opacity:1;}
 .profile-head{background:var(--c-fwy);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;}
 .profile-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
-.profile-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;}
+.profile-close{background:rgba(255,255,255,.08);border:1px solid var(--border);color:#fff;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .profile-body{padding:14px;}
 .profile-slots{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
 .profile-slot{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;}
@@ -839,7 +844,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   padding:16px;display:flex;align-items:center;justify-content:space-between;
 }
 .wc-drawer-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
-.wc-drawer-close{background:rgba(0,0,0,.3);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.wc-drawer-close{background:rgba(255,255,255,.08);border:1px solid var(--border);color:#fff;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .wc-drawer-sub{font-family:'Sen', sans-serif;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px;padding:10px 16px 0;}
 .wc-drawer-slots{display:flex;flex-direction:column;gap:8px;padding:8px 16px 16px;}
 .wc-slot{
@@ -960,13 +965,19 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .wc-front-desc{font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.75);text-align:center;line-height:1.4;}
 .wc-reveal-hint{font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);animation:wc-blink 1.2s ease infinite;}
 @keyframes wc-blink{0%,100%{opacity:.4}50%{opacity:.9}}
-.wc-reveal-actions{display:flex;gap:10px;width:220px;flex-wrap:wrap;}
+.wc-reveal-actions{display:flex;flex-direction:column;gap:10px;width:220px;align-items:stretch;}
 .wc-equip-btn{
-  flex:1;background:linear-gradient(135deg,#7b2f9e,#4a1a6e);color:#fff;border:none;
+  width:100%;background:linear-gradient(135deg,#7b2f9e,#4a1a6e);color:#fff;border:none;
   border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:18px;
   letter-spacing:2px;cursor:pointer;transition:opacity .15s;
 }
 .wc-equip-btn:hover{opacity:.85;}
+.wc-discard-outline-btn{
+  width:100%;background:transparent;color:#ff8080;border:1px solid rgba(255,82,82,.42);
+  border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:16px;
+  letter-spacing:2px;cursor:pointer;transition:all .15s;
+}
+.wc-discard-outline-btn:hover{background:rgba(255,82,82,.12);}
 .wc-discard-all-btn{
   background:rgba(255,82,82,.15);color:#ff8080;border:1px solid rgba(255,82,82,.3);
   border-radius:10px;padding:14px;font-family:'Bebas Neue',cursive;font-size:14px;
@@ -1046,6 +1057,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .tut-overlay.middle{bottom:auto; top:35%; transform:translate(-50%, -30px);}
 .tut-overlay.middle.show{transform:translate(-50%, 0);}
 .tut-overlay-title{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:var(--c-fwyl);margin-bottom:6px;}.tut-overlay-text{font-family:'Sen',sans-serif;font-size:11px;color:rgba(255,255,255,.85);line-height:1.5;margin-bottom:10px;}
+.tut-overlay-text strong{font-weight:700;color:#fff;}
 .tut-overlay-btn{width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:8px;padding:10px;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;cursor:pointer;}
 .tut-overlay-btn:hover{background:var(--c-fwyl);}
 @keyframes tutPulse{0%,100%{box-shadow:0 0 0 0 rgba(78,158,66,.8);}50%{box-shadow:0 0 0 10px rgba(78,158,66,0);}}
@@ -1078,11 +1090,12 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 /* MODE INFO POPUP */
 .mode-info-btn{
   position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:16px;
-  width:32px;height:32px;border-radius:50%;
+  width:32px;height:32px;border-radius:8px;
   background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
   color:rgba(255,255,255,.7);font-family:'Bebas Neue',cursive;font-size:15px;
   cursor:pointer;display:flex;align-items:center;justify-content:center;
   z-index:110;transition:background .15s;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08);
 }
 .mode-info-btn:hover{background:rgba(255,255,255,.22);}
 .mode-info-btn:active{transform:translateY(1px) scale(.92);border-color:rgba(120,220,96,.4);box-shadow:inset 0 0 10px rgba(0,0,0,.42), 0 0 12px rgba(120,220,96,.16);}
@@ -1102,7 +1115,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   display:flex;align-items:center;justify-content:space-between;
 }
 .mode-info-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
-.mode-info-close{background:rgba(0,0,0,.25);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;}
+.mode-info-close{background:rgba(255,255,255,.08);border:1px solid var(--border);color:#fff;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;}
 .mode-info-body{padding:16px;}
 .mode-info-body.compact-top{padding-top:8px;}
 .mode-info-section{margin-bottom:18px;}
@@ -1200,7 +1213,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="setup-head-row">
       <button class="setup-back-btn" onclick="navBack('menuScreen')" aria-label="Back">&#8592;</button>
       <div class="setup-title" style="margin-bottom:0;">VERSUS MODE</div>
-      <button class="mode-info-btn" style="position:static;width:36px;height:36px;font-size:16px;" onclick="openModeInfo('versus')">&#9432;</button>
+      <button class="mode-info-btn" style="position:static;" onclick="openModeInfo('versus')">&#9432;</button>
     </div>
     <div class="vs-setup-players">
       <div class="vs-player-card">
@@ -1250,6 +1263,16 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
         <button class="diff-btn" id="vsH-back" onclick="vsSetHoles('back')">BACK 9</button>
       </div>
     </div>
+
+    <div class="setup-group">
+      <span class="setup-lbl">ROUNDS</span>
+      <div class="diff-row">
+        <button class="diff-btn active" id="vsR-1" onclick="vsSetRounds(1)">ONE</button>
+        <button class="diff-btn" id="vsR-2" onclick="vsSetRounds(2)">TWO</button>
+        <button class="diff-btn" id="vsR-3" onclick="vsSetRounds(3)">THREE</button>
+        <button class="diff-btn" id="vsR-4" onclick="vsSetRounds(4)">FOUR</button>
+      </div>
+    </div>
     
     <div class="setup-group">
       <span class="setup-lbl">DIFFICULTY</span>
@@ -1272,17 +1295,25 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <button class="vs-turn-btn" id="vsTurnBtn" onclick="vsStartTurn()">READY</button>
 </div>
 
+<!-- SINGLE ROUND START TRANSITION -->
+<div class="vs-turn-screen" id="roundStartScreen">
+  <div class="vs-turn-icon" id="rsTurnIcon">🏌️</div>
+  <div class="vs-turn-name" id="rsTurnName">PLAYER</div>
+  <div class="vs-turn-sub" id="rsTurnSub">HOLE 1 · PAR 4</div>
+  <button class="vs-turn-btn" onclick="startSingleRoundFromSplash()">READY</button>
+</div>
+
 <div class="setup-screen" id="playModeScreen" style="display:none">
   <div class="setup-card">
     <div class="setup-head-row">
       <button class="setup-back-btn" onclick="navBack('menuScreen')" aria-label="Back">&#8592;</button>
       <div class="setup-title" style="margin-bottom:0;">SELECT MODE</div>
-      <button class="mode-info-btn" style="position:static;width:36px;height:36px;font-size:16px;" onclick="openModeInfo('play')">&#9432;</button>
+      <button class="mode-info-btn" style="position:static;" onclick="openModeInfo('play')">&#9432;</button>
     </div>
     <div class="mode-menu">
       <button class="menu-btn-sec mode-menu-card" onclick="navToModeDifficulty('single')">
         <div class="mode-menu-copy">
-          <span class="mode-menu-title">SINGLE DAY</span>
+          <span class="mode-menu-title">SINGLE ROUND</span>
           <span class="mode-menu-sub">Quick  play • 18 holes</span>
         </div>
         <span class="mode-menu-icon">⛳</span>
@@ -1323,9 +1354,10 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="setup-group">
       <span class="setup-lbl">ROUNDS</span>
       <div class="diff-row">
-        <button class="diff-btn active" id="cr-1" onclick="setCustomRounds(1)">1 DAY</button>
-        <button class="diff-btn" id="cr-2" onclick="setCustomRounds(2)">2 DAYS</button>
-        <button class="diff-btn" id="cr-4" onclick="setCustomRounds(4)">4 DAYS</button>
+        <button class="diff-btn active" id="cr-1" onclick="setCustomRounds(1)">ONE</button>
+        <button class="diff-btn" id="cr-2" onclick="setCustomRounds(2)">TWO</button>
+        <button class="diff-btn" id="cr-3" onclick="setCustomRounds(3)">THREE</button>
+        <button class="diff-btn" id="cr-4" onclick="setCustomRounds(4)">FOUR</button>
       </div>
     </div>
     
@@ -1407,11 +1439,10 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 <div class="app" id="mainApp" style="display:none">
 <header>
   <div class="logo-row">
-    <button class="menu-mini-btn" onclick="if(TUT.active){tutMenuIntercept();}else{returnToMenuSave();}">MENU</button>
+    <button class="setup-back-btn" id="gameBackBtn" onclick="openGameScreenMenu()" aria-label="Back">&#8592;</button>
     <div class="logo"><img class="brand-logo-img brand-logo-game" src="dicegolf_cropped.png" alt="Dice Golf"></div>
     <div style="display:flex;align-items:center;gap:4px;">
-      <button onclick="openSettings()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;width:26px;height:26px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;" title="Settings">⚙️</button>
-      <button id="abandonBtn" onclick="abandonCurrentGame()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);border-radius:6px;width:26px;height:26px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;" title="Abandon Game">❎</button>
+      <button id="gameSettingsBtn" onclick="openSettings()" style="background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--muted);border-radius:7px;width:32px;height:32px;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;line-height:1;" title="Settings">&#9881;</button>
     </div>
   </div>
   <div class="sc-wrap">
@@ -1485,6 +1516,18 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 </div>
 <div class="legend" id="legend" style="display:grid;">
 </div>
+</div>
+<div class="profile-modal" id="gameMenuModal" style="z-index:700;">
+  <div class="profile-card" style="max-width:320px;">
+    <div class="profile-body" style="padding:20px;">
+      <div style="font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:2px;color:var(--c-fwyl);text-align:center;margin-bottom:14px;">What would you like to do?</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button onclick="resumeGameScreenMenu()" style="width:100%;background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;">RESUME</button>
+        <button onclick="saveAndMenuFromGameScreen()" style="width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;">SAVE &amp; MENU</button>
+        <button onclick="abandonFromGameScreenMenu()" style="width:100%;background:transparent;color:#ff8080;border:1px solid rgba(255,82,82,.35);border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;">ABANDON</button>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="summary-modal" id="summaryModal">
   <div class="summary-card">
@@ -1934,6 +1977,8 @@ window.addEventListener('DOMContentLoaded', function(){
   if(stm) stm.addEventListener('click',function(e){if(e.target===this)closeSettings();});
   const epm=document.getElementById('editProfileModal');
   if(epm) epm.addEventListener('click',function(e){if(e.target===this)closeEditProfile();});
+  const gmm=document.getElementById('gameMenuModal');
+  if(gmm) gmm.addEventListener('click',function(e){if(e.target===this)resumeGameScreenMenu();});
   bindNameSanitizer('onboardInput',12);
   bindNameSanitizer('profileNewInput',10);
   bindNameSanitizer('editProfileName',10);
@@ -2412,7 +2457,7 @@ function teeOffFromCourse(){
 
 function setCustomRounds(r) {
   SETUP.rounds=r;
-  [1,2,4].forEach(i=>document.getElementById(`cr-${i}`)?.classList.toggle('active', i===r));
+  [1,2,3,4].forEach(i=>document.getElementById(`cr-${i}`)?.classList.toggle('active', i===r));
 }
 function setCustomHoles(h) {
   SETUP.holesConfig=h;
@@ -2450,6 +2495,8 @@ function returnToMenu(opts={}){
   setMainAppConcealed(true);
   hideMainApp();
   document.getElementById('vsTurnScreen').classList.remove('show');
+  document.getElementById('roundStartScreen').classList.remove('show');
+  document.getElementById('gameMenuModal').classList.remove('show');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
   const ovBtn = document.getElementById('ovBtn');
   if(ovBtn) ovBtn.onclick = ()=>nextHole();
@@ -2480,6 +2527,28 @@ function startGame(){
   }
   
   init();
+  showSingleRoundSplash();
+}
+
+function showSingleRoundSplash(){
+  if(TUT.active) return;
+  const p = getActiveProfile();
+  const icon = p ? getProfileIcon(p, getActiveProfileIdx()) : '🏌️';
+  const h = HOLES[S.holeIdx];
+  const roundPrefix = S.totalRounds > 1 ? `ROUND ${S.currentRound} · ` : '';
+  const rsIcon = document.getElementById('rsTurnIcon');
+  const rsName = document.getElementById('rsTurnName');
+  const rsSub = document.getElementById('rsTurnSub');
+  if(rsIcon) rsIcon.textContent = icon;
+  if(rsName) rsName.textContent = `${PLAYER_NAME}'S TURN`;
+  if(rsSub) rsSub.textContent = `${roundPrefix}HOLE ${S.holeIdx + 1} · PAR ${h.par}`;
+  setMainAppConcealed(true);
+  document.getElementById('roundStartScreen').classList.add('show');
+}
+
+function startSingleRoundFromSplash(){
+  document.getElementById('roundStartScreen').classList.remove('show');
+  revealMainApp();
   maybeShowShakeBanner();
 }
 
@@ -2638,12 +2707,6 @@ function loadHole(){
   }
   _holdFinishBtn=false;
   hideNextShotBtn(true);
-
-  const abandonBtn = document.getElementById('abandonBtn');
-  if(abandonBtn) {
-     abandonBtn.style.display = 'flex';
-     abandonBtn.onclick = TUT.active ? tutMenuIntercept : abandonCurrentGame;
-  }
 
   const h=HOLES[S.holeIdx];
   S.zone='tee';S.strokes=0;S.shotNum=1;S._tvShotNum=1;S.shotCount=0;
@@ -3731,8 +3794,9 @@ function completeHole(){
     for(let i=S.startIdx; i<=S.holeIdx; i++){
         if (i === S.holeIdx) {
             pTotal += score;
-        } else if (VS.scores[VS.currentPlayer][i] !== null) {
-            pTotal += VS.scores[VS.currentPlayer][i];
+        } else {
+            const savedScore = vsGetScore(VS.currentPlayer, i);
+            if(savedScore !== null) pTotal += savedScore;
         }
         pPar += HOLES[i].par;
     }
@@ -4877,7 +4941,11 @@ function focusIconPicker(){
 }
 
 function closeEditProfile(){
-  _closeProfileLikeModal('editProfileModal', ()=>openProfileModal());
+  const editModal=document.getElementById('editProfileModal');
+  const profileModal=document.getElementById('profileModal');
+  if(editModal) editModal.classList.remove('show');
+  if(profileModal) profileModal.classList.add('show');
+  renderProfileSlots();
 }
 
 function saveEditProfile(){
@@ -5310,7 +5378,7 @@ function startNextRound() {
   revealMainApp();
   loadHole();
   saveGameState();
-  showWcToast(`⛳ ROUND ${S.currentRound} STARTED!`);
+  showSingleRoundSplash();
 }
 
 // ═══════════════════════════════════════
@@ -6323,12 +6391,13 @@ function revealWcCard(){
     actions.innerHTML=''; 
     if(WCS.equipped.length>=3){
       const fullBtn=document.createElement('button');
-      fullBtn.className='wc-discard-all-btn';
-      fullBtn.style.flex='1';
+      fullBtn.className='wc-equip-btn';
+      fullBtn.style.fontSize='14px';
+      fullBtn.style.letterSpacing='1px';
       fullBtn.textContent='FULL — CHOOSE ONE TO REPLACE';
       fullBtn.onclick=showDiscardChoice;
       const discardNewBtn=document.createElement('button');
-      discardNewBtn.className='wc-equip-btn';
+      discardNewBtn.className='wc-discard-outline-btn';
       discardNewBtn.textContent='DISCARD';
       discardNewBtn.onclick=discardAndProceed;
       actions.appendChild(fullBtn);
@@ -6339,7 +6408,12 @@ function revealWcCard(){
       equipBtn.id='wcEquipBtn';
       equipBtn.textContent='EQUIP';
       equipBtn.onclick=equipWildcard;
+      const discardBtn=document.createElement('button');
+      discardBtn.className='wc-discard-outline-btn';
+      discardBtn.textContent='DISCARD';
+      discardBtn.onclick=discardAndProceed;
       actions.appendChild(equipBtn);
+      actions.appendChild(discardBtn);
     }
   },400);
 }
@@ -6374,12 +6448,12 @@ function showDiscardChoice(){
     actions.appendChild(b);
   });
   const keepBtn=document.createElement('button');
-  keepBtn.className='wc-equip-btn';
+  keepBtn.className='wc-discard-outline-btn';
   keepBtn.style.cssText='width:100%;margin-top:6px;font-size:13px;';
   keepBtn.textContent='DISCARD NEW CARD';
   keepBtn.onclick=discardAndProceed;
   actions.appendChild(keepBtn);
-  actions.style.flexWrap='wrap';
+  actions.style.flexWrap='nowrap';
 }
 
 function closeWcReveal(){
@@ -6518,7 +6592,11 @@ function continueGame(){
         VS.histories = save.vsState.histories;
         VS.matchScore = save.vsState.matchScore;
         VS.sharedGrids = save.vsState.sharedGrids || {};
-        VS.setup = save.vsState.setup;
+        VS.setup = {
+          ...VS.setup,
+          ...(save.vsState.setup || {}),
+          rounds: (save.vsState.setup && save.vsState.setup.rounds) ? save.vsState.setup.rounds : 1
+        };
         VS.wcs = save.vsState.wcs;
     } else {
         VS.active = false;
@@ -6629,6 +6707,8 @@ function returnToMenuSave(opts={}){
   setMainAppConcealed(true);
   hideMainApp();
   document.getElementById('vsTurnScreen').classList.remove('show');
+  document.getElementById('roundStartScreen').classList.remove('show');
+  document.getElementById('gameMenuModal').classList.remove('show');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
   const ovBtn = document.getElementById('ovBtn');
   if(ovBtn) ovBtn.onclick = ()=>nextHole();
@@ -6788,6 +6868,28 @@ function showConfirm(msg, onYes){
 }
 function closeConfirm(){
   document.getElementById('confirmModal').classList.remove('show');
+}
+
+function openGameScreenMenu(){
+  if(TUT.active){
+    tutMenuIntercept();
+    return;
+  }
+  document.getElementById('gameMenuModal').classList.add('show');
+}
+
+function resumeGameScreenMenu(){
+  document.getElementById('gameMenuModal').classList.remove('show');
+}
+
+function saveAndMenuFromGameScreen(){
+  resumeGameScreenMenu();
+  returnToMenuSave();
+}
+
+function abandonFromGameScreenMenu(){
+  resumeGameScreenMenu();
+  abandonCurrentGame();
 }
 
 function showToast(msg){
@@ -6994,6 +7096,22 @@ function _tutHighlight(sel, darken = true){
   else bd.classList.remove('show');
 }
 
+function _tutEscapeHtml(text){
+  return String(text||'')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+function _tutFormatText(text){
+  const escaped = _tutEscapeHtml(text);
+  return escaped
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\n/g,'<br>');
+}
+
 function _tutShowTip(title, text, btnLabel, highlight, darken = true, position = 'bottom'){
   _tutBlockInput(true);
   _tutHighlight(highlight || null, darken);
@@ -7004,7 +7122,7 @@ function _tutShowTip(title, text, btnLabel, highlight, darken = true, position =
   else if(position === 'middle') ov.classList.add('middle');
   
   document.getElementById('tutOverlayTitle').textContent = title;
-  document.getElementById('tutOverlayText').textContent = text;
+  document.getElementById('tutOverlayText').innerHTML = _tutFormatText(text);
   document.getElementById('tutOverlayBtn').textContent = btnLabel || 'GOT IT';
   ov.classList.add('show');
 }
@@ -7200,7 +7318,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 11){
-      _tutShowTip('PENALTY REMOVED!', 'Thanks to the Wildcard, you saved a stroke! Now tap NEXT SHOT to continue.', 'GOT IT', '#nextShotBtn', true);
+      _tutShowTip('PENALTY REMOVED!', 'Thanks to the Wildcard, you saved a stroke! Now tap NEXT SHOT to continue.', 'THANKS!', '#nextShotBtn', true);
       scrollToGrid();
       return;
     }
@@ -7213,7 +7331,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 13){
-      _tutShowTip('RECOVERY SHOT', 'Your wildcard saved you from the penalty stroke! But you still have to replay the shot from the same spot — like getting a second chance. Roll again to try landing on the green.', 'THANKS!', '#rollBtn', true);
+      _tutShowTip('RECOVERY SHOT', 'Your wildcard saved you from the penalty stroke! But you still have to replay the shot from the same spot — like getting a second chance. Roll again to try landing on the green.', 'GOT IT', '#rollBtn', true);
       scrollToGrid();
       return;
     }
@@ -7463,6 +7581,7 @@ function navToVsOptions(){
   // Init defaults
   vsSetFormat('stroke');
   vsSetHoles('18');
+  vsSetRounds(1);
   vsSetDiff(1);
 }
 
@@ -7476,6 +7595,10 @@ function vsSetFormat(f){
 function vsSetHoles(h){
   VS.setup.holesConfig = h;
   ['18','front','back'].forEach(k=>document.getElementById('vsH-'+k)?.classList.toggle('active', k===h));
+}
+function vsSetRounds(r){
+  VS.setup.rounds = r;
+  [1,2,3,4].forEach(i=>document.getElementById(`vsR-${i}`)?.classList.toggle('active', i===r));
 }
 function vsSetDiff(d){
   VS.setup.diff = d;
@@ -7503,7 +7626,7 @@ function navBackFromCourse(){
   
 function vsStartFromOptions(){
   SETUP.mode = 'custom';
-  SETUP.rounds = 1;
+  SETUP.rounds = VS.setup.rounds || 1;
   SETUP.holesConfig = VS.setup.holesConfig;
   GAME_DIFF = VS.setup.diff;
   _lastMenuScreen = 'vsOptionsScreen';
@@ -7520,8 +7643,9 @@ function vsStartGame(){
   VS.active = true;
   if(VS.setup) VS.setup.courseSelected = false;
   VS.currentPlayer = 0;
-  VS.scores = [Array(18).fill(null), Array(18).fill(null)];
-  VS.histories = [Array(18).fill(null), Array(18).fill(null)];
+  const makeRounds = () => Array.from({length:S.totalRounds}, ()=>Array(18).fill(null));
+  VS.scores = [makeRounds(), makeRounds()];
+  VS.histories = [makeRounds(), makeRounds()];
   VS.matchScore = [0, 0];
   VS.sharedGrids = {};
   const baseWc = () => ({ equipped:[], active:null, luckyBounceActive:false, ironWillActive:false, magicBackspinActive:false, pressureCookerShots:0, pressureCookerFresh:false, mowersRevengeActive:false, fairwayFinderActive:false, fairwayFinderQueued:false, birdieBoostActive:false, holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false, goldenPutterActive:false, ferrettActive:false, hioActive:false, highlightReelActive:false, shortcutActive:false });
@@ -7529,12 +7653,70 @@ function vsStartGame(){
   vsShowTurnScreen();
 }
 
+function vsRoundIdx(){
+  return Math.max(0, (S.currentRound || 1) - 1);
+}
+
+function vsRoundScores(playerIdx, roundIdx = vsRoundIdx()){
+  const store = VS.scores[playerIdx] || [];
+  if(Array.isArray(store[0])) return store[roundIdx] || Array(18).fill(null);
+  return store;
+}
+
+function vsRoundHistories(playerIdx, roundIdx = vsRoundIdx()){
+  const store = VS.histories[playerIdx] || [];
+  if(Array.isArray(store[0])) return store[roundIdx] || Array(18).fill(null);
+  return store;
+}
+
+function vsGetScore(playerIdx, holeIdx, roundIdx = vsRoundIdx()){
+  const roundScores = vsRoundScores(playerIdx, roundIdx);
+  return roundScores[holeIdx] ?? null;
+}
+
+function vsSetScore(playerIdx, holeIdx, value, roundIdx = vsRoundIdx()){
+  if(Array.isArray(VS.scores[playerIdx]?.[0])){
+    VS.scores[playerIdx][roundIdx][holeIdx] = value;
+    return;
+  }
+  VS.scores[playerIdx][holeIdx] = value;
+}
+
+function vsGetHistory(playerIdx, holeIdx, roundIdx = vsRoundIdx()){
+  const roundHist = vsRoundHistories(playerIdx, roundIdx);
+  return roundHist[holeIdx] || null;
+}
+
+function vsSetHistory(playerIdx, holeIdx, value, roundIdx = vsRoundIdx()){
+  if(Array.isArray(VS.histories[playerIdx]?.[0])){
+    VS.histories[playerIdx][roundIdx][holeIdx] = value;
+    return;
+  }
+  VS.histories[playerIdx][holeIdx] = value;
+}
+
+function vsStrokeTotals(playerIdx, roundsToInclude = (S.currentRound || 1)){
+  let total = 0;
+  let par = 0;
+  for(let r = 0; r < roundsToInclude; r++){
+    for(let i = S.startIdx; i <= S.endIdx; i++){
+      const score = vsGetScore(playerIdx, i, r);
+      if(score !== null){
+        total += score;
+        par += HOLES[i].par;
+      }
+    }
+  }
+  return { total, par, diff: total - par };
+}
+
 function vsShowTurnScreen(){
   const p = VS.players[VS.currentPlayer];
   const h = HOLES[S.holeIdx];
   document.getElementById('vsTurnIcon').textContent = p.icon;
   document.getElementById('vsTurnName').textContent = p.name + "'S TURN";
-  document.getElementById('vsTurnSub').textContent = `HOLE ${S.holeIdx+1} · PAR ${h.par}`;
+  const roundPrefix = S.totalRounds > 1 ? `ROUND ${S.currentRound} · ` : '';
+  document.getElementById('vsTurnSub').textContent = `${roundPrefix}HOLE ${S.holeIdx+1} · PAR ${h.par}`;
   document.getElementById('vsTurnScreen').classList.add('show');
 }
 
@@ -7561,7 +7743,7 @@ function vsStartTurn(){
     nextBtn.disabled=false;
   }
   
-  S.scorecards[0] = [...VS.scores[VS.currentPlayer]]; // Sync scorecard for current player
+  S.scorecards[0] = [...vsRoundScores(VS.currentPlayer)]; // Sync scorecard for current player
   
   // Wipe all active wildcard states cleanly before switching turns
   WCS.active=null; WCS.greenLightShots=0; WCS.sandCastleActive=false; WCS.luckyBounceActive=false;
@@ -7600,14 +7782,14 @@ function vsStartTurn(){
 
 function vsCompleteHole(){
   const score = S.strokes;
-  VS.scores[VS.currentPlayer][S.holeIdx] = score;
-  VS.histories[VS.currentPlayer][S.holeIdx] = {
+  vsSetScore(VS.currentPlayer, S.holeIdx, score);
+  vsSetHistory(VS.currentPlayer, S.holeIdx, {
       log: [...S.log], 
       strokes: score, 
       par: HOLES[S.holeIdx].par, 
       name: HOLES[S.holeIdx].name,
       wcsUsed: [...(S._wcsUsedThisHole || [])]
-  };
+  });
   
   if (!VS.wcs) {
   const baseWc = () => ({ equipped:[], active:null, luckyBounceActive:false, ironWillActive:false, magicBackspinActive:false, pressureCookerShots:0, pressureCookerFresh:false, mowersRevengeActive:false, fairwayFinderActive:false, fairwayFinderQueued:false, birdieBoostActive:false, holeWallActive:false, sandWedgeProActive:false, cupMagnetActive:false, goldenPutterActive:false, ferrettActive:false, hioActive:false, highlightReelActive:false, shortcutActive:false });
@@ -7625,7 +7807,7 @@ function vsCompleteHole(){
     
     // Match play: track hole winner
     if(VS.format === 'match'){
-      const s1 = VS.scores[0][S.holeIdx], s2 = VS.scores[1][S.holeIdx];
+      const s1 = vsGetScore(0, S.holeIdx), s2 = vsGetScore(1, S.holeIdx);
       if(s1 < s2) VS.matchScore[0]++;
       else if(s2 < s1) VS.matchScore[1]++;
     }
@@ -7638,7 +7820,7 @@ function renderVsReplayAndScoreboard(playerIdx) {
   // 1. Render Log
   const logList = document.getElementById('hcLogList');
   logList.innerHTML = '';
-  const pLog = VS.histories[playerIdx][S.holeIdx]?.log || [];
+  const pLog = vsGetHistory(playerIdx, S.holeIdx)?.log || [];
   [...pLog].reverse().forEach(e => {
       const zd = Z[e.zk] || Z.fwy;
       const item = document.createElement('div');
@@ -7660,7 +7842,7 @@ function renderVsReplayAndScoreboard(playerIdx) {
   let runningTot = 0, runningPar = 0;
   activeHoles.forEach((ah, i) => {
       const absIdx = S.startIdx + i;
-      const v = VS.scores[playerIdx][absIdx];
+      const v = vsGetScore(playerIdx, absIdx);
       if (v !== null) { runningTot+=v; runningPar+=ah.par; }
 
       const d1 = document.createElement('div'); d1.textContent = absIdx + 1; scHead.appendChild(d1);
@@ -7728,15 +7910,13 @@ function renderVsReplayAndScoreboard(playerIdx) {
 
 function vsShowHoleComparison(){
   const h = HOLES[S.holeIdx];
-  const s1 = VS.scores[0][S.holeIdx], s2 = VS.scores[1][S.holeIdx];
+  const s1 = vsGetScore(0, S.holeIdx), s2 = vsGetScore(1, S.holeIdx);
   const d1 = s1 - h.par, d2 = s2 - h.par;
 
-  let totalP1=0, totalP2=0, totalPar=0;
-  for(let i=S.startIdx; i<=S.endIdx; i++){
-    if(VS.scores[0][i]!==null){ totalP1+=VS.scores[0][i]; totalPar+=HOLES[i].par; }
-    if(VS.scores[1][i]!==null) totalP2+=VS.scores[1][i];
-  }
-  const td1=totalP1-totalPar, td2=totalP2-totalPar;
+  const totalsP1 = vsStrokeTotals(0, S.currentRound);
+  const totalsP2 = vsStrokeTotals(1, S.currentRound);
+  const td1 = totalsP1.diff;
+  const td2 = totalsP2.diff;
   const p1=VS.players[0], p2=VS.players[1];
   const fmtD=(d)=>d===0?'E':d>0?'+'+d:''+d;
 
@@ -7882,7 +8062,17 @@ function vsShowHoleComparison(){
   renderVsReplayAndScoreboard(0);
 
   const btn = document.getElementById('hcBtn');
-  if (S.holeIdx >= S.endIdx || matchClinched) {
+  if (matchClinched) {
+      btn.textContent = 'FINAL RESULTS';
+      btn.onclick = () => {
+          vsShowFinal();
+      };
+  } else if (S.holeIdx >= S.endIdx && S.currentRound < S.totalRounds) {
+      btn.textContent = `START ROUND ${S.currentRound + 1}`;
+      btn.onclick = () => {
+          vsStartNextRound();
+      };
+  } else if (S.holeIdx >= S.endIdx) {
       btn.textContent = 'FINAL RESULTS';
       btn.onclick = () => {
           vsShowFinal();
@@ -7900,12 +8090,22 @@ function vsShowHoleComparison(){
   hcScreen.classList.add('show');
 }
 
+function vsStartNextRound(){
+  const hcScreen = document.getElementById('hcScreen');
+  if(hcScreen) hcScreen.classList.remove('show');
+  S.currentRound++;
+  S.holeIdx = S.startIdx;
+  showWcToast(`⛳ ROUND ${S.currentRound} STARTED!`);
+  saveGameState();
+  vsShowTurnScreen();
+}
+
 function vsShowFinal(){
-  let t1=0,t2=0,par=0;
-  for(let i=S.startIdx;i<=S.endIdx;i++){
-    if(VS.scores[0][i]!==null){t1+=VS.scores[0][i];par+=HOLES[i].par;}
-    if(VS.scores[1][i]!==null)t2+=VS.scores[1][i];
-  }
+  const totals1 = vsStrokeTotals(0, S.totalRounds);
+  const totals2 = vsStrokeTotals(1, S.totalRounds);
+  const t1 = totals1.total;
+  const t2 = totals2.total;
+  const par = totals1.par;
   const p1=VS.players[0],p2=VS.players[1];
   const fmtD=(d)=>d===0?'E':d>0?'+'+d:''+d;
   const d1=t1-par,d2=t2-par;
@@ -8020,28 +8220,30 @@ function vsShowFinal(){
       stats.unshift({ label: 'Holes Won', p1: VS.matchScore[0], p2: VS.matchScore[1] });
   }
 
-  for (let i = S.startIdx; i <= S.endIdx; i++) {
-      const h = HOLES[i];
-      [0, 1].forEach(pIdx => {
-          const hist = VS.histories[pIdx][i];
-          if (!hist) return;
-          
-          const sIdx = VS.format === 'match' ? 1 : 0;
-          
-          stats[sIdx][pIdx === 0 ? 'p1' : 'p2'] += hist.strokes;
-          
-          const d = hist.strokes - h.par;
-          if (h.par === 3 && hist.strokes === 1) stats[sIdx+1][pIdx === 0 ? 'p1' : 'p2']++;
-          else if (d <= -2) stats[sIdx+2][pIdx === 0 ? 'p1' : 'p2']++;
-          else if (d === -1) stats[sIdx+3][pIdx === 0 ? 'p1' : 'p2']++;
-          else if (d === 0) stats[sIdx+4][pIdx === 0 ? 'p1' : 'p2']++;
-          else if (d === 1) stats[sIdx+5][pIdx === 0 ? 'p1' : 'p2']++;
-          else if (d >= 2) stats[sIdx+6][pIdx === 0 ? 'p1' : 'p2']++;
-          
-          const pens = hist.log.filter(l => l.pen).length;
-          stats[sIdx+7][pIdx === 0 ? 'p1' : 'p2'] += pens;
-          stats[sIdx+8][pIdx === 0 ? 'p1' : 'p2'] += (hist.wcsUsed ? hist.wcsUsed.length : 0);
-      });
+  for(let r = 0; r < S.totalRounds; r++){
+    for (let i = S.startIdx; i <= S.endIdx; i++) {
+        const h = HOLES[i];
+        [0, 1].forEach(pIdx => {
+            const hist = vsGetHistory(pIdx, i, r);
+            if (!hist) return;
+            
+            const sIdx = VS.format === 'match' ? 1 : 0;
+            
+            stats[sIdx][pIdx === 0 ? 'p1' : 'p2'] += hist.strokes;
+            
+            const d = hist.strokes - h.par;
+            if (h.par === 3 && hist.strokes === 1) stats[sIdx+1][pIdx === 0 ? 'p1' : 'p2']++;
+            else if (d <= -2) stats[sIdx+2][pIdx === 0 ? 'p1' : 'p2']++;
+            else if (d === -1) stats[sIdx+3][pIdx === 0 ? 'p1' : 'p2']++;
+            else if (d === 0) stats[sIdx+4][pIdx === 0 ? 'p1' : 'p2']++;
+            else if (d === 1) stats[sIdx+5][pIdx === 0 ? 'p1' : 'p2']++;
+            else if (d >= 2) stats[sIdx+6][pIdx === 0 ? 'p1' : 'p2']++;
+            
+            const pens = hist.log.filter(l => l.pen).length;
+            stats[sIdx+7][pIdx === 0 ? 'p1' : 'p2'] += pens;
+            stats[sIdx+8][pIdx === 0 ? 'p1' : 'p2'] += (hist.wcsUsed ? hist.wcsUsed.length : 0);
+        });
+    }
   }
 
   if(!wcEnabled()){
@@ -8415,7 +8617,7 @@ if ('serviceWorker' in navigator) {
         <div class="mode-info-row">
           <div class="mode-info-icon">⛳</div>
           <div class="mode-info-text">
-            <div class="mode-info-name">SINGLE DAY</div>
+            <div class="mode-info-name">SINGLE ROUND</div>
             <div class="mode-info-desc">A classic 18-hole round of golf. Your score is recorded against par. Perfect for a quick session.</div>
           </div>
         </div>
@@ -8437,7 +8639,7 @@ if ('serviceWorker' in navigator) {
           <div class="mode-info-icon">⚙️</div>
           <div class="mode-info-text">
             <div class="mode-info-name">CUSTOM GAME</div>
-            <div class="mode-info-desc">Build your own round your way. Mix and match number of rounds (1, 2, or 4), holes (18, Front 9, Back 9), and difficulty (Easy / Medium / Hard). Ideal if you want precise control over your experience.</div>
+            <div class="mode-info-desc">Build your own round your way. Mix and match number of rounds (1, 2, 3, or 4), holes (18, Front 9, Back 9), and difficulty (Easy / Medium / Hard). Ideal if you want precise control over your experience.</div>
           </div>
         </div>
       </div>
@@ -8485,23 +8687,6 @@ if ('serviceWorker' in navigator) {
         </div>
       </div>
       <div class="mode-info-section">
-        <div class="mode-info-section-title"><span class="mode-info-section-title-icon"><img src="golf_ball.png" alt=""></span>GAME FORMATS</div>
-        <div class="mode-info-row">
-          <div class="mode-info-icon">🏆</div>
-          <div class="mode-info-text">
-            <div class="mode-info-name">STROKE PLAY</div>
-            <div class="mode-info-desc">The classic format. Both players count every stroke across all holes. Lowest total score at the end wins. A single bad hole won't end the match, keep fighting back!</div>
-          </div>
-        </div>
-        <div class="mode-info-row">
-          <div class="mode-info-icon">⚔️</div>
-          <div class="mode-info-text">
-            <div class="mode-info-name">MATCH PLAY</div>
-            <div class="mode-info-desc">Quadruple bogey on a hole won't end your dream of winning! Each hole is its own contest — lowest score wins that hole. Lead is tracked as "X Up." A player wins when they lead by more holes than remain. Dramatic comebacks happen.</div>
-          </div>
-        </div>
-      </div>
-      <div class="mode-info-section">
         <div class="mode-info-section-title">🏌️ HOW IT WORKS</div>
         <div class="mode-info-row">
           <div class="mode-info-icon">🔄</div>
@@ -8522,6 +8707,23 @@ if ('serviceWorker' in navigator) {
           <div class="mode-info-text">
             <div class="mode-info-name">WILDCARDS</div>
             <div class="mode-info-desc">Each player has their own independent wildcard hand. Rolling doubles earns a wildcard just for you. Use them strategically to gain the edge over your opponent. Of course, unless you want to turn it off in the Settings!</div>
+          </div>
+        </div>
+      </div>
+      <div class="mode-info-section">
+        <div class="mode-info-section-title"><span class="mode-info-section-title-icon"><img src="golf_ball.png" alt=""></span>GAME FORMATS</div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">🏆</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">STROKE PLAY</div>
+            <div class="mode-info-desc">The classic format. Both players count every stroke across all holes. Lowest total score at the end wins. A single bad hole won't end the match, keep fighting back!</div>
+          </div>
+        </div>
+        <div class="mode-info-row">
+          <div class="mode-info-icon">⚔️</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">MATCH PLAY</div>
+            <div class="mode-info-desc">Quadruple bogey on a hole won't end your dream of winning! Each hole is its own contest — lowest score wins that hole. Lead is tracked as "X Up." A player wins when they lead by more holes than remain. Dramatic comebacks happen.</div>
           </div>
         </div>
       </div>
