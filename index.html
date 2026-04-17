@@ -4535,14 +4535,11 @@ function showRoundEnd(){
     const p = profiles[getActiveProfileIdx()];
     const isNewPB = p && (p.bestDiff === undefined || roundDiff < p.bestDiff); 
 
-    const xpHighlightsBefore = captureXpHighlightSnapshot();
     updateProfileAfterRound(roundTotal, roundPar);
     updateProfileStatsAfterRound(roundTotal, roundPar, S._wcUsedThisRound||0);
     applyCompletionModeAchievements();
     incrementCompletedGameCounters();
-    const newAchievements = checkAndAwardAchievements({silent:true});
-    const xpHighlightsAfter = captureXpHighlightSnapshot();
-    const xpEvents = buildXpHighlightRows(xpHighlightsBefore, xpHighlightsAfter, newAchievements.length);
+    checkAndAwardAchievements({silent:true});
     const xpAward = awardRoundExperience({
       source: 'round',
       title: 'GAINED XP',
@@ -4552,8 +4549,7 @@ function showRoundEnd(){
       roundDiff,
       roundTotal,
       roundPar,
-      gameDiff: GAME_DIFF,
-      events: xpEvents
+      gameDiff: GAME_DIFF
     });
     
     let globalTotal = 0, globalPar = 0;
@@ -4636,7 +4632,7 @@ function showRoundEnd(){
     if(showRoundStats && statsContainer){
       statsContainer.style.cssText = 'flex:1 1 0; min-height:0; max-height:min(100%, 280px); margin-bottom:16px; overflow:hidden; position:relative;';
       statsContainer.style.display = 'block';
-      renderTournamentStatsPanel('overall');
+      renderTournamentStatsPanel(S.currentRound);
     } else if(statsContainer){
       statsContainer.style.display = 'none';
       statsContainer.innerHTML = '';
@@ -4652,12 +4648,9 @@ function showRoundEnd(){
     setMainAppConcealed(true);
     hcScreen.classList.add('show');
   } else {
-    const xpHighlightsBefore = captureXpHighlightSnapshot();
     updateProfileAfterRound(roundTotal, roundPar);
     updateProfileStatsAfterRound(roundTotal, roundPar, S._wcUsedThisRound||0);
-    const newAchievements = checkAndAwardAchievements({silent:true});
-    const xpHighlightsAfter = captureXpHighlightSnapshot();
-    const xpEvents = buildXpHighlightRows(xpHighlightsBefore, xpHighlightsAfter, newAchievements.length);
+    checkAndAwardAchievements({silent:true});
     const xpAward = awardRoundExperience({
       source: 'round',
       title: 'GAINED XP',
@@ -4667,8 +4660,7 @@ function showRoundEnd(){
       roundDiff,
       roundTotal,
       roundPar,
-      gameDiff: GAME_DIFF,
-      events: xpEvents
+      gameDiff: GAME_DIFF
     });
     saveGameState();
 
@@ -4743,7 +4735,7 @@ function showRoundEnd(){
     if(showRoundStats && statsC){
       statsC.style.cssText = 'flex:1 1 0; min-height:0; max-height:min(100%, 280px); margin-bottom:16px; overflow:hidden; position:relative;';
       statsC.style.display = 'block';
-      renderTournamentStatsPanel('overall');
+      renderTournamentStatsPanel(S.currentRound);
     } else if(statsC){
       statsC.style.display = 'none';
       statsC.innerHTML = '';
@@ -5351,8 +5343,13 @@ function getActiveProfile(){
   return profiles[idx]||null;
 }
 
+function createProfileId(){
+  return `p_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
+}
+
 function ensureProfileDefaults(p){
   if(!p || typeof p !== 'object') return p;
+  if(typeof p.id !== 'string' || !p.id.trim()) p.id = createProfileId();
   if(!Array.isArray(p.achievements)) p.achievements = [];
   const numericDefaults = {
     gamesPlayed: 0,
@@ -5575,7 +5572,6 @@ function renderXpAwardCardHtml(award){
   const finalToNext = award.after.level >= XP_MAX_LEVEL
     ? 'MAX LEVEL'
     : `${Math.max(0, Math.ceil(award.after.need - award.after.xpIntoLevel))} XP TO LEVEL UP`;
-  const eventRows = Array.isArray(award.events) ? award.events : [];
   return `
     <div class="xp-award-card">
       <div class="xp-award-head">
@@ -5596,11 +5592,6 @@ function renderXpAwardCardHtml(award){
           <span class="xp-to-next-live">${finalToNext}</span>
         </div>
       </div>
-      ${eventRows.length ? `
-        <div class="xp-award-events">
-          ${eventRows.map(row=>`<div class="xp-award-event"><span class="lbl">${row.label}</span><span class="val">${row.value}</span></div>`).join('')}
-        </div>
-      ` : ''}
     </div>
   `;
 }
@@ -5690,6 +5681,7 @@ function awardRoundExperience(options = {}){
   }
 
   ctx.p.xpTotal = Math.max(0, (ctx.p.xpTotal || 0) + totalXp);
+  ctx.p.achievementXpEarned = Math.max(0, (ctx.p.achievementXpEarned || 0) + achievementBonus);
   const afterTotal = ctx.p.xpTotal;
   if(typeof options.roundTotal === 'number') ctx.p.totalStrokes += Math.max(0, options.roundTotal);
   if(typeof options.roundPar === 'number') ctx.p.totalPar += Math.max(0, options.roundPar);
@@ -5829,12 +5821,16 @@ function selectProfile(i){
 function deleteProfile(i){
   const profiles=loadProfiles();
   const profileName=profiles[i]?.name||'this profile';
+  const profileId=profiles[i]?.id||'';
   showConfirm('Remove ' + profileName + '?', ()=>{
     const profiles=loadProfiles();
+    if(profileId) clearSavedGameForProfileId(profileId);
     profiles.splice(i,1);
     saveProfiles(profiles);
     if(!profiles.length){
       try{localStorage.removeItem('gg_tutorial_done');}catch{}
+      try{localStorage.removeItem(PROFILE_SAVE_KEY);}catch{}
+      try{localStorage.removeItem(LEGACY_SAVE_KEY);}catch{}
       closeProfileModal();
       hideScreen('menuScreen');
       const oi=document.getElementById('onboardInput');
@@ -6001,7 +5997,9 @@ function resetProfileStats(i){
     if(!profiles[i])return;
     const name=profiles[i].name;
     const icon=profiles[i].icon;
+    const profileId = profiles[i].id;
     profiles[i]=createDefaultProfile(name);
+    if(profileId) profiles[i].id = profileId;
     if(icon) profiles[i].icon = icon;
     saveProfiles(profiles);
     const sp=document.getElementById('profileStatsPanel');
@@ -6087,6 +6085,7 @@ function updateMenuProfileDisplay(){
   }
   const tvIcon=document.querySelector('.tv-icon-box');
   if(tvIcon&&p){const idx=getActiveProfileIdx();tvIcon.textContent=getProfileIcon(p,idx);}
+  updateMenuContinueBtn();
 }
 
 let _profileHubView = 'home';
@@ -6442,7 +6441,9 @@ function profileHubResetStats(){
   showConfirm('ARE YOU SURE YOU WANT TO RESET YOUR CURRENT STATS AND LEVEL?', ()=>{
     const name = String(ctx.p.name || '').trim() || 'PLAYER';
     const icon = ctx.p.icon;
+    const profileId = ctx.p.id;
     ctx.profiles[ctx.activeIdx] = createDefaultProfile(name);
+    if(profileId) ctx.profiles[ctx.activeIdx].id = profileId;
     if(icon) ctx.profiles[ctx.activeIdx].icon = icon;
     saveProfiles(ctx.profiles);
     PLAYER_NAME = name.toUpperCase();
@@ -6457,13 +6458,17 @@ function profileHubDeleteActive(){
   const ctx = profileHubGetCtx();
   if(!ctx) return;
   const name = ctx.p.name || 'this profile';
+  const profileId = ctx.p.id || '';
   showConfirm(`Remove ${name}?`, ()=>{
     const profiles = loadProfiles();
     const idx = Math.min(getActiveProfileIdx(), profiles.length - 1);
+    if(profileId) clearSavedGameForProfileId(profileId);
     profiles.splice(idx, 1);
     saveProfiles(profiles);
     if(!profiles.length){
       try{localStorage.removeItem('gg_tutorial_done');}catch{}
+      try{localStorage.removeItem(PROFILE_SAVE_KEY);}catch{}
+      try{localStorage.removeItem(LEGACY_SAVE_KEY);}catch{}
       closeProfileModal();
       hideScreen('menuScreen');
       const oi=document.getElementById('onboardInput');
@@ -6655,10 +6660,6 @@ function grantAchievementXpForProfile(ctx, count){
   const grants = Math.max(0, count || 0);
   if(!ctx || !ctx.p || !grants) return;
   const add = grants * XP_ACH_UNLOCK_BONUS;
-  ctx.p.xpTotal = Math.max(0, (ctx.p.xpTotal || 0) + add);
-  ctx.p.achievementXpEarned = (ctx.p.achievementXpEarned || 0) + add;
-  ctx.profiles[ctx.idx] = ctx.p;
-  saveProfiles(ctx.profiles);
   _queueAchievementXp(ctx.idx, add);
 }
 
@@ -7237,33 +7238,30 @@ function openVersusSummary(viewRound = S.currentRound, backTarget = _summaryBack
   summaryModal.classList.add('show');
 }
 
-function renderTournamentStatsPanel(selectedKey='overall'){
+function renderTournamentStatsPanel(selectedKey=S.currentRound){
   const statsContainer = document.getElementById('hcVsStats');
   if(!statsContainer) return;
 
-  const showRoundPills = S.mode === 'tournament' && (S.totalRounds||1) > 1;
-  const scrollStats = S.mode === 'tournament';
-  const rounds = showRoundPills ? Array.from({length:S.currentRound}, (_,i)=>i+1) : [];
-  const pills = showRoundPills ? ['overall', ...rounds] : [];
-  const labelFor = key => key === 'overall' ? 'OVERALL' : `R${key}`;
-  const stats = getRoundStats(selectedKey);
+  const rounds = Array.from({ length: Math.max(1, S.currentRound || 1) }, (_,i)=>i+1);
+  const showRoundPills = S.mode === 'tournament' && rounds.length > 1;
+  const selectedRound = (typeof selectedKey === 'number' && rounds.includes(selectedKey))
+    ? selectedKey
+    : rounds[rounds.length - 1];
+  const pills = showRoundPills ? rounds : [selectedRound];
+  const stats = getRoundStats(selectedRound);
 
   let html = `
-    <div style="display:flex;flex-direction:column;min-height:0;${scrollStats?'height:100%;':''}">
+    <div style="display:flex;flex-direction:column;min-height:0;">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-shrink:0;padding:8px 0 0;">
       <div style="font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">STATISTICS</div>
       <div style="flex:1;height:1px;background:var(--border);"></div>
-      <div style="display:flex;gap:6px;overflow-x:auto;">
+      <div style="display:flex;gap:6px;overflow-x:auto;${showRoundPills ? '' : 'display:none;'}">
   `;
   pills.forEach(key => {
-    const isActive = key === selectedKey;
-    const arg = key === 'overall' ? '&quot;overall&quot;' : key;
-    html += `<button onclick="renderTournamentStatsPanel(${arg})" style="background:${isActive?'var(--c-fwy)':'rgba(255,255,255,.05)'};color:${isActive?'#fff':'var(--muted)'};border:1px solid ${isActive?'var(--c-fwyl)':'var(--border)'};border-radius:14px;padding:6px 12px;font-family:'Sen',sans-serif;font-size:10px;font-weight:bold;cursor:pointer;white-space:nowrap;transition:all 0.2s;">${labelFor(key)}</button>`;
+    const isActive = key === selectedRound;
+    html += `<button onclick="renderTournamentStatsPanel(${key})" style="background:${isActive?'var(--c-fwy)':'rgba(255,255,255,.05)'};color:${isActive?'#fff':'var(--muted)'};border:1px solid ${isActive?'var(--c-fwyl)':'var(--border)'};border-radius:14px;padding:6px 12px;font-family:'Sen',sans-serif;font-size:10px;font-weight:bold;cursor:pointer;white-space:nowrap;transition:all 0.2s;">R${key}</button>`;
   });
   html += `</div></div>`;
-  if(scrollStats){
-    html += `<div style="flex:1;min-height:0;overflow-y:auto;-ms-overflow-style:none;scrollbar-width:none;" class="tournament-stats-list">`;
-  }
 
   const hideLastDivider = S.mode === 'single';
   stats.forEach((s, idx) => {
@@ -7277,7 +7275,6 @@ function renderTournamentStatsPanel(selectedKey='overall'){
     `;
   });
 
-  if(scrollStats) html += `</div>`;
   html += `</div>`;
   statsContainer.innerHTML = html;
   statsContainer.style.display = 'block';
@@ -8450,6 +8447,78 @@ function closeWcReveal(){
 // ═══════════════════════════════════════
 // SAVE / CONTINUE SYSTEM
 // ═══════════════════════════════════════
+const PROFILE_SAVE_KEY = 'gg_saves_by_profile';
+const LEGACY_SAVE_KEY = 'gg_save';
+
+function getActiveProfileId(){
+  const p = getActiveProfile();
+  if(!p || typeof p.id !== 'string') return '';
+  return p.id;
+}
+
+function readProfileSaveStore(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(PROFILE_SAVE_KEY) || '{}');
+    return raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
+  }catch{
+    return {};
+  }
+}
+
+function writeProfileSaveStore(store){
+  try{
+    localStorage.setItem(PROFILE_SAVE_KEY, JSON.stringify(store || {}));
+  }catch{}
+}
+
+function migrateLegacySaveToActiveProfile(){
+  try{
+    const raw = localStorage.getItem(LEGACY_SAVE_KEY);
+    if(!raw) return;
+    const legacy = JSON.parse(raw || 'null');
+    if(!legacy || typeof legacy !== 'object'){
+      localStorage.removeItem(LEGACY_SAVE_KEY);
+      return;
+    }
+    const profileId = getActiveProfileId();
+    if(!profileId) return;
+    const store = readProfileSaveStore();
+    if(!store[profileId]){
+      store[profileId] = { ...legacy, profileId };
+      writeProfileSaveStore(store);
+    }
+    localStorage.removeItem(LEGACY_SAVE_KEY);
+  }catch{}
+}
+
+function getSavedGameForActiveProfile(){
+  migrateLegacySaveToActiveProfile();
+  const profileId = getActiveProfileId();
+  if(!profileId) return null;
+  const store = readProfileSaveStore();
+  const save = store[profileId];
+  if(!save || typeof save !== 'object') return null;
+  if(save.profileId && save.profileId !== profileId) return null;
+  return save;
+}
+
+function setSavedGameForActiveProfile(save){
+  const profileId = getActiveProfileId();
+  if(!profileId || !save) return;
+  const store = readProfileSaveStore();
+  store[profileId] = { ...save, profileId };
+  writeProfileSaveStore(store);
+}
+
+function clearSavedGameForProfileId(profileId){
+  if(!profileId) return;
+  const store = readProfileSaveStore();
+  if(Object.prototype.hasOwnProperty.call(store, profileId)){
+    delete store[profileId];
+    writeProfileSaveStore(store);
+  }
+}
+
 function saveGameState(){
   if(!S||S.holeIdx===undefined || TUT.active)return;
   if(!VS.active && S.holeDone && S.holeIdx >= S.endIdx && S.currentRound >= S.totalRounds){
@@ -8504,12 +8573,12 @@ function saveGameState(){
         wcs: VS.wcs
     } : null
   };
-  try{localStorage.setItem('gg_save',JSON.stringify(save));}catch(e){}
+  setSavedGameForActiveProfile(save);
 }
 
 function hasSavedGame(){
   try{
-    const s=JSON.parse(localStorage.getItem('gg_save')||'null');
+    const s = getSavedGameForActiveProfile();
     if(s && !s.vsState && s.holeDone && s.holeIdx >= s.endIdx && (s.currentRound||1) >= (s.totalRounds||1)) return false;
     if(!s || !s.scorecards) return false;
     const firstRound = Array.isArray(s.scorecards[0]) ? s.scorecards[0] : [];
@@ -8518,11 +8587,15 @@ function hasSavedGame(){
   }catch{return false;}
 }
 
-function clearSavedGame(){ try{localStorage.removeItem('gg_save');}catch{} }
+function clearSavedGame(){
+  const profileId = getActiveProfileId();
+  if(profileId) clearSavedGameForProfileId(profileId);
+  try{localStorage.removeItem(LEGACY_SAVE_KEY);}catch{}
+}
 
 function continueGame(){
   try{
-    const save=JSON.parse(localStorage.getItem('gg_save')||'null');
+    const save = getSavedGameForActiveProfile();
     if(!save)return;
     _skipGridScrollOnce = true;
     clearTutorialUiState();
@@ -8730,7 +8803,11 @@ function updateMenuContinueBtn(){
   if(!btn)return;
   btn.classList.remove('menu-glow');
   if(hasSavedGame()){
-    const save=JSON.parse(localStorage.getItem('gg_save'));
+    const save = getSavedGameForActiveProfile();
+    if(!save){
+      btn.style.display='none';
+      return;
+    }
     
     if (save.vsState) {
         const p1 = save.vsState.players[0].name;
@@ -10210,8 +10287,7 @@ function vsShowFinal(){
     roundDiff: 0,
     gameDiff: VS.setup?.diff || GAME_DIFF,
     scoreMultiplier: 1,
-    scoreMultiplierLabel: 'x1.00',
-    includeAchievementBonus: false
+    scoreMultiplierLabel: 'x1.00'
   });
   
   let winnerText = '';
