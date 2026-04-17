@@ -9,7 +9,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0d1117">
 <title>DiceGolf</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sen:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sen:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
@@ -68,7 +68,7 @@ body.theme-light .summary-modal{background:var(--dark);}
 body.theme-light .toggle-switch{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,.1);}
 body.theme-light .toggle-switch.on{background:var(--c-fwy);border-color:var(--c-fwyl);}
 body{
-  background:var(--dark);color:var(--text);font-family:'DM Sans',sans-serif;
+  background:var(--dark);color:var(--text);font-family:'Sen',sans-serif;
   min-height:100vh;overflow-x:hidden;
   /* Push all content below the iOS status bar */
   padding-top:env(safe-area-inset-top);
@@ -705,7 +705,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
   min-height:100dvh;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden;
   opacity:0;transform:translateY(12px) scale(.985) translateZ(0);
   transition:opacity .26s ease,transform .26s cubic-bezier(0.22,1,0.36,1);
-  will-change:transform,opacity;backface-visibility:hidden;contain:paint;
+  will-change:transform,opacity;backface-visibility:hidden;contain:paint;position:relative;
 }
 .summary-modal.show .summary-card{opacity:1;transform:translateY(0) scale(1) translateZ(0);}
 .sum-head{
@@ -721,10 +721,36 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .sum-close:active{transform:translateY(1px) scale(.95);}
 .sum-body{
   flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;padding:16px 16px calc(env(safe-area-inset-bottom) + 20px);
+  overscroll-behavior:contain;padding:16px 16px calc(env(safe-area-inset-bottom) + 16px);
 }
 .summary-modal::-webkit-scrollbar,.sum-body::-webkit-scrollbar{display:none;}
 .summary-modal,.sum-body{-ms-overflow-style:none;scrollbar-width:none;}
+.sum-section-head{display:flex;align-items:center;gap:10px;margin:0 0 10px;flex-shrink:0;}
+.sum-section-head .ttl{font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;white-space:nowrap;}
+.sum-section-head .line{flex:1;height:1px;background:var(--border);}
+.sum-stats-panel{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden;flex-shrink:0;}
+.sum-stats-head{display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(255,255,255,.03);position:sticky;top:0;z-index:1;}
+.sum-stats-head .ttl{font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;white-space:nowrap;}
+.sum-stats-head .line{flex:1;height:1px;background:var(--border);}
+.sum-stats-list{max-height:176px;overflow-y:auto;-webkit-overflow-scrolling:touch;-ms-overflow-style:none;scrollbar-width:none;}
+.sum-stats-list::-webkit-scrollbar{display:none;}
+.sum-stats-row{display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;column-gap:12px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);font-family:'Sen',sans-serif;font-size:11px;}
+.sum-stats-row:last-child{border-bottom:none;}
+.sum-stats-row .lbl{color:var(--muted);min-width:0;}
+.sum-stats-row .val{color:var(--text);font-weight:700;text-align:center;}
+.sum-hole-list{display:flex;flex-direction:column;gap:4px;max-height:204px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex-shrink:0;-ms-overflow-style:none;scrollbar-width:none;}
+.sum-hole-list::-webkit-scrollbar{display:none;}
+.sum-hole-row{display:flex;align-items:center;gap:10px;padding:7px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:border-color .15s,background .15s;}
+.sum-hole-row:hover{border-color:rgba(255,255,255,.2);}
+.sum-hole-row.active{border-color:var(--c-fwyl);background:rgba(78,158,66,.09);}
+.sum-hole-modal{position:absolute;inset:0;background:rgba(4,8,12,.82);backdrop-filter:blur(2px);z-index:40;display:none;align-items:center;justify-content:center;padding:18px;}
+.sum-hole-modal.show{display:flex;animation:fadeInOverlay .18s ease;}
+.sum-hole-card{width:min(380px,100%);max-height:80vh;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 14px 28px rgba(0,0,0,.38);}
+.sum-hole-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 12px;background:rgba(255,255,255,.04);}
+.sum-hole-ttl{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--text);}
+.sum-hole-close{background:rgba(224,82,82,.2);border:1px solid rgba(255,82,82,.45);color:#ffd7d7;width:26px;height:26px;border-radius:7px;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.sum-hole-body{padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.sum-btn-row{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column;gap:8px;margin-top:14px;padding-top:10px;padding-bottom:calc(env(safe-area-inset-bottom) + 6px);background:linear-gradient(180deg,rgba(13,17,23,0) 0%,rgba(13,17,23,.92) 34%,rgba(13,17,23,1) 100%);}
 .sum-total{display:flex;align-items:center;justify-content:center;gap:16px;padding:14px 0 18px;border-bottom:1px solid var(--border);margin-bottom:14px;}
 .sum-total-score{font-family:'Bebas Neue',cursive;font-size:64px;line-height:1;}
 .sum-total-info{display:flex;flex-direction:column;gap:2px;}
@@ -821,7 +847,6 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .xp-award-card{background:linear-gradient(180deg,rgba(78,158,66,.18),rgba(22,27,34,.98));border:1px solid rgba(120,220,96,.35);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;box-shadow:0 10px 24px rgba(0,0,0,.24);}
 .xp-award-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .xp-award-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--c-fwyl);}
-.xp-award-level{font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
 .xp-award-rows{display:flex;flex-direction:column;gap:6px;}
 .xp-award-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.06);}
 .xp-award-row:last-child{border-bottom:none;}
@@ -832,6 +857,8 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .xp-bar-track{width:100%;height:10px;background:rgba(255,255,255,.08);border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.08);}
 .xp-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#4ed67c 0%, #f0c040 100%);box-shadow:0 0 10px rgba(120,220,96,.35),0 0 14px rgba(240,192,64,.28);transition:width .9s cubic-bezier(0.22,1,0.36,1);}
 .xp-bar-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.xp-bar-meta .xp-level-live{color:var(--c-fwyl);font-weight:700;}
+.xp-bar-meta .xp-to-next-live{color:var(--muted);}
 .xp-rank-chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;background:rgba(240,192,64,.16);border:1px solid rgba(240,192,64,.35);font-family:'Sen',sans-serif;font-size:9px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;}
 
 /* PROFILE HUB */
@@ -864,12 +891,11 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .ph-main-card{background:rgba(255,255,255,.04);border:1px solid rgba(120,220,96,.32);border-radius:20px;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.3);}
 .ph-main-top{padding:16px;display:flex;gap:12px;align-items:center;background:linear-gradient(180deg,rgba(78,158,66,.16),rgba(255,255,255,.02));}
 .ph-ring-wrap{position:relative;width:82px;height:82px;flex-shrink:0;}
-.ph-ring-svg{position:absolute;inset:0;width:82px;height:82px;transform:rotate(-90deg);}
+.ph-ring-svg{position:absolute;inset:0;width:82px;height:82px;transform:rotate(-90deg);z-index:2;}
 .ph-ring-bg{fill:none;stroke:rgba(255,255,255,.12);stroke-width:4;}
 .ph-ring-fill{fill:none;stroke:url(#phRingGrad);stroke-width:4;stroke-linecap:round;filter:drop-shadow(0 0 8px rgba(120,220,96,.45));transition:stroke-dashoffset .95s cubic-bezier(0.22,1,0.36,1);}
-.ph-avatar{position:absolute;inset:8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;background:radial-gradient(circle at 30% 30%, rgba(78,158,66,.5), rgba(13,17,23,.95));border:1px solid rgba(120,220,96,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.16);}
-.ph-ring-wrap.glow::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(120,220,96,.28);box-shadow:0 0 16px rgba(120,220,96,.32);animation:phRingPulse 2.2s ease-in-out infinite;}
-@keyframes phRingPulse{0%,100%{opacity:.72;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+.ph-avatar{position:absolute;inset:8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;background:radial-gradient(circle at 30% 30%, rgba(78,158,66,.5), rgba(13,17,23,.95));border:1px solid rgba(120,220,96,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.16);z-index:3;}
+.ph-ring-wrap.glow::after{content:'';position:absolute;inset:-10px;border-radius:50%;background:radial-gradient(circle, rgba(120,220,96,.24) 0%, rgba(120,220,96,.12) 32%, rgba(120,220,96,.04) 56%, transparent 72%);z-index:1;pointer-events:none;}
 .ph-main-info{flex:1;min-width:0;}
 .ph-name{font-family:'Bebas Neue',cursive;font-size:34px;line-height:1;letter-spacing:2px;color:var(--text);}
 .ph-sub{font-family:'Sen',sans-serif;font-size:10px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-top:4px;}
@@ -883,9 +909,12 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .ph-btn:active{transform:translateY(1px) scale(.98);}
 .ph-btn.primary{background:linear-gradient(135deg,rgba(78,158,66,.9),rgba(115,188,73,.9));border-color:rgba(120,220,96,.45);color:#fff;}
 .ph-btn.gold{background:linear-gradient(135deg,rgba(186,137,23,.92),rgba(240,192,64,.9));border-color:rgba(240,192,64,.45);color:#1b1403;}
+.ph-btn.danger{border-color:rgba(255,82,82,.32);color:#ff9b9b;background:rgba(255,82,82,.08);}
+.ph-actions-edit{display:none;padding:0 12px 12px;}
 .ph-edit-block{display:none;padding:0 12px 12px;}
 .ph-main-card.editing .ph-edit-block{display:block;animation:fadein .22s ease;}
-.ph-main-card.editing .ph-ring-wrap{animation:phRingPulse 2.2s ease-in-out infinite;}
+.ph-main-card.editing .ph-actions-main{display:none;}
+.ph-main-card.editing .ph-actions-edit{display:flex;animation:fadein .2s ease;}
 .ph-edit-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;margin:8px 0 10px;}
 .ph-emoji{border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.03);height:34px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;}
 .ph-emoji.sel{border-color:var(--c-fwyl);background:rgba(78,158,66,.15);}
@@ -899,14 +928,28 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .ph-new-row{margin-top:10px;display:flex;gap:8px;}
 .ph-section{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px;}
 .ph-sec-title{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;color:var(--c-fwyl);margin-bottom:8px;}
+.ph-subhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+.ph-back-pill{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:6px 12px;font-family:'Sen',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
+.ph-back-pill:active{transform:translateY(1px) scale(.98);}
 .ph-kv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+.ph-dist-list{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+.ph-dist-row{display:grid;grid-template-columns:64px 1fr 28px;align-items:center;gap:8px;}
+.ph-dist-lbl{font-family:'Sen',sans-serif;font-size:12px;color:var(--text);letter-spacing:.6px;}
+.ph-dist-track{height:12px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);overflow:hidden;}
+.ph-dist-fill{height:100%;width:0%;border-radius:999px;transition:width .75s cubic-bezier(0.22,1,0.36,1);}
+.ph-dist-fill.eagle{background:linear-gradient(90deg,#ffd95a,#f0c040);}
+.ph-dist-fill.birdie{background:linear-gradient(90deg,#9adf56,#6fc842);}
+.ph-dist-fill.par{background:linear-gradient(90deg,#79b97e,#6aa873);}
+.ph-dist-fill.bogey{background:linear-gradient(90deg,#f0b048,#e8943a);}
+.ph-dist-fill.double{background:linear-gradient(90deg,#ef6b6b,#e05252);}
+.ph-dist-val{font-family:'Bebas Neue',cursive;font-size:20px;color:var(--text);text-align:right;line-height:1;}
 .ph-ach-list{display:flex;flex-direction:column;gap:8px;}
-.ph-ach-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid var(--border);}
+.ph-ach-item{display:grid;grid-template-columns:28px 1fr 64px;align-items:center;column-gap:10px;padding:10px 10px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid var(--border);}
 .ph-ach-item.locked{opacity:.5;filter:grayscale(.45);}
 .ph-ach-icon{font-size:20px;width:28px;text-align:center;}
 .ph-ach-name{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);}
-.ph-ach-desc{font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);}
-.ph-ach-xp{margin-left:auto;font-family:'Sen',sans-serif;font-size:9px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;}
+.ph-ach-desc{font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);line-height:1.3;}
+.ph-ach-xp{font-family:'Sen',sans-serif;font-size:11px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;text-align:right;white-space:nowrap;}
 
 #xpRewardModal{z-index:710;}
 #xpRewardModal .profile-card{max-width:390px;}
@@ -1093,7 +1136,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .wc-front-icon{font-size:42px;line-height:1;}
 .wc-front-name{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#f0c040;text-align:center;line-height:1.1;}
 .wc-front-type{display:none;}
-.wc-front-desc{font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.75);text-align:center;line-height:1.4;}
+.wc-front-desc{font-family:'Sen',sans-serif;font-size:12px;color:rgba(255,255,255,.75);text-align:center;line-height:1.4;}
 .wc-reveal-hint{font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);animation:wc-blink 1.2s ease infinite;}
 @keyframes wc-blink{0%,100%{opacity:.4}50%{opacity:.9}}
 .wc-reveal-actions{display:flex;flex-direction:column;gap:10px;width:220px;align-items:stretch;}
@@ -1692,7 +1735,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <div class="summary-card">
     <div class="sum-head">
       <button class="setup-back-btn" id="sumBackBtn" onclick="summaryGoBack()" style="position:static;transform:none;display:none;" aria-label="Back">&#8592;</button>
-      <div class="sum-title" id="sumTitle" style="flex:1;text-align:center;">ROUND SUMMARY</div>
+      <div class="sum-title" id="sumTitle" style="flex:1;text-align:center;">SUMMARY</div>
       <span class="sum-head-spacer" id="sumHeadSpacer"></span>
     </div>
     <div class="sum-body" id="sumBody"></div>
@@ -3876,7 +3919,7 @@ function showPostShotWcBtn(wcId, label, onUse){
   btn.textContent=label;
   btn.onclick=onUse;
   const skip=document.createElement('button');
-  skip.style.cssText='position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:transparent;color:var(--muted);border:none;font-family:DM Mono,monospace;font-size:11px;letter-spacing:1px;cursor:pointer;z-index:80;';
+  skip.style.cssText='position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:transparent;color:var(--muted);border:none;font-family:Sen,sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;z-index:80;';
   skip.textContent='skip →';
   skip.id='postShotSkipBtn';
   skip.onclick=()=>{
@@ -4359,6 +4402,7 @@ function showRoundEnd(){
     updateProfileAfterRound(roundTotal, roundPar);
     updateProfileStatsAfterRound(roundTotal, roundPar, S._wcUsedThisRound||0);
     applyCompletionModeAchievements();
+    incrementCompletedGameCounters();
     checkAndAwardAchievements({silent:true});
     const xpAward = awardRoundExperience({
       source: 'round',
@@ -4428,40 +4472,6 @@ function showRoundEnd(){
 `;
     animateXpBars(vsContainer);
 
-    const stats = [
-        { label: 'Total Strokes', val: 0 },
-        { label: 'Hole in One', val: 0 },
-        { label: 'Eagles+', val: 0 },
-        { label: 'Birdies', val: 0 },
-        { label: 'Pars', val: 0 },
-        { label: 'Bogeys', val: 0 },
-        { label: 'Double Bogeys+', val: 0 },
-        { label: 'Penalties', val: 0 },
-        { label: 'Wildcards Used', val: 0 }
-    ];
-
-    S.scorecards.forEach((sc, rndIdx) => {
-        sc.forEach((score, i) => {
-            if(score === null) return;
-            const h = HOLES[i];
-            const hist = S.histories[rndIdx][i];
-            if (!hist) return;
-
-            stats[0].val += score;
-            const d = score - h.par;
-            if (h.par === 3 && score === 1) stats[1].val++;
-            else if (d <= -2) stats[2].val++;
-            else if (d === -1) stats[3].val++;
-            else if (d === 0) stats[4].val++;
-            else if (d === 1) stats[5].val++;
-            else if (d >= 2) stats[6].val++;
-            
-            const pens = hist.log.filter(l => l.pen).length;
-            stats[7].val += pens;
-            stats[8].val += (hist.wcsUsed ? hist.wcsUsed.length : 0);
-        });
-    });
-
     document.querySelectorAll('#hcScreen .sec-title').forEach(t => t.style.display = 'none');
     const logList = document.getElementById('hcLogList');
     if (logList) logList.style.display = 'none';
@@ -4471,18 +4481,20 @@ function showRoundEnd(){
     if (vsToggle) vsToggle.style.display = 'none';
 
     let statsContainer = document.getElementById('hcVsStats');
-    if (!statsContainer) {
+    const showRoundStats = S.mode === 'tournament';
+    if (showRoundStats && !statsContainer) {
         statsContainer = document.createElement('div');
         statsContainer.id = 'hcVsStats';
         document.getElementById('hcLogList').parentNode.appendChild(statsContainer);
     }
-    const tournamentStatsLayout = S.mode === 'tournament';
-    statsContainer.style.cssText = tournamentStatsLayout
-      ? 'flex:1 1 0; min-height:0; max-height:min(100%, 280px); margin-bottom:16px; overflow:hidden; position:relative;'
-      : 'flex-shrink:0; margin-bottom:16px; overflow:visible; position:relative;';
-    statsContainer.style.display = 'block';
-
-    renderTournamentStatsPanel('overall');
+    if(showRoundStats && statsContainer){
+      statsContainer.style.cssText = 'flex:1 1 0; min-height:0; max-height:min(100%, 280px); margin-bottom:16px; overflow:hidden; position:relative;';
+      statsContainer.style.display = 'block';
+      renderTournamentStatsPanel('overall');
+    } else if(statsContainer){
+      statsContainer.style.display = 'none';
+      statsContainer.innerHTML = '';
+    }
 
     const btn = document.getElementById('hcBtn');
     btn.textContent = 'NEXT';
@@ -4533,7 +4545,6 @@ function showRoundEnd(){
     hcTitle.textContent = `ROUND ${S.currentRound} COMPLETE`;
     hcTitle.style.color = rColor;
     hcTitle.style.fontSize = '36px';
-    const diffNames = {1:'EASY', 2:'MEDIUM', 3:'HARD'};
     document.getElementById('hcSub').textContent = `${roundTotal} STROKES · PAR ${roundPar}`;
 
     const totSpan = document.getElementById('hcTotSpan');
@@ -4574,13 +4585,20 @@ function showRoundEnd(){
     if(scWrap2) scWrap2.style.display = 'none';
     
     let statsC = document.getElementById('hcVsStats');
-    if(!statsC){
+    const showRoundStats = S.mode === 'tournament';
+    if(showRoundStats && !statsC){
       statsC = document.createElement('div');
       statsC.id = 'hcVsStats';
       document.getElementById('hcLogList').parentNode.insertBefore(statsC, secTitles[1] || document.getElementById('hcLogList').nextSibling);
     }
-    statsC.style.cssText = 'flex:1 1 0; min-height:0; max-height:min(100%, 280px); margin-bottom:16px; overflow:hidden; position:relative;';
-    renderTournamentStatsPanel('overall');
+    if(showRoundStats && statsC){
+      statsC.style.cssText = 'flex:1 1 0; min-height:0; max-height:min(100%, 280px); margin-bottom:16px; overflow:hidden; position:relative;';
+      statsC.style.display = 'block';
+      renderTournamentStatsPanel('overall');
+    } else if(statsC){
+      statsC.style.display = 'none';
+      statsC.innerHTML = '';
+    }
 
     const btn = document.getElementById('hcBtn');
     btn.textContent = 'NEXT';
@@ -4600,6 +4618,7 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
   document.getElementById('overlay').classList.remove('show');
   concealMainApp();
   _summaryBackTarget = backTarget || null;
+  closeSummaryHoleModal();
   const body=document.getElementById('sumBody'); 
   body.innerHTML='';
   body.style.display = 'flex';
@@ -4612,7 +4631,7 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
   if(backBtn) backBtn.style.display = _summaryBackTarget ? 'flex' : 'none';
   if(backSpacer) backSpacer.style.display = _summaryBackTarget ? 'none' : 'block';
   
-  document.getElementById('sumTitle').textContent=`${PLAYER_NAME}'S SCORECARD`;
+  document.getElementById('sumTitle').textContent='SUMMARY';
 
   if (S.totalRounds > 1) {
     const tabs = document.createElement('div');
@@ -4641,18 +4660,31 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
   S.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ globalTotal+=s; globalPar+=HOLES[i].par; } }));
   const globalDiff = globalTotal - globalPar;
   const gDiffStr = globalDiff===0?'E':globalDiff>0?`+${globalDiff}`:`${globalDiff}`;
-  const showXpRecap = LAST_XP_AWARD && LAST_XP_AWARD.source === 'round' && LAST_XP_AWARD.round === viewRound;
+  const roundStats = getRoundStats(viewRound);
 
-  if(showXpRecap){
-    const recap = document.createElement('div');
-    recap.style.cssText = 'margin-bottom:12px;';
-    recap.innerHTML = renderXpAwardCardHtml({
-      ...LAST_XP_AWARD,
-      title: 'ROUND XP RECAP'
-    });
-    body.appendChild(recap);
-    animateXpBars(recap);
-  }
+  const statsPanel = document.createElement('div');
+  statsPanel.className = 'sum-stats-panel';
+  statsPanel.innerHTML = `
+    <div class="sum-stats-head">
+      <div class="ttl">STATISTICS</div>
+      <div class="line"></div>
+    </div>
+  `;
+  const statsList = document.createElement('div');
+  statsList.className = 'sum-stats-list';
+  roundStats.forEach(s=>{
+    const row = document.createElement('div');
+    row.className = 'sum-stats-row';
+    row.innerHTML = `<div class="lbl">${s.label}</div><div class="val">${s.val}</div>`;
+    statsList.appendChild(row);
+  });
+  statsPanel.appendChild(statsList);
+  body.appendChild(statsPanel);
+
+  const scoreHead = document.createElement('div');
+  scoreHead.className = 'sum-section-head';
+  scoreHead.innerHTML = `<div class="ttl">SCORECARD</div><div class="line"></div>`;
+  body.appendChild(scoreHead);
   
   let tournamentTotalBox = null;
   if (S.totalRounds > 1) {
@@ -4747,12 +4779,12 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
   if(tournamentTotalBox) body.appendChild(tournamentTotalBox);
 
   const detailSec=document.createElement('div');
-  detailSec.style.cssText='font-family:"Sen",sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;';
+  detailSec.style.cssText='font-family:"Sen",sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;flex-shrink:0;';
   detailSec.textContent='Tap a hole for details';
   body.appendChild(detailSec);
 
   const holeList=document.createElement('div');
-  holeList.style.cssText='display:flex;flex-direction:column;gap:4px;';
+  holeList.className='sum-hole-list';
   activeHoles.forEach((h,i)=>{
     const absoluteIdx = S.startIdx + i;
     const hist=histData[absoluteIdx];
@@ -4773,10 +4805,8 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
     else{scoreColor='#e05252';resultLabel=`+${d}`;}
 
     const row=document.createElement('div');
-    row.style.cssText='display:flex;align-items:center;gap:10px;padding:7px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:border-color .15s;';
+    row.className = 'sum-hole-row';
     row.dataset.holeIdx=String(absoluteIdx);
-    row.onmouseenter=()=>row.style.borderColor='rgba(255,255,255,.2)';
-    row.onmouseleave=()=>row.style.borderColor='var(--border)';
 
     const zoneDots=hist.log.map(e=>`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${(Z[e.zk]||Z.fwy).color};flex-shrink:0;"></span>`).join('');
     
@@ -4790,13 +4820,13 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
       <span style="display:flex;gap:3px;align-items:center;margin:0 6px;">${zoneDots}</span>
       <span style="font-family:'Bebas Neue',cursive;font-size:18px;color:${scoreColor};min-width:16px;text-align:center;">${hist.strokes}</span>
     `;
-    row.onclick=()=>openHistInline(absoluteIdx, holeList, null, viewRound);
+    row.onclick=()=>openHistInline(absoluteIdx, holeList, row, viewRound);
     holeList.appendChild(row);
   });
   body.appendChild(holeList);
 
   const btnRow=document.createElement('div');
-  btnRow.style.cssText='display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:24px;padding-bottom:4px;flex-shrink:0;';
+  btnRow.className = 'sum-btn-row';
   
   if (S.currentRound < S.totalRounds && S.holeDone) {
     const nextRndBtn=document.createElement('button');
@@ -4834,6 +4864,7 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
 }
 
 function closeSummary(){
+  closeSummaryHoleModal();
   document.getElementById('summaryModal').classList.remove('show');
   _summaryBackTarget = null;
   setTimeout(()=>{
@@ -4846,6 +4877,7 @@ function closeSummary(){
 }
 
 function summaryGoBack(){
+  closeSummaryHoleModal();
   const target=_summaryBackTarget;
   _summaryBackTarget = null;
   if(target === 'hcScreen'){
@@ -4869,18 +4901,21 @@ function summaryGoBack(){
 }
 
 function summaryReturnToMenu(){
+  closeSummaryHoleModal();
   _summaryBackTarget = null;
   returnToMenu({preserveSummary:true});
   requestAnimationFrame(()=>document.getElementById('summaryModal').classList.remove('show'));
 }
 
 function summarySaveAndMenu(){
+  closeSummaryHoleModal();
   _summaryBackTarget = null;
   returnToMenuSave({preserveSummary:true});
   requestAnimationFrame(()=>document.getElementById('summaryModal').classList.remove('show'));
 }
 
 function summaryPlayAgain(){
+  closeSummaryHoleModal();
   document.getElementById('summaryModal').classList.remove('show');
   document.getElementById('overlay').classList.remove('show');
   hideMainApp();
@@ -4957,33 +4992,91 @@ function highlightInlineGrid(idx, log, container) {
   if(wrap) renderHistGrid(wrap, log[idx].gridSnap, log, idx);
 }  
 
-function openHistInline(absoluteIdx, holeList, detailHost, roundIdx){
-  const hist=S.histories[roundIdx-1][absoluteIdx];
-  if(!hist)return;
-  const rows=holeList.querySelectorAll('[data-hole-idx]');
-  let targetRow=null;
-  rows.forEach(r=>{if(parseInt(r.dataset.holeIdx)===absoluteIdx)targetRow=r;});
+let _summaryHoleActiveRow = null;
 
-  const existing=document.getElementById('inlineHistDetail');
-  if(existing){
-    const existingIdx=parseInt(existing.dataset.forHole||'-1');
-    existing.remove(); rows.forEach(r=>r.style.borderColor='var(--border)');
-    if(existingIdx===absoluteIdx) return; 
+function ensureSummaryHoleModal(){
+  const summaryCard = document.querySelector('#summaryModal .summary-card');
+  if(!summaryCard) return null;
+  let modal = document.getElementById('sumHoleDetailModal');
+  if(modal) return modal;
+  modal = document.createElement('div');
+  modal.id = 'sumHoleDetailModal';
+  modal.className = 'sum-hole-modal';
+  modal.innerHTML = `
+    <div class="sum-hole-card">
+      <div class="sum-hole-head">
+        <div class="sum-hole-ttl" id="sumHoleDetailTitle">HOLE DETAILS</div>
+        <button class="sum-hole-close" onclick="closeSummaryHoleModal()" aria-label="Close">✕</button>
+      </div>
+      <div class="sum-hole-body" id="sumHoleDetailBody"></div>
+    </div>
+  `;
+  modal.addEventListener('click', e=>{
+    if(e.target === modal) closeSummaryHoleModal();
+  });
+  summaryCard.appendChild(modal);
+  return modal;
+}
+
+function closeSummaryHoleModal(){
+  const modal = document.getElementById('sumHoleDetailModal');
+  if(modal) modal.classList.remove('show');
+  if(_summaryHoleActiveRow){
+    _summaryHoleActiveRow.classList.remove('active');
+    _summaryHoleActiveRow = null;
+  }
+}
+
+function openHistInline(absoluteIdx, holeList, targetRow, roundIdx){
+  const roundHist = S.histories[roundIdx-1] || [];
+  const hist = roundHist[absoluteIdx];
+  if(!hist) return;
+
+  const modal = ensureSummaryHoleModal();
+  if(!modal) return;
+  if(_summaryHoleActiveRow && _summaryHoleActiveRow !== targetRow){
+    _summaryHoleActiveRow.classList.remove('active');
+  }
+  if(targetRow){
+    targetRow.classList.add('active');
+    _summaryHoleActiveRow = targetRow;
   }
 
-  const detail=document.createElement('div');
-  detail.id='inlineHistDetail'; detail.dataset.forHole=String(absoluteIdx);
-  detail.style.cssText='background:rgba(255,255,255,.03);border:1px solid var(--c-fwyl);border-radius:10px;padding:12px;margin-top:4px;animation:fadein .2s ease;';
-  if(targetRow) targetRow.style.borderColor='var(--c-fwyl)';
+  const hole = HOLES[absoluteIdx];
+  const d = hist.strokes - hist.par;
+  let resultLabel = d===0 ? 'PAR' : d>0 ? `+${d}` : `${d}`;
+  if(hole.par===3 && hist.strokes===1) resultLabel = 'HOLE IN ONE';
+  else if(d<=-2) resultLabel = 'EAGLE';
+  else if(d===-1) resultLabel = 'BIRDIE';
+  else if(d===1) resultLabel = 'BOGEY';
+  else if(d===2) resultLabel = 'DOUBLE';
 
-  const logDiv=document.createElement('div');
+  const title = document.getElementById('sumHoleDetailTitle');
+  if(title) title.textContent = `${hole.name} · PAR ${hole.par}`;
+  const body = document.getElementById('sumHoleDetailBody');
+  if(!body) return;
+  body.innerHTML = `
+    <div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:10px;">
+      <div style="flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:7px 8px;text-align:center;">
+        <div style="font-family:'Bebas Neue',cursive;font-size:24px;line-height:1;color:var(--text);">${hist.strokes}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:9px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;">Strokes</div>
+      </div>
+      <div style="flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:7px 8px;text-align:center;">
+        <div style="font-family:'Bebas Neue',cursive;font-size:24px;line-height:1;color:${d<=0?'var(--c-fwyl)':'#e05252'};">${resultLabel}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:9px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;">Result</div>
+      </div>
+    </div>
+  `;
+
+  const detail = document.createElement('div');
+  const logDiv = document.createElement('div');
   logDiv.style.cssText='display:flex;flex-direction:column;gap:3px;margin-bottom:10px;';
   hist.log.forEach((e,i)=>{
     const zd=Z[e.zk]||Z.fwy;
     const entry=document.createElement('div');
-    entry.style.cssText='display:flex;align-items:center;gap:7px;padding:5px 8px;background:rgba(255,255,255,.03);border-radius:6px;font-family:"Sen",sans-serif;font-size:10px;color:var(--muted);cursor:pointer;';
+    entry.className = 'hlog-entry';
     entry.id='ihl-entry-'+i;
-    entry.innerHTML=`<span style="width:15px;height:15px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--text);flex-shrink:0;">${e.num}</span><span style="width:7px;height:7px;border-radius:50%;background:${zd.color};flex-shrink:0;"></span><span style="flex:1;color:var(--text);">${e.desc}</span><span style="color:${e.pen?'#e05252':'var(--muted)'};">${e.note}</span>`;
+    entry.innerHTML=`<span class="hlog-n">${e.num}</span><span class="hlog-dot" style="background:${zd.color};"></span><span style="flex:1;color:var(--text);">${e.desc}</span><span class="hlog-r" style="color:${e.pen?'#e05252':'var(--muted)'};">${e.note}</span>`;
     entry.onclick=()=>highlightInlineGrid(i, hist.log, detail);
     logDiv.appendChild(entry);
   });
@@ -4991,8 +5084,11 @@ function openHistInline(absoluteIdx, holeList, detailHost, roundIdx){
 
   const lastValidSnap=hist.log.reduceRight((acc,e)=>acc||(Array.isArray(e.gridSnap)?e.gridSnap:null),null);
   if(lastValidSnap){
-    const gridWrap=document.createElement('div'); gridWrap.id='inlineHistGrid'; gridWrap.className='hgrid-wrap';
-    detail.appendChild(gridWrap); renderHistGrid(gridWrap, lastValidSnap, hist.log, hist.log.length-1);
+    const gridWrap=document.createElement('div');
+    gridWrap.id='inlineHistGrid';
+    gridWrap.className='hgrid-wrap';
+    detail.appendChild(gridWrap);
+    renderHistGrid(gridWrap, lastValidSnap, hist.log, hist.log.length-1);
   }
 
   const wcs = hist.wcsUsed || [];
@@ -5003,18 +5099,11 @@ function openHistInline(absoluteIdx, holeList, detailHost, roundIdx){
     detail.appendChild(wcList);
   }
 
-  const closeBtn=document.createElement('button');
-  closeBtn.style.cssText='width:100%;margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px;font-family:"Sen",sans-serif;font-size:10px;letter-spacing:1px;cursor:pointer;';
-  closeBtn.textContent='CLOSE';
-  closeBtn.onclick=()=>{ detail.remove(); rows.forEach(r=>r.style.borderColor='var(--border)'); };
-  detail.appendChild(closeBtn);
-
-  const parent = targetRow ? targetRow.parentNode : holeList;
-  if(targetRow && targetRow.nextSibling){
-    parent.insertBefore(detail, targetRow.nextSibling);
-  } else {
-    parent.appendChild(detail);
+  if(hist.log.length){
+    highlightInlineGrid(hist.log.length - 1, hist.log, detail);
   }
+  body.appendChild(detail);
+  modal.classList.add('show');
 }
 
 function closeHist(){document.getElementById('histModal').classList.remove('show');}
@@ -5091,14 +5180,18 @@ function ensureProfileDefaults(p){
     shakeRolls: 0,
     customGamesCompleted: 0,
     tournamentCompletions: 0,
+    gamesCompleted: 0,
+    versusPlayed: 0,
     majorLikeFinishes: 0,
     par3SpecialistRounds: 0,
     rollercoasterRounds: 0,
     iceVeinsRounds: 0,
     scubaDiverRounds: 0,
+    timesInWater: 0,
     beachBumRounds: 0,
     lumberjackRounds: 0,
     scramblerRounds: 0,
+    wcDiscardedTotal: 0,
     xpTotal: 0,
     achievementXpEarned: 0,
     totalStrokes: 0,
@@ -5123,7 +5216,7 @@ function createDefaultProfile(name){
 
 const XP_MAX_LEVEL = 40;
 const XP_ACH_UNLOCK_BONUS = 40;
-const XP_BASE_PER_HOLE = 20;
+const XP_BASE_PER_HOLE = 10;
 let LAST_XP_AWARD = null;
 const _xpPendingAchBonus = {};
 
@@ -5190,12 +5283,12 @@ function getDifficultyLabel(diff){
 
 function getScoreMultiplier(roundDiff, holesPlayed){
   const perHole = (roundDiff || 0) / Math.max(1, holesPlayed || 1);
-  if(perHole <= -1.0) return 1.35;
-  if(perHole <= -0.5) return 1.2;
+  if(perHole <= -0.60) return 1.35;
+  if(perHole <= -0.30) return 1.2;
   if(perHole < 0) return 1.1;
   if(perHole === 0) return 1.0;
-  if(perHole <= 0.5) return 0.9;
-  if(perHole <= 1.0) return 0.8;
+  if(perHole <= 0.30) return 0.9;
+  if(perHole <= 0.60) return 0.8;
   return 0.7;
 }
 
@@ -5210,6 +5303,17 @@ function consumePendingAchievementXp(idx){
   const row = _xpPendingAchBonus[idx] || { xp: 0, count: 0 };
   _xpPendingAchBonus[idx] = { xp: 0, count: 0 };
   return row;
+}
+
+function incrementCompletedGameCounters(options = {}){
+  const ctx = getActiveProfileContextAny();
+  if(!ctx) return;
+  ctx.p.gamesCompleted = (ctx.p.gamesCompleted || 0) + 1;
+  if(options.versus){
+    ctx.p.versusPlayed = (ctx.p.versusPlayed || 0) + 1;
+  }
+  ctx.profiles[ctx.idx] = ctx.p;
+  saveProfiles(ctx.profiles);
 }
 
 function applyRoundScoreBuckets(profile, roundIdx){
@@ -5232,26 +5336,27 @@ function renderXpAwardCardHtml(award){
   const scoreMulText = award.scoreMultiplierOverride
     ? award.scoreMultiplierOverride
     : `x${award.scoreMultiplier.toFixed(2)}`;
+  const finalToNext = award.after.level >= XP_MAX_LEVEL
+    ? 'MAX LEVEL'
+    : `${Math.max(0, Math.ceil(award.after.need - award.after.xpIntoLevel))} XP TO LEVEL UP`;
   return `
     <div class="xp-award-card">
       <div class="xp-award-head">
         <div class="xp-award-title">${award.title || 'XP REWARD'}</div>
-        <div class="xp-rank-chip">${award.after.rank}</div>
       </div>
-      <div class="xp-award-level">LVL ${award.before.level} → LVL ${award.after.level}</div>
       <div class="xp-award-rows">
         <div class="xp-award-row"><span class="xp-award-lbl">Completed Round</span><span class="xp-award-val">${award.baseXp} XP</span></div>
         <div class="xp-award-row"><span class="xp-award-lbl">Difficulty Multiplier</span><span class="xp-award-val">x${award.difficultyMultiplier.toFixed(2)}</span></div>
         <div class="xp-award-row"><span class="xp-award-lbl">Score Multiplier</span><span class="xp-award-val">${scoreMulText}</span></div>
-        ${award.achievementBonus > 0 ? `<div class="xp-award-row"><span class="xp-award-lbl">Achievement Bonus</span><span class="xp-award-val">+${award.achievementBonus} XP</span></div>` : ''}
-        ${award.tutorialBonus > 0 ? `<div class="xp-award-row"><span class="xp-award-lbl">Tutorial Completion Bonus</span><span class="xp-award-val">+${award.tutorialBonus} XP</span></div>` : ''}
-        <div class="xp-award-row"><span class="xp-award-lbl">Total XP</span><span class="xp-award-val total">+${award.totalXp}</span></div>
+        ${award.achievementBonus > 0 ? `<div class="xp-award-row"><span class="xp-award-lbl">Achievement Bonus</span><span class="xp-award-val">${award.achievementBonus} XP</span></div>` : ''}
+        ${award.tutorialBonus > 0 ? `<div class="xp-award-row"><span class="xp-award-lbl">Tutorial Completion Bonus</span><span class="xp-award-val">${award.tutorialBonus} XP</span></div>` : ''}
+        <div class="xp-award-row"><span class="xp-award-lbl">Total XP</span><span class="xp-award-val total">${award.totalXp} XP</span></div>
       </div>
       <div class="xp-bar-wrap">
-        <div class="xp-bar-track"><div class="xp-bar-fill" data-from="${award.before.progressPct.toFixed(2)}" data-to="${award.after.progressPct.toFixed(2)}" style="width:${award.before.progressPct.toFixed(2)}%;"></div></div>
+        <div class="xp-bar-track"><div class="xp-bar-fill" data-start="${award.beforeTotal}" data-end="${award.afterTotal}" data-from="${award.before.progressPct.toFixed(2)}" data-to="${award.after.progressPct.toFixed(2)}" style="width:${award.before.progressPct.toFixed(2)}%;"></div></div>
         <div class="xp-bar-meta">
-          <span>${award.after.level >= XP_MAX_LEVEL ? 'MAX LEVEL' : `${Math.floor(award.after.xpIntoLevel)} / ${Math.floor(award.after.need)} XP`}</span>
-          <span>${Math.round(award.after.progressPct)}%</span>
+          <span class="xp-level-live">LEVEL ${award.before.level}</span>
+          <span class="xp-to-next-live">${finalToNext}</span>
         </div>
       </div>
     </div>
@@ -5261,6 +5366,35 @@ function renderXpAwardCardHtml(award){
 function animateXpBars(root){
   const scope = root || document;
   scope.querySelectorAll('.xp-bar-fill[data-to]').forEach(fill=>{
+    const startTotalRaw = fill.dataset.start;
+    const endTotalRaw = fill.dataset.end;
+    if(startTotalRaw !== undefined && endTotalRaw !== undefined){
+      const startTotal = parseFloat(startTotalRaw || '0');
+      const endTotal = parseFloat(endTotalRaw || '0');
+      const card = fill.closest('.xp-award-card');
+      const lvlEl = card ? card.querySelector('.xp-level-live') : null;
+      const toNextEl = card ? card.querySelector('.xp-to-next-live') : null;
+      const duration = 1350;
+      const t0 = performance.now();
+      const step = (now)=>{
+        const t = Math.max(0, Math.min(1, (now - t0) / duration));
+        const eased = 1 - Math.pow(1 - t, 3);
+        const currentTotal = startTotal + ((endTotal - startTotal) * eased);
+        const snap = getXpSnapshot(currentTotal);
+        fill.style.width = `${Math.max(0, Math.min(100, snap.progressPct))}%`;
+        if(lvlEl) lvlEl.textContent = `LEVEL ${snap.level}`;
+        if(toNextEl){
+          toNextEl.textContent = snap.level >= XP_MAX_LEVEL
+            ? 'MAX LEVEL'
+            : `${Math.max(0, Math.ceil(snap.need - snap.xpIntoLevel))} XP TO LEVEL UP`;
+        }
+        if(t < 1){
+          requestAnimationFrame(step);
+        }
+      };
+      requestAnimationFrame(step);
+      return;
+    }
     const to = parseFloat(fill.dataset.to || '0');
     requestAnimationFrame(()=>{
       fill.style.width = `${Math.max(0, Math.min(100, to))}%`;
@@ -5287,6 +5421,7 @@ function awardRoundExperience(options = {}){
   let tutorialBonus = Math.max(0, options.tutorialBonus || 0);
 
   const before = getXpSnapshot(ctx.p.xpTotal || 0);
+  const beforeTotal = Math.max(0, ctx.p.xpTotal || 0);
   let totalXp = gameplayXp + achievementBonus + tutorialBonus;
   if(options.ensureLevel2 && before.level < 2){
     const need = Math.max(0, xpTotalForLevel(2) - (ctx.p.xpTotal || 0));
@@ -5297,6 +5432,7 @@ function awardRoundExperience(options = {}){
   }
 
   ctx.p.xpTotal = Math.max(0, (ctx.p.xpTotal || 0) + totalXp);
+  const afterTotal = ctx.p.xpTotal;
   if(typeof options.roundTotal === 'number') ctx.p.totalStrokes += Math.max(0, options.roundTotal);
   if(typeof options.roundPar === 'number') ctx.p.totalPar += Math.max(0, options.roundPar);
   if(typeof options.roundIdx === 'number') applyRoundScoreBuckets(ctx.p, options.roundIdx);
@@ -5316,6 +5452,8 @@ function awardRoundExperience(options = {}){
     achievementBonus,
     achievementCount: ach.count || 0,
     tutorialBonus,
+    beforeTotal,
+    afterTotal,
     before: { ...before, rank: getRankLabelForLevel(before.level) },
     after
   };
@@ -5558,7 +5696,7 @@ function openProfileModal(){
   _profileHubEditing = false;
   _profileHubEmoji = null;
   _profileHubCreateOpen = false;
-  renderProfileHub('home');
+  renderProfileHub('home', { animateRing:true });
   const modal = document.getElementById('profileHubModal');
   if(modal) modal.classList.add('show');
 }
@@ -5719,7 +5857,7 @@ function profileHubGetCtx(){
   return { profiles, activeIdx, p };
 }
 
-function renderProfileHub(view = _profileHubView){
+function renderProfileHub(view = _profileHubView, opts = {}){
   const ctx = profileHubGetCtx();
   const home = document.getElementById('profileHubViewHome');
   const stats = document.getElementById('profileHubViewStats');
@@ -5738,6 +5876,7 @@ function renderProfileHub(view = _profileHubView){
   const earnedCount = ACHIEVEMENTS.filter(a=>earned.includes(a.id)).length;
   const bestStr = ctx.p.bestDiff===undefined ? '—' : ctx.p.bestDiff===0 ? 'E' : ctx.p.bestDiff>0 ? `+${ctx.p.bestDiff}` : `${ctx.p.bestDiff}`;
   const xp = getXpSnapshot(ctx.p.xpTotal || 0);
+  const animateRing = !!opts.animateRing;
   const ringCirc = 2 * Math.PI * 34;
   const ringOffset = ringCirc * (1 - (xp.progressPct / 100));
   const rank = getRankLabelForLevel(xp.level);
@@ -5783,7 +5922,7 @@ function renderProfileHub(view = _profileHubView){
         <div class="ph-ring-wrap glow">
           <svg class="ph-ring-svg" viewBox="0 0 82 82">
             <circle class="ph-ring-bg" cx="41" cy="41" r="34"></circle>
-            <circle class="ph-ring-fill" id="profileHubRingFill" cx="41" cy="41" r="34" data-to="${ringOffset}" style="stroke-dasharray:${ringCirc};stroke-dashoffset:${ringCirc};"></circle>
+            <circle class="ph-ring-fill" id="profileHubRingFill" cx="41" cy="41" r="34" style="stroke-dasharray:${ringCirc};stroke-dashoffset:${animateRing ? ringCirc : ringOffset};"></circle>
           </svg>
           <div class="ph-avatar">${_profileHubEditing ? (_profileHubEmoji || activeIcon) : activeIcon}</div>
         </div>
@@ -5799,23 +5938,23 @@ function renderProfileHub(view = _profileHubView){
       <div class="ph-stats6">
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.gamesPlayed||0}</div><div class="ph-stat-lbl">Rounds</div></div>
         <div class="ph-stat-tile"><div class="ph-stat-num">${bestStr}</div><div class="ph-stat-lbl">Best Score</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${earnedCount}</div><div class="ph-stat-lbl">Achievements</div></div>
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.birdies||0}</div><div class="ph-stat-lbl">Birdies</div></div>
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.eagles||0}</div><div class="ph-stat-lbl">Eagles+</div></div>
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.holeInOnes||0}</div><div class="ph-stat-lbl">Aces</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${earnedCount}/${totalAch}</div><div class="ph-stat-lbl">Achievements</div></div>
       </div>
-      <div class="ph-actions">
+      <div class="ph-actions ph-actions-main">
         <button class="ph-btn" onclick="profileHubToggleEdit(true)">Edit</button>
         <button class="ph-btn primary" onclick="profileHubSwitchTo('stats')">Full Stats</button>
         <button class="ph-btn gold" onclick="profileHubSwitchTo('achievements')">Achievements</button>
       </div>
       <div class="ph-edit-block">
         <div class="ph-edit-grid">${emojiGrid}</div>
-        <div class="ph-actions" style="padding:0;">
-          <button class="ph-btn primary" onclick="profileHubSaveEdit()">Save</button>
-          <button class="ph-btn" onclick="profileHubToggleEdit(false)">Cancel</button>
-        </div>
-        <button class="ph-btn" style="width:100%;margin-top:8px;border-color:rgba(255,82,82,.3);color:#ff9090;" onclick="profileHubDeleteActive()">Delete Profile</button>
+        <button class="ph-btn danger" style="width:100%;margin-top:8px;" onclick="profileHubDeleteActive()">Delete Profile</button>
+      </div>
+      <div class="ph-actions ph-actions-edit">
+        <button class="ph-btn" onclick="profileHubToggleEdit(false)">Cancel</button>
+        <button class="ph-btn primary" onclick="profileHubSaveEdit()">Save</button>
       </div>
     </div>
     <div class="ph-mini-list">
@@ -5829,11 +5968,19 @@ function renderProfileHub(view = _profileHubView){
   const avgDiff = totalParAll > 0 ? ((totalStrokesAll - totalParAll) / Math.max(1, ctx.p.gamesPlayed || 1)) : 0;
   const avgDiffText = totalParAll > 0 ? (avgDiff===0?'E':avgDiff>0?`+${avgDiff.toFixed(1)}`:`${avgDiff.toFixed(1)}`) : '—';
   const buckets = ctx.p.scoreBuckets || { aces:0, eaglesPlus:0, birdies:0, pars:0, bogeys:0, doublePlus:0 };
+  const distRows = [
+    { key: 'eaglesPlus', label: 'Eagle', cls: 'eagle', value: buckets.eaglesPlus || 0 },
+    { key: 'birdies', label: 'Birdie', cls: 'birdie', value: buckets.birdies || 0 },
+    { key: 'pars', label: 'Par', cls: 'par', value: buckets.pars || 0 },
+    { key: 'bogeys', label: 'Bogey', cls: 'bogey', value: buckets.bogeys || 0 },
+    { key: 'doublePlus', label: 'Double+', cls: 'double', value: buckets.doublePlus || 0 }
+  ];
+  const distMax = Math.max(1, ...distRows.map(r=>r.value || 0));
   stats.innerHTML = `
     <div class="ph-section">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <button class="setup-back-btn" onclick="profileHubBackToHome()" aria-label="Back">&#8592;</button>
+      <div class="ph-subhead">
         <div class="ph-sec-title" style="margin:0;">FULL STATS</div>
+        <button class="ph-back-pill" onclick="profileHubBackToHome()">Back</button>
       </div>
       <div class="ph-kv-grid">
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.gamesPlayed||0}</div><div class="ph-stat-lbl">Rounds</div></div>
@@ -5841,18 +5988,22 @@ function renderProfileHub(view = _profileHubView){
         <div class="ph-stat-tile"><div class="ph-stat-num">${totalStrokesAll||0}</div><div class="ph-stat-lbl">Total Strokes</div></div>
         <div class="ph-stat-tile"><div class="ph-stat-num">${avgDiffText}</div><div class="ph-stat-lbl">Avg vs Par</div></div>
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.xpTotal||0}</div><div class="ph-stat-lbl">Total XP</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">LVL ${xp.level}</div><div class="ph-stat-lbl">${rank}</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${earnedCount}</div><div class="ph-stat-lbl">Achievements</div></div>
       </div>
     </div>
     <div class="ph-section">
       <div class="ph-sec-title">Score Distribution</div>
-      <div class="ph-kv-grid">
-        <div class="ph-stat-tile"><div class="ph-stat-num">${buckets.aces||0}</div><div class="ph-stat-lbl">Aces</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${buckets.eaglesPlus||0}</div><div class="ph-stat-lbl">Eagles+</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${buckets.birdies||0}</div><div class="ph-stat-lbl">Birdies</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${buckets.pars||0}</div><div class="ph-stat-lbl">Pars</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${buckets.bogeys||0}</div><div class="ph-stat-lbl">Bogeys</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${buckets.doublePlus||0}</div><div class="ph-stat-lbl">Double+</div></div>
+      <div class="ph-dist-list">
+        ${distRows.map(row=>{
+          const pct = Math.round((row.value / distMax) * 100);
+          return `
+            <div class="ph-dist-row">
+              <div class="ph-dist-lbl">${row.label}</div>
+              <div class="ph-dist-track"><div class="ph-dist-fill ${row.cls}" data-to="${pct}" style="width:0%;"></div></div>
+              <div class="ph-dist-val">${row.value}</div>
+            </div>
+          `;
+        }).join('')}
       </div>
     </div>
     <div class="ph-section">
@@ -5861,8 +6012,8 @@ function renderProfileHub(view = _profileHubView){
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.bestBirdieStreak||0}</div><div class="ph-stat-lbl">Best Birdie Streak</div></div>
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.bestUnderParStreak||0}</div><div class="ph-stat-lbl">Best Under-Par Streak</div></div>
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.bogeyFreeRounds||0}</div><div class="ph-stat-lbl">Bogey-Free Rounds</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.perfectRounds||0}</div><div class="ph-stat-lbl">Perfect Rounds</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.customGamesCompleted||0}</div><div class="ph-stat-lbl">Custom Completed</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.gamesCompleted||0}</div><div class="ph-stat-lbl">Games Completed</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.versusPlayed||0}</div><div class="ph-stat-lbl">Versus Played</div></div>
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.tournamentCompletions||0}</div><div class="ph-stat-lbl">Tournaments</div></div>
       </div>
     </div>
@@ -5871,10 +6022,8 @@ function renderProfileHub(view = _profileHubView){
       <div class="ph-kv-grid">
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.wildcardsUsed||0}</div><div class="ph-stat-lbl">Wildcards Used</div></div>
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.maxWcOneRound||0}</div><div class="ph-stat-lbl">Max WC / Round</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.wcDiscardedRound||0}</div><div class="ph-stat-lbl">Discard Max</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.shakeRolls||0}</div><div class="ph-stat-lbl">Shake Rolls</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.scubaDiverRounds||0}</div><div class="ph-stat-lbl">Scuba Rounds</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.scramblerRounds||0}</div><div class="ph-stat-lbl">Scrambler Rounds</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.wcDiscardedTotal||0}</div><div class="ph-stat-lbl">WC Discarded</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.timesInWater||0}</div><div class="ph-stat-lbl">Times in Water</div></div>
       </div>
     </div>
   `;
@@ -5894,9 +6043,9 @@ function renderProfileHub(view = _profileHubView){
   `;
   ach.innerHTML = `
     <div class="ph-section">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <button class="setup-back-btn" onclick="profileHubBackToHome()" aria-label="Back">&#8592;</button>
+      <div class="ph-subhead">
         <div class="ph-sec-title" style="margin:0;">ACHIEVEMENTS</div>
+        <button class="ph-back-pill" onclick="profileHubBackToHome()">Back</button>
       </div>
       <div class="xp-bar-track"><div class="xp-bar-fill" data-from="0" data-to="${progressPct}" style="width:0%;"></div></div>
       <div class="xp-bar-meta" style="margin-top:6px;"><span>${earnedCount} / ${totalAch} unlocked</span><span>${progressPct}%</span></div>
@@ -5914,15 +6063,27 @@ function renderProfileHub(view = _profileHubView){
   profileHubSwitchView(view);
   const ring = document.getElementById('profileHubRingFill');
   if(ring){
-    requestAnimationFrame(()=>{
+    if(animateRing){
+      requestAnimationFrame(()=>{ ring.style.strokeDashoffset = String(ringOffset); });
+    } else {
       ring.style.strokeDashoffset = String(ringOffset);
-    });
+    }
   }
+  if(view === 'stats') animateProfileDistBars(stats);
   animateXpBars(ach);
 }
 
+function animateProfileDistBars(root){
+  const scope = root || document;
+  scope.querySelectorAll('.ph-dist-fill[data-to]').forEach(fill=>{
+    const to = Math.max(0, Math.min(100, parseFloat(fill.dataset.to || '0')));
+    fill.style.width = '0%';
+    requestAnimationFrame(()=>{ fill.style.width = `${to}%`; });
+  });
+}
+
 function profileHubSwitchTo(view){
-  renderProfileHub(view);
+  renderProfileHub(view, { animateRing:false });
 }
 
 function profileHubToggleEdit(editing){
@@ -5934,7 +6095,14 @@ function profileHubToggleEdit(editing){
 function profileHubSelectEmoji(emoji){
   _profileHubEmoji = emoji;
   _profileHubEditing = true;
-  renderProfileHub('home');
+  const home = document.getElementById('profileHubViewHome');
+  const avatar = home ? home.querySelector('.ph-avatar') : null;
+  if(avatar) avatar.textContent = emoji;
+  if(home){
+    home.querySelectorAll('.ph-emoji').forEach(btn=>{
+      btn.classList.toggle('sel', btn.textContent === emoji);
+    });
+  }
 }
 
 function profileHubSaveEdit(){
@@ -5962,10 +6130,13 @@ function profileHubSelectProfile(i){
   setActiveProfileIdx(i);
   PLAYER_NAME = String(profiles[i].name || '').toUpperCase();
   updateMenuProfileDisplay();
+  const tvName = document.getElementById('tvName');
+  if(tvName) tvName.textContent = String(profiles[i].name || '');
   _profileHubEditing = false;
   _profileHubEmoji = null;
   _profileHubCreateOpen = false;
-  renderProfileHub('home');
+  renderProfileHub('home', { animateRing:true });
+  showToast('PROFILE CHANGED');
 }
 
 function profileHubToggleCreate(open){
@@ -5988,8 +6159,10 @@ function profileHubCreateProfile(){
   setActiveProfileIdx(profiles.length - 1);
   PLAYER_NAME = val.toUpperCase();
   updateMenuProfileDisplay();
+  const tvName = document.getElementById('tvName');
+  if(tvName) tvName.textContent = val;
   _profileHubCreateOpen = false;
-  renderProfileHub('home');
+  renderProfileHub('home', { animateRing:true });
 }
 
 function profileHubDeleteActive(){
@@ -6322,7 +6495,7 @@ function showAchievementPopup(a){
   }
   const el=document.createElement('div');
   el.style.cssText='position:fixed;top:calc(env(safe-area-inset-top) + 60px);right:16px;background:linear-gradient(135deg,#2a1a40,#1a3020);border:1px solid var(--gold);border-radius:14px;padding:12px 16px;z-index:999;display:flex;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,.6);max-width:260px;animation:achIn .4s cubic-bezier(.34,1.56,.64,1) forwards;';
-  el.innerHTML=`<div style="font-size:28px;flex-shrink:0;">${a.icon}</div><div><div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--gold);margin-bottom:2px;">ACHIEVEMENT UNLOCKED</div><div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:#fff;line-height:1;">${a.name}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);margin-top:2px;">${a.desc}</div></div>`;
+  el.innerHTML=`<div style="font-size:28px;flex-shrink:0;">${a.icon}</div><div><div style="font-family:'Sen',sans-serif;font-size:9px;letter-spacing:2px;color:var(--gold);margin-bottom:2px;">ACHIEVEMENT UNLOCKED</div><div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:#fff;line-height:1;">${a.name}</div><div style="font-family:'Sen',sans-serif;font-size:9px;color:rgba(255,255,255,.6);margin-top:2px;">${a.desc}</div></div>`;
   document.body.appendChild(el);
   let _achStartX=0,_achDismissed=false;
   el.addEventListener('touchstart',e=>{_achStartX=e.touches[0].clientX;},{passive:true});
@@ -6392,6 +6565,7 @@ function updateProfileStatsAfterRound(score,par,wcUsedThisRound){
   if(GAME_DIFF===3){p.hardRounds=(p.hardRounds||0)+1;if(diff<0)p.hardUnderPar=(p.hardUnderPar||0)+1;}
   if(hasBirdieOrBetter && hasDoubleOrWorse) p.rollercoasterRounds=(p.rollercoasterRounds||0)+1;
   if(iceTriggered) p.iceVeinsRounds=(p.iceVeinsRounds||0)+1;
+  p.timesInWater = (p.timesInWater || 0) + waterHits;
   if(waterHits>=2) p.scubaDiverRounds=(p.scubaDiverRounds||0)+1;
   if(sandHits>=5) p.beachBumRounds=(p.beachBumRounds||0)+1;
   if(roughHits>=10) p.lumberjackRounds=(p.lumberjackRounds||0)+1;
@@ -6646,7 +6820,7 @@ function requestShakePermission(){
       if(banner)banner.remove();
       showWcToast('📳 Shake mode active!');
     } else {
-      if(banner)banner.innerHTML='<div style="font-family:DM Mono,monospace;font-size:10px;color:#e05252;padding:8px;">Motion access denied. Go to Settings → Safari → Motion & Orientation Access to enable.</div>';
+      if(banner)banner.innerHTML='<div style="font-family:Sen,sans-serif;font-size:10px;color:#e05252;padding:8px;">Motion access denied. Go to Settings → Safari → Motion & Orientation Access to enable.</div>';
       setTimeout(()=>{if(banner)banner.remove();},5000);
     }
   }).catch(()=>{
@@ -7261,16 +7435,20 @@ function discardEquipped(i){
 function trackWcDiscard() {
   S._wcDiscardedThisRound = (S._wcDiscardedThisRound || 0) + 1;
   saveGameState();
-  
+
+  const profiles=loadProfiles();
+  const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
+  const p=profiles[idx];
+  if(p) {
+    ensureProfileDefaults(p);
+    p.wcDiscardedTotal = (p.wcDiscardedTotal || 0) + 1;
+    p.wcDiscardedRound = Math.max(p.wcDiscardedRound || 0, S._wcDiscardedThisRound);
+    profiles[idx]=p;
+    saveProfiles(profiles);
+  }
+
   if(S._wcDiscardedThisRound === 5) {
-     const profiles=loadProfiles();
-     const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
-     const p=profiles[idx];
-     if(p) {
-       p.wcDiscardedRound = Math.max(p.wcDiscardedRound||0, S._wcDiscardedThisRound);
-       saveProfiles(profiles);
-       setTimeout(() => checkAndAwardAchievements(), 300);
-     }
+    setTimeout(() => checkAndAwardAchievements(), 300);
   }
 }
 
@@ -7392,7 +7570,7 @@ function applyWildcardEffect(wc){
 
 function showWcToast(msg, bottom=115){
   const t=document.createElement('div');
-  t.style.cssText=`position:fixed;bottom:${bottom}px;left:50%;transform:translateX(-50%);background:rgba(123,47,158,.95);color:#fff;font-family:"DM Mono",monospace;font-size:12px;letter-spacing:1px;padding:8px 16px;border-radius:8px;z-index:200;animation:fadein .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.4);max-width:85vw;text-align:center;line-height:1.4;`;
+  t.style.cssText=`position:fixed;bottom:${bottom}px;left:50%;transform:translateX(-50%);background:rgba(123,47,158,.95);color:#fff;font-family:"Sen",sans-serif;font-size:12px;letter-spacing:1px;padding:8px 16px;border-radius:8px;z-index:200;animation:fadein .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.4);max-width:85vw;text-align:center;line-height:1.4;`;
   t.textContent=msg;
   document.body.appendChild(t);
   setTimeout(()=>t.remove(),2200);
@@ -8775,6 +8953,7 @@ let VS = {
   sharedGrids: {},
   setup: { rounds:1, holesConfig:'18', diff:1 },
   lastStrokeRounds: 1,
+  completionRecorded: false,
   wcs: [null, null],
 };
 
@@ -8906,6 +9085,7 @@ function vsStartFromOptions(){
 
 function vsStartGame(){
   VS.active = true;
+  VS.completionRecorded = false;
   if(VS.setup) VS.setup.courseSelected = false;
   if(VS.format === 'match'){
     VS.setup.rounds = 1;
@@ -9387,6 +9567,10 @@ function vsStartNextRound(){
 }
 
 function vsShowFinal(){
+  if(!VS.completionRecorded){
+    incrementCompletedGameCounters({versus:true});
+    VS.completionRecorded = true;
+  }
   const totals1 = vsStrokeTotals(0, S.totalRounds);
   const totals2 = vsStrokeTotals(1, S.totalRounds);
   const t1 = totals1.total;
