@@ -760,7 +760,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .sum-hole-card{width:min(380px,100%);max-height:80vh;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 14px 28px rgba(0,0,0,.38);}
 .sum-hole-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 12px;background:rgba(255,255,255,.04);}
 .sum-hole-ttl{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--text);}
-.sum-hole-close{background:rgba(224,82,82,.2);border:1px solid rgba(255,82,82,.45);color:#ffd7d7;width:26px;height:26px;border-radius:7px;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.sum-hole-close{background-color:rgba(224,82,82,.2);border:1px solid rgba(255,82,82,.45);color:#ffd7d7;width:26px;height:26px;border-radius:7px;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .sum-hole-close,
 .profile-close,
 .profile-hub-close,
@@ -844,8 +844,8 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .profile-modal.show .profile-card{transform:translateY(0) scale(1);opacity:1;}
 .profile-head{background:var(--c-fwy);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;}
 .profile-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
-.profile-close{background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:transparent;width:28px;height:28px;border-radius:7px;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.profile-close:hover{background:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
+.profile-close{background-color:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:transparent;width:28px;height:28px;border-radius:7px;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.profile-close:hover{background-color:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
 .profile-close:active{transform:translateY(1px) scale(.95);}
 .profile-body{padding:14px;}
 .profile-slots{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
@@ -928,13 +928,13 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .profile-hub-back{justify-self:start;}
 .profile-hub-close{
   width:28px;height:28px;border-radius:7px;padding:0;margin:0;
-  background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:transparent;
+  background-color:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:transparent;
   font-family:Arial,sans-serif;font-size:0;line-height:1;letter-spacing:0;cursor:pointer;
   display:flex;align-items:center;justify-content:center;justify-self:end;
   box-shadow:none;transition:all .15s;
 }
 .profile-hub-close:active{transform:translateY(1px) scale(.95);}
-.profile-hub-close:hover{background:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
+.profile-hub-close:hover{background-color:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
 .profile-hub-views{position:relative;flex:1;min-height:0;overflow:hidden;}
 .profile-hub-view{
   position:absolute;inset:0;padding:14px 14px calc(env(safe-area-inset-bottom) + 16px);overflow-y:auto;-webkit-overflow-scrolling:touch;
@@ -1329,7 +1329,9 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 /* VERSUS MODE */
 .vs-turn-screen{position:fixed;inset:0;background:var(--dark);z-index:545;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;}
 .vs-turn-screen.show{display:flex;animation:fadeInOverlay .3s ease;}
+.vs-turn-screen.single-round-start.show{display:flex;animation:none;opacity:1;transform:none;}
 .vs-turn-screen.fade-out{display:flex;animation:fadeOutOverlay .24s ease forwards;}
+.vs-turn-screen.single-round-start.fade-out{display:flex;animation:fadeOutOverlay .24s ease forwards;}
 @keyframes fadeOutOverlay{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.985)}}
 .vs-turn-icon{font-size:56px;animation:celebIn .5s cubic-bezier(.34,1.56,.64,1);}
 .vs-turn-name{font-family:'Bebas Neue',cursive;font-size:38px;letter-spacing:4px;color:var(--c-fwyl);animation:celebIn .5s cubic-bezier(.34,1.56,.64,1) .1s both;}
@@ -1354,7 +1356,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .mode-info-btn{
   position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:16px;
   width:32px;height:32px;border-radius:8px;
-  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  background-color:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
   color:rgba(255,255,255,.7);font-family:'Bebas Neue',cursive;font-size:15px;
   cursor:pointer;display:flex;align-items:center;justify-content:center;
   z-index:110;transition:background .15s;flex-shrink:0;
@@ -1362,11 +1364,11 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   background-image:url('./info.svg');
   background-repeat:no-repeat;
   background-position:center;
-  background-size:16px 16px;
+  background-size:20px 20px;
   color:transparent;
   font-size:0;
 }
-.mode-info-btn:hover{background:rgba(255,255,255,.22);}
+.mode-info-btn:hover{background-color:rgba(255,255,255,.22);}
 .mode-info-btn:active{transform:translateY(1px) scale(.92);border-color:rgba(120,220,96,.4);box-shadow:inset 0 0 10px rgba(0,0,0,.42), 0 0 12px rgba(120,220,96,.16);}
 .mode-info-overlay{
   display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);
@@ -1389,8 +1391,8 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   position:sticky;top:0;z-index:2;flex-shrink:0;
 }
 .mode-info-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
-.mode-info-close{background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:transparent;width:28px;height:28px;border-radius:7px;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.mode-info-close:hover{background:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
+.mode-info-close{background-color:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:transparent;width:28px;height:28px;border-radius:7px;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.mode-info-close:hover{background-color:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
 .mode-info-close:active{transform:translateY(1px) scale(.95);}
 .mode-info-body{padding:16px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;}
 .mode-info-body.compact-top{padding-top:8px;}
@@ -1722,7 +1724,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <button class="setup-back-btn" id="gameBackBtn" onclick="openGameScreenMenu()" aria-label="Back">&#8592;</button>
     <div class="logo"><img class="brand-logo-img brand-logo-game" src="dicegolf_cropped.png" alt="Dice Golf"></div>
     <div style="display:flex;align-items:center;gap:4px;">
-      <button id="gameSettingsBtn" onclick="openSettings()" style="background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--muted);border-radius:7px;width:32px;height:32px;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;line-height:1;" title="Settings">&#9881;</button>
+      <button id="gameSettingsBtn" onclick="openSettings()" style="background-color:rgba(255,255,255,.08);border:1px solid var(--border);color:transparent;border-radius:7px;width:32px;height:32px;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;line-height:1;" title="Settings" aria-label="Settings"></button>
     </div>
   </div>
   <div class="sc-wrap">
@@ -2750,12 +2752,14 @@ function selectCourse(courseId){
 function teeOffFromCourse(){
   if(_courseScreenFlow === 'versus'){
     if(!VS.setup.courseSelected) return;
-    hideScreen('courseScreen');
+    setMainAppConcealed(true);
+    hideMainAppImmediate();
     startGame();
     return;
   }
   if(!SETUP.courseSelected) return;
-  hideScreen('courseScreen');
+  setMainAppConcealed(true);
+  hideMainAppImmediate();
   startGame();
 }
 
@@ -2872,19 +2876,16 @@ function showSingleRoundSplash(){
 function startSingleRoundFromSplash(){
   const screen=document.getElementById('roundStartScreen');
   if(screen){
-    screen.classList.add('fade-out');
-  }
-  setMainAppConcealed(true);
-  setTimeout(()=>{
-    revealMainApp();
-  },120);
-  setTimeout(()=>{
-    if(screen){
+    const onFadeOutEnd=(evt)=>{
+      if(evt.target!==screen) return;
       screen.classList.remove('show');
       screen.classList.remove('single-round-start');
       screen.classList.remove('fade-out');
-    }
-  },230);
+    };
+    screen.addEventListener('animationend', onFadeOutEnd, { once:true });
+    screen.classList.add('fade-out');
+  }
+  revealMainApp();
   maybeShowShakeBanner();
 }
 
@@ -5071,8 +5072,8 @@ function summaryPlayAgain(){
   closeSummaryHoleModal();
   setMainAppConcealed(true);
   hideMainAppImmediate();
-  document.getElementById('summaryModal').classList.remove('show');
-  document.getElementById('overlay').classList.remove('show');
+  const summaryModal = document.getElementById('summaryModal');
+  const overlay = document.getElementById('overlay');
   _summaryBackTarget = null;
   const hc = document.getElementById('hcScreen');
   if(hc) hc.classList.remove('show');
@@ -5083,20 +5084,19 @@ function summaryPlayAgain(){
     roundStartScreen.classList.remove('fade-out');
   }
   const versusReplay = !!(_summaryContext && _summaryContext.mode === 'versus');
+  setSummaryContext(null);
   if(versusReplay){
-    setSummaryContext(null);
-    setTimeout(()=>{
-      VS.active = true;
-      startGame();
-      document.querySelector('.tv-bar').classList.add('show');
-    },220);
+    VS.active = true;
+    startGame();
+    if(summaryModal) summaryModal.classList.remove('show');
+    if(overlay) overlay.classList.remove('show');
+    document.querySelector('.tv-bar')?.classList.add('show');
     return;
   }
-  setSummaryContext(null);
-  setTimeout(()=>{
-    startGame();
-    document.querySelector('.tv-bar').classList.add('show');
-  },220);
+  startGame();
+  if(summaryModal) summaryModal.classList.remove('show');
+  if(overlay) overlay.classList.remove('show');
+  document.querySelector('.tv-bar')?.classList.add('show');
 }
 
 function renderHistGrid(wrap, snapGrid, log, logIdx) {
