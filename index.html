@@ -67,9 +67,11 @@ body.theme-light .summary-modal{background:var(--dark);}
 .toggle-switch.on .toggle-knob{transform:translateX(22px);}
 body.theme-light .toggle-switch{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,.1);}
 body.theme-light .toggle-switch.on{background:var(--c-fwy);border-color:var(--c-fwyl);}
+html{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;}
 body{
   background:var(--dark);color:var(--text);font-family:'Sen',sans-serif;
-  min-height:100vh;overflow-x:hidden;
+  min-height:100vh;min-height:100svh;min-height:100dvh;overflow-x:hidden;
+  overscroll-behavior-y:none;-webkit-overflow-scrolling:touch;
   /* Push all content below the iOS status bar */
   padding-top:env(safe-area-inset-top);
 }
@@ -212,8 +214,16 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .grid-axes{display:grid;grid-template-columns:20px repeat(6,1fr);grid-template-rows:20px repeat(6,1fr);gap:2px;aspect-ratio:1;}
 .ax{display:flex;align-items:center;justify-content:center;font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);background:rgba(255,255,255,.03);border-radius:3px;}
 .cell{border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Sen', sans-serif;font-size:8px;font-weight:600;color:rgba(255,255,255,.85);position:relative;}
-.cell.lit{outline:2px solid #fff;outline-offset:1px;z-index:10;animation:cellpop .45s ease;}
-@keyframes cellpop{0%{transform:scale(1.25)}100%{transform:scale(1)}}
+.cell.lit{outline:2px solid #fff;outline-offset:1px;z-index:10;animation:celldrop .68s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 0 0 rgba(255,255,255,.6),0 0 18px 2px rgba(255,255,255,.35);}
+.cell.lit::after{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.9) 0%,rgba(255,255,255,0) 55%);opacity:0;animation:cellflash .62s ease-out;pointer-events:none;}
+@keyframes celldrop{
+  0%{transform:translateY(-14px) scale(1.05);opacity:.7;}
+  55%{transform:translateY(0) scale(1.32);opacity:1;}
+  72%{transform:translateY(-3px) scale(1.12);}
+  86%{transform:translateY(0) scale(1.18);}
+  100%{transform:translateY(0) scale(1);}
+}
+@keyframes cellflash{0%{opacity:.85;}100%{opacity:0;}}
 .z-tee{background:var(--c-tee);}.z-fwy{background:var(--c-fwy);}
 .z-rgh{background:var(--c-rgh);}.z-chip{background:var(--c-chip);}
 .z-sand{background:var(--c-sand);}.z-grn{background:var(--c-grn);}
@@ -222,7 +232,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .z-2p{background:var(--c-2p);}.z-3p{background:var(--c-3p);}
 
 /* DICE */
-.dice-row{margin:0 16px 10px;display:flex;gap:10px;align-items:stretch;}
+.dice-row{margin:0 16px 10px;display:flex;gap:10px;align-items:stretch;perspective:600px;perspective-origin:center 30%;}
 .dc{flex:.78 1 0;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;}
 .dc-lbl{font-family:'Sen', sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
 .die{
@@ -300,9 +310,13 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .btn-roll:disabled:active{transform:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 0 0 1px rgba(255,255,255,.04), 0 3px 10px rgba(0,0,0,.2);}
 .btn-roll.rolling-state{background:#487a41;color:rgba(255,255,255,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 0 0 1px rgba(255,255,255,.04), 0 3px 10px rgba(0,0,0,.2);filter:saturate(.68) brightness(.92);}
 .roll-col{flex:1.44 1 0;display:grid;min-width:0;position:relative;}
-#rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:opacity .15s ease,transform .15s cubic-bezier(0.22,1,0.36,1),visibility 0s linear .15s,background-color .15s ease-in-out,box-shadow .15s ease-in-out,color .15s ease-in-out,filter .15s ease-in-out;}
+/* MORPH: buttons share the same slot; outgoing fades + scales down, incoming fades + scales up with a tiny bounce. */
+#rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:opacity .22s ease,transform .32s cubic-bezier(.34,1.56,.64,1),visibility 0s linear .22s,background-color .22s ease-in-out,box-shadow .15s ease-in-out,color .15s ease-in-out,filter .15s ease-in-out;}
 .shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0) scale(1);transition-delay:0s;}
-.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(0) scale(1);}
+.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(0) scale(.82);}
+/* Pulse the slot when swap happens */
+.roll-col.morphing{animation:morphPulse .46s cubic-bezier(.34,1.56,.64,1);}
+@keyframes morphPulse{0%{transform:scale(1);}40%{transform:scale(1.06);}100%{transform:scale(1);}}
 #nextShotBtn{letter-spacing:2px;font-size:20px;}
 
 /* RESULT */
@@ -319,6 +333,8 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .log-list{display:flex;flex-direction:column;gap:3px;}
 .log-entry{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:7px;font-family:'Sen', sans-serif;font-size:11px;color:var(--muted);animation:fadein .28s ease;}
 @keyframes fadein{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
 .log-n{width:17px;height:17px;background:var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text);flex-shrink:0;}
 .log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .log-r{margin-left:auto;font-size:10px;}
@@ -332,9 +348,19 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .menu-screen, .setup-screen {
   position:fixed;inset:0;background:var(--dark);z-index:500;display:flex;align-items:center;justify-content:center;overflow-y:auto;
   padding:calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
-  opacity:0;transform:translateY(12px) scale(.985);transition:opacity .26s ease,transform .26s cubic-bezier(0.22,1,0.36,1); pointer-events:none;
+  opacity:0;transform:translateY(12px) scale(.985);transition:opacity .28s ease,transform .34s cubic-bezier(0.22,1,0.36,1); pointer-events:none;
+  will-change:opacity,transform;
 }
 .menu-screen.visible, .setup-screen.visible { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+/* Direction-aware iOS-native transitions. `body.nav-forward`/`body.nav-back` is toggled by showScreen(). */
+body.nav-forward .menu-screen:not(.visible),
+body.nav-forward .setup-screen:not(.visible){ transform:translateX(24%) scale(.99); opacity:0; }
+body.nav-forward .menu-screen.visible,
+body.nav-forward .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1; }
+body.nav-back .menu-screen:not(.visible),
+body.nav-back .setup-screen:not(.visible){ transform:translateX(-18%) scale(.985); opacity:0; }
+body.nav-back .menu-screen.visible,
+body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1; }
 .menu-bg-grass{position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(180deg,transparent 0%,#0d1f0a 100%);pointer-events:none;z-index:0;}
 .menu-content{position:relative;z-index:10;text-align:center;width:100%;max-width:380px;min-height:min(78vh,720px);display:flex;flex-direction:column;}
 .onboard-content{max-width:360px;min-height:auto;justify-content:center;}
@@ -456,7 +482,11 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 2px 8px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08);
   justify-self:start;
+  position:relative;
+  transition:transform .18s cubic-bezier(.22,1,.36,1), background .18s ease, border-color .18s ease;
 }
+/* Expand touch target to iOS-recommended 44pt without changing visual size */
+.setup-back-btn::before{content:'';position:absolute;inset:-8px;}
 .setup-back-btn,
 .profile-hub-back{
   background-image:url('./back.svg');
@@ -1847,16 +1877,17 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   </div>
   <style>
     #hcScreen { overscroll-behavior: none; touch-action: none; }
-    /* Vertical scroll for the log list only */
-    #hcLogList { overscroll-behavior: contain; touch-action: pan-y; overflow-y: auto; -webkit-overflow-scrolling: touch; max-height: 115px; -ms-overflow-style: none; scrollbar-width: none; }
-    #hcLogList::-webkit-scrollbar { display: none; }
+    /* Horizontal scroll for the shot trail */
+    #hcShotTrail { overscroll-behavior-x: contain; touch-action: pan-x; overflow-x: auto; -webkit-overflow-scrolling: touch; -ms-overflow-style: none; scrollbar-width: none; }
+    #hcShotTrail::-webkit-scrollbar { display: none; }
     /* Horizontal scroll for the scorecard only */
     #hcScreen .sc-wrap { overscroll-behavior-x: none; touch-action: pan-x; overflow-x: auto; -webkit-overflow-scrolling: touch; -ms-overflow-style: none; scrollbar-width: none; }
     #hcScreen .sc-wrap::-webkit-scrollbar { display: none; }
   </style>
   <div id="hcMidSection" style="flex:1; display:flex; flex-direction:column; min-height:0; padding-bottom:12px;">
     <div class="sec-title" style="flex-shrink:0;">SHOT REPLAY</div>
-    <div class="hc-log-list" id="hcLogList" style="flex-shrink:0; margin-bottom:16px;"></div>
+    <div id="hcShotTrail" style="display:flex;align-items:center;gap:4px;padding:6px 0 6px;flex-shrink:0;"></div>
+    <div id="hcShotDetail" style="flex-shrink:0;margin-bottom:12px;min-height:34px;"></div>
     <div class="sec-title" style="flex-shrink:0;">SCORECARD</div>
     <div class="sc-wrap" style="margin-bottom:0; flex-shrink:0;">
       <div class="sc-inner">
@@ -1978,9 +2009,23 @@ function setMetricsPref(m){
 // ═══════════════════════════════════════
 // SCREEN TRANSITION HELPERS
 // ═══════════════════════════════════════
+function _setNavDir(dir){
+  const b=document.body; if(!b) return;
+  b.classList.remove('nav-forward','nav-back');
+  if(dir) b.classList.add(dir==='back'?'nav-back':'nav-forward');
+  // Auto-clear after transition completes so non-nav actions don't inherit direction
+  clearTimeout(window._navDirClear);
+  window._navDirClear=setTimeout(()=>{
+    b.classList.remove('nav-forward','nav-back');
+  }, 420);
+}
 function showScreen(id, flexOrBlock='flex'){
   const el=document.getElementById(id);
   if(!el)return;
+  // Default to forward direction if nothing else set it
+  if(!document.body.classList.contains('nav-back') && !document.body.classList.contains('nav-forward')){
+    _setNavDir('forward');
+  }
   if(!window._screenHideTimers) window._screenHideTimers = {};
   if(window._screenHideTimers[id]){
     clearTimeout(window._screenHideTimers[id]);
@@ -2249,6 +2294,58 @@ window.addEventListener('DOMContentLoaded', function(){
   _loadShakePermission();
   applyRollMode(getRollMode());
   initFloatingEntities();
+  // Edge-swipe back gesture (iOS-native feel). Finds the visible back button and taps it.
+  (function initEdgeSwipe(){
+    let sx=0, sy=0, sT=0, tracking=false;
+    const EDGE = 28;            // start zone from left edge (px)
+    const MIN_DX = 70;          // min horizontal travel
+    const MAX_DY = 60;          // max vertical drift
+    const MAX_T = 600;          // max duration (ms)
+    function findBackBtn(){
+      // Priority: visible modal back buttons, then current screen back buttons
+      const selectors=['.setup-back-btn:not([disabled])','.profile-hub-back:not([disabled])','#wcInfoBackBtn','.modal-back-btn'];
+      for(const sel of selectors){
+        const els=document.querySelectorAll(sel);
+        for(const el of els){
+          const s=getComputedStyle(el);
+          if(s.display==='none'||s.visibility==='hidden'||el.style.pointerEvents==='none') continue;
+          const r=el.getBoundingClientRect();
+          if(r.width===0||r.height===0) continue;
+          return el;
+        }
+      }
+      return null;
+    }
+    document.addEventListener('touchstart', e=>{
+      if(!e.touches[0]) return;
+      const t=e.touches[0];
+      // Ignore if touch starts on an interactive scroll area mid-screen
+      if(t.clientX > EDGE) { tracking=false; return; }
+      sx=t.clientX; sy=t.clientY; sT=Date.now(); tracking=true;
+    }, {passive:true});
+    document.addEventListener('touchend', e=>{
+      if(!tracking) return;
+      tracking=false;
+      const t=e.changedTouches[0]; if(!t) return;
+      const dx=t.clientX-sx, dy=Math.abs(t.clientY-sy), dt=Date.now()-sT;
+      if(dx>MIN_DX && dy<MAX_DY && dt<MAX_T){
+        const btn=findBackBtn();
+        if(btn){ _setNavDir('back'); _hapticClick(); btn.click(); }
+      }
+    }, {passive:true});
+  })();
+  // Double-tap zoom prevention on interactive controls (iOS Safari/WKWebView)
+  let _lastTapTime=0;
+  document.addEventListener('touchend', e=>{
+    const now=Date.now();
+    if(now-_lastTapTime<300){
+      const tgt=e.target;
+      if(tgt && tgt.closest('button, .cell, .dice, .menu-btn-play, .menu-btn-sec, .setup-back-btn, .ov-btn, .tee-off-btn, .vs-turn-btn')){
+        e.preventDefault();
+      }
+    }
+    _lastTapTime=now;
+  }, {passive:false});
   const oi=document.getElementById('onboardInput');
   if(oi){
     oi.addEventListener('keydown',e=>{if(e.key==='Enter')createFirstProfile();});
@@ -2625,6 +2722,7 @@ function forceHideGame() {
 
 function navBack(to) {
   forceHideGame();
+  _setNavDir('back');
   const target = to === 'mode' ? (SETUP.mode === 'custom' ? 'customScreen' : 'playModeScreen') : to;
   const screens = ['menuScreen','playModeScreen','customScreen','courseScreen','diffScreen','versusSetupScreen','vsOptionsScreen'];
   screens.forEach(id => { if (id !== target) hideScreen(id); });
@@ -2936,8 +3034,19 @@ function _setShotBtnState(showNext, immediate=false){
   const other = showNext ? roll : next;
   const targetDisabled = showNext ? false : !!S.rolling;
 
+  // Fire morph pulse on the wrapping slot when a real swap happens (not an immediate init)
+  const isRealSwap = !immediate && other.classList.contains('shot-btn-visible') && !target.classList.contains('shot-btn-visible');
   setVisible(other, false, true);
   setVisible(target, true, targetDisabled);
+  if(isRealSwap){
+    const slot = roll.parentElement;
+    if(slot){
+      slot.classList.remove('morphing');
+      void slot.offsetWidth;
+      slot.classList.add('morphing');
+      setTimeout(()=>slot.classList.remove('morphing'), 480);
+    }
+  }
 }
 
 function showNextShotBtn(immediate=false){ _setShotBtnState(true, immediate); }
@@ -3581,7 +3690,7 @@ function doRoll(){
     setDie('dp1',r1);
     d1.classList.add('landed');
     vibDiceLand();
-  },550);
+  },850);
 
   setTimeout(()=>{
     d2.classList.remove('rolling');
@@ -3595,7 +3704,7 @@ function doRoll(){
         processShot(r1-1,r2-1);
       }
     }, 50); // Dramatically reduced wait time after dice land
-  },630);
+  },1000);
 }
 
 // ═══════════════════════════════════════
@@ -3813,7 +3922,11 @@ function processShot(row,col){
   }
 
   playShotSound(prevZone, resolvedOutcome);
-  vibShot();
+  // Outcome-specific haptics — subtle for good, stronger for trouble
+  if(resolvedOutcome==='wtr' || resolvedOutcome==='ob'){ _doHaptic('HEAVY'); }
+  else if(resolvedOutcome==='bkr' || resolvedOutcome==='rgh'){ _doHaptic('MEDIUM'); }
+  else if(resolvedOutcome==='grn' || resolvedOutcome==='chip'){ _doHaptic('LIGHT'); }
+  else { vibShot(); }
 
   S.strokes+=1;S.shotCount++;
   if(resolvedOutcome==='fwy')S.fwyVisits++;
@@ -3951,7 +4064,7 @@ function _showTailwindDieChoice(){
           setRerollChoiceActive(false);
           processShot(newR1-1,newR2-1);
         }, 900); 
-      }, 550);
+      }, 850);
       
       renderWcFab();
     };
@@ -4098,6 +4211,42 @@ function getNetPenaltyCount(entries=S.log){
   return Math.max(0, penaltyAdds - penaltyRemovals);
 }
 
+const _ZONE_ABBR={tee:'T',fwy:'F',rgh:'R',chip:'C',sand:'S',grn:'G',h2o:'W',ob:'OB',hole:'⛳'};
+function _renderShotReplay(log, holeDone){
+  const trail = document.getElementById('hcShotTrail');
+  const detail = document.getElementById('hcShotDetail');
+  if(!trail || !detail){ return; }
+  if(!log || !log.length){ trail.innerHTML=''; detail.innerHTML=''; return; }
+
+  function render(idx){
+    trail.innerHTML = '';
+    log.forEach((e, i) => {
+      const fromZk = e.prevZone || e.zk || 'fwy';
+      const zd = Z[fromZk] || Z.fwy;
+      const abbr = _ZONE_ABBR[fromZk] || fromZk.substring(0,2).toUpperCase();
+      const isActive = i === idx;
+      if(i > 0){
+        const arr = document.createElement('span');
+        arr.textContent = '→';
+        arr.style.cssText = 'color:var(--muted);font-size:10px;flex-shrink:0;';
+        trail.appendChild(arr);
+      }
+      const pill = document.createElement('button');
+      pill.textContent = abbr;
+      pill.style.cssText = `flex-shrink:0;min-width:28px;height:28px;border-radius:14px;border:none;cursor:pointer;font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:1px;padding:0 7px;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .15s,box-shadow .15s;-webkit-tap-highlight-color:transparent;${isActive?`background:${zd.color};color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.25);transform:scale(1.1);`:'background:rgba(255,255,255,.07);color:var(--muted);transform:scale(1);'}`;
+      pill.onclick = () => render(i);
+      trail.appendChild(pill);
+    });
+    const e = log[idx];
+    const fromZk = e.prevZone || e.zk || 'fwy';
+    const toName = e.zk === 'hole' ? 'HOLE' : ((Z[e.zk]||Z.fwy).name.toUpperCase());
+    const fromName = (Z[fromZk]||Z.fwy).name.toUpperCase();
+    const noteStr = (e.note && e.note !== '+1') ? ` · ${e.note}` : '';
+    detail.innerHTML = `<div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;color:var(--text);line-height:1.2;">SHOT ${e.num} · ${fromName} → ${toName}</div><div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:3px;">${e.desc}${noteStr}</div>`;
+  }
+  render(log.length - 1);
+}
+
 function renderLog(targetEl,data){
   const el=targetEl||document.getElementById('logList');
   const entries=data||S.log;
@@ -4169,6 +4318,10 @@ function completeHole(){
     else if(d===4) title='QUADRUPLE BOGEY';
     else if(d===5) title='QUINTUPLE BOGEY';
     else if(d>5) title=`+${d}`;
+    // Outcome haptic on hole completion
+    if(isHoleInOne || d<=-2){ vibHoleInOne(); }
+    else if(d===-1){ _doHaptic('MEDIUM'); }
+    else if(d>=2){ _doHaptic('HEAVY'); }
     document.getElementById('ovEmoji').textContent=emoji;
     document.getElementById('ovEmoji').style.display='block';
     document.getElementById('ovTitle').textContent=title;
@@ -4283,9 +4436,6 @@ function completeHole(){
   if(baseSecTitles[0]) baseSecTitles[0].textContent = 'SHOT REPLAY';
   if(baseSecTitles[1]) baseSecTitles[1].textContent = 'SCORECARD';
   
-  const logList = document.getElementById('hcLogList');
-  if(logList) logList.style.display = 'flex';
-
   const scWrap = document.querySelector('#hcScreen .sc-wrap');
   if (scWrap) scWrap.style.display = ''; // Restore scorecard visibility
   const midSection = document.getElementById('hcMidSection');
@@ -4314,7 +4464,7 @@ function completeHole(){
     unlockAchievement('eyes_closed');
   }
 
-  {
+  if(!TUT.active){
     const profiles=loadProfiles();
     const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
     const p=profiles[idx];
@@ -4366,6 +4516,11 @@ function completeHole(){
   const hcTitle = document.getElementById('hcTitle');
   hcTitle.textContent = title;
   
+  // Outcome haptic
+  if(isHoleInOne || d<=-2){ vibHoleInOne(); }
+  else if(d===-1){ _doHaptic('MEDIUM'); }
+  else if(d>=2){ _doHaptic('HEAVY'); }
+  
   if(d<=-2) hcTitle.style.color='var(--gold)';
   else if(d===-1) hcTitle.style.color='#ff6b9d';
   else if(d===0) hcTitle.style.color='var(--c-fwyl)';
@@ -4379,16 +4534,8 @@ function completeHole(){
   else if(totalDiff===0) totSpan.style.color='var(--c-fwyl)';
   else totSpan.style.color='#e05252';
 
-  // Populate Shot Replay mimicking the Shot Log
-  logList.innerHTML = '';
-  [...S.log].reverse().forEach(e => {
-      const zd = Z[e.zk] || Z.fwy;
-      const item = document.createElement('div');
-      item.className = 'log-entry';
-      item.style.marginBottom = '4px';
-      item.innerHTML = `<div class="log-n">${e.num}</div><div class="log-dot" style="background:${zd.color}"></div><span style="color:var(--text);flex:1">${e.desc}</span>${(e.note&&e.note!=='+1')?`<span class="log-r" style="color:${e.pen?'#e05252':'var(--muted)'}">${e.note}</span>`:''}`;
-      logList.appendChild(item);
-  });
+  // Populate Shot Replay
+  _renderShotReplay([...S.log], S.holeDone);
 
   // Populate Mini Scorecard
   const scHead = document.getElementById('hcScHead');
@@ -4601,7 +4748,7 @@ function showRoundEnd(){
 
     let pbHtml = '';
     if (isNewPB) {
-        pbHtml = `<div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--gold);margin-bottom:14px;text-align:center;animation:pulse 1s infinite alternate;">NEW PERSONAL BEST!</div>`;
+        pbHtml = `<div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--gold);margin-top:18px;margin-bottom:4px;text-align:center;animation:pulse 1s infinite alternate;">NEW PERSONAL BEST!</div>`;
         if(!document.getElementById('pbStyle')){
             const s = document.createElement('style'); s.id = 'pbStyle';
             s.textContent = '@keyframes pulse { from { opacity: 0.7; transform: scale(0.98); } to { opacity: 1; transform: scale(1.05); } }';
@@ -4625,8 +4772,10 @@ function showRoundEnd(){
     }
 
     document.querySelectorAll('#hcScreen .sec-title').forEach(t => t.style.display = 'none');
-    const logList = document.getElementById('hcLogList');
-    if (logList) logList.style.display = 'none';
+    const shotTrailF = document.getElementById('hcShotTrail');
+    const shotDetailF = document.getElementById('hcShotDetail');
+    if(shotTrailF) shotTrailF.style.display = 'none';
+    if(shotDetailF) shotDetailF.style.display = 'none';
     const scWrap = document.querySelector('#hcScreen .sc-wrap');
     if (scWrap) scWrap.style.display = 'none'; // Hide the scorecard here
     const vsToggle = document.getElementById('vsToggleRow');
@@ -4718,11 +4867,10 @@ function showRoundEnd(){
     }
 
     // Show tournament statistics only
-    const logList2 = document.getElementById('hcLogList');
-    if(logList2){
-      logList2.style.display = 'none';
-      logList2.innerHTML = '';
-    }
+    const shotTrailT = document.getElementById('hcShotTrail');
+    const shotDetailT = document.getElementById('hcShotDetail');
+    if(shotTrailT) shotTrailT.style.display = 'none';
+    if(shotDetailT) shotDetailT.style.display = 'none';
     const secTitles = document.querySelectorAll('#hcScreen .sec-title');
     if(secTitles[0]) secTitles[0].style.display = 'none';
     if(secTitles[1]) secTitles[1].style.display = 'none';
@@ -4777,25 +4925,10 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
   
   document.getElementById('sumTitle').textContent='SUMMARY';
 
-  if (S.totalRounds > 1) {
-    const tabs = document.createElement('div');
-    tabs.className = 'sum-tabs';
-    tabs.style.position = 'static';
-    for(let r=1; r<=S.totalRounds; r++){
-      if (r > S.currentRound && S.currentRound !== S.totalRounds && !S.scorecards[r-1]) continue;
-      const tab = document.createElement('button');
-      tab.className = `sum-tab ${r === viewRound ? 'active' : ''}`;
-      tab.textContent = `ROUND ${r}`;
-      tab.onclick = () => openSummary(r, backTarget);
-      tabs.appendChild(tab);
-    }
-    body.appendChild(tabs);
-  }
-
   const scData = S.scorecards[viewRound - 1] || Array(18).fill(null);
   const histData = S.histories[viewRound - 1] || Array(18).fill(null);
   const activeHoles = HOLES.slice(S.startIdx, S.endIdx + 1);
-  
+
   const roundTotal = scData.reduce((a,b)=>a+(b||0),0);
   const roundPar = activeHoles.reduce((a,h)=>a+h.par,0);
   const roundDiff = roundTotal - roundPar;
@@ -4809,6 +4942,19 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
   const statsHead = document.createElement('div');
   statsHead.className = 'sum-section-head';
   statsHead.innerHTML = `<div class="ttl">STATISTICS</div><div class="line"></div>`;
+  if(S.totalRounds > 1){
+    const pillWrap = document.createElement('div');
+    pillWrap.style.cssText = 'display:flex;gap:4px;flex-shrink:0;';
+    for(let r=1; r<=S.totalRounds; r++){
+      if(r > S.currentRound && S.currentRound !== S.totalRounds && !S.scorecards[r-1]) continue;
+      const pill = document.createElement('button');
+      pill.className = `sum-tab${r === viewRound ? ' active' : ''}`;
+      pill.textContent = `R${r}`;
+      pill.onclick = () => openSummary(r, backTarget);
+      pillWrap.appendChild(pill);
+    }
+    statsHead.appendChild(pillWrap);
+  }
   body.appendChild(statsHead);
   const statsList = document.createElement('div');
   statsList.className = 'sum-stats-list';
@@ -5513,6 +5659,7 @@ function incrementCompletedGameCounters(options = {}){
 }
 
 function applyRoundScoreBuckets(profile, roundIdx){
+  if(TUT.active) return;
   const histRow = (S.histories[roundIdx] || []);
   for(let i = S.startIdx; i <= S.endIdx; i++){
     const hist = histRow[i];
@@ -5670,11 +5817,10 @@ function awardRoundExperience(options = {}){
   const beforeTotal = Math.max(0, ctx.p.xpTotal || 0);
   let totalXp = gameplayXp + achievementBonus + tutorialBonus;
   if(options.ensureLevel2 && before.level < 2){
+    // Guarantee player reaches level 2; top-up is silent — does not change the
+    // displayed tutorialBonus so the shown value stays exactly as passed (40).
     const need = Math.max(0, xpTotalForLevel(2) - (ctx.p.xpTotal || 0));
-    if(totalXp < need){
-      tutorialBonus += (need - totalXp);
-      totalXp = need;
-    }
+    if(totalXp < need) totalXp = need;
   }
 
   ctx.p.xpTotal = Math.max(0, (ctx.p.xpTotal || 0) + totalXp);
@@ -5743,6 +5889,7 @@ function showXpRewardModal(title, award, buttonText = 'CONTINUE', afterClose = n
 }
 
 function updateProfileAfterRound(score, par){
+  if(TUT.active) return;
   const profiles=loadProfiles();
   if(!profiles.length)return;
   const idx=Math.min(getActiveProfileIdx(), profiles.length-1);
@@ -6799,6 +6946,7 @@ function showAchievementPopup(a){
 }
 
 function updateProfileStatsAfterRound(score,par,wcUsedThisRound){
+  if(TUT.active) return;
   const profiles=loadProfiles();
   const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
   const p=profiles[idx];if(!p)return;
@@ -7346,22 +7494,11 @@ function setRollMode(mode){
       && typeof DeviceMotionEvent.requestPermission==='function'){
     _loadShakePermission();
     if(!_shakePermissionGranted){
-      DeviceMotionEvent.requestPermission().then(r=>{
-        if(r==='granted'){
-          _shakePermissionGranted=true;
-          _saveShakePermission();
-          _startShakeListener();
-        } else {
-          // User denied — revert toggle back to classic
-          try{localStorage.setItem('gg_rollmode','classic');}catch{}
-          updateRollModeUI('classic');
-        }
-      }).catch(()=>{
-        try{localStorage.setItem('gg_rollmode','classic');}catch{}
-        updateRollModeUI('classic');
-      });
+      // Show in-app pre-prompt first; the Allow button calls requestPermission()
+      // from its own click handler so the user-gesture context is preserved for iOS.
       updateRollModeUI('haptic');
-      return; // listener started async above; skip applyRollMode for now
+      _showShakePrePrompt();
+      return;
     }
   }
   applyRollMode(mode);
@@ -7406,6 +7543,104 @@ function applyRollMode(mode){
   }
 }
 
+function _showShakePrePrompt(){
+  const old = document.getElementById('shakePrePrompt');
+  if(old) old.remove();
+  const modal = document.createElement('div');
+  modal.id = 'shakePrePrompt';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(7,11,15,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:900;display:flex;align-items:flex-end;justify-content:center;padding:0 0 env(safe-area-inset-bottom,0);animation:fadeIn .22s ease;';
+  modal.innerHTML = `
+    <div style="background:#161c24;border:1px solid var(--border);border-radius:20px 20px 0 0;max-width:460px;width:100%;padding:24px 22px 28px;text-align:center;animation:slideUp .32s cubic-bezier(.34,1.56,.64,1);">
+      <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);margin:0 auto 18px;"></div>
+      <div style="font-size:36px;line-height:1;margin-bottom:10px;">📳</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:var(--gold);margin-bottom:8px;">SHAKE TO ROLL</div>
+      <div style="font-family:'Sen',sans-serif;font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:20px;">DiceGolf needs access to your device motion so you can shake to roll the dice. Tap <b style="color:var(--text);">Allow Motion</b> to continue.</div>
+      <div style="display:flex;gap:8px;flex-direction:column;">
+        <button id="shakePreAllow" style="background:var(--c-fwy);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:2px;cursor:pointer;transition:transform .2s cubic-bezier(.34,1.56,.64,1);">ALLOW MOTION</button>
+        <button id="shakePreCancel" style="background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:12px;padding:12px;font-family:'Sen',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;">USE TAP TO ROLL</button>
+      </div>
+    </div>`;
+  if(!document.getElementById('shakeSlideUpStyle')){
+    const s = document.createElement('style');
+    s.id = 'shakeSlideUpStyle';
+    s.textContent = '@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}';
+    document.head.appendChild(s);
+  }
+  document.body.appendChild(modal);
+  const close = () => { modal.style.animation = 'fadeOut .18s ease forwards'; setTimeout(()=>modal.remove(), 180); };
+  modal.querySelector('#shakePreCancel').onclick = () => {
+    try{localStorage.setItem('gg_rollmode','classic');}catch{}
+    updateRollModeUI('classic');
+    close();
+  };
+  modal.querySelector('#shakePreAllow').onclick = () => {
+    close();
+    if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
+      DeviceMotionEvent.requestPermission().then(r => {
+        if(r === 'granted'){
+          _shakePermissionGranted = true;
+          _saveShakePermission();
+          _startShakeListener();
+          try{localStorage.setItem('gg_rollmode','haptic');}catch{}
+          updateRollModeUI('haptic');
+          if(typeof showWcToast === 'function') showWcToast('📳 Shake mode active!');
+        } else {
+          try{localStorage.setItem('gg_rollmode','classic');}catch{}
+          updateRollModeUI('classic');
+          _showShakePermissionDeniedUI();
+        }
+      }).catch(() => {
+        try{localStorage.setItem('gg_rollmode','classic');}catch{}
+        updateRollModeUI('classic');
+        _showShakePermissionDeniedUI();
+      });
+    }
+  };
+}
+
+function _showShakePermissionDeniedUI(){
+  // Remove any existing modal first
+  const old=document.getElementById('shakeDeniedModal');
+  if(old) old.remove();
+  const modal=document.createElement('div');
+  modal.id='shakeDeniedModal';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(7,11,15,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:900;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .22s ease;';
+  modal.innerHTML=`
+    <div style="background:#1a1a2e;border:1px solid var(--border);border-radius:18px;max-width:340px;width:100%;padding:22px 22px 18px;text-align:center;animation:popin .34s cubic-bezier(.34,1.56,.64,1);">
+      <div style="font-size:38px;line-height:1;margin-bottom:10px;">📳</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:var(--gold);margin-bottom:8px;">MOTION ACCESS NEEDED</div>
+      <div style="font-family:'Sen',sans-serif;font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:14px;">
+        Shake‑to‑roll needs permission to read device motion. You can grant it now, or enable it later in iOS&nbsp;Settings → Safari → Motion&nbsp;&amp;&nbsp;Orientation&nbsp;Access.
+      </div>
+      <div style="display:flex;gap:8px;flex-direction:column;">
+        <button id="shakeDeniedTry" style="background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;">TRY AGAIN</button>
+        <button id="shakeDeniedClose" style="background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:10px;padding:10px;font-family:'Sen',sans-serif;font-size:12px;letter-spacing:2px;cursor:pointer;">USE TAP TO ROLL</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  const close=()=>{ modal.style.animation='fadeOut .2s ease forwards'; setTimeout(()=>modal.remove(),200); };
+  modal.querySelector('#shakeDeniedClose').onclick=close;
+  modal.querySelector('#shakeDeniedTry').onclick=()=>{
+    // Must be re-requested from a user gesture — this click counts.
+    if(typeof DeviceMotionEvent!=='undefined' && typeof DeviceMotionEvent.requestPermission==='function'){
+      DeviceMotionEvent.requestPermission().then(r=>{
+        if(r==='granted'){
+          _shakePermissionGranted=true;
+          _saveShakePermission();
+          _startShakeListener();
+          try{localStorage.setItem('gg_rollmode','haptic');}catch{}
+          updateRollModeUI('haptic');
+          close();
+          if(typeof showWcToast==='function') showWcToast('📳 Shake mode active!');
+        } else {
+          // Still denied — keep modal up but nudge to Settings
+          const sub=modal.querySelector('div[style*="color:var(--muted)"]');
+          if(sub) sub.innerHTML='Still blocked. Open iOS&nbsp;Settings → Safari → <b>Motion &amp; Orientation Access</b> and toggle it on, then return here.';
+        }
+      }).catch(()=>close());
+    } else { close(); }
+  };
+}
 function _showShakePermissionBanner(){
   const existing=document.getElementById('shakePermBanner');
   if(existing)existing.remove();
@@ -7841,6 +8076,13 @@ function showWcInfoDetail(wc, color){
 function closeWcInfo(){
   const panel=document.getElementById('wcInfoPanel');
   if(panel)panel.classList.remove('open');
+  // Force synchronous repaint on back buttons that may have been visually
+  // obscured by the panel's z-index during its open state.
+  const bb=document.getElementById('wcInfoBackBtn');
+  if(bb){bb.style.visibility='visible';bb.style.pointerEvents='';void bb.offsetHeight;}
+  document.querySelectorAll('.setup-back-btn').forEach(b=>{
+    b.style.visibility='visible';b.style.pointerEvents='';void b.offsetHeight;
+  });
 }
 
 function renderWcDrawer(){
@@ -9614,6 +9856,7 @@ function tutComplete(isAbandon = false){
         roundTotal,
         roundPar,
         gameDiff: 1,
+        tutorialBonus: 40,
         ensureLevel2: true
       });
   }
@@ -9743,6 +9986,7 @@ function vsSetRoundsAvailability(lockToOne){
 }
 
 function navBackFromCourse(){
+  _setNavDir('back');
   hideScreen('courseScreen');
   if(_courseScreenFlow === 'versus'){
     if(VS.setup) VS.setup.courseSelected=false;
@@ -9974,18 +10218,9 @@ function vsCompleteHole(){
 }
 
 function renderVsReplayAndScoreboard(playerIdx) {
-  // 1. Render Log
-  const logList = document.getElementById('hcLogList');
-  logList.innerHTML = '';
+  // 1. Render Shot Replay
   const pLog = vsGetHistory(playerIdx, S.holeIdx)?.log || [];
-  [...pLog].reverse().forEach(e => {
-      const zd = Z[e.zk] || Z.fwy;
-      const item = document.createElement('div');
-      item.className = 'log-entry';
-      item.style.marginBottom = '4px';
-      item.innerHTML = `<div class="log-n">${e.num}</div><div class="log-dot" style="background:${zd.color}"></div><span style="color:var(--text);flex:1">${e.desc}</span>${(e.note&&e.note!=='+1')?`<span class="log-r" style="color:${e.pen?'#e05252':'var(--muted)'}">${e.note}</span>`:''}`;
-      logList.appendChild(item);
-  });
+  _renderShotReplay([...pLog], true);
 
   // 2. Render Scorecard
   const scHead = document.getElementById('hcScHead');
@@ -10183,8 +10418,10 @@ function vsShowHoleComparison(){
     <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--text);margin-top:16px;text-align:center;letter-spacing:1px;background:rgba(255,255,255,.05);padding:6px;border-radius:8px;">${centerText}</div>
   `;
 
-  const logList = document.getElementById('hcLogList');
-  if (logList) logList.style.display = 'flex';
+  const shotTrailVs = document.getElementById('hcShotTrail');
+  const shotDetailVs = document.getElementById('hcShotDetail');
+  if(shotTrailVs) shotTrailVs.style.display = 'flex';
+  if(shotDetailVs) shotDetailVs.style.display = 'block';
   const statsContainer = document.getElementById('hcVsStats');
   if (statsContainer) statsContainer.style.display = 'none';
   const hcDiffSub = document.getElementById('hcDiffSub');
@@ -10210,7 +10447,7 @@ function vsShowHoleComparison(){
       vsToggle = document.createElement('div');
       vsToggle.id = 'vsToggleRow';
       vsToggle.style.cssText = "display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-shrink:0;";
-      document.getElementById('hcLogList').parentNode.insertBefore(vsToggle, document.getElementById('hcLogList'));
+      document.getElementById('hcShotTrail').parentNode.insertBefore(vsToggle, document.getElementById('hcShotTrail'));
   }
   vsToggle.style.display = 'flex';
   vsToggle.innerHTML = `
@@ -10434,6 +10671,11 @@ function closeModeInfo(type){
     el.classList.remove('closing');
     el.classList.remove('show');
     el._closeTimer = null;
+    // Force synchronous repaint on any setup back buttons that sit beneath
+    // this overlay so they don't require a touch to reappear.
+    document.querySelectorAll('.setup-back-btn').forEach(b=>{
+      b.style.visibility='visible';b.style.pointerEvents='';void b.offsetHeight;
+    });
   }, 210);
 }
 </script>
