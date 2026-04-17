@@ -437,6 +437,10 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 }
 .menu-btn-sec:disabled{opacity:0.4;cursor:not-allowed;pointer-events:none;}
 .menu-btn-sec:disabled:active{transform:none;border-color:var(--border);box-shadow:0 4px 10px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.03);filter:none;}
+.menu-settings-icon{
+  width:18px;height:18px;display:block;flex-shrink:0;
+  background:url('./settings.svg') center/contain no-repeat;
+}
 
 .onboard-input{width:100%;background:rgba(255,255,255,.08);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;color:var(--text);outline:none;text-transform:uppercase;transition:border-color .2s;text-align:center;}
 .onboard-input:focus{border-color:var(--c-fwyl);}
@@ -452,6 +456,15 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 2px 8px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08);
   justify-self:start;
+}
+.setup-back-btn,
+.profile-hub-back{
+  background-image:url('./back.svg');
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:17px 17px;
+  color:transparent;
+  font-size:0;
 }
 .setup-back-btn:active{
   transform:translateY(1px) scale(.92);
@@ -748,6 +761,17 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .sum-hole-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 12px;background:rgba(255,255,255,.04);}
 .sum-hole-ttl{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--text);}
 .sum-hole-close{background:rgba(224,82,82,.2);border:1px solid rgba(255,82,82,.45);color:#ffd7d7;width:26px;height:26px;border-radius:7px;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.sum-hole-close,
+.profile-close,
+.profile-hub-close,
+.mode-info-close{
+  background-image:url('./close.svg');
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:15px 15px;
+  color:transparent;
+  font-size:0;
+}
 .sum-hole-body{padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .sum-btn-row{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:16px;padding-bottom:calc(env(safe-area-inset-bottom) + 2px);background:linear-gradient(180deg,rgba(13,17,23,0) 0%,rgba(13,17,23,.92) 34%,rgba(13,17,23,1) 100%);}
 .sum-detail-hint{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-shrink:0;font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
@@ -789,6 +813,14 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .txt-toggle.on .lbl-r{color:#000;}
 .txt-toggle:not(.on) .lbl-l{color:#000;}
 body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,.1);}
+#gameSettingsBtn{
+  background-image:url('./settings.svg');
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:18px 18px;
+  color:transparent!important;
+  font-size:0!important;
+}
 
 /* PROFILE SYSTEM */
 .profile-btn{
@@ -812,7 +844,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .profile-modal.show .profile-card{transform:translateY(0) scale(1);opacity:1;}
 .profile-head{background:var(--c-fwy);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;}
 .profile-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
-.profile-close{background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:#ffd7d7;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.profile-close{background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:transparent;width:28px;height:28px;border-radius:7px;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
 .profile-close:hover{background:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
 .profile-close:active{transform:translateY(1px) scale(.95);}
 .profile-body{padding:14px;}
@@ -895,14 +927,14 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .profile-hub-title{font-family:'Bebas Neue',cursive;font-size:25px;letter-spacing:3px;color:var(--c-fwyl);text-align:center;}
 .profile-hub-back{justify-self:start;}
 .profile-hub-close{
-  width:32px;height:32px;border-radius:8px;padding:0;margin:0;
-  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;
-  font-family:Arial,sans-serif;font-size:16px;line-height:1;letter-spacing:0;cursor:pointer;
+  width:28px;height:28px;border-radius:7px;padding:0;margin:0;
+  background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:transparent;
+  font-family:Arial,sans-serif;font-size:0;line-height:1;letter-spacing:0;cursor:pointer;
   display:flex;align-items:center;justify-content:center;justify-self:end;
-  box-shadow:0 2px 8px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08);transition:all .15s;
+  box-shadow:none;transition:all .15s;
 }
 .profile-hub-close:active{transform:translateY(1px) scale(.95);}
-.profile-hub-close:hover{background:rgba(255,255,255,.22);}
+.profile-hub-close:hover{background:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
 .profile-hub-views{position:relative;flex:1;min-height:0;overflow:hidden;}
 .profile-hub-view{
   position:absolute;inset:0;padding:14px 14px calc(env(safe-area-inset-bottom) + 16px);overflow-y:auto;-webkit-overflow-scrolling:touch;
@@ -1327,6 +1359,12 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   cursor:pointer;display:flex;align-items:center;justify-content:center;
   z-index:110;transition:background .15s;flex-shrink:0;
   box-shadow:0 2px 8px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08);
+  background-image:url('./info.svg');
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:16px 16px;
+  color:transparent;
+  font-size:0;
 }
 .mode-info-btn:hover{background:rgba(255,255,255,.22);}
 .mode-info-btn:active{transform:translateY(1px) scale(.92);border-color:rgba(120,220,96,.4);box-shadow:inset 0 0 10px rgba(0,0,0,.42), 0 0 12px rgba(120,220,96,.16);}
@@ -1351,7 +1389,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   position:sticky;top:0;z-index:2;flex-shrink:0;
 }
 .mode-info-head-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:#fff;}
-.mode-info-close{background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:#ffd7d7;width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.mode-info-close{background:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:transparent;width:28px;height:28px;border-radius:7px;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
 .mode-info-close:hover{background:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
 .mode-info-close:active{transform:translateY(1px) scale(.95);}
 .mode-info-body{padding:16px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;}
@@ -1423,7 +1461,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()" style="padding:20px 16px; font-size:28px; min-height:84px;">⛳ PLAY</button>
     <div style="display:flex; gap:10px;">
       <button class="menu-btn-play" id="menuVersusBtn" onclick="navToVersusSetup()" style="flex:1; background:linear-gradient(135deg,#1a5f8a,#2a3a6e);box-shadow:0 4px 20px rgba(30,95,138,.4); font-size:20px; padding:20px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;"><span style="font-size:24px;line-height:1;">🆚</span> VERSUS</button>
-      <button class="menu-btn-sec" onclick="openSettings()" style="flex:1; font-size:20px; letter-spacing:2px; padding:20px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; background:rgba(255,255,255,0.05); border-radius:18px;"><span style="font-size:24px;line-height:1;">⚙️</span> SETTINGS</button>
+      <button class="menu-btn-sec" onclick="openSettings()" style="flex:1; font-size:20px; letter-spacing:2px; padding:20px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; background:rgba(255,255,255,0.05); border-radius:18px;"><span class="menu-settings-icon" aria-hidden="true"></span> SETTINGS</button>
     </div>
   </div>
 </div>
@@ -1968,6 +2006,17 @@ function hideMainApp(){
     if(!app.classList.contains('visible')) app.style.display='none';
     window._mainAppHideTimer=null;
   },260);
+}
+function hideMainAppImmediate(){
+  const app=document.getElementById('mainApp');
+  if(!app)return;
+  app.classList.remove('visible');
+  if(window._mainAppHideTimer){
+    clearTimeout(window._mainAppHideTimer);
+    window._mainAppHideTimer=null;
+  }
+  app.style.visibility='hidden';
+  app.style.display='none';
 }
 function setMainAppConcealed(concealed){
   const app=document.getElementById('mainApp');
@@ -2767,7 +2816,7 @@ let _skipGridScrollOnce = false;
 
 function startGame(){
   setMainAppConcealed(true);
-  hideMainApp();
+  hideMainAppImmediate();
   clearSavedGame();
   _skipGridScrollOnce = true;
   clearSavedGame();
@@ -2780,7 +2829,8 @@ function startGame(){
   HOLES.forEach(h=>{ h.diff=diffMap[h.baseDiff][GAME_DIFF-1]; });
   hideScreen('diffScreen');
   hideScreen('courseScreen');
-  concealMainApp();
+  hideMainAppImmediate();
+  setMainAppConcealed(true);
   
   if(VS.active){
     vsStartGame();
@@ -2815,6 +2865,7 @@ function showSingleRoundSplash(){
   if(rsSub) rsSub.textContent = `${PLAYER_NAME}!`;
   if(rsMeta) rsMeta.textContent = `${roundPrefix}HOLE ${S.holeIdx + 1} · PAR ${h.par}`;
   setMainAppConcealed(true);
+  hideMainAppImmediate();
   document.getElementById('roundStartScreen').classList.add('show');
 }
 
@@ -5019,7 +5070,7 @@ function summarySaveAndMenu(){
 function summaryPlayAgain(){
   closeSummaryHoleModal();
   setMainAppConcealed(true);
-  hideMainApp();
+  hideMainAppImmediate();
   document.getElementById('summaryModal').classList.remove('show');
   document.getElementById('overlay').classList.remove('show');
   _summaryBackTarget = null;
@@ -7249,7 +7300,8 @@ function startNextRound() {
   document.getElementById('summaryModal').classList.remove('show');
   const hc=document.getElementById('hcScreen');
   if(hc) hc.classList.remove('show');
-  revealMainApp();
+  setMainAppConcealed(true);
+  hideMainAppImmediate();
   loadHole();
   saveGameState();
   showSingleRoundSplash();
