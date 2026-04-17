@@ -818,6 +818,100 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 #settingsModal{align-items:flex-start;padding:calc(env(safe-area-inset-top) + 16px) 20px 20px;overflow-y:auto;}
 #settingsModal .profile-card{max-height:calc(100vh - env(safe-area-inset-top) - 36px);display:flex;flex-direction:column;}
 #settingsModal .profile-body{overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.xp-award-card{background:linear-gradient(180deg,rgba(78,158,66,.18),rgba(22,27,34,.98));border:1px solid rgba(120,220,96,.35);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;box-shadow:0 10px 24px rgba(0,0,0,.24);}
+.xp-award-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.xp-award-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--c-fwyl);}
+.xp-award-level{font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.xp-award-rows{display:flex;flex-direction:column;gap:6px;}
+.xp-award-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.xp-award-row:last-child{border-bottom:none;}
+.xp-award-lbl{font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.xp-award-val{font-family:'Bebas Neue',cursive;font-size:18px;color:var(--text);letter-spacing:1px;line-height:1;}
+.xp-award-val.total{font-size:24px;color:var(--gold);}
+.xp-bar-wrap{display:flex;flex-direction:column;gap:5px;}
+.xp-bar-track{width:100%;height:10px;background:rgba(255,255,255,.08);border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.08);}
+.xp-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#4ed67c 0%, #f0c040 100%);box-shadow:0 0 10px rgba(120,220,96,.35),0 0 14px rgba(240,192,64,.28);transition:width .9s cubic-bezier(0.22,1,0.36,1);}
+.xp-bar-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.xp-rank-chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;background:rgba(240,192,64,.16);border:1px solid rgba(240,192,64,.35);font-family:'Sen',sans-serif;font-size:9px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;}
+
+/* PROFILE HUB */
+#profileHubModal{z-index:660;align-items:flex-start;padding:0;overflow:hidden;background:rgba(7,11,15,.95);}
+#profileHubModal .profile-hub{
+  width:100%;height:100vh;max-width:480px;margin:0 auto;background:
+  radial-gradient(120% 100% at 0% 0%, rgba(78,158,66,.15), transparent 55%),
+  radial-gradient(120% 120% at 100% 0%, rgba(240,192,64,.14), transparent 50%),
+  linear-gradient(180deg,#10161e 0%, #0d1117 100%);
+  border-left:1px solid var(--border);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;position:relative;
+}
+.profile-hub-head{
+  flex-shrink:0;padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.08);background:rgba(13,17,23,.7);backdrop-filter:blur(8px);
+}
+.profile-hub-title{font-family:'Bebas Neue',cursive;font-size:25px;letter-spacing:3px;color:var(--c-fwyl);}
+.profile-hub-close{
+  width:30px;height:30px;border-radius:8px;background:rgba(224,82,82,.2);border:1px solid rgba(255,82,82,.4);color:#ffd7d7;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s;
+}
+.profile-hub-close:active{transform:translateY(1px) scale(.95);}
+.profile-hub-views{position:relative;flex:1;min-height:0;overflow:hidden;}
+.profile-hub-view{
+  position:absolute;inset:0;padding:14px 14px calc(env(safe-area-inset-bottom) + 16px);overflow-y:auto;-webkit-overflow-scrolling:touch;
+  opacity:0;pointer-events:none;transform:translateX(14px) scale(.99);transition:opacity .22s ease,transform .26s cubic-bezier(0.22,1,0.36,1);
+}
+.profile-hub-view.active{opacity:1;pointer-events:auto;transform:translateX(0) scale(1);}
+.ph-main-card{background:rgba(255,255,255,.04);border:1px solid rgba(120,220,96,.32);border-radius:20px;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.3);}
+.ph-main-top{padding:16px;display:flex;gap:12px;align-items:center;background:linear-gradient(180deg,rgba(78,158,66,.16),rgba(255,255,255,.02));}
+.ph-ring-wrap{position:relative;width:82px;height:82px;flex-shrink:0;}
+.ph-ring-svg{position:absolute;inset:0;width:82px;height:82px;transform:rotate(-90deg);}
+.ph-ring-bg{fill:none;stroke:rgba(255,255,255,.12);stroke-width:4;}
+.ph-ring-fill{fill:none;stroke:url(#phRingGrad);stroke-width:4;stroke-linecap:round;filter:drop-shadow(0 0 8px rgba(120,220,96,.45));transition:stroke-dashoffset .95s cubic-bezier(0.22,1,0.36,1);}
+.ph-avatar{position:absolute;inset:8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;background:radial-gradient(circle at 30% 30%, rgba(78,158,66,.5), rgba(13,17,23,.95));border:1px solid rgba(120,220,96,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.16);}
+.ph-ring-wrap.glow::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(120,220,96,.28);box-shadow:0 0 16px rgba(120,220,96,.32);animation:phRingPulse 2.2s ease-in-out infinite;}
+@keyframes phRingPulse{0%,100%{opacity:.72;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+.ph-main-info{flex:1;min-width:0;}
+.ph-name{font-family:'Bebas Neue',cursive;font-size:34px;line-height:1;letter-spacing:2px;color:var(--text);}
+.ph-sub{font-family:'Sen',sans-serif;font-size:10px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-top:4px;}
+.ph-xp{font-family:'Sen',sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-top:5px;}
+.ph-stats6{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px;}
+.ph-stat-tile{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 8px;text-align:center;}
+.ph-stat-num{font-family:'Bebas Neue',cursive;font-size:24px;line-height:1;color:var(--text);}
+.ph-stat-lbl{font-family:'Sen',sans-serif;font-size:9px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-top:2px;}
+.ph-actions{display:flex;gap:8px;padding:0 12px 12px;}
+.ph-btn{flex:1;border-radius:11px;padding:10px 8px;font-family:'Sen',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);transition:all .16s;}
+.ph-btn:active{transform:translateY(1px) scale(.98);}
+.ph-btn.primary{background:linear-gradient(135deg,rgba(78,158,66,.9),rgba(115,188,73,.9));border-color:rgba(120,220,96,.45);color:#fff;}
+.ph-btn.gold{background:linear-gradient(135deg,rgba(186,137,23,.92),rgba(240,192,64,.9));border-color:rgba(240,192,64,.45);color:#1b1403;}
+.ph-edit-block{display:none;padding:0 12px 12px;}
+.ph-main-card.editing .ph-edit-block{display:block;animation:fadein .22s ease;}
+.ph-main-card.editing .ph-ring-wrap{animation:phRingPulse 2.2s ease-in-out infinite;}
+.ph-edit-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;margin:8px 0 10px;}
+.ph-emoji{border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.03);height:34px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;}
+.ph-emoji.sel{border-color:var(--c-fwyl);background:rgba(78,158,66,.15);}
+.ph-mini-list{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
+.ph-mini-card{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--border);cursor:pointer;transition:all .18s cubic-bezier(0.22,1,0.36,1);}
+.ph-mini-card:active{transform:translateY(1px) scale(.985);}
+.ph-mini-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;background:radial-gradient(circle at 30% 30%, rgba(78,158,66,.35), rgba(13,17,23,.95));border:1px solid rgba(255,255,255,.14);}
+.ph-mini-name{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:var(--text);}
+.ph-mini-sub{font-family:'Sen',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.ph-mini-arrow{margin-left:auto;color:var(--muted);font-size:18px;opacity:.55;}
+.ph-new-row{margin-top:10px;display:flex;gap:8px;}
+.ph-section{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px;}
+.ph-sec-title{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;color:var(--c-fwyl);margin-bottom:8px;}
+.ph-kv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+.ph-ach-list{display:flex;flex-direction:column;gap:8px;}
+.ph-ach-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid var(--border);}
+.ph-ach-item.locked{opacity:.5;filter:grayscale(.45);}
+.ph-ach-icon{font-size:20px;width:28px;text-align:center;}
+.ph-ach-name{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);}
+.ph-ach-desc{font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);}
+.ph-ach-xp{margin-left:auto;font-family:'Sen',sans-serif;font-size:9px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;}
+
+#xpRewardModal{z-index:710;}
+#xpRewardModal .profile-card{max-width:390px;}
+.xp-modal-body{padding:14px;}
+.xp-modal-note{font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;text-align:center;}
 .settings-section-title{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
 .settings-section-title.tight{margin-bottom:8px;}
 .settings-section-title.spaced-top{margin-top:18px;}
@@ -2036,6 +2130,10 @@ window.addEventListener('DOMContentLoaded', function(){
   if(hm) hm.addEventListener('click',function(e){if(e.target===this)closeHist();});
   const pm=document.getElementById('profileModal');
   if(pm) pm.addEventListener('click',function(e){if(e.target===this)closeProfileModal();});
+  const phm=document.getElementById('profileHubModal');
+  if(phm) phm.addEventListener('click',function(e){if(e.target===this)closeProfileModal();});
+  const xrm=document.getElementById('xpRewardModal');
+  if(xrm) xrm.addEventListener('click',function(e){if(e.target===this)closeXpRewardModal();});
   const sm=document.getElementById('summaryModal');
   if(sm) sm.addEventListener('click',function(e){if(e.target===this)closeSummary();});
   const stm=document.getElementById('settingsModal');
@@ -4261,6 +4359,18 @@ function showRoundEnd(){
     updateProfileAfterRound(roundTotal, roundPar);
     updateProfileStatsAfterRound(roundTotal, roundPar, S._wcUsedThisRound||0);
     applyCompletionModeAchievements();
+    checkAndAwardAchievements({silent:true});
+    const xpAward = awardRoundExperience({
+      source: 'round',
+      title: 'ROUND XP',
+      roundNumber: S.currentRound,
+      roundIdx: S.currentRound - 1,
+      holesPlayed: activeHoles.length,
+      roundDiff,
+      roundTotal,
+      roundPar,
+      gameDiff: GAME_DIFF
+    });
     
     let globalTotal = 0, globalPar = 0;
     S.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ globalTotal+=s; globalPar+=HOLES[i].par; } }));
@@ -4273,6 +4383,8 @@ function showRoundEnd(){
     document.getElementById('hcRndBadge').style.display = 'none';
     const hcDiffSub = document.getElementById('hcDiffSub');
     if (hcDiffSub) hcDiffSub.style.display = 'none';
+    const hcXpWrapFinal = document.getElementById('hcXpWrap');
+    if (hcXpWrapFinal) hcXpWrapFinal.style.display = 'none';
 
     ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
         const el = document.getElementById(id);
@@ -4302,6 +4414,7 @@ function showRoundEnd(){
             document.head.appendChild(s);
         }
     }
+    const xpHtml = xpAward ? `<div style="margin-top:14px;">${renderXpAwardCardHtml(xpAward)}</div>` : '';
 
     vsContainer.innerHTML = `
     <div style="font-size:56px; margin-bottom:12px; text-align:center; line-height:1;">${emoji}</div>
@@ -4311,7 +4424,9 @@ function showRoundEnd(){
     <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);text-align:center;margin-bottom:0;text-transform:uppercase;">DIFFICULTY: ${finalDiffLabel}</div>
     
     ${pbHtml}
+    ${xpHtml}
 `;
+    animateXpBars(vsContainer);
 
     const stats = [
         { label: 'Total Strokes', val: 0 },
@@ -4380,6 +4495,18 @@ function showRoundEnd(){
   } else {
     updateProfileAfterRound(roundTotal, roundPar);
     updateProfileStatsAfterRound(roundTotal, roundPar, S._wcUsedThisRound||0);
+    checkAndAwardAchievements({silent:true});
+    const xpAward = awardRoundExperience({
+      source: 'round',
+      title: `ROUND ${S.currentRound} XP`,
+      roundNumber: S.currentRound,
+      roundIdx: S.currentRound - 1,
+      holesPlayed: activeHoles.length,
+      roundDiff,
+      roundTotal,
+      roundPar,
+      gameDiff: GAME_DIFF
+    });
     saveGameState();
 
     const hcScreen = document.getElementById('hcScreen');
@@ -4422,6 +4549,16 @@ function showRoundEnd(){
     }
     hcDiffSub.textContent = `DIFFICULTY: ${diffNames2[GAME_DIFF] || 'MEDIUM'}`;
     hcDiffSub.style.display = '';
+    let hcXpWrap = document.getElementById('hcXpWrap');
+    if (!hcXpWrap) {
+      hcXpWrap = document.createElement('div');
+      hcXpWrap.id = 'hcXpWrap';
+      hcXpWrap.style.cssText = 'margin-top:10px;';
+      hcDiffSub.insertAdjacentElement('afterend', hcXpWrap);
+    }
+    hcXpWrap.innerHTML = xpAward ? renderXpAwardCardHtml(xpAward) : '';
+    hcXpWrap.style.display = xpAward ? 'block' : 'none';
+    if (xpAward) animateXpBars(hcXpWrap);
 
     // Show tournament statistics only
     const logList2 = document.getElementById('hcLogList');
@@ -4504,6 +4641,18 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
   S.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ globalTotal+=s; globalPar+=HOLES[i].par; } }));
   const globalDiff = globalTotal - globalPar;
   const gDiffStr = globalDiff===0?'E':globalDiff>0?`+${globalDiff}`:`${globalDiff}`;
+  const showXpRecap = LAST_XP_AWARD && LAST_XP_AWARD.source === 'round' && LAST_XP_AWARD.round === viewRound;
+
+  if(showXpRecap){
+    const recap = document.createElement('div');
+    recap.style.cssText = 'margin-bottom:12px;';
+    recap.innerHTML = renderXpAwardCardHtml({
+      ...LAST_XP_AWARD,
+      title: 'ROUND XP RECAP'
+    });
+    body.appendChild(recap);
+    animateXpBars(recap);
+  }
   
   let tournamentTotalBox = null;
   if (S.totalRounds > 1) {
@@ -4949,10 +5098,19 @@ function ensureProfileDefaults(p){
     scubaDiverRounds: 0,
     beachBumRounds: 0,
     lumberjackRounds: 0,
-    scramblerRounds: 0
+    scramblerRounds: 0,
+    xpTotal: 0,
+    achievementXpEarned: 0,
+    totalStrokes: 0,
+    totalPar: 0
   };
   Object.keys(numericDefaults).forEach(k=>{
     if(typeof p[k] !== 'number' || !isFinite(p[k])) p[k] = numericDefaults[k];
+  });
+  if(!p.scoreBuckets || typeof p.scoreBuckets !== 'object') p.scoreBuckets = {};
+  const scoreDefaults = { aces:0, eaglesPlus:0, birdies:0, pars:0, bogeys:0, doublePlus:0 };
+  Object.keys(scoreDefaults).forEach(k=>{
+    if(typeof p.scoreBuckets[k] !== 'number' || !isFinite(p.scoreBuckets[k])) p.scoreBuckets[k] = scoreDefaults[k];
   });
   if(p.bestDiff !== undefined && (typeof p.bestDiff !== 'number' || !isFinite(p.bestDiff))) p.bestDiff = undefined;
   return p;
@@ -4961,6 +5119,241 @@ function ensureProfileDefaults(p){
 function createDefaultProfile(name){
   const p = { name, bestDiff: undefined, achievements: [] };
   return ensureProfileDefaults(p);
+}
+
+const XP_MAX_LEVEL = 40;
+const XP_ACH_UNLOCK_BONUS = 40;
+const XP_BASE_PER_HOLE = 20;
+let LAST_XP_AWARD = null;
+const _xpPendingAchBonus = {};
+
+function getActiveProfileContextAny(){
+  const profiles = loadProfiles();
+  if(!profiles.length) return null;
+  const idx = Math.min(getActiveProfileIdx(), profiles.length - 1);
+  const p = profiles[idx];
+  if(!p) return null;
+  ensureProfileDefaults(p);
+  return { profiles, idx, p };
+}
+
+function xpToNextLevel(level){
+  if(level >= XP_MAX_LEVEL) return 0;
+  return 120 + ((level - 1) * 22);
+}
+
+function xpTotalForLevel(level){
+  let total = 0;
+  for(let lvl = 1; lvl < Math.max(1, Math.min(level, XP_MAX_LEVEL)); lvl++){
+    total += xpToNextLevel(lvl);
+  }
+  return total;
+}
+
+function getXpSnapshot(xpTotal){
+  let level = 1;
+  let remaining = Math.max(0, Math.floor(xpTotal || 0));
+  while(level < XP_MAX_LEVEL){
+    const need = xpToNextLevel(level);
+    if(remaining < need) break;
+    remaining -= need;
+    level++;
+  }
+  const need = xpToNextLevel(level);
+  const progressPct = level >= XP_MAX_LEVEL ? 100 : Math.max(0, Math.min(100, (remaining / Math.max(1, need)) * 100));
+  return { level, xpIntoLevel: remaining, need, progressPct };
+}
+
+function getRankLabelForLevel(level){
+  if(level >= 40) return 'Grid Legend';
+  if(level >= 35) return 'Tour Pro';
+  if(level >= 30) return 'Major Contender';
+  if(level >= 25) return 'Course Tactician';
+  if(level >= 20) return 'Birdie Hunter';
+  if(level >= 15) return 'Fairway Specialist';
+  if(level >= 10) return 'Club Veteran';
+  if(level >= 5) return 'Sunday Golfer';
+  return 'Rookie';
+}
+
+function getDifficultyMultiplier(diff){
+  if(diff === 3) return 1.4;
+  if(diff === 2) return 1.2;
+  return 1.0;
+}
+
+function getDifficultyLabel(diff){
+  if(diff === 3) return 'Hard';
+  if(diff === 2) return 'Medium';
+  return 'Easy';
+}
+
+function getScoreMultiplier(roundDiff, holesPlayed){
+  const perHole = (roundDiff || 0) / Math.max(1, holesPlayed || 1);
+  if(perHole <= -1.0) return 1.35;
+  if(perHole <= -0.5) return 1.2;
+  if(perHole < 0) return 1.1;
+  if(perHole === 0) return 1.0;
+  if(perHole <= 0.5) return 0.9;
+  if(perHole <= 1.0) return 0.8;
+  return 0.7;
+}
+
+function _queueAchievementXp(idx, amount){
+  if(!amount || amount <= 0) return;
+  if(!_xpPendingAchBonus[idx]) _xpPendingAchBonus[idx] = { xp: 0, count: 0 };
+  _xpPendingAchBonus[idx].xp += amount;
+  _xpPendingAchBonus[idx].count += Math.max(1, Math.round(amount / XP_ACH_UNLOCK_BONUS));
+}
+
+function consumePendingAchievementXp(idx){
+  const row = _xpPendingAchBonus[idx] || { xp: 0, count: 0 };
+  _xpPendingAchBonus[idx] = { xp: 0, count: 0 };
+  return row;
+}
+
+function applyRoundScoreBuckets(profile, roundIdx){
+  const histRow = (S.histories[roundIdx] || []);
+  for(let i = S.startIdx; i <= S.endIdx; i++){
+    const hist = histRow[i];
+    if(!hist) continue;
+    const d = hist.strokes - hist.par;
+    if(hist.par === 3 && hist.strokes === 1) profile.scoreBuckets.aces++;
+    else if(d <= -2) profile.scoreBuckets.eaglesPlus++;
+    else if(d === -1) profile.scoreBuckets.birdies++;
+    else if(d === 0) profile.scoreBuckets.pars++;
+    else if(d === 1) profile.scoreBuckets.bogeys++;
+    else profile.scoreBuckets.doublePlus++;
+  }
+}
+
+function renderXpAwardCardHtml(award){
+  if(!award) return '';
+  const scoreMulText = award.scoreMultiplierOverride
+    ? award.scoreMultiplierOverride
+    : `x${award.scoreMultiplier.toFixed(2)}`;
+  return `
+    <div class="xp-award-card">
+      <div class="xp-award-head">
+        <div class="xp-award-title">${award.title || 'XP REWARD'}</div>
+        <div class="xp-rank-chip">${award.after.rank}</div>
+      </div>
+      <div class="xp-award-level">LVL ${award.before.level} → LVL ${award.after.level}</div>
+      <div class="xp-award-rows">
+        <div class="xp-award-row"><span class="xp-award-lbl">Completed Round</span><span class="xp-award-val">${award.baseXp} XP</span></div>
+        <div class="xp-award-row"><span class="xp-award-lbl">Difficulty Multiplier</span><span class="xp-award-val">x${award.difficultyMultiplier.toFixed(2)}</span></div>
+        <div class="xp-award-row"><span class="xp-award-lbl">Score Multiplier</span><span class="xp-award-val">${scoreMulText}</span></div>
+        ${award.achievementBonus > 0 ? `<div class="xp-award-row"><span class="xp-award-lbl">Achievement Bonus</span><span class="xp-award-val">+${award.achievementBonus} XP</span></div>` : ''}
+        ${award.tutorialBonus > 0 ? `<div class="xp-award-row"><span class="xp-award-lbl">Tutorial Completion Bonus</span><span class="xp-award-val">+${award.tutorialBonus} XP</span></div>` : ''}
+        <div class="xp-award-row"><span class="xp-award-lbl">Total XP</span><span class="xp-award-val total">+${award.totalXp}</span></div>
+      </div>
+      <div class="xp-bar-wrap">
+        <div class="xp-bar-track"><div class="xp-bar-fill" data-from="${award.before.progressPct.toFixed(2)}" data-to="${award.after.progressPct.toFixed(2)}" style="width:${award.before.progressPct.toFixed(2)}%;"></div></div>
+        <div class="xp-bar-meta">
+          <span>${award.after.level >= XP_MAX_LEVEL ? 'MAX LEVEL' : `${Math.floor(award.after.xpIntoLevel)} / ${Math.floor(award.after.need)} XP`}</span>
+          <span>${Math.round(award.after.progressPct)}%</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function animateXpBars(root){
+  const scope = root || document;
+  scope.querySelectorAll('.xp-bar-fill[data-to]').forEach(fill=>{
+    const to = parseFloat(fill.dataset.to || '0');
+    requestAnimationFrame(()=>{
+      fill.style.width = `${Math.max(0, Math.min(100, to))}%`;
+    });
+  });
+}
+
+function awardRoundExperience(options = {}){
+  const ctx = options.profileCtx || getActiveProfileContextAny();
+  if(!ctx) return null;
+  const holesPlayed = Math.max(1, options.holesPlayed || (S.endIdx - S.startIdx + 1));
+  const difficultyMultiplier = getDifficultyMultiplier(options.gameDiff || GAME_DIFF);
+  const scoreMultiplier = typeof options.scoreMultiplier === 'number'
+    ? options.scoreMultiplier
+    : getScoreMultiplier(options.roundDiff || 0, holesPlayed);
+
+  const baseXp = Math.round(Math.max(1, holesPlayed * XP_BASE_PER_HOLE));
+  const gameplayXp = Math.max(1, Math.round(baseXp * difficultyMultiplier * scoreMultiplier));
+
+  const ach = options.includeAchievementBonus === false
+    ? { xp: 0, count: 0 }
+    : consumePendingAchievementXp(ctx.idx);
+  let achievementBonus = Math.max(0, ach.xp || 0);
+  let tutorialBonus = Math.max(0, options.tutorialBonus || 0);
+
+  const before = getXpSnapshot(ctx.p.xpTotal || 0);
+  let totalXp = gameplayXp + achievementBonus + tutorialBonus;
+  if(options.ensureLevel2 && before.level < 2){
+    const need = Math.max(0, xpTotalForLevel(2) - (ctx.p.xpTotal || 0));
+    if(totalXp < need){
+      tutorialBonus += (need - totalXp);
+      totalXp = need;
+    }
+  }
+
+  ctx.p.xpTotal = Math.max(0, (ctx.p.xpTotal || 0) + totalXp);
+  if(typeof options.roundTotal === 'number') ctx.p.totalStrokes += Math.max(0, options.roundTotal);
+  if(typeof options.roundPar === 'number') ctx.p.totalPar += Math.max(0, options.roundPar);
+  if(typeof options.roundIdx === 'number') applyRoundScoreBuckets(ctx.p, options.roundIdx);
+  ctx.profiles[ctx.idx] = ctx.p;
+  saveProfiles(ctx.profiles);
+
+  const afterBase = getXpSnapshot(ctx.p.xpTotal || 0);
+  const after = { ...afterBase, rank: getRankLabelForLevel(afterBase.level) };
+  const summary = {
+    title: options.title || 'XP REWARD',
+    baseXp,
+    gameplayXp,
+    totalXp,
+    difficultyMultiplier,
+    scoreMultiplier,
+    scoreMultiplierOverride: options.scoreMultiplierLabel || '',
+    achievementBonus,
+    achievementCount: ach.count || 0,
+    tutorialBonus,
+    before: { ...before, rank: getRankLabelForLevel(before.level) },
+    after
+  };
+  LAST_XP_AWARD = {
+    ...summary,
+    source: options.source || 'round',
+    round: typeof options.roundNumber === 'number' ? options.roundNumber : S.currentRound
+  };
+  return summary;
+}
+
+function closeXpRewardModal(){
+  _closeProfileLikeModal('xpRewardModal');
+}
+
+function xpRewardContinue(){
+  const cb = window.__xpAfterClose;
+  window.__xpAfterClose = null;
+  closeXpRewardModal();
+  if(typeof cb === 'function') cb();
+}
+
+function showXpRewardModal(title, award, buttonText = 'CONTINUE', afterClose = null){
+  const modal = document.getElementById('xpRewardModal');
+  const titleEl = document.getElementById('xpRewardTitle');
+  const body = document.getElementById('xpRewardBody');
+  if(!modal || !titleEl || !body || !award) return;
+  titleEl.textContent = title;
+  body.innerHTML = `
+    <div class="xp-modal-note">Progress Updated</div>
+    ${renderXpAwardCardHtml(award)}
+    <div style="margin-top:12px;">
+      <button class="menu-btn-play" style="width:100%;" onclick="xpRewardContinue()">${buttonText}</button>
+    </div>
+  `;
+  window.__xpAfterClose = typeof afterClose === 'function' ? afterClose : null;
+  modal.classList.add('show');
+  animateXpBars(body);
 }
 
 function updateProfileAfterRound(score, par){
@@ -5162,13 +5555,15 @@ function saveEditProfile(){
 }
 
 function openProfileModal(){
-  const sp=document.getElementById('profileStatsPanel');
-  if(sp)sp.remove();
-  renderProfileSlots();
-  document.getElementById('profileNewForm').classList.remove('show');
-  document.getElementById('profileModal').classList.add('show');
+  _profileHubEditing = false;
+  _profileHubEmoji = null;
+  _profileHubCreateOpen = false;
+  renderProfileHub('home');
+  const modal = document.getElementById('profileHubModal');
+  if(modal) modal.classList.add('show');
 }
 function closeProfileModal(){
+  _closeProfileLikeModal('profileHubModal');
   _closeProfileLikeModal('profileModal');
 }
 
@@ -5295,6 +5690,335 @@ function updateMenuProfileDisplay(){
   }
   const tvIcon=document.querySelector('.tv-icon-box');
   if(tvIcon&&p){const idx=getActiveProfileIdx();tvIcon.textContent=getProfileIcon(p,idx);}
+}
+
+let _profileHubView = 'home';
+let _profileHubEditing = false;
+let _profileHubEmoji = null;
+let _profileHubCreateOpen = false;
+
+function profileHubSwitchView(view){
+  _profileHubView = view;
+  ['home','stats','achievements'].forEach(v=>{
+    const el = document.getElementById(`profileHubView${v.charAt(0).toUpperCase()+v.slice(1)}`);
+    if(el) el.classList.toggle('active', v === view);
+  });
+}
+
+function profileHubBackToHome(){
+  renderProfileHub('home');
+}
+
+function profileHubGetCtx(){
+  const profiles = loadProfiles();
+  if(!profiles.length) return null;
+  const activeIdx = Math.min(getActiveProfileIdx(), profiles.length - 1);
+  const p = profiles[activeIdx];
+  if(!p) return null;
+  ensureProfileDefaults(p);
+  return { profiles, activeIdx, p };
+}
+
+function renderProfileHub(view = _profileHubView){
+  const ctx = profileHubGetCtx();
+  const home = document.getElementById('profileHubViewHome');
+  const stats = document.getElementById('profileHubViewStats');
+  const ach = document.getElementById('profileHubViewAchievements');
+  if(!home || !stats || !ach) return;
+  if(!ctx){
+    home.innerHTML = '';
+    stats.innerHTML = '';
+    ach.innerHTML = '';
+    profileHubSwitchView('home');
+    return;
+  }
+
+  const totalAch = ACHIEVEMENTS.length;
+  const earned = ctx.p.achievements || [];
+  const earnedCount = ACHIEVEMENTS.filter(a=>earned.includes(a.id)).length;
+  const bestStr = ctx.p.bestDiff===undefined ? '—' : ctx.p.bestDiff===0 ? 'E' : ctx.p.bestDiff>0 ? `+${ctx.p.bestDiff}` : `${ctx.p.bestDiff}`;
+  const xp = getXpSnapshot(ctx.p.xpTotal || 0);
+  const ringCirc = 2 * Math.PI * 34;
+  const ringOffset = ringCirc * (1 - (xp.progressPct / 100));
+  const rank = getRankLabelForLevel(xp.level);
+  const activeIcon = getProfileIcon(ctx.p, ctx.activeIdx);
+  const nameVal = String(ctx.p.name || '').toUpperCase();
+
+  const emojis = PROFILE_EMOJIS.slice(0, 32);
+  const emojiGrid = emojis.map(emoji=>{
+    const selected = (_profileHubEmoji || activeIcon) === emoji;
+    return `<button class="ph-emoji${selected?' sel':''}" onclick="profileHubSelectEmoji('${emoji.replace(/'/g, "\\'")}')">${emoji}</button>`;
+  }).join('');
+
+  const inactiveCards = ctx.profiles
+    .map((p, i)=>({p, i}))
+    .filter(row=>row.i !== ctx.activeIdx)
+    .map(({p, i})=>{
+      const s = getXpSnapshot(p.xpTotal || 0);
+      return `
+        <button class="ph-mini-card" onclick="profileHubSelectProfile(${i})">
+          <div class="ph-mini-avatar">${getProfileIcon(p, i)}</div>
+          <div style="min-width:0;text-align:left;">
+            <div class="ph-mini-name">${String(p.name || '').toUpperCase()}</div>
+            <div class="ph-mini-sub">LVL ${s.level} · ${getRankLabelForLevel(s.level)}</div>
+          </div>
+          <div class="ph-mini-arrow">›</div>
+        </button>
+      `;
+    }).join('');
+
+  const createBlock = _profileHubCreateOpen ? `
+    <div class="ph-new-row">
+      <input class="profile-new-input" id="profileHubNewInput" placeholder="YOUR NAME" maxlength="10" autocomplete="off" spellcheck="false" style="margin:0;">
+      <button class="ph-btn primary" style="flex:0 0 auto;min-width:92px;" onclick="profileHubCreateProfile()">Create</button>
+      <button class="ph-btn" style="flex:0 0 auto;min-width:84px;" onclick="profileHubToggleCreate(false)">Cancel</button>
+    </div>
+  ` : (ctx.profiles.length < MAX_PROFILES ? `
+    <button class="ph-btn" style="width:100%;margin-top:10px;" onclick="profileHubToggleCreate(true)">+ New Profile (max. 3)</button>
+  ` : '');
+
+  home.innerHTML = `
+    <div class="ph-main-card${_profileHubEditing ? ' editing' : ''}">
+      <div class="ph-main-top">
+        <div class="ph-ring-wrap glow">
+          <svg class="ph-ring-svg" viewBox="0 0 82 82">
+            <circle class="ph-ring-bg" cx="41" cy="41" r="34"></circle>
+            <circle class="ph-ring-fill" id="profileHubRingFill" cx="41" cy="41" r="34" data-to="${ringOffset}" style="stroke-dasharray:${ringCirc};stroke-dashoffset:${ringCirc};"></circle>
+          </svg>
+          <div class="ph-avatar">${_profileHubEditing ? (_profileHubEmoji || activeIcon) : activeIcon}</div>
+        </div>
+        <div class="ph-main-info">
+          ${_profileHubEditing
+            ? `<input class="profile-new-input" id="profileHubNameInput" maxlength="10" autocomplete="off" spellcheck="false" value="${nameVal}" style="margin-bottom:6px;">`
+            : `<div class="ph-name">${nameVal}</div>`
+          }
+          <div class="ph-sub">LVL ${xp.level} · ${rank}</div>
+          <div class="ph-xp">${xp.level >= XP_MAX_LEVEL ? 'MAX LEVEL' : `${Math.floor(xp.xpIntoLevel)} / ${Math.floor(xp.need)} XP`}</div>
+        </div>
+      </div>
+      <div class="ph-stats6">
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.gamesPlayed||0}</div><div class="ph-stat-lbl">Rounds</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${bestStr}</div><div class="ph-stat-lbl">Best Score</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.birdies||0}</div><div class="ph-stat-lbl">Birdies</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.eagles||0}</div><div class="ph-stat-lbl">Eagles+</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.holeInOnes||0}</div><div class="ph-stat-lbl">Aces</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${earnedCount}/${totalAch}</div><div class="ph-stat-lbl">Achievements</div></div>
+      </div>
+      <div class="ph-actions">
+        <button class="ph-btn" onclick="profileHubToggleEdit(true)">Edit</button>
+        <button class="ph-btn primary" onclick="profileHubSwitchTo('stats')">Full Stats</button>
+        <button class="ph-btn gold" onclick="profileHubSwitchTo('achievements')">Achievements</button>
+      </div>
+      <div class="ph-edit-block">
+        <div class="ph-edit-grid">${emojiGrid}</div>
+        <div class="ph-actions" style="padding:0;">
+          <button class="ph-btn primary" onclick="profileHubSaveEdit()">Save</button>
+          <button class="ph-btn" onclick="profileHubToggleEdit(false)">Cancel</button>
+        </div>
+        <button class="ph-btn" style="width:100%;margin-top:8px;border-color:rgba(255,82,82,.3);color:#ff9090;" onclick="profileHubDeleteActive()">Delete Profile</button>
+      </div>
+    </div>
+    <div class="ph-mini-list">
+      ${inactiveCards}
+    </div>
+    ${createBlock}
+  `;
+
+  const totalParAll = ctx.p.totalPar || 0;
+  const totalStrokesAll = ctx.p.totalStrokes || 0;
+  const avgDiff = totalParAll > 0 ? ((totalStrokesAll - totalParAll) / Math.max(1, ctx.p.gamesPlayed || 1)) : 0;
+  const avgDiffText = totalParAll > 0 ? (avgDiff===0?'E':avgDiff>0?`+${avgDiff.toFixed(1)}`:`${avgDiff.toFixed(1)}`) : '—';
+  const buckets = ctx.p.scoreBuckets || { aces:0, eaglesPlus:0, birdies:0, pars:0, bogeys:0, doublePlus:0 };
+  stats.innerHTML = `
+    <div class="ph-section">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <button class="setup-back-btn" onclick="profileHubBackToHome()" aria-label="Back">&#8592;</button>
+        <div class="ph-sec-title" style="margin:0;">FULL STATS</div>
+      </div>
+      <div class="ph-kv-grid">
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.gamesPlayed||0}</div><div class="ph-stat-lbl">Rounds</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.holesPlayed||0}</div><div class="ph-stat-lbl">Holes</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${totalStrokesAll||0}</div><div class="ph-stat-lbl">Total Strokes</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${avgDiffText}</div><div class="ph-stat-lbl">Avg vs Par</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.xpTotal||0}</div><div class="ph-stat-lbl">Total XP</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">LVL ${xp.level}</div><div class="ph-stat-lbl">${rank}</div></div>
+      </div>
+    </div>
+    <div class="ph-section">
+      <div class="ph-sec-title">Score Distribution</div>
+      <div class="ph-kv-grid">
+        <div class="ph-stat-tile"><div class="ph-stat-num">${buckets.aces||0}</div><div class="ph-stat-lbl">Aces</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${buckets.eaglesPlus||0}</div><div class="ph-stat-lbl">Eagles+</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${buckets.birdies||0}</div><div class="ph-stat-lbl">Birdies</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${buckets.pars||0}</div><div class="ph-stat-lbl">Pars</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${buckets.bogeys||0}</div><div class="ph-stat-lbl">Bogeys</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${buckets.doublePlus||0}</div><div class="ph-stat-lbl">Double+</div></div>
+      </div>
+    </div>
+    <div class="ph-section">
+      <div class="ph-sec-title">Streaks & Specials</div>
+      <div class="ph-kv-grid">
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.bestBirdieStreak||0}</div><div class="ph-stat-lbl">Best Birdie Streak</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.bestUnderParStreak||0}</div><div class="ph-stat-lbl">Best Under-Par Streak</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.bogeyFreeRounds||0}</div><div class="ph-stat-lbl">Bogey-Free Rounds</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.perfectRounds||0}</div><div class="ph-stat-lbl">Perfect Rounds</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.customGamesCompleted||0}</div><div class="ph-stat-lbl">Custom Completed</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.tournamentCompletions||0}</div><div class="ph-stat-lbl">Tournaments</div></div>
+      </div>
+    </div>
+    <div class="ph-section">
+      <div class="ph-sec-title">Wildcards & Hazards</div>
+      <div class="ph-kv-grid">
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.wildcardsUsed||0}</div><div class="ph-stat-lbl">Wildcards Used</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.maxWcOneRound||0}</div><div class="ph-stat-lbl">Max WC / Round</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.wcDiscardedRound||0}</div><div class="ph-stat-lbl">Discard Max</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.shakeRolls||0}</div><div class="ph-stat-lbl">Shake Rolls</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.scubaDiverRounds||0}</div><div class="ph-stat-lbl">Scuba Rounds</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.scramblerRounds||0}</div><div class="ph-stat-lbl">Scrambler Rounds</div></div>
+      </div>
+    </div>
+  `;
+
+  const progressPct = totalAch > 0 ? Math.round((earnedCount / totalAch) * 100) : 0;
+  const unlockedList = ACHIEVEMENTS.filter(a=>earned.includes(a.id));
+  const lockedList = ACHIEVEMENTS.filter(a=>!earned.includes(a.id));
+  const renderAchItem = (a, locked) => `
+    <div class="ph-ach-item${locked?' locked':''}">
+      <div class="ph-ach-icon">${a.icon}</div>
+      <div style="min-width:0;">
+        <div class="ph-ach-name">${a.name}</div>
+        <div class="ph-ach-desc">${a.desc}</div>
+      </div>
+      <div class="ph-ach-xp">+${XP_ACH_UNLOCK_BONUS} XP</div>
+    </div>
+  `;
+  ach.innerHTML = `
+    <div class="ph-section">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <button class="setup-back-btn" onclick="profileHubBackToHome()" aria-label="Back">&#8592;</button>
+        <div class="ph-sec-title" style="margin:0;">ACHIEVEMENTS</div>
+      </div>
+      <div class="xp-bar-track"><div class="xp-bar-fill" data-from="0" data-to="${progressPct}" style="width:0%;"></div></div>
+      <div class="xp-bar-meta" style="margin-top:6px;"><span>${earnedCount} / ${totalAch} unlocked</span><span>${progressPct}%</span></div>
+    </div>
+    <div class="ph-section">
+      <div class="ph-sec-title">Unlocked</div>
+      <div class="ph-ach-list">${unlockedList.map(a=>renderAchItem(a, false)).join('') || `<div class="ph-ach-desc">No achievements yet.</div>`}</div>
+    </div>
+    <div class="ph-section">
+      <div class="ph-sec-title">Locked</div>
+      <div class="ph-ach-list">${lockedList.map(a=>renderAchItem(a, true)).join('')}</div>
+    </div>
+  `;
+
+  profileHubSwitchView(view);
+  const ring = document.getElementById('profileHubRingFill');
+  if(ring){
+    requestAnimationFrame(()=>{
+      ring.style.strokeDashoffset = String(ringOffset);
+    });
+  }
+  animateXpBars(ach);
+}
+
+function profileHubSwitchTo(view){
+  renderProfileHub(view);
+}
+
+function profileHubToggleEdit(editing){
+  _profileHubEditing = !!editing;
+  if(!_profileHubEditing) _profileHubEmoji = null;
+  renderProfileHub('home');
+}
+
+function profileHubSelectEmoji(emoji){
+  _profileHubEmoji = emoji;
+  _profileHubEditing = true;
+  renderProfileHub('home');
+}
+
+function profileHubSaveEdit(){
+  const ctx = profileHubGetCtx();
+  if(!ctx) return;
+  const input = document.getElementById('profileHubNameInput');
+  const name = sanitizeName(input ? input.value : ctx.p.name, 10);
+  if(!name) return;
+  ctx.p.name = name;
+  if(_profileHubEmoji) ctx.p.icon = _profileHubEmoji;
+  ctx.profiles[ctx.activeIdx] = ctx.p;
+  saveProfiles(ctx.profiles);
+  PLAYER_NAME = name.toUpperCase();
+  updateMenuProfileDisplay();
+  const tvName = document.getElementById('tvName');
+  if(tvName) tvName.textContent = name;
+  _profileHubEditing = false;
+  _profileHubEmoji = null;
+  renderProfileHub('home');
+}
+
+function profileHubSelectProfile(i){
+  const profiles = loadProfiles();
+  if(!profiles[i]) return;
+  setActiveProfileIdx(i);
+  PLAYER_NAME = String(profiles[i].name || '').toUpperCase();
+  updateMenuProfileDisplay();
+  _profileHubEditing = false;
+  _profileHubEmoji = null;
+  _profileHubCreateOpen = false;
+  renderProfileHub('home');
+}
+
+function profileHubToggleCreate(open){
+  _profileHubCreateOpen = !!open;
+  renderProfileHub('home');
+  if(_profileHubCreateOpen){
+    const input = document.getElementById('profileHubNewInput');
+    if(input) input.focus();
+  }
+}
+
+function profileHubCreateProfile(){
+  const input = document.getElementById('profileHubNewInput');
+  const val = sanitizeName(input ? input.value : '', 10);
+  if(!val) return;
+  const profiles = loadProfiles();
+  if(profiles.length >= MAX_PROFILES) return;
+  profiles.push(createDefaultProfile(val));
+  saveProfiles(profiles);
+  setActiveProfileIdx(profiles.length - 1);
+  PLAYER_NAME = val.toUpperCase();
+  updateMenuProfileDisplay();
+  _profileHubCreateOpen = false;
+  renderProfileHub('home');
+}
+
+function profileHubDeleteActive(){
+  const ctx = profileHubGetCtx();
+  if(!ctx) return;
+  const name = ctx.p.name || 'this profile';
+  showConfirm(`Remove ${name}?`, ()=>{
+    const profiles = loadProfiles();
+    const idx = Math.min(getActiveProfileIdx(), profiles.length - 1);
+    profiles.splice(idx, 1);
+    saveProfiles(profiles);
+    if(!profiles.length){
+      try{localStorage.removeItem('gg_tutorial_done');}catch{}
+      closeProfileModal();
+      hideScreen('menuScreen');
+      const oi=document.getElementById('onboardInput');
+      if(oi)oi.value='';
+      const ob=document.getElementById('onboardScreen');
+      if(ob){ob.style.display='flex';void ob.offsetWidth;ob.classList.add('visible');}
+      return;
+    }
+    if(getActiveProfileIdx() >= profiles.length) setActiveProfileIdx(Math.max(0, profiles.length - 1));
+    const p = getActiveProfile();
+    if(p) PLAYER_NAME = String(p.name || '').toUpperCase();
+    updateMenuProfileDisplay();
+    _profileHubEditing = false;
+    _profileHubEmoji = null;
+    renderProfileHub('home');
+  });
 }
 
 // ═══════════════════════════════════════
@@ -5466,6 +6190,17 @@ function _findAchievementById(id){
   return ACHIEVEMENTS.find(a=>a.id===id) || null;
 }
 
+function grantAchievementXpForProfile(ctx, count){
+  const grants = Math.max(0, count || 0);
+  if(!ctx || !ctx.p || !grants) return;
+  const add = grants * XP_ACH_UNLOCK_BONUS;
+  ctx.p.xpTotal = Math.max(0, (ctx.p.xpTotal || 0) + add);
+  ctx.p.achievementXpEarned = (ctx.p.achievementXpEarned || 0) + add;
+  ctx.profiles[ctx.idx] = ctx.p;
+  saveProfiles(ctx.profiles);
+  _queueAchievementXp(ctx.idx, add);
+}
+
 function hasAchievement(id, p){
   const prof = p || getActiveProfile();
   if(!prof) return false;
@@ -5479,6 +6214,7 @@ function unlockAchievement(id){
   if(!ctx) return false;
   if((ctx.p.achievements||[]).includes(id)) return false;
   ctx.p.achievements.push(id);
+  grantAchievementXpForProfile(ctx, 1);
   ctx.profiles[ctx.idx]=ctx.p;
   saveProfiles(ctx.profiles);
   showAchievementPopup(ach);
@@ -5524,9 +6260,9 @@ function handleShotAchievementOutcome(resolvedOutcome, prevZone){
   S._highlightReelArmedShot = false;
 }
 
-function checkAndAwardAchievements(){
+function checkAndAwardAchievements(options = {}){
   const ctx = _getAchievementContext();
-  if(!ctx) return;
+  if(!ctx) return [];
   const newlyEarned=[];
   ACHIEVEMENTS.forEach(a=>{
     const rule = ACHIEVEMENT_RULES[a.id];
@@ -5537,10 +6273,14 @@ function checkAndAwardAchievements(){
       newlyEarned.push(a);
     }
   });
-  if(!newlyEarned.length) return;
+  if(!newlyEarned.length) return [];
+  grantAchievementXpForProfile(ctx, newlyEarned.length);
   ctx.profiles[ctx.idx]=ctx.p;
   saveProfiles(ctx.profiles);
-  newlyEarned.forEach((a,i)=>setTimeout(()=>showAchievementPopup(a),i*2000));
+  if(!options.silent){
+    newlyEarned.forEach((a,i)=>setTimeout(()=>showAchievementPopup(a),i*2000));
+  }
+  return newlyEarned;
 }
 
 function applyCompletionModeAchievements(){
@@ -5665,7 +6405,6 @@ function updateProfileStatsAfterRound(score,par,wcUsedThisRound){
     if(par3Specialist) p.par3SpecialistRounds=(p.par3SpecialistRounds||0)+1;
   }
   profiles[idx]=p;saveProfiles(profiles);
-  setTimeout(()=>checkAndAwardAchievements(),600);
 }
 
 function getRoundStats(roundIdx){
@@ -7970,6 +8709,7 @@ function tutComplete(isAbandon = false){
   _tutBlockInput(false);
   clearTutorialUiState();
   tutMarkDone();
+  let tutorialAward = null;
   
   // ONLY award the achievement if they successfully finished it
   if (!isAbandon) {
@@ -7978,14 +8718,41 @@ function tutComplete(isAbandon = false){
       if(profiles[idx]){
          profiles[idx].tutorialCompleted = (profiles[idx].tutorialCompleted||0)+1;
          saveProfiles(profiles);
-         setTimeout(()=>checkAndAwardAchievements(), 300);
+         checkAndAwardAchievements({silent:true});
       }
+      const tutScoreRow = S.scorecards[0] || [];
+      const holesPlayed = 3;
+      let roundTotal = 0;
+      let roundPar = 0;
+      for(let i = 0; i < 3; i++){
+        const v = tutScoreRow[i];
+        if(v !== null && v !== undefined){
+          roundTotal += v;
+          roundPar += HOLES[i].par;
+        }
+      }
+      const roundDiff = roundTotal - roundPar;
+      tutorialAward = awardRoundExperience({
+        source: 'tutorial',
+        title: 'TUTORIAL XP',
+        roundNumber: 1,
+        roundIdx: 0,
+        holesPlayed,
+        roundDiff,
+        roundTotal,
+        roundPar,
+        gameDiff: 1,
+        ensureLevel2: true
+      });
   }
 
   restoreBaseHoles();
   resetResult();
   document.getElementById('overlay').classList.remove('show');
   returnToMenu();
+  if(!isAbandon && tutorialAward){
+    showXpRewardModal('TUTORIAL COMPLETE', tutorialAward, 'CONTINUE');
+  }
 }
 
 function tutMenuIntercept(){
@@ -8546,6 +9313,8 @@ function vsShowHoleComparison(){
   if (statsContainer) statsContainer.style.display = 'none';
   const hcDiffSub = document.getElementById('hcDiffSub');
   if (hcDiffSub) hcDiffSub.style.display = 'none';
+  const hcXpWrap = document.getElementById('hcXpWrap');
+  if (hcXpWrap) hcXpWrap.style.display = 'none';
 
   const secTitles = document.querySelectorAll('#hcScreen .sec-title');
   const replayTitle = secTitles[0];
@@ -8626,6 +9395,22 @@ function vsShowFinal(){
   const p1=VS.players[0],p2=VS.players[1];
   const fmtD=(d)=>d===0?'E':d>0?'+'+d:''+d;
   const d1=t1-par,d2=t2-par;
+  let completedHoles = 0;
+  for(let r = 0; r < S.totalRounds; r++){
+    for(let i = S.startIdx; i <= S.endIdx; i++){
+      if(vsGetHistory(0, i, r) || vsGetHistory(1, i, r)) completedHoles++;
+    }
+  }
+  const vsXpAward = awardRoundExperience({
+    source: 'versus',
+    title: 'VERSUS XP',
+    holesPlayed: Math.max(1, completedHoles),
+    roundDiff: 0,
+    gameDiff: VS.setup?.diff || GAME_DIFF,
+    scoreMultiplier: 1,
+    scoreMultiplierLabel: 'x1.00',
+    includeAchievementBonus: false
+  });
   
   let winnerText = '';
   let p1Color = 'var(--text)', p2Color = 'var(--text)';
@@ -8663,6 +9448,8 @@ function vsShowFinal(){
   document.getElementById('hcRndBadge').style.display = 'none';
   const hcDiffSub = document.getElementById('hcDiffSub');
   if (hcDiffSub) hcDiffSub.style.display = 'none';
+  const hcXpWrap = document.getElementById('hcXpWrap');
+  if (hcXpWrap) hcXpWrap.style.display = 'none';
 
   const getColor = (d) => d < 0 ? 'var(--gold)' : d === 0 ? 'var(--c-fwyl)' : '#e05252';
 
@@ -8674,6 +9461,7 @@ function vsShowFinal(){
 
   const diffNames = {1:'EASY', 2:'MEDIUM', 3:'HARD'};
   const diffLabel = diffNames[VS.setup?.diff || GAME_DIFF] || 'MEDIUM';
+  const xpHtml = vsXpAward ? `<div style="margin-top:14px;">${renderXpAwardCardHtml(vsXpAward)}</div>` : '';
   const p1Html = `
     <div style="font-size:36px;margin-bottom:8px;">${p1.icon}</div>
     <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p1Color};white-space:nowrap;">${p1.name}</div>
@@ -8719,7 +9507,9 @@ function vsShowFinal(){
         <div style="flex:1;text-align:center;">${p2Html}</div>
     </div>
     <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:14px;text-align:center;">DIFFICULTY: ${diffLabel}</div>
+    ${xpHtml}
   `;
+  animateXpBars(vsContainer);
 
   let stats = [
       { label: 'Total Strokes', p1: 0, p2: 0 },
@@ -9011,6 +9801,38 @@ function closeModeInfo(type){
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="profile-modal" id="profileHubModal">
+  <div class="profile-hub">
+    <svg width="0" height="0" style="position:absolute;pointer-events:none;">
+      <defs>
+        <linearGradient id="phRingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#4ed67c"></stop>
+          <stop offset="100%" stop-color="#f0c040"></stop>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="profile-hub-head">
+      <div class="profile-hub-title">PROFILE</div>
+      <button class="profile-hub-close" onclick="closeProfileModal()">✕</button>
+    </div>
+    <div class="profile-hub-views">
+      <section class="profile-hub-view active" id="profileHubViewHome"></section>
+      <section class="profile-hub-view" id="profileHubViewStats"></section>
+      <section class="profile-hub-view" id="profileHubViewAchievements"></section>
+    </div>
+  </div>
+</div>
+
+<div class="profile-modal" id="xpRewardModal">
+  <div class="profile-card" style="max-width:390px;">
+    <div class="profile-head">
+      <div class="profile-head-title" id="xpRewardTitle">XP REWARD</div>
+      <button class="profile-close" onclick="closeXpRewardModal()">✕</button>
+    </div>
+    <div class="xp-modal-body" id="xpRewardBody"></div>
   </div>
 </div>
 
