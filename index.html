@@ -310,13 +310,11 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .btn-roll:disabled:active{transform:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 0 0 1px rgba(255,255,255,.04), 0 3px 10px rgba(0,0,0,.2);}
 .btn-roll.rolling-state{background:#487a41;color:rgba(255,255,255,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 0 0 1px rgba(255,255,255,.04), 0 3px 10px rgba(0,0,0,.2);filter:saturate(.68) brightness(.92);}
 .roll-col{flex:1.44 1 0;display:grid;min-width:0;position:relative;}
-/* MORPH: buttons share the same slot; outgoing fades + scales down, incoming fades + scales up with a tiny bounce. */
-#rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:opacity .22s ease,transform .32s cubic-bezier(.34,1.56,.64,1),visibility 0s linear .22s,background-color .22s ease-in-out,box-shadow .15s ease-in-out,color .15s ease-in-out,filter .15s ease-in-out;}
-.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0) scale(1);transition-delay:0s;}
-.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(0) scale(.82);}
-/* Pulse the slot when swap happens */
-.roll-col.morphing{animation:morphPulse .46s cubic-bezier(.34,1.56,.64,1);}
-@keyframes morphPulse{0%{transform:scale(1);}40%{transform:scale(1.06);}100%{transform:scale(1);}}
+/* MORPH: buttons share the same slot; removed transform/opacity transitions for instant response. */
+#rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:background-color .1s ease-in-out,box-shadow .1s ease-in-out,color .1s ease-in-out,filter .1s ease-in-out;}
+.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:none;}
+.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:none;}
+.roll-col.morphing{animation:none;}
 #nextShotBtn{letter-spacing:2px;font-size:20px;}
 
 /* RESULT */
@@ -4238,8 +4236,9 @@ function _renderShotReplay(log, holeDone){
       trail.appendChild(pill);
     });
     const e = log[idx];
-    const fromZk = e.prevZone || e.zk || 'fwy';
+      const fromZk = e.prevZone || e.zk || 'fwy';
       const toName = e.zk === 'hole' ? 'HOLE' : ((Z[e.zk]||Z.fwy).name.toUpperCase());
+      const fromName = (Z[fromZk]||Z.fwy).name.toUpperCase();
       const emoji = e.zk === 'hole' ? '🏆' : ((Z[e.zk]||Z.fwy).emoji);
       const color = e.zk === 'hole' ? 'var(--c-hole)' : ((Z[e.zk]||Z.fwy).color);
       
@@ -4259,7 +4258,7 @@ function _renderShotReplay(log, holeDone){
         <div style="display:flex;align-items:center;gap:12px;text-align:left;width:100%;">
           <div style="width:44px;height:44px;border-radius:9px;background:${color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${emoji}</div>
           <div style="flex:1;">
-            <div style="font-family:'Bebas Neue',cursive;font-size:19px;letter-spacing:2px;color:var(--text);line-height:1;">${toName}</div>
+            <div style="font-family:'Bebas Neue',cursive;font-size:19px;letter-spacing:2px;color:var(--text);line-height:1;">${fromName} → ${toName}</div>
             <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:2px;">${distanceStr}${noteStr}</div>
           </div>
         </div>`;
@@ -6128,6 +6127,8 @@ function closeProfileModal(){
 }
 
 function autoLoadProfile(){
+  const tv = document.getElementById('tvBar'); if(tv) tv.classList.remove('show');
+  const fab = document.getElementById('wcFab'); if(fab) fab.classList.remove('visible');
   const profiles=loadProfiles();
   if(!profiles.length){
     const obs=document.getElementById('onboardScreen');
