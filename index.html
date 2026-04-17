@@ -728,11 +728,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .sum-section-head{display:flex;align-items:center;gap:10px;margin:0 0 10px;flex-shrink:0;}
 .sum-section-head .ttl{font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;white-space:nowrap;}
 .sum-section-head .line{flex:1;height:1px;background:var(--border);}
-.sum-stats-panel{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden;flex-shrink:0;}
-.sum-stats-head{display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(255,255,255,.03);position:sticky;top:0;z-index:1;}
-.sum-stats-head .ttl{font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;white-space:nowrap;}
-.sum-stats-head .line{flex:1;height:1px;background:var(--border);}
-.sum-stats-list{max-height:176px;overflow-y:auto;-webkit-overflow-scrolling:touch;-ms-overflow-style:none;scrollbar-width:none;}
+.sum-stats-list{max-height:176px;overflow-y:auto;-webkit-overflow-scrolling:touch;-ms-overflow-style:none;scrollbar-width:none;margin-bottom:12px;}
 .sum-stats-list::-webkit-scrollbar{display:none;}
 .sum-stats-row{display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;column-gap:12px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);font-family:'Sen',sans-serif;font-size:11px;}
 .sum-stats-row:last-child{border-bottom:none;}
@@ -750,7 +746,9 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .sum-hole-ttl{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--text);}
 .sum-hole-close{background:rgba(224,82,82,.2);border:1px solid rgba(255,82,82,.45);color:#ffd7d7;width:26px;height:26px;border-radius:7px;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .sum-hole-body{padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.sum-btn-row{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column;gap:8px;margin-top:14px;padding-top:10px;padding-bottom:calc(env(safe-area-inset-bottom) + 6px);background:linear-gradient(180deg,rgba(13,17,23,0) 0%,rgba(13,17,23,.92) 34%,rgba(13,17,23,1) 100%);}
+.sum-btn-row{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:16px;padding-bottom:calc(env(safe-area-inset-bottom) + 2px);background:linear-gradient(180deg,rgba(13,17,23,0) 0%,rgba(13,17,23,.92) 34%,rgba(13,17,23,1) 100%);}
+.sum-detail-hint{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-shrink:0;font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.sum-detail-hint::after{content:'';flex:1;height:1px;background:var(--border);}
 .sum-total{display:flex;align-items:center;justify-content:center;gap:16px;padding:14px 0 18px;border-bottom:1px solid var(--border);margin-bottom:14px;}
 .sum-total-score{font-family:'Bebas Neue',cursive;font-size:64px;line-height:1;}
 .sum-total-info{display:flex;flex-direction:column;gap:2px;}
@@ -859,6 +857,11 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .xp-bar-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
 .xp-bar-meta .xp-level-live{color:var(--c-fwyl);font-weight:700;}
 .xp-bar-meta .xp-to-next-live{color:var(--muted);}
+.xp-award-events{display:flex;flex-direction:column;gap:4px;margin-top:2px;}
+.xp-award-event{display:grid;grid-template-columns:minmax(0,1fr) 52px;align-items:center;column-gap:10px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.xp-award-event:last-child{border-bottom:none;}
+.xp-award-event .lbl{font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;min-width:0;}
+.xp-award-event .val{font-family:'Bebas Neue',cursive;font-size:18px;color:var(--text);letter-spacing:1px;text-align:center;line-height:1;}
 .xp-rank-chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;background:rgba(240,192,64,.16);border:1px solid rgba(240,192,64,.35);font-family:'Sen',sans-serif;font-size:9px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;}
 
 /* PROFILE HUB */
@@ -873,15 +876,20 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 }
 .profile-hub-head{
   flex-shrink:0;padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  display:grid;grid-template-columns:32px minmax(0,1fr) 32px;align-items:center;gap:12px;
   border-bottom:1px solid rgba(255,255,255,.08);background:rgba(13,17,23,.7);backdrop-filter:blur(8px);
 }
-.profile-hub-title{font-family:'Bebas Neue',cursive;font-size:25px;letter-spacing:3px;color:var(--c-fwyl);}
+.profile-hub-title{font-family:'Bebas Neue',cursive;font-size:25px;letter-spacing:3px;color:var(--c-fwyl);text-align:center;}
+.profile-hub-back{justify-self:start;}
 .profile-hub-close{
-  width:30px;height:30px;border-radius:8px;background:rgba(224,82,82,.2);border:1px solid rgba(255,82,82,.4);color:#ffd7d7;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s;
+  width:32px;height:32px;border-radius:8px;padding:0;margin:0;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;
+  font-family:Arial,sans-serif;font-size:16px;line-height:1;letter-spacing:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;justify-self:end;
+  box-shadow:0 2px 8px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08);transition:all .15s;
 }
 .profile-hub-close:active{transform:translateY(1px) scale(.95);}
+.profile-hub-close:hover{background:rgba(255,255,255,.22);}
 .profile-hub-views{position:relative;flex:1;min-height:0;overflow:hidden;}
 .profile-hub-view{
   position:absolute;inset:0;padding:14px 14px calc(env(safe-area-inset-bottom) + 16px);overflow-y:auto;-webkit-overflow-scrolling:touch;
@@ -911,10 +919,12 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .ph-btn.gold{background:linear-gradient(135deg,rgba(186,137,23,.92),rgba(240,192,64,.9));border-color:rgba(240,192,64,.45);color:#1b1403;}
 .ph-btn.danger{border-color:rgba(255,82,82,.32);color:#ff9b9b;background:rgba(255,82,82,.08);}
 .ph-actions-edit{display:none;padding:0 12px 12px;}
+.ph-delete-wrap{display:none;padding:0 12px 12px;}
 .ph-edit-block{display:none;padding:0 12px 12px;}
 .ph-main-card.editing .ph-edit-block{display:block;animation:fadein .22s ease;}
 .ph-main-card.editing .ph-actions-main{display:none;}
 .ph-main-card.editing .ph-actions-edit{display:flex;animation:fadein .2s ease;}
+.ph-main-card.editing .ph-delete-wrap{display:block;animation:fadein .2s ease;}
 .ph-edit-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;margin:8px 0 10px;}
 .ph-emoji{border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.03);height:34px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;}
 .ph-emoji.sel{border-color:var(--c-fwyl);background:rgba(78,158,66,.15);}
@@ -929,11 +939,9 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .ph-section{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px;}
 .ph-sec-title{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;color:var(--c-fwyl);margin-bottom:8px;}
 .ph-subhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
-.ph-back-pill{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:6px 12px;font-family:'Sen',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
-.ph-back-pill:active{transform:translateY(1px) scale(.98);}
 .ph-kv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
 .ph-dist-list{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
-.ph-dist-row{display:grid;grid-template-columns:64px 1fr 28px;align-items:center;gap:8px;}
+.ph-dist-row{display:grid;grid-template-columns:72px 1fr 28px;align-items:center;gap:8px;}
 .ph-dist-lbl{font-family:'Sen',sans-serif;font-size:12px;color:var(--text);letter-spacing:.6px;}
 .ph-dist-track{height:12px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);overflow:hidden;}
 .ph-dist-fill{height:100%;width:0%;border-radius:999px;transition:width .75s cubic-bezier(0.22,1,0.36,1);}
@@ -1759,7 +1767,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <span id="hcHoleTitle">HOLE 1 COMPLETE</span>
     <div class="hc-rnd-badge" id="hcRndBadge">ROUND 1</div>
   </div>
-  <div class="hc-card">
+  <div class="hc-card" id="hcScoreCard">
     <div class="hc-card-icon" id="hcIcon">🐦</div>
     <div class="hc-card-title" id="hcTitle">BIRDIE!</div>
     <div class="hc-card-sub" id="hcSub">3 STROKES · PAR 4</div>
@@ -1774,7 +1782,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     #hcScreen .sc-wrap { overscroll-behavior-x: none; touch-action: pan-x; overflow-x: auto; -webkit-overflow-scrolling: touch; -ms-overflow-style: none; scrollbar-width: none; }
     #hcScreen .sc-wrap::-webkit-scrollbar { display: none; }
   </style>
-  <div style="flex:1; display:flex; flex-direction:column; min-height:0; padding-bottom:12px;">
+  <div id="hcMidSection" style="flex:1; display:flex; flex-direction:column; min-height:0; padding-bottom:12px;">
     <div class="sec-title" style="flex-shrink:0;">SHOT REPLAY</div>
     <div class="hc-log-list" id="hcLogList" style="flex-shrink:0; margin-bottom:16px;"></div>
     <div class="sec-title" style="flex-shrink:0;">SCORECARD</div>
@@ -1952,6 +1960,8 @@ function closeHcScreenThen(fn, delay=230){
   setTimeout(()=>{ if(typeof fn==='function') fn(); },delay);
 }
 let _summaryBackTarget = null;
+let _summaryContext = null;
+let _vsSummaryPlayer = 0;
 let _onboardFocusLockCount = 0;
 
 function lockOnboardPosition(){
@@ -1975,6 +1985,9 @@ function openSummaryTransition(viewRound = S.currentRound, backTarget = null){
   _summaryBackTarget = backTarget;
   concealMainApp();
   requestAnimationFrame(()=>openSummary(viewRound, backTarget));
+}
+function setSummaryContext(ctx = null){
+  _summaryContext = ctx ? { ...ctx } : null;
 }
 function hideScreen(id){
   const el=document.getElementById(id);
@@ -2725,6 +2738,7 @@ function startGame(){
   _skipGridScrollOnce = true;
   clearSavedGame();
   resetGameState();
+  setSummaryContext(null);
   restoreBaseHoles();
   const p=getActiveProfile();
   PLAYER_NAME=p?p.name.toUpperCase():'PLAYER';
@@ -2732,7 +2746,7 @@ function startGame(){
   HOLES.forEach(h=>{ h.diff=diffMap[h.baseDiff][GAME_DIFF-1]; });
   hideScreen('diffScreen');
   hideScreen('courseScreen');
-  showMainApp();
+  concealMainApp();
   
   if(VS.active){
     vsStartGame();
@@ -2757,7 +2771,10 @@ function showSingleRoundSplash(){
   const rsMeta = document.getElementById('rsTurnMeta');
   if(rsIcon) rsIcon.textContent = icon;
   if(screen) screen.classList.add('single-round-start');
-  if(rsName) rsName.textContent = 'Please welcome...';
+  if(rsName){
+    const splashLines = ['PLEASE WELCOME...', 'NOW, ON THE TEE...', 'DRIVING FROM THE TEE...'];
+    rsName.textContent = splashLines[Math.floor(Math.random() * splashLines.length)];
+  }
   if(rsSub) rsSub.textContent = `${PLAYER_NAME}!`;
   if(rsMeta) rsMeta.textContent = `${roundPrefix}HOLE ${S.holeIdx + 1} · PAR ${h.par}`;
   setMainAppConcealed(true);
@@ -4026,6 +4043,8 @@ function showCelebration(d, onDone){
 function completeHole(){
   const h=HOLES[S.holeIdx];
   const score=S.strokes;
+  const roundXpWrap = document.getElementById('hcRoundXpWrap');
+  if(roundXpWrap) roundXpWrap.style.display = 'none';
   
   // VERSUS MODE
   if(VS.active){
@@ -4385,8 +4404,25 @@ function nextHole(){
   }, 30);
 }
 
+function ensureRoundXpPanel(){
+  const hcScreen = document.getElementById('hcScreen');
+  if(!hcScreen) return null;
+  let xpWrap = document.getElementById('hcRoundXpWrap');
+  if(xpWrap) return xpWrap;
+  const scoreCard = document.getElementById('hcScoreCard');
+  const mid = document.getElementById('hcMidSection');
+  if(!scoreCard || !mid || !scoreCard.parentNode) return null;
+  xpWrap = document.createElement('div');
+  xpWrap.id = 'hcRoundXpWrap';
+  xpWrap.style.cssText = 'margin-top:-8px;margin-bottom:12px;display:none;flex-shrink:0;';
+  scoreCard.parentNode.insertBefore(xpWrap, mid);
+  return xpWrap;
+}
+
 function showRoundEnd(){
   clearSavedGame();
+  const midSection = document.getElementById('hcMidSection');
+  if(midSection) midSection.style.display = 'flex';
   
   const curSc = S.scorecards[S.currentRound - 1];
   const activeHoles = HOLES.slice(S.startIdx, S.endIdx + 1);
@@ -4399,11 +4435,14 @@ function showRoundEnd(){
     const p = profiles[getActiveProfileIdx()];
     const isNewPB = p && (p.bestDiff === undefined || roundDiff < p.bestDiff); 
 
+    const xpHighlightsBefore = captureXpHighlightSnapshot();
     updateProfileAfterRound(roundTotal, roundPar);
     updateProfileStatsAfterRound(roundTotal, roundPar, S._wcUsedThisRound||0);
     applyCompletionModeAchievements();
     incrementCompletedGameCounters();
-    checkAndAwardAchievements({silent:true});
+    const newAchievements = checkAndAwardAchievements({silent:true});
+    const xpHighlightsAfter = captureXpHighlightSnapshot();
+    const xpEvents = buildXpHighlightRows(xpHighlightsBefore, xpHighlightsAfter, newAchievements.length);
     const xpAward = awardRoundExperience({
       source: 'round',
       title: 'ROUND XP',
@@ -4413,7 +4452,8 @@ function showRoundEnd(){
       roundDiff,
       roundTotal,
       roundPar,
-      gameDiff: GAME_DIFF
+      gameDiff: GAME_DIFF,
+      events: xpEvents
     });
     
     let globalTotal = 0, globalPar = 0;
@@ -4429,6 +4469,8 @@ function showRoundEnd(){
     if (hcDiffSub) hcDiffSub.style.display = 'none';
     const hcXpWrapFinal = document.getElementById('hcXpWrap');
     if (hcXpWrapFinal) hcXpWrapFinal.style.display = 'none';
+    const hcRoundXpWrapFinal = document.getElementById('hcRoundXpWrap');
+    if (hcRoundXpWrapFinal) hcRoundXpWrapFinal.style.display = 'none';
 
     ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
         const el = document.getElementById(id);
@@ -4458,8 +4500,6 @@ function showRoundEnd(){
             document.head.appendChild(s);
         }
     }
-    const xpHtml = xpAward ? `<div style="margin-top:14px;">${renderXpAwardCardHtml(xpAward)}</div>` : '';
-
     vsContainer.innerHTML = `
     <div style="font-size:56px; margin-bottom:12px; text-align:center; line-height:1;">${emoji}</div>
     <div style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--text);letter-spacing:3px;text-align:center;margin-bottom:4px;">FINAL SCORE</div>
@@ -4468,9 +4508,13 @@ function showRoundEnd(){
     <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);text-align:center;margin-bottom:0;text-transform:uppercase;">DIFFICULTY: ${finalDiffLabel}</div>
     
     ${pbHtml}
-    ${xpHtml}
 `;
-    animateXpBars(vsContainer);
+    const roundXpWrapFinal = ensureRoundXpPanel();
+    if(roundXpWrapFinal){
+      roundXpWrapFinal.innerHTML = xpAward ? renderXpAwardCardHtml(xpAward) : '';
+      roundXpWrapFinal.style.display = xpAward ? 'block' : 'none';
+      if(xpAward) animateXpBars(roundXpWrapFinal);
+    }
 
     document.querySelectorAll('#hcScreen .sec-title').forEach(t => t.style.display = 'none');
     const logList = document.getElementById('hcLogList');
@@ -4482,9 +4526,11 @@ function showRoundEnd(){
 
     let statsContainer = document.getElementById('hcVsStats');
     const showRoundStats = S.mode === 'tournament';
+    const midSectionFinal = document.getElementById('hcMidSection');
+    if(midSectionFinal) midSectionFinal.style.display = showRoundStats ? 'flex' : 'none';
     if (showRoundStats && !statsContainer) {
-        statsContainer = document.createElement('div');
-        statsContainer.id = 'hcVsStats';
+      statsContainer = document.createElement('div');
+      statsContainer.id = 'hcVsStats';
         document.getElementById('hcLogList').parentNode.appendChild(statsContainer);
     }
     if(showRoundStats && statsContainer){
@@ -4499,15 +4545,19 @@ function showRoundEnd(){
     const btn = document.getElementById('hcBtn');
     btn.textContent = 'NEXT';
     btn.onclick = () => {
+        setSummaryContext(null);
         openSummaryTransition(S.currentRound,'hcScreen');
     };
 
     setMainAppConcealed(true);
     hcScreen.classList.add('show');
   } else {
+    const xpHighlightsBefore = captureXpHighlightSnapshot();
     updateProfileAfterRound(roundTotal, roundPar);
     updateProfileStatsAfterRound(roundTotal, roundPar, S._wcUsedThisRound||0);
-    checkAndAwardAchievements({silent:true});
+    const newAchievements = checkAndAwardAchievements({silent:true});
+    const xpHighlightsAfter = captureXpHighlightSnapshot();
+    const xpEvents = buildXpHighlightRows(xpHighlightsBefore, xpHighlightsAfter, newAchievements.length);
     const xpAward = awardRoundExperience({
       source: 'round',
       title: `ROUND ${S.currentRound} XP`,
@@ -4517,7 +4567,8 @@ function showRoundEnd(){
       roundDiff,
       roundTotal,
       roundPar,
-      gameDiff: GAME_DIFF
+      gameDiff: GAME_DIFF,
+      events: xpEvents
     });
     saveGameState();
 
@@ -4560,16 +4611,12 @@ function showRoundEnd(){
     }
     hcDiffSub.textContent = `DIFFICULTY: ${diffNames2[GAME_DIFF] || 'MEDIUM'}`;
     hcDiffSub.style.display = '';
-    let hcXpWrap = document.getElementById('hcXpWrap');
-    if (!hcXpWrap) {
-      hcXpWrap = document.createElement('div');
-      hcXpWrap.id = 'hcXpWrap';
-      hcXpWrap.style.cssText = 'margin-top:10px;';
-      hcDiffSub.insertAdjacentElement('afterend', hcXpWrap);
+    const roundXpWrap = ensureRoundXpPanel();
+    if(roundXpWrap){
+      roundXpWrap.innerHTML = xpAward ? renderXpAwardCardHtml(xpAward) : '';
+      roundXpWrap.style.display = xpAward ? 'block' : 'none';
+      if (xpAward) animateXpBars(roundXpWrap);
     }
-    hcXpWrap.innerHTML = xpAward ? renderXpAwardCardHtml(xpAward) : '';
-    hcXpWrap.style.display = xpAward ? 'block' : 'none';
-    if (xpAward) animateXpBars(hcXpWrap);
 
     // Show tournament statistics only
     const logList2 = document.getElementById('hcLogList');
@@ -4586,6 +4633,8 @@ function showRoundEnd(){
     
     let statsC = document.getElementById('hcVsStats');
     const showRoundStats = S.mode === 'tournament';
+    const midSectionRound = document.getElementById('hcMidSection');
+    if(midSectionRound) midSectionRound.style.display = showRoundStats ? 'flex' : 'none';
     if(showRoundStats && !statsC){
       statsC = document.createElement('div');
       statsC.id = 'hcVsStats';
@@ -4603,6 +4652,7 @@ function showRoundEnd(){
     const btn = document.getElementById('hcBtn');
     btn.textContent = 'NEXT';
     btn.onclick = () => {
+        setSummaryContext(null);
         openSummaryTransition(S.currentRound,'hcScreen');
     };
 
@@ -4615,6 +4665,11 @@ function showRoundEnd(){
 // ROUND SUMMARY MODAL
 // ═══════════════════════════════════════
 function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget){
+  if(_summaryContext && _summaryContext.mode === 'versus'){
+    openVersusSummary(viewRound, backTarget);
+    return;
+  }
+  setSummaryContext(null);
   document.getElementById('overlay').classList.remove('show');
   concealMainApp();
   _summaryBackTarget = backTarget || null;
@@ -4662,14 +4717,10 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
   const gDiffStr = globalDiff===0?'E':globalDiff>0?`+${globalDiff}`:`${globalDiff}`;
   const roundStats = getRoundStats(viewRound);
 
-  const statsPanel = document.createElement('div');
-  statsPanel.className = 'sum-stats-panel';
-  statsPanel.innerHTML = `
-    <div class="sum-stats-head">
-      <div class="ttl">STATISTICS</div>
-      <div class="line"></div>
-    </div>
-  `;
+  const statsHead = document.createElement('div');
+  statsHead.className = 'sum-section-head';
+  statsHead.innerHTML = `<div class="ttl">STATISTICS</div><div class="line"></div>`;
+  body.appendChild(statsHead);
   const statsList = document.createElement('div');
   statsList.className = 'sum-stats-list';
   roundStats.forEach(s=>{
@@ -4678,8 +4729,7 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
     row.innerHTML = `<div class="lbl">${s.label}</div><div class="val">${s.val}</div>`;
     statsList.appendChild(row);
   });
-  statsPanel.appendChild(statsList);
-  body.appendChild(statsPanel);
+  body.appendChild(statsList);
 
   const scoreHead = document.createElement('div');
   scoreHead.className = 'sum-section-head';
@@ -4779,7 +4829,7 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
   if(tournamentTotalBox) body.appendChild(tournamentTotalBox);
 
   const detailSec=document.createElement('div');
-  detailSec.style.cssText='font-family:"Sen",sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;flex-shrink:0;';
+  detailSec.className = 'sum-detail-hint';
   detailSec.textContent='Tap a hole for details';
   body.appendChild(detailSec);
 
@@ -4867,6 +4917,7 @@ function closeSummary(){
   closeSummaryHoleModal();
   document.getElementById('summaryModal').classList.remove('show');
   _summaryBackTarget = null;
+  setSummaryContext(null);
   setTimeout(()=>{
     if(S.holeIdx >= S.endIdx && S.holeDone && S.currentRound === S.totalRounds){
       returnToMenu();
@@ -4880,6 +4931,7 @@ function summaryGoBack(){
   closeSummaryHoleModal();
   const target=_summaryBackTarget;
   _summaryBackTarget = null;
+  setSummaryContext(null);
   if(target === 'hcScreen'){
     requestAnimationFrame(()=>document.getElementById('summaryModal').classList.remove('show'));
     return;
@@ -4903,6 +4955,7 @@ function summaryGoBack(){
 function summaryReturnToMenu(){
   closeSummaryHoleModal();
   _summaryBackTarget = null;
+  setSummaryContext(null);
   returnToMenu({preserveSummary:true});
   requestAnimationFrame(()=>document.getElementById('summaryModal').classList.remove('show'));
 }
@@ -4910,6 +4963,7 @@ function summaryReturnToMenu(){
 function summarySaveAndMenu(){
   closeSummaryHoleModal();
   _summaryBackTarget = null;
+  setSummaryContext(null);
   returnToMenuSave({preserveSummary:true});
   requestAnimationFrame(()=>document.getElementById('summaryModal').classList.remove('show'));
 }
@@ -4919,6 +4973,19 @@ function summaryPlayAgain(){
   document.getElementById('summaryModal').classList.remove('show');
   document.getElementById('overlay').classList.remove('show');
   hideMainApp();
+  const versusReplay = !!(_summaryContext && _summaryContext.mode === 'versus');
+  if(versusReplay){
+    setSummaryContext(null);
+    const hc = document.getElementById('hcScreen');
+    if(hc) hc.classList.remove('show');
+    setTimeout(()=>{
+      VS.active = true;
+      startGame();
+      document.querySelector('.tv-bar').classList.add('show');
+    },220);
+    return;
+  }
+  setSummaryContext(null);
   setTimeout(()=>{
     startGame();
     document.querySelector('.tv-bar').classList.add('show');
@@ -5205,6 +5272,12 @@ function ensureProfileDefaults(p){
   Object.keys(scoreDefaults).forEach(k=>{
     if(typeof p.scoreBuckets[k] !== 'number' || !isFinite(p.scoreBuckets[k])) p.scoreBuckets[k] = scoreDefaults[k];
   });
+  const bucketTotal = (p.scoreBuckets.aces||0) + (p.scoreBuckets.eaglesPlus||0) + (p.scoreBuckets.birdies||0) + (p.scoreBuckets.pars||0) + (p.scoreBuckets.bogeys||0) + (p.scoreBuckets.doublePlus||0);
+  if(bucketTotal === 0 && ((p.holeInOnes||0) > 0 || (p.eagles||0) > 0 || (p.birdies||0) > 0)){
+    p.scoreBuckets.aces = Math.max(0, p.holeInOnes || 0);
+    p.scoreBuckets.eaglesPlus = Math.max(0, (p.eagles || 0) - p.scoreBuckets.aces);
+    p.scoreBuckets.birdies = Math.max(0, p.birdies || 0);
+  }
   if(p.bestDiff !== undefined && (typeof p.bestDiff !== 'number' || !isFinite(p.bestDiff))) p.bestDiff = undefined;
   return p;
 }
@@ -5331,6 +5404,40 @@ function applyRoundScoreBuckets(profile, roundIdx){
   }
 }
 
+function captureXpHighlightSnapshot(profile = null){
+  const p = profile || getActiveProfile();
+  if(!p) return null;
+  ensureProfileDefaults(p);
+  return {
+    bestBirdieStreak: p.bestBirdieStreak || 0,
+    bestUnderParStreak: p.bestUnderParStreak || 0,
+    maxWcOneRound: p.maxWcOneRound || 0,
+    timesInWater: p.timesInWater || 0
+  };
+}
+
+function buildXpHighlightRows(before, after, achievementCount = 0){
+  if(!before || !after) return [];
+  const rows = [];
+  if((after.bestBirdieStreak || 0) > (before.bestBirdieStreak || 0)){
+    rows.push({ label:'New Best Birdie Streak', value: after.bestBirdieStreak || 0 });
+  }
+  if((after.bestUnderParStreak || 0) > (before.bestUnderParStreak || 0)){
+    rows.push({ label:'New Best Under-Par Streak', value: after.bestUnderParStreak || 0 });
+  }
+  if((after.maxWcOneRound || 0) > (before.maxWcOneRound || 0)){
+    rows.push({ label:'Max WC / Round', value: after.maxWcOneRound || 0 });
+  }
+  const waterDelta = Math.max(0, (after.timesInWater || 0) - (before.timesInWater || 0));
+  if(waterDelta > 0){
+    rows.push({ label:'Times in Water', value: waterDelta });
+  }
+  if(achievementCount > 0){
+    rows.push({ label:'New Achievements', value: achievementCount });
+  }
+  return rows;
+}
+
 function renderXpAwardCardHtml(award){
   if(!award) return '';
   const scoreMulText = award.scoreMultiplierOverride
@@ -5339,6 +5446,7 @@ function renderXpAwardCardHtml(award){
   const finalToNext = award.after.level >= XP_MAX_LEVEL
     ? 'MAX LEVEL'
     : `${Math.max(0, Math.ceil(award.after.need - award.after.xpIntoLevel))} XP TO LEVEL UP`;
+  const eventRows = Array.isArray(award.events) ? award.events : [];
   return `
     <div class="xp-award-card">
       <div class="xp-award-head">
@@ -5359,6 +5467,11 @@ function renderXpAwardCardHtml(award){
           <span class="xp-to-next-live">${finalToNext}</span>
         </div>
       </div>
+      ${eventRows.length ? `
+        <div class="xp-award-events">
+          ${eventRows.map(row=>`<div class="xp-award-event"><span class="lbl">${row.label}</span><span class="val">${row.value}</span></div>`).join('')}
+        </div>
+      ` : ''}
     </div>
   `;
 }
@@ -5374,11 +5487,14 @@ function animateXpBars(root){
       const card = fill.closest('.xp-award-card');
       const lvlEl = card ? card.querySelector('.xp-level-live') : null;
       const toNextEl = card ? card.querySelector('.xp-to-next-live') : null;
-      const duration = 1350;
+      const startSnap = getXpSnapshot(startTotal);
+      const endSnap = getXpSnapshot(endTotal);
+      const levelUps = Math.max(0, endSnap.level - startSnap.level);
+      const duration = Math.min(6800, 2400 + (levelUps * 1400));
       const t0 = performance.now();
       const step = (now)=>{
         const t = Math.max(0, Math.min(1, (now - t0) / duration));
-        const eased = 1 - Math.pow(1 - t, 3);
+        const eased = 0.5 - (Math.cos(Math.PI * t) / 2);
         const currentTotal = startTotal + ((endTotal - startTotal) * eased);
         const snap = getXpSnapshot(currentTotal);
         fill.style.width = `${Math.max(0, Math.min(100, snap.progressPct))}%`;
@@ -5452,6 +5568,7 @@ function awardRoundExperience(options = {}){
     achievementBonus,
     achievementCount: ach.count || 0,
     tutorialBonus,
+    events: Array.isArray(options.events) ? options.events : [],
     beforeTotal,
     afterTotal,
     before: { ...before, rank: getRankLabelForLevel(before.level) },
@@ -5506,9 +5623,9 @@ function updateProfileAfterRound(score, par){
     if(!hist)return;
     p.holesPlayed=(p.holesPlayed||0)+1;
     const d=hist.strokes-hist.par;
-    if(d<=-2) p.eagles=(p.eagles||0)+1;
-    else if(d===-1) p.birdies=(p.birdies||0)+1;
     if(h.par===3&&hist.strokes===1) p.holeInOnes=(p.holeInOnes||0)+1;
+    else if(d<=-2) p.eagles=(p.eagles||0)+1;
+    else if(d===-1) p.birdies=(p.birdies||0)+1;
   });
   const diff=score-par;
   if(p.bestDiff===undefined||diff<p.bestDiff) p.bestDiff=diff;
@@ -5882,6 +5999,9 @@ function renderProfileHub(view = _profileHubView, opts = {}){
   const rank = getRankLabelForLevel(xp.level);
   const activeIcon = getProfileIcon(ctx.p, ctx.activeIdx);
   const nameVal = String(ctx.p.name || '').toUpperCase();
+  const buckets = ctx.p.scoreBuckets || { aces:0, eaglesPlus:0, birdies:0, pars:0, bogeys:0, doublePlus:0 };
+  const acesTotal = Math.max(buckets.aces || 0, ctx.p.holeInOnes || 0);
+  const eaglesPlusTotal = Math.max(buckets.eaglesPlus || 0, Math.max(0, (ctx.p.eagles || 0) - acesTotal));
 
   const emojis = PROFILE_EMOJIS.slice(0, 32);
   const emojiGrid = emojis.map(emoji=>{
@@ -5932,7 +6052,7 @@ function renderProfileHub(view = _profileHubView, opts = {}){
             : `<div class="ph-name">${nameVal}</div>`
           }
           <div class="ph-sub">LVL ${xp.level} · ${rank}</div>
-          <div class="ph-xp">${xp.level >= XP_MAX_LEVEL ? 'MAX LEVEL' : `${Math.floor(xp.xpIntoLevel)} / ${Math.floor(xp.need)} XP`}</div>
+          <div class="ph-xp">${xp.level >= XP_MAX_LEVEL ? 'MAX LEVEL' : `${Math.max(0, Math.ceil(xp.need - xp.xpIntoLevel))} XP LEFT TO LEVEL UP`}</div>
         </div>
       </div>
       <div class="ph-stats6">
@@ -5940,8 +6060,8 @@ function renderProfileHub(view = _profileHubView, opts = {}){
         <div class="ph-stat-tile"><div class="ph-stat-num">${bestStr}</div><div class="ph-stat-lbl">Best Score</div></div>
         <div class="ph-stat-tile"><div class="ph-stat-num">${earnedCount}</div><div class="ph-stat-lbl">Achievements</div></div>
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.birdies||0}</div><div class="ph-stat-lbl">Birdies</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.eagles||0}</div><div class="ph-stat-lbl">Eagles+</div></div>
-        <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.holeInOnes||0}</div><div class="ph-stat-lbl">Aces</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${eaglesPlusTotal}</div><div class="ph-stat-lbl">Eagles+</div></div>
+        <div class="ph-stat-tile"><div class="ph-stat-num">${acesTotal}</div><div class="ph-stat-lbl">Aces</div></div>
       </div>
       <div class="ph-actions ph-actions-main">
         <button class="ph-btn" onclick="profileHubToggleEdit(true)">Edit</button>
@@ -5950,11 +6070,13 @@ function renderProfileHub(view = _profileHubView, opts = {}){
       </div>
       <div class="ph-edit-block">
         <div class="ph-edit-grid">${emojiGrid}</div>
-        <button class="ph-btn danger" style="width:100%;margin-top:8px;" onclick="profileHubDeleteActive()">Delete Profile</button>
       </div>
       <div class="ph-actions ph-actions-edit">
         <button class="ph-btn" onclick="profileHubToggleEdit(false)">Cancel</button>
         <button class="ph-btn primary" onclick="profileHubSaveEdit()">Save</button>
+      </div>
+      <div class="ph-delete-wrap">
+        <button class="ph-btn danger" style="width:100%;" onclick="profileHubDeleteActive()">Delete Profile</button>
       </div>
     </div>
     <div class="ph-mini-list">
@@ -5967,9 +6089,9 @@ function renderProfileHub(view = _profileHubView, opts = {}){
   const totalStrokesAll = ctx.p.totalStrokes || 0;
   const avgDiff = totalParAll > 0 ? ((totalStrokesAll - totalParAll) / Math.max(1, ctx.p.gamesPlayed || 1)) : 0;
   const avgDiffText = totalParAll > 0 ? (avgDiff===0?'E':avgDiff>0?`+${avgDiff.toFixed(1)}`:`${avgDiff.toFixed(1)}`) : '—';
-  const buckets = ctx.p.scoreBuckets || { aces:0, eaglesPlus:0, birdies:0, pars:0, bogeys:0, doublePlus:0 };
   const distRows = [
-    { key: 'eaglesPlus', label: 'Eagle', cls: 'eagle', value: buckets.eaglesPlus || 0 },
+    { key: 'aces', label: 'Ace', cls: 'eagle', value: acesTotal },
+    { key: 'eaglesPlus', label: 'Eagle+', cls: 'eagle', value: eaglesPlusTotal },
     { key: 'birdies', label: 'Birdie', cls: 'birdie', value: buckets.birdies || 0 },
     { key: 'pars', label: 'Par', cls: 'par', value: buckets.pars || 0 },
     { key: 'bogeys', label: 'Bogey', cls: 'bogey', value: buckets.bogeys || 0 },
@@ -5978,10 +6100,7 @@ function renderProfileHub(view = _profileHubView, opts = {}){
   const distMax = Math.max(1, ...distRows.map(r=>r.value || 0));
   stats.innerHTML = `
     <div class="ph-section">
-      <div class="ph-subhead">
-        <div class="ph-sec-title" style="margin:0;">FULL STATS</div>
-        <button class="ph-back-pill" onclick="profileHubBackToHome()">Back</button>
-      </div>
+      <div class="ph-sec-title" style="margin:0 0 8px;">FULL STATS</div>
       <div class="ph-kv-grid">
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.gamesPlayed||0}</div><div class="ph-stat-lbl">Rounds</div></div>
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.holesPlayed||0}</div><div class="ph-stat-lbl">Holes</div></div>
@@ -6043,10 +6162,7 @@ function renderProfileHub(view = _profileHubView, opts = {}){
   `;
   ach.innerHTML = `
     <div class="ph-section">
-      <div class="ph-subhead">
-        <div class="ph-sec-title" style="margin:0;">ACHIEVEMENTS</div>
-        <button class="ph-back-pill" onclick="profileHubBackToHome()">Back</button>
-      </div>
+      <div class="ph-sec-title" style="margin:0 0 8px;">ACHIEVEMENTS</div>
       <div class="xp-bar-track"><div class="xp-bar-fill" data-from="0" data-to="${progressPct}" style="width:0%;"></div></div>
       <div class="xp-bar-meta" style="margin-top:6px;"><span>${earnedCount} / ${totalAch} unlocked</span><span>${progressPct}%</span></div>
     </div>
@@ -6061,12 +6177,20 @@ function renderProfileHub(view = _profileHubView, opts = {}){
   `;
 
   profileHubSwitchView(view);
+  const hubBack = document.getElementById('profileHubBackBtn');
+  if(hubBack){
+    const showBack = view !== 'home';
+    hubBack.style.visibility = showBack ? 'visible' : 'hidden';
+    hubBack.style.pointerEvents = showBack ? 'auto' : 'none';
+  }
   const ring = document.getElementById('profileHubRingFill');
   if(ring){
     if(animateRing){
       requestAnimationFrame(()=>{ ring.style.strokeDashoffset = String(ringOffset); });
     } else {
+      ring.style.transition = 'none';
       ring.style.strokeDashoffset = String(ringOffset);
+      requestAnimationFrame(()=>{ ring.style.transition = ''; });
     }
   }
   if(view === 'stats') animateProfileDistBars(stats);
@@ -6622,6 +6746,291 @@ function getRoundStats(roundIdx){
 
   if(!wcEnabled()) stats = stats.filter(s => s.label !== 'Wildcards Used');
   return stats;
+}
+
+function getVsRoundStats(playerIdx, roundIdx){
+  let stats = [
+    { label: 'Total Strokes', val: 0 },
+    { label: 'Hole in One', val: 0 },
+    { label: 'Eagles+', val: 0 },
+    { label: 'Birdies', val: 0 },
+    { label: 'Pars', val: 0 },
+    { label: 'Bogeys', val: 0 },
+    { label: 'Double Bogeys+', val: 0 },
+    { label: 'Penalties', val: 0 },
+    { label: 'Wildcards Used', val: 0 }
+  ];
+  let holesWon = 0;
+  const rounds = roundIdx === 'overall'
+    ? Array.from({length:Math.max(1, S.totalRounds || 1)}, (_,i)=>i)
+    : [Math.max(0, (roundIdx || 1) - 1)];
+  rounds.forEach(rndIdx=>{
+    for(let i = S.startIdx; i <= S.endIdx; i++){
+      const h = HOLES[i];
+      const hist = vsGetHistory(playerIdx, i, rndIdx);
+      if(!h || !hist || hist.strokes === null || hist.strokes === undefined) continue;
+      const score = hist.strokes;
+      stats[0].val += score;
+      const d = score - h.par;
+      if(h.par === 3 && score === 1) stats[1].val++;
+      else if(d <= -2) stats[2].val++;
+      else if(d === -1) stats[3].val++;
+      else if(d === 0) stats[4].val++;
+      else if(d === 1) stats[5].val++;
+      else if(d >= 2) stats[6].val++;
+      stats[7].val += (hist.log || []).filter(l=>l.pen).length;
+      stats[8].val += (hist.wcsUsed ? hist.wcsUsed.length : 0);
+
+      if(VS.format === 'match'){
+        const opp = vsGetHistory(playerIdx === 0 ? 1 : 0, i, rndIdx);
+        if(opp && opp.strokes !== null && opp.strokes !== undefined && score < opp.strokes) holesWon++;
+      }
+    }
+  });
+  if(VS.format === 'match'){
+    stats.unshift({ label: 'Holes Won', val: holesWon });
+  }
+  if(!wcEnabled()) stats = stats.filter(s => s.label !== 'Wildcards Used');
+  return stats;
+}
+
+function setVsSummaryPlayer(playerIdx, viewRound = S.currentRound, backTarget = _summaryBackTarget){
+  _vsSummaryPlayer = Math.max(0, Math.min(1, playerIdx || 0));
+  if(_summaryContext && _summaryContext.mode === 'versus'){
+    _summaryContext.playerIdx = _vsSummaryPlayer;
+  }
+  openVersusSummary(viewRound, backTarget);
+}
+
+function openVersusSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget){
+  document.getElementById('overlay').classList.remove('show');
+  concealMainApp();
+  _summaryBackTarget = backTarget || null;
+  closeSummaryHoleModal();
+  const body=document.getElementById('sumBody');
+  body.innerHTML='';
+  body.style.display = 'flex';
+  body.style.flexDirection = 'column';
+  body.style.flex = '1';
+  body.style.minHeight = '0';
+  body.scrollTop = 0;
+  const backBtn=document.getElementById('sumBackBtn');
+  const backSpacer=document.getElementById('sumHeadSpacer');
+  if(backBtn) backBtn.style.display = _summaryBackTarget ? 'flex' : 'none';
+  if(backSpacer) backSpacer.style.display = _summaryBackTarget ? 'none' : 'block';
+  document.getElementById('sumTitle').textContent='SUMMARY';
+
+  if (S.totalRounds > 1) {
+    const tabs = document.createElement('div');
+    tabs.className = 'sum-tabs';
+    tabs.style.position = 'static';
+    for(let r=1; r<=S.totalRounds; r++){
+      const tab = document.createElement('button');
+      tab.className = `sum-tab ${r === viewRound ? 'active' : ''}`;
+      tab.textContent = `ROUND ${r}`;
+      tab.onclick = () => openVersusSummary(r, backTarget);
+      tabs.appendChild(tab);
+    }
+    body.appendChild(tabs);
+  }
+
+  const playerIdx = Math.max(0, Math.min(1, _vsSummaryPlayer || 0));
+  setSummaryContext({ mode:'versus', playerIdx });
+  const player = VS.players[playerIdx] || { name:'PLAYER' };
+  const scData = vsRoundScores(playerIdx, viewRound - 1) || Array(18).fill(null);
+  const histData = vsRoundHistories(playerIdx, viewRound - 1) || Array(18).fill(null);
+  const activeHoles = HOLES.slice(S.startIdx, S.endIdx + 1);
+  const roundTotal = scData.reduce((a,b)=>a+(b||0),0);
+  const roundPar = activeHoles.reduce((a,h)=>a+h.par,0);
+  const roundDiff = roundTotal - roundPar;
+  const totals = vsStrokeTotals(playerIdx, S.totalRounds);
+  const gDiffStr = totals.diff===0 ? 'E' : totals.diff>0 ? `+${totals.diff}` : `${totals.diff}`;
+  const roundStats = getVsRoundStats(playerIdx, viewRound);
+
+  const statsHead = document.createElement('div');
+  statsHead.className = 'sum-section-head';
+  statsHead.innerHTML = `<div class="ttl">STATISTICS</div><div class="line"></div>`;
+  body.appendChild(statsHead);
+  const statsList = document.createElement('div');
+  statsList.className = 'sum-stats-list';
+  roundStats.forEach(s=>{
+    const row = document.createElement('div');
+    row.className = 'sum-stats-row';
+    row.innerHTML = `<div class="lbl">${s.label}</div><div class="val">${s.val}</div>`;
+    statsList.appendChild(row);
+  });
+  body.appendChild(statsList);
+
+  const scoreHead = document.createElement('div');
+  scoreHead.className = 'sum-section-head';
+  scoreHead.innerHTML = `<div class="ttl">SCORECARD</div><div class="line"></div>`;
+  const pillWrap = document.createElement('div');
+  pillWrap.style.cssText = 'display:flex;gap:6px;overflow-x:auto;';
+  VS.players.forEach((pl, idx)=>{
+    const btn = document.createElement('button');
+    const isActive = idx === playerIdx;
+    btn.style.cssText = `background:${isActive?'var(--c-fwy)':'rgba(255,255,255,.05)'};color:${isActive?'#fff':'var(--muted)'};border:1px solid ${isActive?'var(--c-fwyl)':'var(--border)'};border-radius:14px;padding:6px 12px;font-family:'Sen',sans-serif;font-size:10px;font-weight:bold;cursor:pointer;white-space:nowrap;transition:all .2s;`;
+    btn.textContent = String(pl.name || `P${idx+1}`).toUpperCase().slice(0, 10);
+    btn.onclick = ()=>setVsSummaryPlayer(idx, viewRound, backTarget);
+    pillWrap.appendChild(btn);
+  });
+  scoreHead.appendChild(pillWrap);
+  body.appendChild(scoreHead);
+
+  let tournamentTotalBox = null;
+  if (S.totalRounds > 1) {
+    tournamentTotalBox = document.createElement('div');
+    tournamentTotalBox.style.cssText = 'background:rgba(240,192,64,.15);border:1px solid rgba(240,192,64,.3);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;';
+    tournamentTotalBox.innerHTML = `
+      <div><div style="font-family:'Sen',sans-serif;font-size:10px;color:var(--gold);letter-spacing:1px;">TOURNAMENT TOTAL</div><div style="font-family:'Sen',sans-serif;font-size:12px;color:var(--text);">${totals.total} strokes</div></div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);">${gDiffStr}</div>
+    `;
+  }
+
+  const sc=document.createElement('div');
+  sc.className = 'sc-table-wrapper';
+  sc.style.cssText='display:block;overflow-x:auto;overflow-y:hidden;flex-shrink:0;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:none;transform:translateZ(0);';
+  const table=document.createElement('table');
+  const minW = activeHoles.length <= 9 ? '100%' : `${Math.max(320, (activeHoles.length + 2) * 34)}px`;
+  table.style.cssText=`width:100%;min-width:${minW};border-collapse:collapse;font-family:"Sen",sans-serif;font-size:10px;`;
+  const td=(txt,styles='')=>{
+    const c=document.createElement('td'); c.textContent=txt;
+    c.style.cssText='padding:5px 3px;text-align:center;border:1px solid var(--border);'+styles;
+    return c;
+  };
+
+  const headRow=document.createElement('tr');
+  headRow.style.background='var(--c-fwy)';
+  ['HOLE', ...activeHoles.map((_,i)=>S.startIdx+i+1), 'TOT'].forEach((v,i)=>{
+    headRow.appendChild(td(v,'color:#fff;font-weight:600;font-size:10px;letter-spacing:1px;'+(i===0?'text-align:left;padding-left:8px;':'')+(i===activeHoles.length+1?'background:rgba(0,0,0,.2);':'')));
+  });
+  table.appendChild(headRow);
+
+  const parRow=document.createElement('tr');
+  parRow.style.background='rgba(255,255,255,.04)';
+  ['PAR', ...activeHoles.map(h=>h.par), roundPar].forEach((v,i)=>{
+    parRow.appendChild(td(v,'color:var(--muted);'+(i===0?'text-align:left;padding-left:8px;color:var(--text);':'')+(i===activeHoles.length+1?'font-weight:600;color:var(--text);':'')));
+  });
+  table.appendChild(parRow);
+
+  const scoreRow=document.createElement('tr');
+  scoreRow.style.background='rgba(255,255,255,.03)';
+  const playerLabel = String(player.name || '').toUpperCase();
+  const scoreCells=[playerLabel, ...activeHoles.map((h,i)=>scData[S.startIdx+i] !== null ? scData[S.startIdx+i] : '–'), roundTotal];
+  scoreCells.forEach((v,i)=>{
+    const cell=document.createElement('td');
+    cell.style.cssText='padding:3px 2px;text-align:center;border:1px solid var(--border);font-size:11px;font-weight:700;'+(i===activeHoles.length+1?'background:rgba(0,0,0,.2);':'');
+    if(i===0){
+      cell.textContent=v;
+      cell.style.cssText+='text-align:left;padding-left:8px;font-family:"Bebas Neue",cursive;font-size:13px;letter-spacing:1px;';
+    } else if(i===activeHoles.length+1){
+      cell.textContent=v;
+      cell.style.color=roundDiff<0?'var(--gold)':roundDiff>0?'#e05252':'var(--c-fwyl)';
+    } else {
+      const score=scData[S.startIdx + i - 1];
+      const h=activeHoles[i-1];
+      if(score===null){cell.textContent='–';cell.style.color='var(--muted)';}
+      else {
+        const d=score-h.par;
+        const span=document.createElement('span');
+        span.textContent=v;
+        span.className = 'sc-sym';
+        if(d<=-2)       span.classList.add('sc-sym-eagle');
+        else if(d===-1) span.classList.add('sc-sym-birdie');
+        else if(d===1)  span.classList.add('sc-sym-bogey');
+        else if(d>=2)   span.classList.add('sc-sym-double');
+        cell.appendChild(span);
+      }
+    }
+    scoreRow.appendChild(cell);
+  });
+  table.appendChild(scoreRow);
+
+  const diffRow=document.createElement('tr');
+  diffRow.style.background='rgba(0,0,0,.15)';
+  let runningDiff=0;
+  ['±',...activeHoles.map((h,i)=>{
+    const score=scData[S.startIdx+i];
+    if(score===null)return null;
+    runningDiff+=score-h.par; return runningDiff;
+  }),roundDiff].forEach((v,i)=>{
+    const cell=document.createElement('td');
+    cell.style.cssText='padding:4px 2px;text-align:center;border:1px solid var(--border);font-family:"Sen",sans-serif;font-size:9px;'+(i===activeHoles.length+1?'background:rgba(0,0,0,.2);font-weight:700;':'')+(i===0?'text-align:left;padding-left:8px;':'');
+    if(i===0 || v===null){cell.textContent=v===null?'–':'±';cell.style.color='var(--muted)';diffRow.appendChild(cell);return;}
+    const txt=v===0?'E':v>0?`+${v}`:`${v}`;
+    cell.textContent=txt;
+    if(v<0)cell.style.color='var(--gold)'; else if(v===0)cell.style.color='var(--c-fwyl)'; else cell.style.color='#e05252';
+    diffRow.appendChild(cell);
+  });
+  table.appendChild(diffRow);
+  sc.appendChild(table);
+  body.appendChild(sc);
+  if(tournamentTotalBox) body.appendChild(tournamentTotalBox);
+
+  const detailSec=document.createElement('div');
+  detailSec.className = 'sum-detail-hint';
+  detailSec.textContent='Tap a hole for details';
+  body.appendChild(detailSec);
+
+  const holeList=document.createElement('div');
+  holeList.className='sum-hole-list';
+  activeHoles.forEach((h,i)=>{
+    const absoluteIdx = S.startIdx + i;
+    const hist=histData[absoluteIdx];
+    if(!hist)return;
+    const d=hist.strokes-hist.par;
+    let scoreColor='var(--text)'; let resultLabel='';
+    if(h.par===3 && hist.strokes===1){scoreColor='var(--gold)';resultLabel='Hole in One!';}
+    else if(d<=-2){scoreColor='var(--gold)';resultLabel='Eagle';}
+    else if(d===-1){scoreColor='#52c87a';resultLabel='Birdie';}
+    else if(d===0){scoreColor='var(--text)';resultLabel='Par';}
+    else if(d===1){scoreColor='#e05252';resultLabel='Bogey';}
+    else if(d===2){scoreColor='#e05252';resultLabel='Double';}
+    else if(d===3){scoreColor='#e05252';resultLabel='Triple';}
+    else if(d===4){scoreColor='#e05252';resultLabel='Quad';}
+    else if(d===5){scoreColor='#e05252';resultLabel='Quint';}
+    else{scoreColor='#e05252';resultLabel=`+${d}`;}
+    const row=document.createElement('div');
+    row.className = 'sum-hole-row';
+    row.dataset.holeIdx=String(absoluteIdx);
+    const zoneDots=(hist.log || []).map(e=>`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${(Z[e.zk]||Z.fwy).color};flex-shrink:0;"></span>`).join('');
+    const wcs = hist.wcsUsed || [];
+    const wcBadge = (wcEnabled() && wcs.length > 0) ? `<span style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);margin-left:6px;">🃏 ${wcs.length}</span>` : '';
+    row.innerHTML=`
+      <span style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;color:var(--muted);min-width:54px;">${h.name}</span>
+      <span style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);">par ${h.par}${wcBadge}</span>
+      <span style="font-family:'Sen',sans-serif;font-size:10px;color:${scoreColor};margin-left:auto;text-align:right;min-width:44px;">${resultLabel}</span>
+      <span style="display:flex;gap:3px;align-items:center;margin:0 6px;">${zoneDots}</span>
+      <span style="font-family:'Bebas Neue',cursive;font-size:18px;color:${scoreColor};min-width:16px;text-align:center;">${hist.strokes}</span>
+    `;
+    row.onclick=()=>{
+      if(!Array.isArray(S.histories[viewRound - 1])) S.histories[viewRound - 1] = Array(18).fill(null);
+      for(let hIdx = S.startIdx; hIdx <= S.endIdx; hIdx++){
+        S.histories[viewRound - 1][hIdx] = histData[hIdx] || null;
+      }
+      openHistInline(absoluteIdx, holeList, row, viewRound);
+    };
+    holeList.appendChild(row);
+  });
+  body.appendChild(holeList);
+
+  const btnRow=document.createElement('div');
+  btnRow.className = 'sum-btn-row';
+  const returnBtn=document.createElement('button');
+  returnBtn.style.cssText='width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
+  returnBtn.textContent='RETURN TO MAIN MENU';
+  returnBtn.onclick=()=>summaryReturnToMenu();
+  btnRow.appendChild(returnBtn);
+  const playAgainBtn=document.createElement('button');
+  playAgainBtn.style.cssText='width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
+  playAgainBtn.textContent='PLAY AGAIN';
+  playAgainBtn.onclick=()=>summaryPlayAgain();
+  btnRow.appendChild(playAgainBtn);
+  body.appendChild(btnRow);
+
+  const summaryModal = document.getElementById('summaryModal');
+  summaryModal.scrollTop = 0;
+  summaryModal.classList.add('show');
 }
 
 function renderTournamentStatsPanel(selectedKey='overall'){
@@ -9398,6 +9807,8 @@ function vsShowHoleComparison(){
   }
 
   const hcScreen = document.getElementById('hcScreen');
+  const midSection = document.getElementById('hcMidSection');
+  if(midSection) midSection.style.display = 'flex';
   let titleText = `HOLE ${S.holeIdx + 1} COMPLETE`;
   let centerText = '';
   
@@ -9495,6 +9906,8 @@ function vsShowHoleComparison(){
   if (hcDiffSub) hcDiffSub.style.display = 'none';
   const hcXpWrap = document.getElementById('hcXpWrap');
   if (hcXpWrap) hcXpWrap.style.display = 'none';
+  const roundXpWrap = document.getElementById('hcRoundXpWrap');
+  if (roundXpWrap) roundXpWrap.style.display = 'none';
 
   const secTitles = document.querySelectorAll('#hcScreen .sec-title');
   const replayTitle = secTitles[0];
@@ -9628,203 +10041,76 @@ function vsShowFinal(){
   }
   
   const hcScreen = document.getElementById('hcScreen');
-  document.getElementById('hcHoleTitle').style.display = 'none';
+  const hcTitle = document.getElementById('hcHoleTitle');
+  if(hcTitle){
+    hcTitle.style.display = '';
+    hcTitle.textContent = 'FINAL RESULT';
+  }
   document.getElementById('hcRndBadge').style.display = 'none';
   const hcDiffSub = document.getElementById('hcDiffSub');
   if (hcDiffSub) hcDiffSub.style.display = 'none';
   const hcXpWrap = document.getElementById('hcXpWrap');
   if (hcXpWrap) hcXpWrap.style.display = 'none';
+  const roundXpWrapFinal = ensureRoundXpPanel();
 
   const getColor = (d) => d < 0 ? 'var(--gold)' : d === 0 ? 'var(--c-fwyl)' : '#e05252';
-
-  let p1PillContent = VS.format === 'match' ? `<span style="font-size:26px;line-height:1;">${VS.matchScore[0]}</span>` : `TOTAL: ${fmtD(d1)}`;
-  let p2PillContent = VS.format === 'match' ? `<span style="font-size:26px;line-height:1;">${VS.matchScore[1]}</span>` : `TOTAL: ${fmtD(d2)}`;
-
-  let p1PillColor = VS.format === 'match' ? (VS.matchScore[0] > VS.matchScore[1] ? 'var(--gold)' : 'var(--text)') : getColor(d1);
-  let p2PillColor = VS.format === 'match' ? (VS.matchScore[1] > VS.matchScore[0] ? 'var(--gold)' : 'var(--text)') : getColor(d2);
-
+  const p1TotalLabel = VS.format === 'match' ? VS.matchScore[0] : fmtD(d1);
+  const p2TotalLabel = VS.format === 'match' ? VS.matchScore[1] : fmtD(d2);
   const diffNames = {1:'EASY', 2:'MEDIUM', 3:'HARD'};
   const diffLabel = diffNames[VS.setup?.diff || GAME_DIFF] || 'MEDIUM';
-  const xpHtml = vsXpAward ? `<div style="margin-top:14px;">${renderXpAwardCardHtml(vsXpAward)}</div>` : '';
-  const p1Html = `
-    <div style="font-size:36px;margin-bottom:8px;">${p1.icon}</div>
-    <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p1Color};white-space:nowrap;">${p1.name}</div>
-    <div style="display:inline-flex;align-items:center;justify-content:center;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;min-width:64px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${p1PillColor};">${p1PillContent}</div>
-    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">${t1} strokes</div>
-    ${VS.format === 'match' ? `<div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:4px;">TOTAL: ${fmtD(d1)}</div>` : ''}
-  `;
-  
-  const p2Html = `
-    <div style="font-size:36px;margin-bottom:8px;">${p2.icon}</div>
-    <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p2Color};white-space:nowrap;">${p2.name}</div>
-    <div style="display:inline-flex;align-items:center;justify-content:center;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;min-width:64px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${p2PillColor};">${p2PillContent}</div>
-    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">${t2} strokes</div>
-    ${VS.format === 'match' ? `<div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:4px;">TOTAL: ${fmtD(d2)}</div>` : ''}
-  `;
 
   ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
-      const el = document.getElementById(id);
-      if(el) el.style.display = 'none';
+    const el = document.getElementById(id);
+    if(el) el.style.display = 'none';
   });
 
   let vsContainer = document.getElementById('hcVsContainer');
   if (!vsContainer) {
-      vsContainer = document.createElement('div');
-      vsContainer.id = 'hcVsContainer';
-      document.querySelector('.hc-card').appendChild(vsContainer);
+    vsContainer = document.createElement('div');
+    vsContainer.id = 'hcVsContainer';
+    document.querySelector('.hc-card').appendChild(vsContainer);
   }
   vsContainer.style.display = 'block';
-
-  // Add the pulse animation style if it doesn't already exist
-  if(!document.getElementById('pulseStyle')){
-      const s = document.createElement('style'); s.id = 'pulseStyle';
-      s.textContent = '@keyframes pulse { from { opacity: 0.7; transform: scale(0.98); } to { opacity: 1; transform: scale(1.05); } }';
-      document.head.appendChild(s);
-  }
-
-  // Notice: The pill text below the VS container has been removed here.
   vsContainer.innerHTML = `
-    <div style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--gold);letter-spacing:3px;margin-bottom:24px;text-align:center;animation:pulse 1s infinite alternate;">${winnerText}</div>
-    <div style="display:flex;justify-content:space-around;align-items:center;">
-        <div style="flex:1;text-align:center;">${p1Html}</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--border);padding-bottom:20px;">VS</div>
-        <div style="flex:1;text-align:center;">${p2Html}</div>
-    </div>
-    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:14px;text-align:center;">DIFFICULTY: ${diffLabel}</div>
-    ${xpHtml}
-  `;
-  animateXpBars(vsContainer);
-
-  let stats = [
-      { label: 'Total Strokes', p1: 0, p2: 0 },
-      { label: 'Hole in One', p1: 0, p2: 0 },
-      { label: 'Eagles+', p1: 0, p2: 0 },
-      { label: 'Birdies', p1: 0, p2: 0 },
-      { label: 'Pars', p1: 0, p2: 0 },
-      { label: 'Bogeys', p1: 0, p2: 0 },
-      { label: 'Double Bogeys+', p1: 0, p2: 0 },
-      { label: 'Penalties', p1: 0, p2: 0 },
-      { label: 'Wildcards Used', p1: 0, p2: 0 }
-  ];
-
-  if (VS.format === 'match') {
-      stats.unshift({ label: 'Holes Won', p1: VS.matchScore[0], p2: VS.matchScore[1] });
-  }
-
-  for(let r = 0; r < S.totalRounds; r++){
-    for (let i = S.startIdx; i <= S.endIdx; i++) {
-        const h = HOLES[i];
-        [0, 1].forEach(pIdx => {
-            const hist = vsGetHistory(pIdx, i, r);
-            if (!hist) return;
-            
-            const sIdx = VS.format === 'match' ? 1 : 0;
-            
-            stats[sIdx][pIdx === 0 ? 'p1' : 'p2'] += hist.strokes;
-            
-            const d = hist.strokes - h.par;
-            if (h.par === 3 && hist.strokes === 1) stats[sIdx+1][pIdx === 0 ? 'p1' : 'p2']++;
-            else if (d <= -2) stats[sIdx+2][pIdx === 0 ? 'p1' : 'p2']++;
-            else if (d === -1) stats[sIdx+3][pIdx === 0 ? 'p1' : 'p2']++;
-            else if (d === 0) stats[sIdx+4][pIdx === 0 ? 'p1' : 'p2']++;
-            else if (d === 1) stats[sIdx+5][pIdx === 0 ? 'p1' : 'p2']++;
-            else if (d >= 2) stats[sIdx+6][pIdx === 0 ? 'p1' : 'p2']++;
-            
-            const pens = hist.log.filter(l => l.pen).length;
-            stats[sIdx+7][pIdx === 0 ? 'p1' : 'p2'] += pens;
-            stats[sIdx+8][pIdx === 0 ? 'p1' : 'p2'] += (hist.wcsUsed ? hist.wcsUsed.length : 0);
-        });
-    }
-  }
-
-  if(!wcEnabled()){
-      stats = stats.filter(s => s.label !== 'Wildcards Used');
-  }
-
-  const secTitles = document.querySelectorAll('#hcScreen .sec-title');
-  const replayTitle = secTitles[0];
-  const scoreboardTitle = secTitles[1];
-  if (scoreboardTitle) scoreboardTitle.style.display = 'none';
-  if (replayTitle) replayTitle.style.display = 'none';
-  const logList = document.getElementById('hcLogList');
-  if (logList) logList.style.display = 'none';
-  const scWrap = document.querySelector('#hcScreen .sc-wrap');
-  if (scWrap) scWrap.style.display = '';
-
-  let statsContainer = document.getElementById('hcVsStats');
-  if (!statsContainer) {
-      statsContainer = document.createElement('div');
-      statsContainer.id = 'hcVsStats';
-      document.getElementById('hcLogList').parentNode.insertBefore(statsContainer, document.getElementById('hcLogList'));
-  }
-  // Setup container relative positioning to make sticky top header work
-  statsContainer.style.cssText = 'flex-shrink:0; margin-bottom:16px; max-height:160px; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; position:relative;';
-  statsContainer.style.display = 'block';
-
-  // Pinned Header
-  let statsHtml = `<div class="sec-title" style="margin-bottom:12px; display:flex; justify-content:center; position:sticky; top:0; background:var(--dark); z-index:5; padding:8px 0;">STATISTICS</div>`;
-  
-  stats.forEach(s => {
-      let c1 = 'var(--text)', c2 = 'var(--text)';
-      if (s.p1 === s.p2) {
-          if (s.p1 === 0 && s.p2 === 0) {
-              c1 = 'var(--muted)';
-              c2 = 'var(--muted)';
-          } else {
-              c1 = '#fff';
-              c2 = '#fff';
-          }
-      } else {
-          if (s.label === 'Total Strokes') {
-              c1 = s.p1 < s.p2 ? '#52c87a' : 'var(--muted)';
-              c2 = s.p2 < s.p1 ? '#52c87a' : 'var(--muted)';
-          } else if (['Holes Won', 'Hole in One', 'Eagles+', 'Birdies', 'Wildcards Used'].includes(s.label)) {
-              c1 = s.p1 > s.p2 ? '#52c87a' : 'var(--muted)';
-              c2 = s.p2 > s.p1 ? '#52c87a' : 'var(--muted)';
-          } else if (['Bogeys', 'Double Bogeys+', 'Penalties'].includes(s.label)) {
-              c1 = s.p1 > s.p2 ? '#e05252' : 'var(--muted)';
-              c2 = s.p2 > s.p1 ? '#e05252' : 'var(--muted)';
-          }
-      }
-      statsHtml += `
-          <div style="display:flex; justify-content:space-between; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,.05); font-family:'Sen',sans-serif; font-size:11px;">
-              <div style="flex:1; text-align:center; color:${c1}; font-weight:bold;">${s.p1}</div>
-              <div style="flex:2; text-align:center; color:var(--muted);">${s.label}</div>
-              <div style="flex:1; text-align:center; color:${c2}; font-weight:bold;">${s.p2}</div>
-          </div>
-      `;
-  });
-  statsContainer.innerHTML = statsHtml;
-
-  let vsToggle = document.getElementById('vsToggleRow');
-  if (!vsToggle) {
-      vsToggle = document.createElement('div');
-      vsToggle.id = 'vsToggleRow';
-      vsToggle.style.cssText = "display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-shrink:0;";
-  }
-  // Always insert vsToggle (SCORECARD + player pills) after the statsContainer
-  statsContainer.parentNode.insertBefore(vsToggle, statsContainer.nextSibling);
-  vsToggle.style.display = 'flex';
-  vsToggle.innerHTML = `
-      <div style="font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" id="vsToggleTitle">SCORECARD</div>
-      <div style="flex:1; height:1px; background:var(--border);"></div>
-      <div style="display:flex; gap:6px;">
-          <button id="vsPill0" onclick="renderVsReplayAndScoreboard(0)" style="background:var(--c-fwy); color:#fff; border:1px solid var(--c-fwyl); border-radius:14px; padding:6px 12px; font-family:'Sen',sans-serif; font-size:10px; font-weight:bold; cursor:pointer; transition:all 0.2s;">${p1.name.substring(0, 8)}</button>
-          <button id="vsPill1" onclick="renderVsReplayAndScoreboard(1)" style="background:rgba(255,255,255,.05); color:var(--muted); border:1px solid var(--border); border-radius:14px; padding:6px 12px; font-family:'Sen',sans-serif; font-size:10px; font-weight:bold; cursor:pointer; transition:all 0.2s;">${p2.name.substring(0, 8)}</button>
+    <div style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--gold);letter-spacing:3px;margin-bottom:22px;text-align:center;">${winnerText}</div>
+    <div style="display:flex;justify-content:space-around;align-items:flex-start;gap:14px;">
+      <div style="flex:1;text-align:center;">
+        <div style="font-size:34px;margin-bottom:8px;">${p1.icon}</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1px;color:${p1Color};white-space:nowrap;">${p1.name}</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:34px;line-height:1;color:${VS.format==='match'?(VS.matchScore[0] > VS.matchScore[1] ? 'var(--gold)' : 'var(--text)'):getColor(d1)};margin-top:6px;">${p1TotalLabel}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:6px;">${t1} strokes</div>
       </div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--border);padding-top:18px;">VS</div>
+      <div style="flex:1;text-align:center;">
+        <div style="font-size:34px;margin-bottom:8px;">${p2.icon}</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1px;color:${p2Color};white-space:nowrap;">${p2.name}</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:34px;line-height:1;color:${VS.format==='match'?(VS.matchScore[1] > VS.matchScore[0] ? 'var(--gold)' : 'var(--text)'):getColor(d2)};margin-top:6px;">${p2TotalLabel}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:6px;">${t2} strokes</div>
+      </div>
+    </div>
+    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:12px;text-align:center;text-transform:uppercase;">DIFFICULTY: ${diffLabel}</div>
   `;
 
-  renderVsReplayAndScoreboard(0);
+  const midSection = document.getElementById('hcMidSection');
+  if(midSection) midSection.style.display = 'none';
+  const statsContainer = document.getElementById('hcVsStats');
+  if(statsContainer) statsContainer.style.display = 'none';
+  const vsToggle = document.getElementById('vsToggleRow');
+  if(vsToggle) vsToggle.style.display = 'none';
+
+  if(roundXpWrapFinal){
+    roundXpWrapFinal.innerHTML = vsXpAward ? renderXpAwardCardHtml(vsXpAward) : '';
+    roundXpWrapFinal.style.display = vsXpAward ? 'block' : 'none';
+    if(vsXpAward) animateXpBars(roundXpWrapFinal);
+  }
 
   const btn = document.getElementById('hcBtn');
   btn.style.flexShrink = '0';
-  btn.textContent = 'BACK TO MENU';
+  btn.textContent = 'NEXT';
   btn.onclick = () => {
-      VS.active = false;
-      document.getElementById('hcHoleTitle').style.display = '';
-      clearSavedGame();
-      hcScreen.classList.remove('show');
-      returnToMenu();
+    _vsSummaryPlayer = 0;
+    setSummaryContext({ mode:'versus', playerIdx:0 });
+    openSummaryTransition(S.currentRound, null);
   };
 
   setMainAppConcealed(true);
@@ -9999,6 +10285,7 @@ function closeModeInfo(type){
       </defs>
     </svg>
     <div class="profile-hub-head">
+      <button class="setup-back-btn profile-hub-back" id="profileHubBackBtn" onclick="profileHubBackToHome()" aria-label="Back" style="visibility:hidden;pointer-events:none;">&#8592;</button>
       <div class="profile-hub-title">PROFILE</div>
       <button class="profile-hub-close" onclick="closeProfileModal()">✕</button>
     </div>
