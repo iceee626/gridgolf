@@ -741,6 +741,9 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .sum-hole-row.active{border-color:var(--c-fwyl);background:rgba(78,158,66,.09);}
 .sum-hole-modal{position:absolute;inset:0;background:rgba(4,8,12,.82);backdrop-filter:blur(2px);z-index:40;display:none;align-items:center;justify-content:center;padding:18px;}
 .sum-hole-modal.show{display:flex;animation:fadeInOverlay .18s ease;}
+.sum-hole-modal.closing{display:flex;animation:fadeOutOverlay .2s ease forwards;}
+.sum-hole-modal.closing .sum-hole-card{animation:sumHoleOut .2s ease forwards;}
+@keyframes sumHoleOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(8px) scale(.98)}}
 .sum-hole-card{width:min(380px,100%);max-height:80vh;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 14px 28px rgba(0,0,0,.38);}
 .sum-hole-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 12px;background:rgba(255,255,255,.04);}
 .sum-hole-ttl{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--text);}
@@ -915,7 +918,18 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .ph-avatar{position:absolute;inset:8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;background:radial-gradient(circle at 30% 30%, rgba(78,158,66,.5), rgba(13,17,23,.95));border:1px solid rgba(120,220,96,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.16);z-index:3;}
 .ph-ring-wrap.glow::after{content:'';position:absolute;inset:-10px;border-radius:50%;background:radial-gradient(circle, rgba(120,220,96,.24) 0%, rgba(120,220,96,.12) 32%, rgba(120,220,96,.04) 56%, transparent 72%);z-index:1;pointer-events:none;}
 .ph-main-info{flex:1;min-width:0;}
-.ph-name{font-family:'Bebas Neue',cursive;font-size:34px;line-height:1;letter-spacing:2px;color:var(--text);}
+.ph-name{
+  font-family:'Bebas Neue',cursive;font-size:34px;line-height:1;letter-spacing:2px;
+  background:linear-gradient(120deg,#ffffff 10%, #f0c040 42%, #ffffff 72%, #f0c040 100%);
+  background-size:220% 100%;
+  background-position:0 50%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  color:transparent;
+  animation:phNameGradient 10s linear infinite;
+}
+@keyframes phNameGradient{from{background-position:0 50%;}to{background-position:220% 50%;}}
 .ph-sub{font-family:'Sen',sans-serif;font-size:10px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-top:4px;}
 .ph-xp{font-family:'Sen',sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-top:5px;}
 .ph-stats6{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px;}
@@ -927,6 +941,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .ph-btn:active{transform:translateY(1px) scale(.98);}
 .ph-btn.primary{background:linear-gradient(135deg,rgba(78,158,66,.9),rgba(115,188,73,.9));border-color:rgba(120,220,96,.45);color:#fff;}
 .ph-btn.gold{background:linear-gradient(135deg,rgba(186,137,23,.92),rgba(240,192,64,.9));border-color:rgba(240,192,64,.45);color:#1b1403;}
+.ph-actions-ach .ph-btn.gold{color:#fff;}
 .ph-btn.danger{border-color:rgba(255,82,82,.32);color:#ff9b9b;background:rgba(255,82,82,.08);}
 .ph-actions-edit{display:none;padding:0 12px 12px;}
 .ph-actions-ach{padding-top:0;}
@@ -1320,13 +1335,16 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   z-index:620;align-items:flex-start;justify-content:center;
   padding:calc(env(safe-area-inset-top) + 16px) 20px 20px;overflow:hidden;
 }
-.mode-info-overlay.show{display:flex;}
+.mode-info-overlay.show{display:flex;animation:fadeInOverlay .18s ease;}
+.mode-info-overlay.closing{display:flex;animation:fadeOutOverlay .2s ease forwards;}
 .mode-info-card{
   background:var(--card);border:1px solid var(--border);border-radius:16px;
   max-width:420px;width:100%;max-height:calc(100vh - env(safe-area-inset-top) - 36px);overflow:hidden;
   display:flex;flex-direction:column;
   animation:popin .3s cubic-bezier(.34,1.56,.64,1);
 }
+.mode-info-overlay.closing .mode-info-card{animation:modeInfoOut .2s ease forwards;}
+@keyframes modeInfoOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(8px) scale(.98)}}
 .mode-info-head{
   background:var(--c-fwy);padding:14px 18px;
   display:flex;align-items:center;justify-content:space-between;
@@ -2748,6 +2766,8 @@ function returnToMenu(opts={}){
 let _skipGridScrollOnce = false;
 
 function startGame(){
+  setMainAppConcealed(true);
+  hideMainApp();
   clearSavedGame();
   _skipGridScrollOnce = true;
   clearSavedGame();
@@ -2803,7 +2823,10 @@ function startSingleRoundFromSplash(){
   if(screen){
     screen.classList.add('fade-out');
   }
-  revealMainApp();
+  setMainAppConcealed(true);
+  setTimeout(()=>{
+    revealMainApp();
+  },120);
   setTimeout(()=>{
     if(screen){
       screen.classList.remove('show');
@@ -4470,7 +4493,7 @@ function showRoundEnd(){
     const xpEvents = buildXpHighlightRows(xpHighlightsBefore, xpHighlightsAfter, newAchievements.length);
     const xpAward = awardRoundExperience({
       source: 'round',
-      title: 'ROUND XP',
+      title: 'GAINED XP',
       roundNumber: S.currentRound,
       roundIdx: S.currentRound - 1,
       holesPlayed: activeHoles.length,
@@ -4585,7 +4608,7 @@ function showRoundEnd(){
     const xpEvents = buildXpHighlightRows(xpHighlightsBefore, xpHighlightsAfter, newAchievements.length);
     const xpAward = awardRoundExperience({
       source: 'round',
-      title: `ROUND ${S.currentRound} XP`,
+      title: 'GAINED XP',
       roundNumber: S.currentRound,
       roundIdx: S.currentRound - 1,
       holesPlayed: activeHoles.length,
@@ -4995,6 +5018,8 @@ function summarySaveAndMenu(){
 
 function summaryPlayAgain(){
   closeSummaryHoleModal();
+  setMainAppConcealed(true);
+  hideMainApp();
   document.getElementById('summaryModal').classList.remove('show');
   document.getElementById('overlay').classList.remove('show');
   _summaryBackTarget = null;
@@ -5006,7 +5031,6 @@ function summaryPlayAgain(){
     roundStartScreen.classList.remove('single-round-start');
     roundStartScreen.classList.remove('fade-out');
   }
-  hideMainApp();
   const versusReplay = !!(_summaryContext && _summaryContext.mode === 'versus');
   if(versusReplay){
     setSummaryContext(null);
@@ -5092,6 +5116,7 @@ function highlightInlineGrid(idx, log, container) {
 }  
 
 let _summaryHoleActiveRow = null;
+let _summaryHoleCloseTimer = null;
 
 function ensureSummaryHoleModal(){
   const summaryCard = document.querySelector('#summaryModal .summary-card');
@@ -5119,7 +5144,23 @@ function ensureSummaryHoleModal(){
 
 function closeSummaryHoleModal(){
   const modal = document.getElementById('sumHoleDetailModal');
-  if(modal) modal.classList.remove('show');
+  if(modal){
+    if(_summaryHoleCloseTimer){
+      clearTimeout(_summaryHoleCloseTimer);
+      _summaryHoleCloseTimer = null;
+    }
+    if(modal.classList.contains('show') && !modal.classList.contains('closing')){
+      modal.classList.add('closing');
+      _summaryHoleCloseTimer = setTimeout(()=>{
+        modal.classList.remove('closing');
+        modal.classList.remove('show');
+        _summaryHoleCloseTimer = null;
+      }, 210);
+    } else {
+      modal.classList.remove('closing');
+      modal.classList.remove('show');
+    }
+  }
   if(_summaryHoleActiveRow){
     _summaryHoleActiveRow.classList.remove('active');
     _summaryHoleActiveRow = null;
@@ -5202,6 +5243,11 @@ function openHistInline(absoluteIdx, holeList, targetRow, roundIdx){
     highlightInlineGrid(hist.log.length - 1, hist.log, detail);
   }
   body.appendChild(detail);
+  if(_summaryHoleCloseTimer){
+    clearTimeout(_summaryHoleCloseTimer);
+    _summaryHoleCloseTimer = null;
+  }
+  modal.classList.remove('closing');
   modal.classList.add('show');
 }
 
@@ -5482,7 +5528,7 @@ function renderXpAwardCardHtml(award){
   return `
     <div class="xp-award-card">
       <div class="xp-award-head">
-        <div class="xp-award-title">${award.title || 'XP REWARD'}</div>
+        <div class="xp-award-title">${award.title || 'GAINED XP'}</div>
       </div>
       <div class="xp-award-rows">
         <div class="xp-award-row"><span class="xp-award-lbl">Completed Round</span><span class="xp-award-val">${award.baseXp} XP</span></div>
@@ -5603,7 +5649,7 @@ function awardRoundExperience(options = {}){
   const afterBase = getXpSnapshot(ctx.p.xpTotal || 0);
   const after = { ...afterBase, rank: getRankLabelForLevel(afterBase.level) };
   const summary = {
-    title: options.title || 'XP REWARD',
+    title: options.title || 'GAINED XP',
     baseXp,
     gameplayXp,
     totalXp,
@@ -6192,6 +6238,9 @@ function renderProfileHub(view = _profileHubView, opts = {}){
         <div class="ph-stat-tile"><div class="ph-stat-num">${ctx.p.timesInWater||0}</div><div class="ph-stat-lbl">Times in Water</div></div>
       </div>
     </div>
+    <div style="padding:0 2px 2px;">
+      <button class="ph-btn danger" style="width:100%;" onclick="profileHubResetStats()">RESET STATS</button>
+    </div>
   `;
 
   const progressPct = totalAch > 0 ? Math.round((earnedCount / totalAch) * 100) : 0;
@@ -6334,6 +6383,23 @@ function profileHubCreateProfile(){
   if(tvName) tvName.textContent = val;
   _profileHubCreateOpen = false;
   renderProfileHub('home', { animateRing:true });
+}
+
+function profileHubResetStats(){
+  const ctx = profileHubGetCtx();
+  if(!ctx) return;
+  showConfirm('ARE YOU SURE YOU WANT TO RESET YOUR CURRENT STATS AND LEVEL?', ()=>{
+    const name = String(ctx.p.name || '').trim() || 'PLAYER';
+    const icon = ctx.p.icon;
+    ctx.profiles[ctx.activeIdx] = createDefaultProfile(name);
+    if(icon) ctx.profiles[ctx.activeIdx].icon = icon;
+    saveProfiles(ctx.profiles);
+    PLAYER_NAME = name.toUpperCase();
+    updateMenuProfileDisplay();
+    const tvName = document.getElementById('tvName');
+    if(tvName) tvName.textContent = name;
+    renderProfileHub('stats', { animateRing:true });
+  });
 }
 
 function profileHubDeleteActive(){
@@ -9408,7 +9474,7 @@ function tutComplete(isAbandon = false){
       const roundDiff = roundTotal - roundPar;
       tutorialAward = awardRoundExperience({
         source: 'tutorial',
-        title: 'TUTORIAL XP',
+        title: 'GAINED XP',
         roundNumber: 1,
         roundIdx: 0,
         holesPlayed,
@@ -10087,7 +10153,7 @@ function vsShowFinal(){
   }
   const vsXpAward = awardRoundExperience({
     source: 'versus',
-    title: 'VERSUS XP',
+    title: 'GAINED XP',
     holesPlayed: Math.max(1, completedHoles),
     roundDiff: 0,
     gameDiff: VS.setup?.diff || GAME_DIFF,
@@ -10218,11 +10284,26 @@ function vsGetCachedGrid(){
 
 function openModeInfo(type){
   const id = type === 'play' ? 'playModeInfoOverlay' : 'versusModeInfoOverlay';
-  document.getElementById(id).classList.add('show');
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(el._closeTimer){
+    clearTimeout(el._closeTimer);
+    el._closeTimer = null;
+  }
+  el.classList.remove('closing');
+  el.classList.add('show');
 }
 function closeModeInfo(type){
   const id = type === 'play' ? 'playModeInfoOverlay' : 'versusModeInfoOverlay';
-  document.getElementById(id).classList.remove('show');
+  const el = document.getElementById(id);
+  if(!el || !el.classList.contains('show') || el.classList.contains('closing')) return;
+  el.classList.add('closing');
+  if(el._closeTimer) clearTimeout(el._closeTimer);
+  el._closeTimer = setTimeout(()=>{
+    el.classList.remove('closing');
+    el.classList.remove('show');
+    el._closeTimer = null;
+  }, 210);
 }
 </script>
 
@@ -10387,7 +10468,7 @@ function closeModeInfo(type){
 <div class="profile-modal" id="xpRewardModal">
   <div class="profile-card" style="max-width:390px;">
     <div class="profile-head">
-      <div class="profile-head-title" id="xpRewardTitle">XP REWARD</div>
+      <div class="profile-head-title" id="xpRewardTitle">GAINED XP</div>
       <button class="profile-close" onclick="closeXpRewardModal()">✕</button>
     </div>
     <div class="xp-modal-body" id="xpRewardBody"></div>
