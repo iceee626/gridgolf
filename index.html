@@ -311,12 +311,11 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .btn-roll.rolling-state{background:#487a41;color:rgba(255,255,255,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 0 0 1px rgba(255,255,255,.04), 0 3px 10px rgba(0,0,0,.2);filter:saturate(.68) brightness(.92);}
 .roll-col{flex:1.44 1 0;display:grid;min-width:0;position:relative;}
 /* MORPH: buttons share the same slot; outgoing fades + scales down, incoming fades + scales up with a tiny bounce. */
-#rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:opacity .22s ease,transform .32s cubic-bezier(.34,1.56,.64,1),visibility 0s linear .22s,background-color .22s ease-in-out,box-shadow .15s ease-in-out,color .15s ease-in-out,filter .15s ease-in-out;}
-.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0) scale(1);transition-delay:0s;}
-.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(0) scale(.82);}
-/* Pulse the slot when swap happens */
-.roll-col.morphing{animation:morphPulse .46s cubic-bezier(.34,1.56,.64,1);}
-@keyframes morphPulse{0%{transform:scale(1);}40%{transform:scale(1.06);}100%{transform:scale(1);}}
+#rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:opacity .14s ease,visibility 0s linear .14s,background-color .14s ease,box-shadow .14s ease,color .14s ease,filter .14s ease;}
+.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition-delay:0s;}
+.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:none;}
+/* Morph pulse removed to eliminate lag between roll/next-shot/finish-hole */
+.roll-col.morphing{animation:none;}
 #nextShotBtn{letter-spacing:2px;font-size:20px;}
 
 /* RESULT */
@@ -447,7 +446,6 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
   box-shadow:0 4px 20px rgba(58,122,48,.4), inset 0 1px 0 rgba(255,255,255,.06);
 }
 .menu-btn-play:active{
-  transform:translateY(1px) scale(0.955);
   box-shadow:inset 0 0 14px rgba(0,0,0,.42), 0 0 18px rgba(120,220,96,.28);
   filter:brightness(.96);
 }
@@ -457,7 +455,6 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
   box-shadow:0 4px 10px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.03);
 }
 .menu-btn-sec:active{
-  transform:translateY(1px) scale(0.955);
   border-color:rgba(120,220,96,.45);
   box-shadow:inset 0 0 12px rgba(0,0,0,.44), 0 0 14px rgba(120,220,96,.22);
 }
@@ -1468,7 +1465,6 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 </head>
 <body>
 <div class="menu-screen" id="onboardScreen" style="display:none;">
-  <div class="menu-bg-grass"></div>
   <div class="menu-content onboard-content">
     <div class="menu-logo"><img class="brand-logo-img" src="dicegolf-logo.png" alt="Dice Golf"></div>
     <div style="font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:20px;">CREATE YOUR PROFILE</div>
@@ -1478,7 +1474,6 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 </div>
 
 <div class="menu-screen" id="menuScreen" style="display:none;">
-  <div class="menu-bg-grass"></div>
   <div id="floatingEntities"></div>
   
   <button onclick="openProfileModal()" style="position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:24px;display:flex;align-items:center;gap:8px;z-index:110;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:30px;padding:4px 12px 4px 4px;cursor:pointer;backdrop-filter:blur(4px);transition:background 0.15s;">
@@ -1761,11 +1756,10 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     </div>
   </div>
 </header>
-<div class="sc-wrap" style="margin:0 16px 12px;">
+<!-- Scorecard removed from game screen (still present in HOLE COMPLETE + SUMMARY) -->
+<div style="display:none;">
   <div class="sc-inner">
-    <div class="sc-row sc-head" id="scHeadRow">
-      <div></div>
-    </div>
+    <div class="sc-row sc-head" id="scHeadRow"><div></div></div>
     <div class="sc-row sc-body" id="parRow"><div class="sc-lbl">PAR</div></div>
     <div class="sc-row sc-body" id="scoreRow"><div class="sc-lbl">YOU</div></div>
   </div>
@@ -1890,10 +1884,10 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <div id="hcMidSection" style="flex:1; display:flex; flex-direction:column; min-height:0; padding-bottom:12px;">
     <div class="sec-title" style="flex-shrink:0;">SHOT REPLAY</div>
     <div id="hcShotTrailCard" style="flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;margin-bottom:8px;overflow:visible;">
-      <div id="hcShotTrail" style="display:flex;align-items:center;gap:8px;padding:2px 0;"></div>
+      <div id="hcShotTrail" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:2px 0;flex-wrap:wrap;"></div>
     </div>
-    <div id="hcShotDetailCard" style="flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin-bottom:12px;min-height:52px;display:flex;align-items:center;justify-content:center;text-align:center;">
-      <div id="hcShotDetail" style="width:100%;"></div>
+    <div id="hcShotDetailCard" style="flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin-bottom:12px;min-height:66px;display:flex;align-items:center;">
+      <div id="hcShotDetail" style="width:100%;display:flex;align-items:center;gap:12px;"></div>
     </div>
     <div class="sec-title" style="flex-shrink:0;">SCORECARD</div>
     <div class="sc-wrap" style="margin-bottom:0; flex-shrink:0;">
@@ -4248,10 +4242,18 @@ function _renderShotReplay(log, holeDone){
     });
     const e = log[idx];
     const fromZk = e.prevZone || e.zk || 'fwy';
-    const toName = e.zk === 'hole' ? 'HOLE' : ((Z[e.zk]||Z.fwy).name.toUpperCase());
-    const fromName = (Z[fromZk]||Z.fwy).name.toUpperCase();
-    const noteStr = (e.note && e.note !== '+1') ? ` · ${e.note}` : '';
-    detail.innerHTML = `<div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;color:var(--text);line-height:1.2;">SHOT ${e.num} · ${fromName} → ${toName}</div><div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:3px;">${e.desc}${noteStr}</div>`;
+    const zFrom = Z[fromZk] || Z.fwy;
+    const zOutcome = Z[e.zk] || Z.fwy;
+    // Use the outcome zone color for the chip (mirrors the in-game res-chip which colors by outcome)
+    const chipColor = zOutcome.color;
+    const chipEmoji = zOutcome.emoji || '🎲';
+    const noteStr = (e.note && e.note !== '+1') ? e.note : '';
+    detail.innerHTML = `
+      <div class="res-chip" style="background:${chipColor};width:44px;height:44px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;">${chipEmoji}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1.5px;color:var(--text);line-height:1.2;">${e.desc}</div>
+        ${noteStr?`<div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:3px;">${noteStr}</div>`:''}
+      </div>`;
   }
   render(log.length - 1);
 }
@@ -4652,12 +4654,15 @@ function nextHole(){
   
   // Instantly load the next hole in the DOM in the background
   S.holeIdx++;
-  loadHole(); 
-  
+  loadHole();
+  // Ensure the game screen is scrolled to the top so the new hole starts at the header
+  try{ window.scrollTo({top:0, left:0, behavior:'auto'}); document.documentElement.scrollTop = 0; document.body.scrollTop = 0; }catch{}
+
   // Wait exactly long enough for Safari to paint the new layout, then hide the overlay
   setTimeout(() => {
       const hc = document.getElementById('hcScreen');
       if (hc) hc.classList.remove('show');
+      try{ window.scrollTo({top:0, left:0, behavior:'auto'}); }catch{}
   }, 30);
 }
 
@@ -6674,8 +6679,8 @@ function updateLegendSettingUI(){
 }
 
 function gridFocusEnabled(){
-  if (typeof TUT !== 'undefined' && TUT.active) return false; // Ignore setting during tutorial
-  try{return localStorage.getItem('gg_focus_grid')!=='off';}catch{return true;}
+  // Feature removed: auto-focus on grid is always off now
+  return false;
 }
 function setGridFocusEnabled(v){try{localStorage.setItem('gg_focus_grid',v?'on':'off');}catch{}}
 function setGridFocusPref(v){
@@ -10730,13 +10735,6 @@ function closeModeInfo(type){
           <div class="settings-row-desc">Roll doubles to earn wildcard cards</div>
         </div>
         <div class="toggle-switch" id="wcToggle" onclick="setWcPref(!wcEnabled())"><div class="toggle-knob"></div></div>
-      </div>
-      <div class="settings-row">
-        <div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">&#x1F3AF; FOCUS ON GRID</div>
-          <div class="settings-row-desc">Automatically focus on shot grid every roll</div>
-        </div>
-        <div class="toggle-switch" id="gridFocusToggle" onclick="setGridFocusPref(!gridFocusEnabled())"><div class="toggle-knob"></div></div>
       </div>
       <div class="settings-row">
         <div>
