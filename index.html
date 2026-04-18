@@ -3784,7 +3784,8 @@ function processShot(row,col){
         nextBtn.disabled=true;
         nextBtn.style.pointerEvents='none';
         updateTVBanner();
-        setTimeout(()=>{ if(tutorialFinish && !TUT.active) return; completeHole(); },200);
+        try{ saveGameState(); }catch{}
+        setTimeout(()=>{ if(tutorialFinish && !TUT.active) return; completeHole(); try{ saveGameState(); }catch{} },200);
       };
     }
     showNextShotBtn();
@@ -3915,7 +3916,8 @@ function processShot(row,col){
           nextBtn.disabled=true;
           nextBtn.style.pointerEvents='none';
           updateTVBanner();
-          setTimeout(()=>{ if(tutorialFinish && !TUT.active) return; completeHole(); },200);
+          try{ saveGameState(); }catch{}
+          setTimeout(()=>{ if(tutorialFinish && !TUT.active) return; completeHole(); try{ saveGameState(); }catch{} },200);
         };
       }
       showNextShotBtn();
@@ -8970,7 +8972,8 @@ function continueGame(){
                 nextBtn.disabled=true;
                 nextBtn.style.pointerEvents='none';
                 updateTVBanner();
-                setTimeout(()=>{ completeHole(); },200);
+                try{ saveGameState(); }catch{}
+                setTimeout(()=>{ completeHole(); try{ saveGameState(); }catch{} },200);
             };
         }
         showNextShotBtn();
