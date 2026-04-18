@@ -3776,10 +3776,7 @@ function processShot(row,col){
       const h_putt=HOLES[S.holeIdx];
       const d_putt=S.strokes-h_putt.par;
       const isHio_putt=(h_putt.par===3&&S.strokes===1);
-      showCelebration(isHio_putt?-99:d_putt, ()=>{
-        const nb=document.getElementById('nextShotBtn');
-        if(nb && nb.textContent==='FINISH HOLE'){ nb.disabled=false; nb.style.pointerEvents=''; nb.style.opacity=''; }
-      });
+      showCelebration(isHio_putt?-99:d_putt, ()=>{});
       S._skipCelebration=true;
     }
 
@@ -3803,7 +3800,6 @@ function processShot(row,col){
       };
     }
     showNextShotBtn();
-    if(nextBtn){ nextBtn.disabled=true; nextBtn.style.pointerEvents='none'; nextBtn.style.opacity='0.6'; }
     renderWcFab();
     S._puttWcUsed=false;
     S.rolling=false;
@@ -4232,11 +4228,34 @@ function getNetPenaltyCount(entries=S.log){
 }
 
 const _ZONE_ABBR={tee:'T',fwy:'F',rgh:'R',chip:'C',sand:'S',grn:'G',h2o:'W',ob:'OB',hole:'⛳'};
-function _renderShotReplay(log, holeDone){
+function _scoreDiffLabel(d){
+  if(d==null) return null;
+  if(d<=-3) return 'ALBATROSS';
+  if(d<=-2) return 'EAGLE';
+  if(d===-1) return 'BIRDIE';
+  if(d===0) return 'PAR';
+  if(d===1) return 'BOGEY';
+  if(d===2) return 'DBL BOGEY';
+  if(d===3) return 'TRIPLE';
+  return `+${d}`;
+}
+function _scoreDiffColor(d){
+  if(d==null) return 'var(--muted)';
+  if(d<=-2) return 'var(--gold)';
+  if(d===-1) return '#52c87a';
+  if(d===0) return 'var(--c-fwyl)';
+  return '#e05252';
+}
+function _renderShotReplay(log, holeDone, scoreDiff){
   const trail = document.getElementById('hcShotTrail');
   const detail = document.getElementById('hcShotDetail');
   if(!trail || !detail){ return; }
   if(!log || !log.length){ trail.innerHTML=''; detail.innerHTML=''; return; }
+
+  const resultLabel = _scoreDiffLabel(scoreDiff != null ? scoreDiff : null);
+  const resultColor = _scoreDiffColor(scoreDiff != null ? scoreDiff : null);
+  // -1 is the virtual "result pill" index
+  const RESULT_IDX = log.length;
 
   function render(idx){
     trail.innerHTML = '';
@@ -4257,11 +4276,32 @@ function _renderShotReplay(log, holeDone){
       pill.onclick = () => render(i);
       trail.appendChild(pill);
     });
+    // Result pill (⛳ + BIRDIE etc.)
+    if(resultLabel != null){
+      const rarr = document.createElement('span');
+      rarr.textContent = '→';
+      rarr.style.cssText = 'color:var(--muted);font-size:10px;flex-shrink:0;';
+      trail.appendChild(rarr);
+      const rpill = document.createElement('button');
+      rpill.textContent = '⛳';
+      const isResultActive = idx === RESULT_IDX;
+      rpill.style.cssText = `flex-shrink:0;width:32px;height:32px;border-radius:8px;cursor:pointer;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:0;padding:0;display:flex;align-items:center;justify-content:center;transition:transform .18s cubic-bezier(.22,1,.36,1),background .18s ease,border-color .18s ease,box-shadow .18s ease;-webkit-tap-highlight-color:transparent;box-shadow:0 2px 8px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.08);${isResultActive?`background:rgba(255,255,255,.2);border:1px solid ${resultColor};`:'background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);'}`;
+      rpill.onclick = () => render(RESULT_IDX);
+      trail.appendChild(rpill);
+    }
+    if(idx === RESULT_IDX){
+      // Show result summary card
+      detail.innerHTML = `
+        <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);">⛳</div>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:${resultColor};line-height:1.1;">${resultLabel}</div>
+          <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:3px;">${log.length} shot${log.length!==1?'s':''} played</div>
+        </div>`;
+      return;
+    }
     const e = log[idx];
     const fromZk = e.prevZone || e.zk || 'fwy';
-    const zFrom = Z[fromZk] || Z.fwy;
     const zOutcome = Z[e.zk] || Z.fwy;
-    // Use the outcome zone color for the chip (mirrors the in-game res-chip which colors by outcome)
     const chipColor = zOutcome.color;
     const chipEmoji = zOutcome.emoji || '🎲';
     const descStr = String(e.desc||'');
@@ -4272,13 +4312,8 @@ function _renderShotReplay(log, holeDone){
       titleStr = descStr.substring(0, sepIdx);
       subStr = descStr.substring(sepIdx + 3);
     } else {
-      // No "yards left" yardage segment. Still move trailing "(wildcard…)" parenthetical
-      // down into the subtitle so the chip/title align like multi-line entries.
       const wcMatch = titleStr.match(/^(.+?)\s*(\([^)]+\))\s*$/);
-      if(wcMatch){
-        titleStr = wcMatch[1].trim();
-        subStr = wcMatch[2];
-      }
+      if(wcMatch){ titleStr = wcMatch[1].trim(); subStr = wcMatch[2]; }
     }
     detail.innerHTML = `
       <div class="res-chip" style="background:${chipColor};width:44px;height:44px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;">${chipEmoji}</div>
@@ -4287,7 +4322,7 @@ function _renderShotReplay(log, holeDone){
         ${subStr?`<div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:3px;line-height:1.25;">${subStr}</div>`:''}
       </div>`;
   }
-  render(log.length - 1);
+  render(0);
 }
 
 function renderLog(targetEl,data){
@@ -4489,6 +4524,15 @@ function completeHole(){
 
   const vsToggle = document.getElementById('vsToggleRow');
   if(vsToggle) vsToggle.style.display = 'none';
+  // Restore shot trail/detail cards hidden by VS mode
+  const trailCard = document.getElementById('hcShotTrailCard');
+  const detailCard = document.getElementById('hcShotDetailCard');
+  if(trailCard) trailCard.style.display = '';
+  if(detailCard) detailCard.style.display = '';
+  const shotTrailEl = document.getElementById('hcShotTrail');
+  const shotDetailEl = document.getElementById('hcShotDetail');
+  if(shotTrailEl) shotTrailEl.style.display = 'flex';
+  if(shotDetailEl) shotDetailEl.style.display = 'flex';
   // ------------------------------------------------
   
   S.holeDone=true;
@@ -4578,7 +4622,7 @@ function completeHole(){
   else totSpan.style.color='#e05252';
 
   // Populate Shot Replay
-  _renderShotReplay([...S.log], S.holeDone);
+  _renderShotReplay([...S.log], S.holeDone, d);
 
   // Populate Mini Scorecard
   const scHead = document.getElementById('hcScHead');
@@ -5123,35 +5167,19 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
     if(!hist)return; 
     
     const d=hist.strokes-hist.par;
-    let scoreColor='var(--text)'; let resultLabel='';
-    
-    if(h.par===3 && hist.strokes===1){scoreColor='var(--gold)';resultLabel='Hole in One!';}
-    else if(d<=-2){scoreColor='var(--gold)';resultLabel='Eagle';}
-    else if(d===-1){scoreColor='#52c87a';resultLabel='Birdie';}
-    else if(d===0){scoreColor='var(--text)';resultLabel='Par';}
-    else if(d===1){scoreColor='#e05252';resultLabel='Bogey';}
-    else if(d===2){scoreColor='#e05252';resultLabel='Double';}
-    else if(d===3){scoreColor='#e05252';resultLabel='Triple';}
-    else if(d===4){scoreColor='#e05252';resultLabel='Quad';}
-    else if(d===5){scoreColor='#e05252';resultLabel='Quint';}
-    else{scoreColor='#e05252';resultLabel=`+${d}`;}
-
-    let bg='rgba(255,255,255,.08)';
-    if(h.par===3 && hist.strokes===1) bg='#c39e2b';
-    else if(d<=-2) bg='#c39e2b';
-    else if(d===-1) bg='#3a9b52';
-    else if(d===0) bg='#4a5566';
-    else if(d===1) bg='#c25555';
-    else if(d>=2) bg='#8a2d2d';
+    let numColor='var(--text)';
+    if(h.par===3 && hist.strokes===1) numColor='var(--gold)';
+    else if(d<=-2) numColor='var(--gold)';
+    else if(d===-1) numColor='#52c87a';
+    else if(d===0) numColor='var(--text)';
+    else if(d===1) numColor='#e05252';
+    else numColor='#c04444';
 
     const row=document.createElement('div');
     row.className = 'sum-hole-pill';
     row.dataset.holeIdx=String(absoluteIdx);
-    row.style.background = bg;
-    row.innerHTML=`
-      <div class="shp-num">${hist.strokes}</div>
-      <div class="shp-lbl">${h.name} · P${h.par}</div>
-    `;
+    row.style.background = 'rgba(255,255,255,.07)';
+    row.innerHTML=`<div class="shp-num" style="color:${numColor};">${absoluteIdx+1}</div>`;
     row.onclick=()=>openHistInline(absoluteIdx, holeList, row, viewRound);
     holeList.appendChild(row);
   });
@@ -7387,32 +7415,18 @@ function openVersusSummary(viewRound = S.currentRound, backTarget = _summaryBack
     const hist=histData[absoluteIdx];
     if(!hist)return;
     const d=hist.strokes-hist.par;
-    let scoreColor='var(--text)'; let resultLabel='';
-    if(h.par===3 && hist.strokes===1){scoreColor='var(--gold)';resultLabel='Hole in One!';}
-    else if(d<=-2){scoreColor='var(--gold)';resultLabel='Eagle';}
-    else if(d===-1){scoreColor='#52c87a';resultLabel='Birdie';}
-    else if(d===0){scoreColor='var(--text)';resultLabel='Par';}
-    else if(d===1){scoreColor='#e05252';resultLabel='Bogey';}
-    else if(d===2){scoreColor='#e05252';resultLabel='Double';}
-    else if(d===3){scoreColor='#e05252';resultLabel='Triple';}
-    else if(d===4){scoreColor='#e05252';resultLabel='Quad';}
-    else if(d===5){scoreColor='#e05252';resultLabel='Quint';}
-    else{scoreColor='#e05252';resultLabel=`+${d}`;}
-    let bg='rgba(255,255,255,.08)';
-    if(h.par===3 && hist.strokes===1) bg='#c39e2b';
-    else if(d<=-2) bg='#c39e2b';
-    else if(d===-1) bg='#3a9b52';
-    else if(d===0) bg='#4a5566';
-    else if(d===1) bg='#c25555';
-    else if(d>=2) bg='#8a2d2d';
+    let numColor='var(--text)';
+    if(h.par===3 && hist.strokes===1) numColor='var(--gold)';
+    else if(d<=-2) numColor='var(--gold)';
+    else if(d===-1) numColor='#52c87a';
+    else if(d===0) numColor='var(--text)';
+    else if(d===1) numColor='#e05252';
+    else numColor='#c04444';
     const row=document.createElement('div');
     row.className = 'sum-hole-pill';
     row.dataset.holeIdx=String(absoluteIdx);
-    row.style.background = bg;
-    row.innerHTML=`
-      <div class="shp-num">${hist.strokes}</div>
-      <div class="shp-lbl">${h.name} · P${h.par}</div>
-    `;
+    row.style.background = 'rgba(255,255,255,.07)';
+    row.innerHTML=`<div class="shp-num" style="color:${numColor};">${absoluteIdx+1}</div>`;
     row.onclick=()=>{
       if(!Array.isArray(S.histories[viewRound - 1])) S.histories[viewRound - 1] = Array(18).fill(null);
       for(let hIdx = S.startIdx; hIdx <= S.endIdx; hIdx++){
@@ -10305,7 +10319,9 @@ function vsCompleteHole(){
 function renderVsReplayAndScoreboard(playerIdx) {
   // 1. Render Shot Replay
   const pLog = vsGetHistory(playerIdx, S.holeIdx)?.log || [];
-  _renderShotReplay([...pLog], true);
+  const vsScore = vsGetScore(playerIdx, S.holeIdx);
+  const vsDiff = (vsScore !== null) ? vsScore - HOLES[S.holeIdx].par : null;
+  _renderShotReplay([...pLog], true, vsDiff);
 
   // 2. Render Scorecard
   const scHead = document.getElementById('hcScHead');
@@ -10464,47 +10480,13 @@ function vsShowHoleComparison(){
   let p1PillColor = VS.format === 'match' ? (VS.matchScore[0] > VS.matchScore[1] ? 'var(--gold)' : 'var(--text)') : getColor(td1);
   let p2PillColor = VS.format === 'match' ? (VS.matchScore[1] > VS.matchScore[0] ? 'var(--gold)' : 'var(--text)') : getColor(td2);
 
-  const _buildTrail = (log) => {
-    if(!log || !log.length) return '<div style="font-family:\'Sen\',sans-serif;font-size:10px;color:var(--muted);opacity:.5;">—</div>';
-    let html='';
-    log.forEach((e,i)=>{
-      const fromZk = e.prevZone || e.zk || 'fwy';
-      const zd = Z[fromZk] || Z.fwy;
-      const abbr = _ZONE_ABBR[fromZk] || fromZk.substring(0,2).toUpperCase();
-      if(i>0) html += '<span style="color:var(--muted);font-size:9px;">→</span>';
-      html += `<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:${zd.color};color:#fff;font-family:\'Bebas Neue\',cursive;font-size:11px;letter-spacing:.5px;">${abbr}</span>`;
-    });
-    const last = log[log.length-1];
-    if(last && last.zk==='hole'){
-      html += '<span style="color:var(--muted);font-size:9px;">→</span>';
-      html += '<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#f0c040;color:#111;font-size:13px;">⛳</span>';
-    }
-    return html;
-  };
-  const p1Log = vsGetHistory(0, S.holeIdx)?.log || [];
-  const p2Log = vsGetHistory(1, S.holeIdx)?.log || [];
-  const _replayBlock = (log) => `
-    <div style="font-family:'Sen',sans-serif;font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">SHOT REPLAY</div>
-    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:6px 8px;margin-bottom:10px;min-height:34px;">${_buildTrail(log)}</div>
-  `;
-
-  const p1Html = `
-    ${_replayBlock(p1Log)}
-    <div style="font-size:36px;margin-bottom:8px;">${p1.icon}</div>
-    <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p1Color};white-space:nowrap;">${p1.name}</div>
-    <div style="display:inline-flex;align-items:center;justify-content:center;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;min-width:64px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${p1PillColor};">${p1PillContent}</div>
-    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">H: ${s1} strokes (${fmtD(d1)})</div>
-    ${VS.format === 'match' ? `<div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:4px;">TOTAL: ${fmtD(td1)}</div>` : ''}
-  `;
-
-  const p2Html = `
-    ${_replayBlock(p2Log)}
-    <div style="font-size:36px;margin-bottom:8px;">${p2.icon}</div>
-    <div style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:22px;color:${p2Color};white-space:nowrap;">${p2.name}</div>
-    <div style="display:inline-flex;align-items:center;justify-content:center;background:#0d1117;border:1px solid var(--border);border-radius:16px;padding:6px 14px;min-width:64px;font-family:'Bebas Neue',cursive;font-size:18px;margin-top:8px;color:${p2PillColor};">${p2PillContent}</div>
-    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:10px;">H: ${s2} strokes (${fmtD(d2)})</div>
-    ${VS.format === 'match' ? `<div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:4px;">TOTAL: ${fmtD(td2)}</div>` : ''}
-  `;
+  // Build pill background based on relative standing
+  const p1PillBg = VS.format === 'match'
+    ? (VS.matchScore[0] > VS.matchScore[1] ? 'rgba(58,155,82,.35)' : VS.matchScore[0] < VS.matchScore[1] ? 'rgba(192,80,80,.25)' : 'rgba(255,255,255,.07)')
+    : (td1 < td2 ? 'rgba(58,155,82,.35)' : td1 > td2 ? 'rgba(192,80,80,.25)' : 'rgba(255,255,255,.07)');
+  const p2PillBg = VS.format === 'match'
+    ? (VS.matchScore[1] > VS.matchScore[0] ? 'rgba(58,155,82,.35)' : VS.matchScore[1] < VS.matchScore[0] ? 'rgba(192,80,80,.25)' : 'rgba(255,255,255,.07)')
+    : (td2 < td1 ? 'rgba(58,155,82,.35)' : td2 > td1 ? 'rgba(192,80,80,.25)' : 'rgba(255,255,255,.07)');
 
   const hcCard = document.querySelector('.hc-card');
   ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
@@ -10520,23 +10502,30 @@ function vsShowHoleComparison(){
   }
   vsContainer.style.display = 'block';
   vsContainer.innerHTML = `
-    <div style="font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;">PAR ${h.par} &nbsp; ${starsHTML(h.baseDiff)}</div>
-    <div style="display:flex;justify-content:space-around;align-items:center;">
-        <div style="flex:1;text-align:center;">${p1Html}</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--border);">VS</div>
-        <div style="flex:1;text-align:center;">${p2Html}</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 12px;">
+        <span style="font-size:26px;line-height:1;flex-shrink:0;">${p1.icon}</span>
+        <span style="flex:1;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:${p1Color};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;">${p1.name}</span>
+        <div style="display:flex;align-items:center;justify-content:center;background:${p1PillBg};border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:4px 14px;font-family:'Bebas Neue',cursive;font-size:20px;min-width:56px;text-align:center;color:${p1PillColor};flex-shrink:0;">${p1PillContent}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 12px;">
+        <span style="font-size:26px;line-height:1;flex-shrink:0;">${p2.icon}</span>
+        <span style="flex:1;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:${p2Color};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;">${p2.name}</span>
+        <div style="display:flex;align-items:center;justify-content:center;background:${p2PillBg};border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:4px 14px;font-family:'Bebas Neue',cursive;font-size:20px;min-width:56px;text-align:center;color:${p2PillColor};flex-shrink:0;">${p2PillContent}</div>
+      </div>
     </div>
-    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--text);margin-top:16px;text-align:center;letter-spacing:1px;background:rgba(255,255,255,.05);padding:6px;border-radius:8px;">${centerText}</div>
+    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--text);text-align:center;letter-spacing:1px;background:rgba(255,255,255,.05);padding:6px;border-radius:8px;">${centerText}</div>
   `;
 
-  const shotTrailVs = document.getElementById('hcShotTrail');
-  const shotDetailVs = document.getElementById('hcShotDetail');
+  // Restore the shared shot trail/detail cards for VS
   const shotTrailCardVs = document.getElementById('hcShotTrailCard');
   const shotDetailCardVs = document.getElementById('hcShotDetailCard');
-  if(shotTrailVs) shotTrailVs.style.display = 'none';
-  if(shotDetailVs) shotDetailVs.style.display = 'none';
-  if(shotTrailCardVs) shotTrailCardVs.style.display = 'none';
-  if(shotDetailCardVs) shotDetailCardVs.style.display = 'none';
+  if(shotTrailCardVs) shotTrailCardVs.style.display = '';
+  if(shotDetailCardVs) shotDetailCardVs.style.display = '';
+  const shotTrailVs = document.getElementById('hcShotTrail');
+  const shotDetailVs = document.getElementById('hcShotDetail');
+  if(shotTrailVs) shotTrailVs.style.display = 'flex';
+  if(shotDetailVs) shotDetailVs.style.display = 'flex';
   const statsContainer = document.getElementById('hcVsStats');
   if (statsContainer) statsContainer.style.display = 'none';
   const hcDiffSub = document.getElementById('hcDiffSub');
@@ -10549,16 +10538,31 @@ function vsShowHoleComparison(){
   const secTitles = document.querySelectorAll('#hcScreen .sec-title');
   const replayTitle = secTitles[0];
   const scorecardTitle = secTitles[1];
-  if(replayTitle) replayTitle.style.display = 'none';
+  if(replayTitle) replayTitle.style.display = 'none'; // vsToggleRow replaces SHOT REPLAY header
   if(scorecardTitle){
       scorecardTitle.style.display = 'flex';
       scorecardTitle.textContent = 'SCORECARD';
   }
   const scWrap = document.querySelector('#hcScreen .sc-wrap');
   if (scWrap) scWrap.style.display = '';
-  
+
+  // Build / refresh vsToggleRow (shows SHOT REPLAY label + player toggle pills)
   let vsToggle = document.getElementById('vsToggleRow');
-  if (vsToggle) vsToggle.style.display = 'none';
+  if (!vsToggle) {
+      vsToggle = document.createElement('div');
+      vsToggle.id = 'vsToggleRow';
+      const trailCard = document.getElementById('hcShotTrailCard');
+      if(trailCard) trailCard.parentNode.insertBefore(vsToggle, trailCard);
+  }
+  vsToggle.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-shrink:0;';
+  vsToggle.innerHTML = `
+    <div style="font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;flex-shrink:0;">SHOT REPLAY</div>
+    <div style="flex:1;height:1px;background:var(--border);"></div>
+    <div style="display:flex;gap:6px;flex-shrink:0;">
+      <button id="vsPill0" onclick="renderVsReplayAndScoreboard(0)" style="background:var(--c-fwy);color:#fff;border:1px solid var(--c-fwyl);border-radius:14px;padding:5px 11px;font-family:'Sen',sans-serif;font-size:10px;font-weight:bold;cursor:pointer;">${p1.name.substring(0,8)}</button>
+      <button id="vsPill1" onclick="renderVsReplayAndScoreboard(1)" style="background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);border-radius:14px;padding:5px 11px;font-family:'Sen',sans-serif;font-size:10px;font-weight:bold;cursor:pointer;">${p2.name.substring(0,8)}</button>
+    </div>
+  `;
 
   try { renderVsReplayAndScoreboard(0); } catch(_){}
 
