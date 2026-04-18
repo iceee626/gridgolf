@@ -360,7 +360,8 @@ body.nav-back .menu-screen:not(.visible),
 body.nav-back .setup-screen:not(.visible){ transform:translateX(-18%) scale(.985); opacity:0; }
 body.nav-back .menu-screen.visible,
 body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1; }
-.menu-bg-grass{position:fixed;bottom:0;left:0;right:0;height:40%;background:linear-gradient(180deg,transparent 0%,#0d1f0a 100%);pointer-events:none;z-index:0;}
+.menu-bg-grass{display:none;}
+#menuScreen{background:linear-gradient(180deg,var(--dark) 55%,#0d1f0a 100%) !important;}
 .menu-content{position:relative;z-index:10;text-align:center;width:100%;max-width:380px;min-height:min(78vh,720px);display:flex;flex-direction:column;}
 .onboard-content{max-width:360px;min-height:auto;justify-content:center;}
 .onboard-content .menu-logo{margin-top:0;margin-bottom:18px;}
@@ -829,11 +830,15 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
 .hc-screen.show { opacity:1; visibility:visible; pointer-events:auto; transform:translateY(0) scale(1); transition:opacity .26s ease,transform .26s cubic-bezier(0.22,1,0.36,1),visibility 0s; }
 .hc-header { display:flex; justify-content:center; align-items:center; font-family:'Bebas Neue',cursive; font-size:18px; letter-spacing:2px; color:var(--muted); margin-bottom:16px; position:relative; flex-shrink:0; }
 .hc-rnd-badge { position:absolute; right:0; background:rgba(240,192,64,.15); color:var(--gold); padding:4px 8px; border-radius:12px; font-size:10px; border:1px solid rgba(240,192,64,.3); font-family:'Sen',sans-serif; letter-spacing:1px; }
-.hc-card { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:16px; padding:32px 24px; text-align:center; margin-bottom:24px; box-shadow:0 8px 24px rgba(0,0,0,0.4); flex-shrink:0; }
-.hc-card-icon { font-size:56px; margin-bottom:12px; line-height:1; }
-.hc-card-title { font-family:'Bebas Neue',cursive; font-size:48px; letter-spacing:3px; line-height:1; margin-bottom:12px; }
-.hc-card-sub { font-family:'Sen',sans-serif; font-size:12px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:20px; }
-.hc-card-tot { display:inline-block; background:#0d1117; border:1px solid var(--border); border-radius:24px; padding:8px 20px; font-family:'Bebas Neue',cursive; font-size:22px; letter-spacing:1px; }
+.hc-card { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:16px; padding:18px 20px; margin-bottom:20px; box-shadow:0 8px 24px rgba(0,0,0,0.4); flex-shrink:0; }
+.hc-card-row { display:flex; align-items:center; gap:14px; }
+.hc-card-left { flex:1; min-width:0; }
+.hc-card-icon { font-size:40px; line-height:1; flex-shrink:0; }
+.hc-card-title { font-family:'Bebas Neue',cursive; font-size:44px; letter-spacing:3px; line-height:1; }
+.hc-card-sub { font-family:'Sen',sans-serif; font-size:11px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; }
+.hc-card-tot-wrap { display:flex; flex-direction:column; align-items:center; flex-shrink:0; gap:4px; }
+.hc-card-tot { display:flex; align-items:center; justify-content:center; background:#0d1117; border:1px solid var(--border); border-radius:14px; padding:10px 16px; flex-shrink:0; min-width:62px; font-family:'Bebas Neue',cursive; font-size:36px; letter-spacing:1px; line-height:1; }
+.hc-card-tot-lbl { font-family:'Sen',sans-serif; font-size:9px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
 .hc-section-title { font-family:'Sen',sans-serif; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:8px; flex-shrink:0; }
 .hc-log-list { display:flex; flex-direction:column; gap:4px; max-height:120px; overflow-y:auto; margin-bottom:20px; -ms-overflow-style:none; scrollbar-width:none; flex-shrink:0; }
 .hc-log-list::-webkit-scrollbar { display:none; }
@@ -1875,10 +1880,21 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="hc-rnd-badge" id="hcRndBadge">ROUND 1</div>
   </div>
   <div class="hc-card" id="hcScoreCard">
-    <div class="hc-card-icon" id="hcIcon">🐦</div>
-    <div class="hc-card-title" id="hcTitle">BIRDIE!</div>
-    <div class="hc-card-sub" id="hcSub">3 STROKES · PAR 4</div>
-    <div class="hc-card-tot" id="hcTot">TOTAL: <span id="hcTotSpan" style="color:#52c87a">-1</span></div>
+    <div class="hc-card-row">
+      <div class="hc-card-left">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+          <div class="hc-card-icon" id="hcIcon">🐦</div>
+          <div class="hc-card-title" id="hcTitle">BIRDIE!</div>
+        </div>
+        <div class="hc-card-sub" id="hcSub">3 STROKES · PAR 4</div>
+      </div>
+      <div class="hc-card-tot-wrap" id="hcTot">
+        <span class="hc-card-tot-lbl">TOTAL</span>
+        <div class="hc-card-tot">
+          <span id="hcTotSpan" style="color:#52c87a">-1</span>
+        </div>
+      </div>
+    </div>
   </div>
   <style>
     #hcScreen { overscroll-behavior: none; touch-action: none; }
@@ -1891,8 +1907,8 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   </style>
   <div id="hcMidSection" style="flex:1; display:flex; flex-direction:column; min-height:0; padding-bottom:12px;">
     <div class="sec-title" style="flex-shrink:0;">SHOT REPLAY</div>
-    <div id="hcShotTrailCard" style="flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;margin-bottom:8px;overflow:visible;">
-      <div id="hcShotTrail" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:2px 0;flex-wrap:wrap;"></div>
+    <div id="hcShotTrailCard" style="flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;margin-bottom:8px;overflow:hidden;">
+      <div id="hcShotTrail" style="display:flex;align-items:center;justify-content:flex-start;gap:8px;padding:2px 0;flex-wrap:nowrap;overflow-x:auto;"></div>
     </div>
     <div id="hcShotDetailCard" style="flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin-bottom:12px;min-height:66px;display:flex;align-items:center;">
       <div id="hcShotDetail" style="width:100%;display:flex;align-items:center;gap:12px;"></div>
@@ -3786,6 +3802,7 @@ function processShot(row,col){
       nextBtn.style.background='var(--c-tee)';
       nextBtn.onclick=()=>{
         if(_rerollChoiceActive) return;
+        document.querySelectorAll('.celebration-overlay').forEach(e=>e.remove());
         const tutorialFinish = TUT.active;
         const b=document.getElementById('puttWcBtn');if(b)b.remove();
         S._pendingPuttResult=null;
@@ -3918,6 +3935,7 @@ function processShot(row,col){
         nextBtn.style.background='var(--c-tee)';
         nextBtn.onclick=()=>{
           if(_rerollChoiceActive) return;
+          document.querySelectorAll('.celebration-overlay').forEach(e=>e.remove());
           const tutorialFinish = TUT.active;
           const b=document.getElementById('puttWcBtn');if(b)b.remove();
           S._pendingPuttResult=null;
@@ -4294,8 +4312,7 @@ function _renderShotReplay(log, holeDone, scoreDiff){
       detail.innerHTML = `
         <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);">⛳</div>
         <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:${resultColor};line-height:1.1;">${resultLabel}</div>
-          <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:3px;">${log.length} shot${log.length!==1?'s':''} played</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:19px;letter-spacing:2px;color:${resultColor};line-height:1.1;">${resultLabel}</div>
         </div>`;
       return;
     }
@@ -4318,7 +4335,7 @@ function _renderShotReplay(log, holeDone, scoreDiff){
     detail.innerHTML = `
       <div class="res-chip" style="background:${chipColor};width:44px;height:44px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;">${chipEmoji}</div>
       <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;">
-        <div style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1.5px;color:var(--text);line-height:1.2;">${titleStr}</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:19px;letter-spacing:1.5px;color:var(--text);line-height:1.2;">${titleStr}</div>
         ${subStr?`<div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:3px;line-height:1.25;">${subStr}</div>`:''}
       </div>`;
   }
@@ -4570,11 +4587,11 @@ function completeHole(){
   }
 
   let emoji,title;
-  if(isHoleInOne){emoji='⛳';title='HOLE IN ONE!';}
-  else if(d<=-3){emoji='🪶';title='ALBATROSS!';}
-  else if(d<=-2){emoji='🦅';title='EAGLE!';}
-  else if(d===-1){emoji='🐤';title='BIRDIE!';}
-  else if(d===0){emoji='⛳';title='PAR!';}
+  if(isHoleInOne){emoji='⛳';title='HOLE IN ONE';}
+  else if(d<=-3){emoji='🪶';title='ALBATROSS';}
+  else if(d<=-2){emoji='🦅';title='EAGLE';}
+  else if(d===-1){emoji='🐤';title='BIRDIE';}
+  else if(d===0){emoji='⛳';title='PAR';}
   else if(d===1){emoji='⛳';title='BOGEY';}
   else if(d===2){emoji='⛳';title='DOUBLE BOGEY';}
   else if(d===3){emoji='⛳';title='TRIPLE BOGEY';}
@@ -4599,21 +4616,23 @@ function completeHole(){
   document.getElementById('hcRndBadge').textContent = `ROUND ${S.currentRound}`;
   document.getElementById('hcRndBadge').style.display = S.totalRounds > 1 ? 'block' : 'none';
 
-  document.getElementById('hcIcon').textContent = emoji;
+  const hcIconEl = document.getElementById('hcIcon');
+  if(hcIconEl){ hcIconEl.style.display = 'none'; }
   const hcTitle = document.getElementById('hcTitle');
   hcTitle.textContent = title;
-  
+  hcTitle.style.display = '';
+
   // Outcome haptic
   if(isHoleInOne || d<=-2){ vibHoleInOne(); }
   else if(d===-1){ _doHaptic('MEDIUM'); }
   else if(d>=2){ _doHaptic('HEAVY'); }
-  
+
   if(d<=-2) hcTitle.style.color='var(--gold)';
   else if(d===-1) hcTitle.style.color='#ff6b9d';
   else if(d===0) hcTitle.style.color='var(--c-fwyl)';
   else hcTitle.style.color='#e05252';
 
-  document.getElementById('hcSub').innerHTML = score === 1 ? `HOLE IN ONE! · PAR ${h.par} &nbsp; ${starsHTML(h.baseDiff)}` : `${score} STROKES · PAR ${h.par} &nbsp; ${starsHTML(h.baseDiff)}`;
+  document.getElementById('hcSub').innerHTML = score === 1 ? `HOLE IN ONE · PAR ${h.par} · ${starsHTML(h.baseDiff)}` : `${score} STROKES · PAR ${h.par} · ${starsHTML(h.baseDiff)}`;
   
   const totSpan = document.getElementById('hcTotSpan');
   totSpan.textContent = totalStr;
@@ -4837,23 +4856,18 @@ function showRoundEnd(){
     const diffNamesFinal = {1:'EASY', 2:'MEDIUM', 3:'HARD'};
     const finalDiffLabel = diffNamesFinal[GAME_DIFF] || 'MEDIUM';
 
-    let pbHtml = '';
-    if (isNewPB) {
-        pbHtml = `<div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--gold);margin-top:18px;margin-bottom:4px;text-align:center;animation:pulse 1s infinite alternate;">NEW PERSONAL BEST!</div>`;
-        if(!document.getElementById('pbStyle')){
-            const s = document.createElement('style'); s.id = 'pbStyle';
-            s.textContent = '@keyframes pulse { from { opacity: 0.7; transform: scale(0.98); } to { opacity: 1; transform: scale(1.05); } }';
-            document.head.appendChild(s);
-        }
-    }
     vsContainer.innerHTML = `
-    <div style="font-size:56px; margin-bottom:12px; text-align:center; line-height:1;">${emoji}</div>
-    <div style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--text);letter-spacing:3px;text-align:center;margin-bottom:4px;">FINAL SCORE</div>
-    <div style="font-family:'Bebas Neue',cursive;font-size:64px;color:${color};line-height:1;text-align:center;">${finalTotalStr}</div>
-    <div style="font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);text-align:center;margin-top:8px;margin-bottom:8px;text-transform:uppercase;">${globalTotal} strokes · par ${globalPar}${roundsStr}</div>
-    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);text-align:center;margin-bottom:0;text-transform:uppercase;">DIFFICULTY: ${finalDiffLabel}</div>
-    
-    ${pbHtml}
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-family:'Bebas Neue',cursive;font-size:40px;color:var(--text);letter-spacing:2px;line-height:1;margin-bottom:6px;">FINAL SCORE</div>
+        <div style="font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">${globalTotal} strokes</div>
+        <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Par ${globalPar}${roundsStr} · ${finalDiffLabel}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;gap:4px;">
+        <span style="font-family:'Sen',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">TOTAL</span>
+        <div style="background:#0d1117;border:1px solid var(--border);border-radius:14px;padding:10px 16px;min-width:62px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:1px;line-height:1;color:${color};">${finalTotalStr}</div>
+      </div>
+    </div>
 `;
     const roundXpWrapFinal = ensureRoundXpPanel();
     if(roundXpWrapFinal){
@@ -10217,6 +10231,8 @@ function vsShowTurnScreen(){
   document.getElementById('vsTurnSub').textContent = `${roundPrefix}HOLE ${S.holeIdx+1} · PAR ${h.par}`;
   try{ setMainAppConcealed(true); }catch{}
   try{ hideMainAppImmediate(); }catch{}
+  const tvBar = document.getElementById('tvBar');
+  if(tvBar) tvBar.classList.remove('show');
   document.getElementById('vsTurnScreen').classList.add('show');
 }
 
@@ -10300,19 +10316,23 @@ function vsCompleteHole(){
   if(VS.currentPlayer === 0){
     VS.currentPlayer = 1;
     document.getElementById('overlay').classList.remove('show');
-    setTimeout(()=>vsShowTurnScreen(), 300);
+    try{ setMainAppConcealed(true); }catch{}
+    try{ hideMainAppImmediate(); }catch{}
+    setTimeout(()=>vsShowTurnScreen(), 50);
   } else {
     VS.currentPlayer = 0;
     document.getElementById('overlay').classList.remove('show');
-    
+
     // Match play: track hole winner
     if(VS.format === 'match'){
       const s1 = vsGetScore(0, S.holeIdx), s2 = vsGetScore(1, S.holeIdx);
       if(s1 < s2) VS.matchScore[0]++;
       else if(s2 < s1) VS.matchScore[1]++;
     }
-    
-    setTimeout(()=>vsShowHoleComparison(), 300);
+
+    try{ setMainAppConcealed(true); }catch{}
+    try{ hideMainAppImmediate(); }catch{}
+    setTimeout(()=>vsShowHoleComparison(), 50);
   }
 }
 
@@ -10501,17 +10521,21 @@ function vsShowHoleComparison(){
       hcCard.appendChild(vsContainer);
   }
   vsContainer.style.display = 'block';
+  const fmtScore = (d) => d===0?'E':d>0?`+${d}`:`${d}`;
+  const matchFmt1 = VS.format === 'match' ? `${VS.matchScore[0]}` : fmtScore(td1);
+  const matchFmt2 = VS.format === 'match' ? `${VS.matchScore[1]}` : fmtScore(td2);
   vsContainer.innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;">
-      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 12px;">
-        <span style="font-size:26px;line-height:1;flex-shrink:0;">${p1.icon}</span>
-        <span style="flex:1;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:${p1Color};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;">${p1.name}</span>
-        <div style="display:flex;align-items:center;justify-content:center;background:${p1PillBg};border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:4px 14px;font-family:'Bebas Neue',cursive;font-size:20px;min-width:56px;text-align:center;color:${p1PillColor};flex-shrink:0;">${p1PillContent}</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;padding:4px 0;">
+        <span style="font-size:28px;line-height:1;flex-shrink:0;">${p1.icon}</span>
+        <span style="flex:1;font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px;color:${p1Color};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;">${p1.name}</span>
+        <div style="background:#0d1117;border:1px solid ${p1PillBg.includes('58,155') ? 'rgba(58,155,82,.5)' : p1PillBg.includes('192,80') ? 'rgba(192,80,80,.5)' : 'var(--border)'};border-radius:12px;padding:6px 14px;font-family:'Bebas Neue',cursive;font-size:26px;min-width:52px;text-align:center;color:${p1PillColor};flex-shrink:0;line-height:1;">${matchFmt1}</div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 12px;">
-        <span style="font-size:26px;line-height:1;flex-shrink:0;">${p2.icon}</span>
-        <span style="flex:1;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:${p2Color};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;">${p2.name}</span>
-        <div style="display:flex;align-items:center;justify-content:center;background:${p2PillBg};border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:4px 14px;font-family:'Bebas Neue',cursive;font-size:20px;min-width:56px;text-align:center;color:${p2PillColor};flex-shrink:0;">${p2PillContent}</div>
+      <div style="height:1px;background:var(--border);margin:0 4px;"></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:4px 0;">
+        <span style="font-size:28px;line-height:1;flex-shrink:0;">${p2.icon}</span>
+        <span style="flex:1;font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px;color:${p2Color};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;">${p2.name}</span>
+        <div style="background:#0d1117;border:1px solid ${p2PillBg.includes('58,155') ? 'rgba(58,155,82,.5)' : p2PillBg.includes('192,80') ? 'rgba(192,80,80,.5)' : 'var(--border)'};border-radius:12px;padding:6px 14px;font-family:'Bebas Neue',cursive;font-size:26px;min-width:52px;text-align:center;color:${p2PillColor};flex-shrink:0;line-height:1;">${matchFmt2}</div>
       </div>
     </div>
     <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--text);text-align:center;letter-spacing:1px;background:rgba(255,255,255,.05);padding:6px;border-radius:8px;">${centerText}</div>
@@ -10610,6 +10634,7 @@ function vsShowFinal(){
   if(!VS.completionRecorded){
     incrementCompletedGameCounters({versus:true});
     VS.completionRecorded = true;
+    clearSavedGame();
   }
   const totals1 = vsStrokeTotals(0, S.totalRounds);
   const totals2 = vsStrokeTotals(1, S.totalRounds);
@@ -10736,7 +10761,7 @@ function vsShowFinal(){
   btn.onclick = () => {
     _vsSummaryPlayer = 0;
     setSummaryContext({ mode:'versus', playerIdx:0 });
-    openSummaryTransition(S.currentRound, null);
+    openSummaryTransition(S.currentRound, 'game');
   };
 
   setMainAppConcealed(true);
