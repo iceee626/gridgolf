@@ -311,9 +311,9 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .btn-roll.rolling-state{background:#487a41;color:rgba(255,255,255,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 0 0 1px rgba(255,255,255,.04), 0 3px 10px rgba(0,0,0,.2);filter:saturate(.68) brightness(.92);}
 .roll-col{flex:1.44 1 0;display:grid;min-width:0;position:relative;}
 /* MORPH: buttons share the same slot; outgoing fades + scales down, incoming fades + scales up with a tiny bounce. */
-#rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:opacity .14s ease,visibility 0s linear .14s,background-color .14s ease,box-shadow .14s ease,color .14s ease,filter .14s ease;}
-.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition-delay:0s;}
-.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:none;}
+#rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:opacity .08s ease,background-color .08s ease,box-shadow .08s ease,color .08s ease,filter .08s ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:none;}
+.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none !important;transform:none;}
 /* Morph pulse removed to eliminate lag between roll/next-shot/finish-hole */
 .roll-col.morphing{animation:none;}
 #nextShotBtn{letter-spacing:2px;font-size:20px;}
@@ -777,7 +777,7 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
 .sum-stats-row:last-child{border-bottom:none;}
 .sum-stats-row .lbl{color:var(--muted);min-width:0;}
 .sum-stats-row .val{color:var(--text);font-weight:700;text-align:center;}
-.sum-hole-list{display:flex;flex-direction:column;gap:4px;max-height:236px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex-shrink:0;-ms-overflow-style:none;scrollbar-width:none;}
+.sum-hole-list{display:flex;flex-direction:column;gap:4px;max-height:188px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex-shrink:0;-ms-overflow-style:none;scrollbar-width:none;}
 .sum-hole-list::-webkit-scrollbar{display:none;}
 .sum-hole-row{display:flex;align-items:center;gap:10px;padding:7px 10px;min-height:44px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:border-color .15s,background .15s;}
 .sum-hole-row:hover{border-color:rgba(255,255,255,.2);}
@@ -3002,22 +3002,25 @@ function _setShotBtnState(showNext, immediate=false){
   const roll=document.getElementById('rollBtn');
   const next=document.getElementById('nextShotBtn');
   if(!roll||!next)return;
-  
+
   const setVisible=(btn, visible, disabled)=>{
     if (immediate) {
         btn.style.transition = 'none';
     } else {
         btn.style.transition = ''; // Ensure CSS handles the smooth crossfade
     }
-    
+
     btn.classList.toggle('shot-btn-visible', visible);
     btn.classList.toggle('shot-btn-hidden', !visible);
-    
+
     if (visible) {
         btn.disabled = !!disabled;
-        btn.classList.remove('rolling-state'); 
+        btn.classList.remove('rolling-state');
+        // Force immediate hitbox activation (don't wait for opacity fade).
+        btn.style.pointerEvents = disabled ? 'none' : 'auto';
     } else {
         btn.disabled = true;
+        btn.style.pointerEvents = 'none';
         btn.blur();
     }
 
@@ -4249,12 +4252,27 @@ function _renderShotReplay(log, holeDone){
     // Use the outcome zone color for the chip (mirrors the in-game res-chip which colors by outcome)
     const chipColor = zOutcome.color;
     const chipEmoji = zOutcome.emoji || '🎲';
-    const noteStr = (e.note && e.note !== '+1') ? e.note : '';
+    const descStr = String(e.desc||'');
+    let titleStr = descStr;
+    let subStr = '';
+    const sepIdx = descStr.indexOf(' · ');
+    if(sepIdx >= 0){
+      titleStr = descStr.substring(0, sepIdx);
+      subStr = descStr.substring(sepIdx + 3);
+    } else {
+      // No "yards left" yardage segment. Still move trailing "(wildcard…)" parenthetical
+      // down into the subtitle so the chip/title align like multi-line entries.
+      const wcMatch = titleStr.match(/^(.+?)\s*(\([^)]+\))\s*$/);
+      if(wcMatch){
+        titleStr = wcMatch[1].trim();
+        subStr = wcMatch[2];
+      }
+    }
     detail.innerHTML = `
       <div class="res-chip" style="background:${chipColor};width:44px;height:44px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;">${chipEmoji}</div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1.5px;color:var(--text);line-height:1.2;">${e.desc}</div>
-        ${noteStr?`<div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:3px;">${noteStr}</div>`:''}
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1.5px;color:var(--text);line-height:1.2;">${titleStr}</div>
+        ${subStr?`<div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:3px;line-height:1.25;">${subStr}</div>`:''}
       </div>`;
   }
   render(log.length - 1);
@@ -4638,6 +4656,7 @@ function completeHole(){
       document.getElementById('hcScreen').classList.add('show');
     });
   }
+  try{ saveGameState(); }catch{}
 }
 
 function nextHole(){
@@ -5126,8 +5145,13 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
   });
   body.appendChild(holeList);
 
+  const spacer=document.createElement('div');
+  spacer.style.cssText='flex:1 1 auto;min-height:8px;';
+  body.appendChild(spacer);
+
   const btnRow=document.createElement('div');
   btnRow.className = 'sum-btn-row';
+  btnRow.style.flexShrink = '0';
   
   if (S.currentRound < S.totalRounds && S.holeDone) {
     const nextRndBtn=document.createElement('button');
@@ -7380,8 +7404,13 @@ function openVersusSummary(viewRound = S.currentRound, backTarget = _summaryBack
   });
   body.appendChild(holeList);
 
+  const spacer=document.createElement('div');
+  spacer.style.cssText='flex:1 1 auto;min-height:8px;';
+  body.appendChild(spacer);
+
   const btnRow=document.createElement('div');
   btnRow.className = 'sum-btn-row';
+  btnRow.style.flexShrink = '0';
   const returnBtn=document.createElement('button');
   returnBtn.style.cssText='width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:13px;font-family:"Bebas Neue",cursive;font-size:18px;letter-spacing:2px;cursor:pointer;';
   returnBtn.textContent='RETURN TO MAIN MENU';
@@ -8977,6 +9006,11 @@ function continueGame(){
             };
         }
         showNextShotBtn();
+    } else if (S.holeDone && !VS.active) {
+        // Hole already finished on last exit — lock controls, overlay handles advancement below
+        showNextShotBtn(true);
+        const nextBtn = document.getElementById('nextShotBtn');
+        if(nextBtn){ nextBtn.disabled=true; nextBtn.style.pointerEvents='none'; }
     } else if (waitingForNextShot && !S.holeDone) {
         showNextShotBtn();
     } else {
@@ -9000,11 +9034,20 @@ function continueGame(){
             renderWcFab();
         }
     } else if(S.holeDone) {
+        // Defensive: if hole was marked done but scorecard wasn't filled (exit between
+        // FINISH HOLE click and completeHole timeout), backfill it now before overlay.
+        const _curSc = S.scorecards && S.scorecards[S.currentRound - 1];
+        if(_curSc && _curSc[S.holeIdx] == null){
+          S._skipCelebration = true;
+          try{ completeHole(); }catch(e){ console.error('completeHole backfill failed', e); }
+          try{ saveGameState(); }catch{}
+          return;
+        }
         showNextShotBtn();
         if (S.holeIdx >= S.endIdx && S.currentRound === S.totalRounds) {
             showRoundEnd();
         } else if (S.holeIdx >= S.endIdx) {
-            showRoundEnd(); 
+            showRoundEnd();
         } else {
             document.getElementById('ovEmoji').textContent='⛳';
             document.getElementById('ovTitle').textContent='HOLE COMPLETE';
