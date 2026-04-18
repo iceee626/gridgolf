@@ -725,9 +725,10 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
   background:#2a8a3e;
   padding:4px 12px;
   text-align:center;
-  display:none;
+  min-height:21px;
+  visibility:hidden;
 }
-.tv-row2.show{display:block;}
+.tv-row2.show{visibility:visible;}
 .tv-putt-status{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;color:#fff;}
 .tv-putt-status.eagle-c{color:var(--gold);}
 .tv-putt-status.birdie-c{color:#c8ffd4;}
@@ -763,7 +764,7 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
 .sum-close:active{transform:translateY(1px) scale(.95);}
 .sum-body{
   flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;padding:16px 16px calc(env(safe-area-inset-bottom) + 16px);
+  overscroll-behavior:contain;padding:16px 16px 0;
   display:flex;flex-direction:column;
 }
 .summary-modal::-webkit-scrollbar,.sum-body::-webkit-scrollbar{display:none;}
@@ -803,7 +804,7 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
   font-size:0;
 }
 .sum-hole-body{padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.sum-btn-row{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:16px;padding-bottom:calc(env(safe-area-inset-bottom) + 2px);background:linear-gradient(180deg,rgba(13,17,23,0) 0%,rgba(13,17,23,.92) 34%,rgba(13,17,23,1) 100%);}
+.sum-btn-row{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:16px;padding-bottom:calc(env(safe-area-inset-bottom) + 16px);background:linear-gradient(180deg,rgba(13,17,23,0) 0%,rgba(13,17,23,.92) 34%,rgba(13,17,23,1) 100%);}
 .sum-detail-hint{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-shrink:0;font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
 .sum-detail-hint::after{content:'';flex:1;height:1px;background:var(--border);}
 .sum-vs-stats-row{display:grid;grid-template-columns:56px minmax(0,1fr) 56px;align-items:center;column-gap:10px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);font-family:'Sen',sans-serif;font-size:11px;}
@@ -982,8 +983,9 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .ph-main-info{flex:1;min-width:0;}
 .ph-name{
   font-family:'Bebas Neue',cursive;font-size:34px;line-height:1;letter-spacing:2px;
-  background:linear-gradient(120deg,#ffffff 10%, #f0c040 42%, #ffffff 72%, #f0c040 100%);
-  background-size:220% 100%;
+  background:linear-gradient(120deg,#ffffff 0%, #f0c040 25%, #ffffff 50%, #f0c040 75%, #ffffff 100%);
+  background-size:200% 100%;
+  background-repeat:repeat;
   background-position:0 50%;
   -webkit-background-clip:text;
   background-clip:text;
@@ -991,7 +993,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   color:transparent;
   animation:phNameGradient 10s linear infinite;
 }
-@keyframes phNameGradient{from{background-position:0 50%;}to{background-position:220% 50%;}}
+@keyframes phNameGradient{from{background-position:0% 50%;}to{background-position:200% 50%;}}
 .ph-sub{font-family:'Sen',sans-serif;font-size:10px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-top:4px;}
 .ph-xp{font-family:'Sen',sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-top:5px;}
 .ph-stats6{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px;}
@@ -1474,8 +1476,9 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 </div>
 
 <div class="menu-screen" id="menuScreen" style="display:none;">
+  <div class="menu-bg-grass"></div>
   <div id="floatingEntities"></div>
-  
+
   <button onclick="openProfileModal()" style="position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:24px;display:flex;align-items:center;gap:8px;z-index:110;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:30px;padding:4px 12px 4px 4px;cursor:pointer;backdrop-filter:blur(4px);transition:background 0.15s;">
     <div id="menuProfileIconBtn" style="width:28px;height:28px;border-radius:50%;background:var(--c-fwy);display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 4px rgba(0,0,0,0.3);">👤</div>
     <span id="menuProfileName" style="font-family:'Bebas Neue', cursive;font-size:16px;letter-spacing:1px;color:var(--text);padding-bottom:1px;"></span>
@@ -1657,7 +1660,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <div class="setup-card">
     <div class="setup-head-row">
       <button class="setup-back-btn" onclick="navBack('playModeScreen')" aria-label="Back">&#8592;</button>
-      <div class="setup-title" style="margin-bottom:0;">CUSTOM GAME</div>
+      <div class="setup-title" style="margin-bottom:0;">GAME OPTIONS</div>
       <span class="setup-head-spacer"></span>
     </div>
     
@@ -1752,7 +1755,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <button class="setup-back-btn" id="gameBackBtn" onclick="openGameScreenMenu()" aria-label="Back">&#8592;</button>
     <div class="logo"><img class="brand-logo-img brand-logo-game" src="dicegolf_cropped.png" alt="Dice Golf"></div>
     <div style="display:flex;align-items:center;gap:4px;">
-      <button id="gameSettingsBtn" onclick="openSettings()" style="background-color:rgba(255,255,255,.08);border:1px solid var(--border);color:transparent;border-radius:7px;width:32px;height:32px;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;line-height:1;" title="Settings" aria-label="Settings"></button>
+      <button id="gameSettingsBtn" onclick="openSettings(true)" style="background-color:rgba(255,255,255,.08);border:1px solid var(--border);color:transparent;border-radius:7px;width:32px;height:32px;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;line-height:1;" title="Settings" aria-label="Settings"></button>
     </div>
   </div>
 </header>
@@ -3768,7 +3771,10 @@ function processShot(row,col){
       const h_putt=HOLES[S.holeIdx];
       const d_putt=S.strokes-h_putt.par;
       const isHio_putt=(h_putt.par===3&&S.strokes===1);
-      showCelebration(isHio_putt?-99:d_putt, ()=>{});
+      showCelebration(isHio_putt?-99:d_putt, ()=>{
+        const nb=document.getElementById('nextShotBtn');
+        if(nb && nb.textContent==='FINISH HOLE'){ nb.disabled=false; nb.style.pointerEvents=''; nb.style.opacity=''; }
+      });
       S._skipCelebration=true;
     }
 
@@ -3792,6 +3798,7 @@ function processShot(row,col){
       };
     }
     showNextShotBtn();
+    if(nextBtn){ nextBtn.disabled=true; nextBtn.style.pointerEvents='none'; nextBtn.style.opacity='0.6'; }
     renderWcFab();
     S._puttWcUsed=false;
     S.rolling=false;
@@ -4955,8 +4962,8 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
   body.scrollTop = 0;
   const backBtn=document.getElementById('sumBackBtn');
   const backSpacer=document.getElementById('sumHeadSpacer');
-  if(backBtn) backBtn.style.display = _summaryBackTarget ? 'flex' : 'none';
-  if(backSpacer) backSpacer.style.display = _summaryBackTarget ? 'none' : 'block';
+  if(backBtn){ backBtn.style.display='flex'; backBtn.style.visibility = _summaryBackTarget ? 'visible' : 'hidden'; }
+  if(backSpacer){ backSpacer.style.display='block'; backSpacer.style.visibility = _summaryBackTarget ? 'hidden' : 'visible'; }
   
   document.getElementById('sumTitle').textContent='SUMMARY';
 
@@ -7184,9 +7191,15 @@ function setVsSummaryPlayer(playerIdx, viewRound = S.currentRound, backTarget = 
   if(_summaryContext && _summaryContext.mode === 'versus'){
     _summaryContext.playerIdx = _vsSummaryPlayer;
   }
+  const body=document.getElementById('sumBody');
+  const savedScroll = body ? body.scrollTop : 0;
+  _vsSummaryPreserveScroll = true;
   openVersusSummary(viewRound, backTarget);
+  _vsSummaryPreserveScroll = false;
+  if(body) requestAnimationFrame(()=>{ body.scrollTop = savedScroll; });
 }
 
+let _vsSummaryPreserveScroll = false;
 function openVersusSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget){
   document.getElementById('overlay').classList.remove('show');
   concealMainApp();
@@ -7198,11 +7211,11 @@ function openVersusSummary(viewRound = S.currentRound, backTarget = _summaryBack
   body.style.flexDirection = 'column';
   body.style.flex = '1';
   body.style.minHeight = '0';
-  body.scrollTop = 0;
+  if(!_vsSummaryPreserveScroll) body.scrollTop = 0;
   const backBtn=document.getElementById('sumBackBtn');
   const backSpacer=document.getElementById('sumHeadSpacer');
-  if(backBtn) backBtn.style.display = _summaryBackTarget ? 'flex' : 'none';
-  if(backSpacer) backSpacer.style.display = _summaryBackTarget ? 'none' : 'block';
+  if(backBtn){ backBtn.style.display='flex'; backBtn.style.visibility = _summaryBackTarget ? 'visible' : 'hidden'; }
+  if(backSpacer){ backSpacer.style.display='block'; backSpacer.style.visibility = _summaryBackTarget ? 'hidden' : 'visible'; }
   document.getElementById('sumTitle').textContent='SUMMARY';
 
   if (S.totalRounds > 1) {
@@ -7817,7 +7830,7 @@ function updateSettingsUI(){
   }
 }
 
-function openSettings(){
+function openSettings(fromGame){
   updateSettingsUI();
   const theme=getThemeSetting();
   ['dark','light','system'].forEach(t=>{
@@ -7828,6 +7841,9 @@ function openSettings(){
       b.style.color=theme===t?'#fff':'var(--muted)';
     }
   });
+  // Hide the TUTORIAL header only when opened from the gamescreen gear icon
+  const tutHdr=document.getElementById('settingsTutorialHdr');
+  if(tutHdr) tutHdr.style.display = fromGame ? 'none' : '';
   document.getElementById('settingsModal').classList.add('show');
 }
 function _closeProfileLikeModal(id, afterClose){
@@ -10178,6 +10194,8 @@ function vsShowTurnScreen(){
   document.getElementById('vsTurnName').textContent = p.name + "'S TURN";
   const roundPrefix = S.totalRounds > 1 ? `ROUND ${S.currentRound} · ` : '';
   document.getElementById('vsTurnSub').textContent = `${roundPrefix}HOLE ${S.holeIdx+1} · PAR ${h.par}`;
+  try{ setMainAppConcealed(true); }catch{}
+  try{ hideMainAppImmediate(); }catch{}
   document.getElementById('vsTurnScreen').classList.add('show');
 }
 
@@ -10811,7 +10829,7 @@ function closeModeInfo(type){
           <div class="txt-lbl lbl-r">YES</div>
         </div>
       </div>
-      <div class="settings-section-title tight spaced-top">TUTORIAL</div>
+      <div id="settingsTutorialHdr" class="settings-section-title tight spaced-top">TUTORIAL</div>
       <div id="settingsTutorialRow" class="settings-row">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📖 TUTORIAL</div>
