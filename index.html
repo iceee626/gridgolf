@@ -305,16 +305,18 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
   box-shadow:0 6px 18px rgba(58,122,48,.28), inset 0 1px 0 rgba(255,255,255,.05);
 }
 .btn-roll:hover:not(:disabled){background:var(--c-fwyl);}
-.btn-roll:active:not(:disabled){transform:translateY(1px) scale(.985);background:#34712e;box-shadow:inset 0 0 12px rgba(0,0,0,.22),0 4px 14px rgba(0,0,0,.24);}
+.btn-roll:active:not(:disabled){background:#34712e;box-shadow:inset 0 0 12px rgba(0,0,0,.22),0 4px 14px rgba(0,0,0,.24);}
 .btn-roll:disabled{opacity:1;cursor:not-allowed;pointer-events:none;background:#487a41;color:rgba(255,255,255,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 0 0 1px rgba(255,255,255,.04), 0 3px 10px rgba(0,0,0,.2);filter:saturate(.68) brightness(.92);}
 .btn-roll:disabled:active{transform:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 0 0 1px rgba(255,255,255,.04), 0 3px 10px rgba(0,0,0,.2);}
 .btn-roll.rolling-state{background:#487a41;color:rgba(255,255,255,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 0 0 1px rgba(255,255,255,.04), 0 3px 10px rgba(0,0,0,.2);filter:saturate(.68) brightness(.92);}
 .roll-col{flex:1.44 1 0;display:grid;min-width:0;position:relative;}
-/* MORPH: buttons share the same slot; removed transform/opacity transitions for instant response. */
-#rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:background-color .1s ease-in-out,box-shadow .1s ease-in-out,color .1s ease-in-out,filter .1s ease-in-out;}
-.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:none;}
-.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:none;}
-.roll-col.morphing{animation:none;}
+/* MORPH: buttons share the same slot; outgoing fades + scales down, incoming fades + scales up with a tiny bounce. */
+#rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:opacity .22s ease,transform .32s cubic-bezier(.34,1.56,.64,1),visibility 0s linear .22s,background-color .22s ease-in-out,box-shadow .15s ease-in-out,color .15s ease-in-out,filter .15s ease-in-out;}
+.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0) scale(1);transition-delay:0s;}
+.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(0) scale(.82);}
+/* Pulse the slot when swap happens */
+.roll-col.morphing{animation:morphPulse .46s cubic-bezier(.34,1.56,.64,1);}
+@keyframes morphPulse{0%{transform:scale(1);}40%{transform:scale(1.06);}100%{transform:scale(1);}}
 #nextShotBtn{letter-spacing:2px;font-size:20px;}
 
 /* RESULT */
@@ -345,7 +347,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 /* MAIN MENU & SCREENS */
 .menu-screen, .setup-screen {
   position:fixed;inset:0;background:var(--dark);z-index:500;display:flex;align-items:center;justify-content:center;overflow-y:auto;
-  padding:calc(env(safe-area-inset-top) + 24px) 24px 0;
+  padding:calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
   opacity:0;transform:translateY(12px) scale(.985);transition:opacity .28s ease,transform .34s cubic-bezier(0.22,1,0.36,1); pointer-events:none;
   will-change:opacity,transform;
 }
@@ -360,7 +362,7 @@ body.nav-back .setup-screen:not(.visible){ transform:translateX(-18%) scale(.985
 body.nav-back .menu-screen.visible,
 body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1; }
 .menu-bg-grass{position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(180deg,transparent 0%,#0d1f0a 100%);pointer-events:none;z-index:0;}
-.menu-content{position:relative;z-index:10;text-align:center;width:100%;max-width:380px;min-height:min(78vh,720px);display:flex;flex-direction:column;padding-bottom:calc(env(safe-area-inset-bottom) + 24px);}
+.menu-content{position:relative;z-index:10;text-align:center;width:100%;max-width:380px;min-height:min(78vh,720px);display:flex;flex-direction:column;}
 .onboard-content{max-width:360px;min-height:auto;justify-content:center;}
 .onboard-content .menu-logo{margin-top:0;margin-bottom:18px;}
 .onboard-content.locked-focus{
@@ -411,7 +413,7 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
   margin-top:auto;
 }
 .menu-tagline{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:20px;}
-.menu-btns{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-bottom:8px;}
+.menu-btns{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-bottom:max(8px, env(safe-area-inset-bottom));}
 .menu-content > br{display:none;}
 #menuContinueBtn{min-height:84px!important;padding:12px 16px!important;border-radius:18px!important;}
 #menuContinueBtn.menu-glow{
@@ -470,7 +472,7 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
 .onboard-input:focus{border-color:var(--c-fwyl);}
 .onboard-input::placeholder{color:rgba(255,255,255,.2);}
 
-.setup-card{max-width:360px;width:100%;text-align:center;position:relative;z-index:10;padding-bottom:calc(env(safe-area-inset-bottom) + 24px);}
+.setup-card{max-width:360px;width:100%;text-align:center;position:relative;z-index:10;}
 .setup-top-back{display:none;}
 .setup-head-row{display:grid;grid-template-columns:32px 1fr 32px;align-items:center;gap:12px;margin-bottom:18px;}
 .setup-back-btn{
@@ -764,7 +766,8 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
 .sum-close:active{transform:translateY(1px) scale(.95);}
 .sum-body{
   flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;padding:16px 16px calc(env(safe-area-inset-bottom) + 140px);
+  overscroll-behavior:contain;padding:16px 16px calc(env(safe-area-inset-bottom) + 16px);
+  display:flex;flex-direction:column;
 }
 .summary-modal::-webkit-scrollbar,.sum-body::-webkit-scrollbar{display:none;}
 .summary-modal,.sum-body{-ms-overflow-style:none;scrollbar-width:none;}
@@ -803,7 +806,7 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
   font-size:0;
 }
 .sum-hole-body{padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.sum-btn-row{position:absolute;bottom:0;left:0;right:0;z-index:20;display:flex;flex-direction:column;gap:8px;padding:16px 16px calc(env(safe-area-inset-bottom) + 16px);background:linear-gradient(180deg,rgba(13,17,23,0) 0%,rgba(13,17,23,.98) 20%,rgba(13,17,23,1) 100%);}
+.sum-btn-row{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:16px;padding-bottom:calc(env(safe-area-inset-bottom) + 2px);background:linear-gradient(180deg,rgba(13,17,23,0) 0%,rgba(13,17,23,.92) 34%,rgba(13,17,23,1) 100%);}
 .sum-detail-hint{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-shrink:0;font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
 .sum-detail-hint::after{content:'';flex:1;height:1px;background:var(--border);}
 .sum-vs-stats-row{display:grid;grid-template-columns:56px minmax(0,1fr) 56px;align-items:center;column-gap:10px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);font-family:'Sen',sans-serif;font-size:11px;}
@@ -1758,6 +1761,15 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     </div>
   </div>
 </header>
+<div class="sc-wrap" style="margin:0 16px 12px;">
+  <div class="sc-inner">
+    <div class="sc-row sc-head" id="scHeadRow">
+      <div></div>
+    </div>
+    <div class="sc-row sc-body" id="parRow"><div class="sc-lbl">PAR</div></div>
+    <div class="sc-row sc-body" id="scoreRow"><div class="sc-lbl">YOU</div></div>
+  </div>
+</div>
 
 <div class="hole-hero">
   <div class="hole-hero-top">
@@ -1878,7 +1890,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   <div id="hcMidSection" style="flex:1; display:flex; flex-direction:column; min-height:0; padding-bottom:12px;">
     <div class="sec-title" style="flex-shrink:0;">SHOT REPLAY</div>
     <div id="hcShotTrailCard" style="flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;margin-bottom:8px;overflow:visible;">
-      <div id="hcShotTrail" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:2px 0;width:100%;overflow-x:auto;"></div>
+      <div id="hcShotTrail" style="display:flex;align-items:center;gap:8px;padding:2px 0;"></div>
     </div>
     <div id="hcShotDetailCard" style="flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin-bottom:12px;min-height:52px;display:flex;align-items:center;justify-content:center;text-align:center;">
       <div id="hcShotDetail" style="width:100%;"></div>
@@ -2442,7 +2454,9 @@ function initFloatingEntities() {
     
     const item = { el: el, isDragging: false, offsetX: 0, offsetY: 0 };
     spawnItem(item, true); // Do the initial staggered off-screen spawn
-    
+    // Apply transform immediately so items don't briefly clump at (0,0) before the RAF animate loop runs
+    el.style.transform = `translate3d(${item.x}px, ${item.y}px, 0) rotate(${item.rot}deg)`;
+
     container.appendChild(el);
     
     const startDrag = (e) => {
@@ -2964,11 +2978,6 @@ function showSingleRoundSplash(){
   if(rsMeta) rsMeta.textContent = `${roundPrefix}HOLE ${S.holeIdx + 1} · PAR ${h.par}`;
   setMainAppConcealed(true);
   hideMainAppImmediate();
-  
-  // Hide UI overlays that might otherwise sit beneath the splash screen
-  const tv = document.getElementById('tvBar'); if(tv) tv.classList.remove('show');
-  const fab = document.getElementById('wcFab'); if(fab) fab.classList.remove('visible');
-  
   document.getElementById('roundStartScreen').classList.add('show');
 }
 
@@ -2985,8 +2994,6 @@ function startSingleRoundFromSplash(){
     screen.classList.add('fade-out');
   }
   revealMainApp();
-  updateTVBanner();
-  renderWcFab();
   maybeShowShakeBanner();
 }
 
@@ -3202,6 +3209,8 @@ function loadHole(){
   startDiceIdle();
   buildScorecard();buildGrid();updateZonePill();updateYrd();resetResult();renderLog();updateFloat();
   updateTVBanner();
+  
+  if(!TUT.active && gridFocusEnabled()) scrollToGrid();
 }
 
 // ═══════════════════════════════════════
@@ -3641,6 +3650,7 @@ function startDiceIdle(){
 function doRoll(){
   if(S.rolling||S.holeDone||_rerollChoiceActive)return;
   if(TUT.active && TUT.blocked) return;
+  if(!TUT.active && gridFocusEnabled()) scrollToGrid();
   S.rolling=true;
   const rollBtn=document.getElementById('rollBtn');
   if(rollBtn){ rollBtn.disabled=true; rollBtn.classList.add('rolling-state'); }
@@ -3770,21 +3780,18 @@ function processShot(row,col){
       nextBtn.textContent='FINISH HOLE';
       nextBtn.style.background='var(--c-tee)';
       nextBtn.onclick=()=>{
-          if(_rerollChoiceActive) return;
-          const tutorialFinish = TUT.active;
-          const b=document.getElementById('puttWcBtn');if(b)b.remove();
-          S._pendingPuttResult=null;
-          S._pendingHoleFinish=null;
-          S.holeDone=true;
-          _holdFinishBtn=true;
-          nextBtn.disabled=true;
-          nextBtn.style.pointerEvents='none';
-          updateTVBanner();
-          setTimeout(() => {
-              if(tutorialFinish && !TUT.active) return;
-              completeHole();
-          }, 20); // Allows button press state to paint instantly
-        };
+        if(_rerollChoiceActive) return;
+        const tutorialFinish = TUT.active;
+        const b=document.getElementById('puttWcBtn');if(b)b.remove();
+        S._pendingPuttResult=null;
+        S._pendingHoleFinish=null;
+        S.holeDone=true;
+        _holdFinishBtn=true;
+        nextBtn.disabled=true;
+        nextBtn.style.pointerEvents='none';
+        updateTVBanner();
+        setTimeout(()=>{ if(tutorialFinish && !TUT.active) return; completeHole(); },200);
+      };
     }
     showNextShotBtn();
     renderWcFab();
@@ -3903,7 +3910,7 @@ function processShot(row,col){
       if(nextBtn){
         nextBtn.textContent='FINISH HOLE';
         nextBtn.style.background='var(--c-tee)';
-       nextBtn.onclick=()=>{
+        nextBtn.onclick=()=>{
           if(_rerollChoiceActive) return;
           const tutorialFinish = TUT.active;
           const b=document.getElementById('puttWcBtn');if(b)b.remove();
@@ -3914,10 +3921,7 @@ function processShot(row,col){
           nextBtn.disabled=true;
           nextBtn.style.pointerEvents='none';
           updateTVBanner();
-          setTimeout(() => {
-              if(tutorialFinish && !TUT.active) return;
-              completeHole();
-          }, 20); // Allows button press state to paint instantly
+          setTimeout(()=>{ if(tutorialFinish && !TUT.active) return; completeHole(); },200);
         };
       }
       showNextShotBtn();
@@ -4001,9 +4005,10 @@ function doNextShot(){
   S._tvShotNum = S.shotNum;
   _holdFinishBtn=false;
   
-  hideNextShotBtn(true); // Force immediate UI swap
+  // Instantly trigger button swap
+  hideNextShotBtn(); 
 
-  // Allow browser to paint the button swap before building the heavy grid
+  // Allow Safari to fully paint the button press state before building the heavy grid
   requestAnimationFrame(() => {
       setTimeout(() => {
           if(S._forceGrid){S._forceGrid=false;}
@@ -4014,8 +4019,9 @@ function doNextShot(){
           updateTVBanner();
           startDiceIdle();
           
+          if(!TUT.active && gridFocusEnabled()) scrollToGrid();
           if(TUT.active) _tutFire('next_shot_clicked');
-      }, 20);
+      }, 20); // Small 20ms buffer guarantees UI responsiveness
   });
 }
 
@@ -4241,33 +4247,12 @@ function _renderShotReplay(log, holeDone){
       trail.appendChild(pill);
     });
     const e = log[idx];
-      const fromZk = e.prevZone || e.zk || 'fwy';
-      const toName = e.zk === 'hole' ? 'HOLE' : ((Z[e.zk]||Z.fwy).name.toUpperCase());
-      const fromName = (Z[fromZk]||Z.fwy).name.toUpperCase();
-      const emoji = e.zk === 'hole' ? '🏆' : ((Z[e.zk]||Z.fwy).emoji);
-      const color = e.zk === 'hole' ? 'var(--c-hole)' : ((Z[e.zk]||Z.fwy).color);
-      
-      let distanceStr = '';
-      if (e.desc && e.desc.includes(' · ')) {
-          distanceStr = e.desc.split(' · ')[1];
-      } else if (e.zk === 'hole') {
-          distanceStr = 'Hole In!';
-      } else if (e.zk === 'grn') {
-          distanceStr = 'On Green';
-      } else if (e.zk === 'ob' || e.zk === 'h2o') {
-          distanceStr = 'Penalty';
-      }
-      const noteStr = (e.note && e.note !== '+1' && e.note !== '+2 (pen)') ? ` · ${e.note}` : '';
-
-      detail.innerHTML = `
-        <div style="display:flex;align-items:center;gap:12px;text-align:left;width:100%;">
-          <div style="width:44px;height:44px;border-radius:9px;background:${color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${emoji}</div>
-          <div style="flex:1;">
-            <div style="font-family:'Bebas Neue',cursive;font-size:19px;letter-spacing:2px;color:var(--text);line-height:1;">${fromName} → ${toName}</div>
-            <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:2px;">${distanceStr}${noteStr}</div>
-          </div>
-        </div>`;
-    }
+    const fromZk = e.prevZone || e.zk || 'fwy';
+    const toName = e.zk === 'hole' ? 'HOLE' : ((Z[e.zk]||Z.fwy).name.toUpperCase());
+    const fromName = (Z[fromZk]||Z.fwy).name.toUpperCase();
+    const noteStr = (e.note && e.note !== '+1') ? ` · ${e.note}` : '';
+    detail.innerHTML = `<div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;color:var(--text);line-height:1.2;">SHOT ${e.num} · ${fromName} → ${toName}</div><div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:3px;">${e.desc}${noteStr}</div>`;
+  }
   render(log.length - 1);
 }
 
@@ -5166,10 +5151,7 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
     }
   }
   
-  const summaryCard = document.querySelector('#summaryModal .summary-card');
-  const existingBtnRow = summaryCard.querySelector('.sum-btn-row');
-  if(existingBtnRow) existingBtnRow.remove();
-  summaryCard.appendChild(btnRow);
+  body.appendChild(btnRow);
   const summaryModal = document.getElementById('summaryModal');
   summaryModal.scrollTop = 0;
   summaryModal.classList.add('show');
@@ -6132,8 +6114,6 @@ function closeProfileModal(){
 }
 
 function autoLoadProfile(){
-  const tv = document.getElementById('tvBar'); if(tv) tv.classList.remove('show');
-  const fab = document.getElementById('wcFab'); if(fab) fab.classList.remove('visible');
   const profiles=loadProfiles();
   if(!profiles.length){
     const obs=document.getElementById('onboardScreen');
@@ -7405,11 +7385,7 @@ function openVersusSummary(viewRound = S.currentRound, backTarget = _summaryBack
   playAgainBtn.textContent='PLAY AGAIN';
   playAgainBtn.onclick=()=>summaryPlayAgain();
   btnRow.appendChild(playAgainBtn);
-  
-  const summaryCard = document.querySelector('#summaryModal .summary-card');
-  const existingBtnRow = summaryCard.querySelector('.sum-btn-row');
-  if(existingBtnRow) existingBtnRow.remove();
-  summaryCard.appendChild(btnRow);
+  body.appendChild(btnRow);
 
   const summaryModal = document.getElementById('summaryModal');
   summaryModal.scrollTop = 0;
@@ -10754,6 +10730,13 @@ function closeModeInfo(type){
           <div class="settings-row-desc">Roll doubles to earn wildcard cards</div>
         </div>
         <div class="toggle-switch" id="wcToggle" onclick="setWcPref(!wcEnabled())"><div class="toggle-knob"></div></div>
+      </div>
+      <div class="settings-row">
+        <div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">&#x1F3AF; FOCUS ON GRID</div>
+          <div class="settings-row-desc">Automatically focus on shot grid every roll</div>
+        </div>
+        <div class="toggle-switch" id="gridFocusToggle" onclick="setGridFocusPref(!gridFocusEnabled())"><div class="toggle-knob"></div></div>
       </div>
       <div class="settings-row">
         <div>
