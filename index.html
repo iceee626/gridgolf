@@ -828,7 +828,7 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
 /* REDESIGNED HOLE COMPLETE SCREEN */
 .hc-screen { position:fixed; inset:0; background:var(--dark); z-index:550; display:flex; flex-direction:column; padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px); overflow-y:hidden; opacity:0; visibility:hidden; pointer-events:none; transform:translateY(12px) scale(.985); transition:opacity .26s ease,transform .26s cubic-bezier(0.22,1,0.36,1),visibility 0s linear .26s; }
 .hc-screen.show { opacity:1; visibility:visible; pointer-events:auto; transform:translateY(0) scale(1); transition:opacity .26s ease,transform .26s cubic-bezier(0.22,1,0.36,1),visibility 0s; }
-.hc-header { display:flex; justify-content:center; align-items:center; font-family:'Bebas Neue',cursive; font-size:18px; letter-spacing:2px; color:var(--muted); margin-bottom:16px; position:relative; flex-shrink:0; }
+.hc-header { display:flex; justify-content:center; align-items:center; font-family:'Bebas Neue',cursive; font-size:18px; letter-spacing:2px; color:#fff; margin-bottom:16px; position:relative; flex-shrink:0; }
 .hc-rnd-badge { position:absolute; right:0; background:rgba(240,192,64,.15); color:var(--gold); padding:4px 8px; border-radius:12px; font-size:10px; border:1px solid rgba(240,192,64,.3); font-family:'Sen',sans-serif; letter-spacing:1px; }
 .hc-card { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:16px; padding:18px 20px; margin-bottom:20px; box-shadow:0 8px 24px rgba(0,0,0,0.4); flex-shrink:0; }
 .hc-card-row { display:flex; align-items:center; gap:14px; }
@@ -4029,9 +4029,12 @@ function doNextShot(){
   S._mulliganJustFired=false;
   S._tvShotNum = S.shotNum;
   _holdFinishBtn=false;
-  
+
   // Instantly trigger button swap
-  hideNextShotBtn(); 
+  hideNextShotBtn();
+  // iOS spam protection: briefly block ROLL until the new grid is ready
+  const rollBtnEl = document.getElementById('rollBtn');
+  if(rollBtnEl){ rollBtnEl.disabled = true; }
 
   // Allow Safari to fully paint the button press state before building the heavy grid
   requestAnimationFrame(() => {
@@ -4039,11 +4042,12 @@ function doNextShot(){
           if(S._forceGrid){S._forceGrid=false;}
           else if(S._preserveGrid){S._preserveGrid=false;}
           else{buildGrid();}
-          
+
           updateZonePill();
           updateTVBanner();
           startDiceIdle();
-          
+          if(rollBtnEl && !S.rolling){ rollBtnEl.disabled = false; }
+
           if(!TUT.active && gridFocusEnabled()) scrollToGrid();
           if(TUT.active) _tutFire('next_shot_clicked');
       }, 20); // Small 20ms buffer guarantees UI responsiveness
@@ -4857,7 +4861,7 @@ function showRoundEnd(){
     const finalDiffLabel = diffNamesFinal[GAME_DIFF] || 'MEDIUM';
 
     vsContainer.innerHTML = `
-    <div style="display:flex;align-items:center;gap:14px;">
+    <div style="display:flex;align-items:flex-start;gap:14px;">
       <div style="flex:1;min-width:0;">
         <div style="font-family:'Bebas Neue',cursive;font-size:40px;color:var(--text);letter-spacing:2px;line-height:1;margin-bottom:6px;">FINAL SCORE</div>
         <div style="font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">${globalTotal} strokes</div>
@@ -5193,7 +5197,9 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
     row.className = 'sum-hole-pill';
     row.dataset.holeIdx=String(absoluteIdx);
     row.style.background = 'rgba(255,255,255,.07)';
-    row.innerHTML=`<div class="shp-num" style="color:${numColor};">${absoluteIdx+1}</div>`;
+    row.style.position = 'relative';
+    const hasWc = hist.wcsUsed && hist.wcsUsed.length > 0;
+    row.innerHTML=`<div class="shp-num" style="color:${numColor};">${absoluteIdx+1}</div>${hasWc?'<div style="position:absolute;top:2px;right:3px;font-size:9px;line-height:1;pointer-events:none;">🃏</div>':''}`;
     row.onclick=()=>openHistInline(absoluteIdx, holeList, row, viewRound);
     holeList.appendChild(row);
   });
@@ -7440,7 +7446,9 @@ function openVersusSummary(viewRound = S.currentRound, backTarget = _summaryBack
     row.className = 'sum-hole-pill';
     row.dataset.holeIdx=String(absoluteIdx);
     row.style.background = 'rgba(255,255,255,.07)';
-    row.innerHTML=`<div class="shp-num" style="color:${numColor};">${absoluteIdx+1}</div>`;
+    row.style.position = 'relative';
+    const hasWcVs = hist.wcsUsed && hist.wcsUsed.length > 0;
+    row.innerHTML=`<div class="shp-num" style="color:${numColor};">${absoluteIdx+1}</div>${hasWcVs?'<div style="position:absolute;top:2px;right:3px;font-size:9px;line-height:1;pointer-events:none;">🃏</div>':''}`;
     row.onclick=()=>{
       if(!Array.isArray(S.histories[viewRound - 1])) S.histories[viewRound - 1] = Array(18).fill(null);
       for(let hIdx = S.startIdx; hIdx <= S.endIdx; hIdx++){
@@ -10318,7 +10326,7 @@ function vsCompleteHole(){
     document.getElementById('overlay').classList.remove('show');
     try{ setMainAppConcealed(true); }catch{}
     try{ hideMainAppImmediate(); }catch{}
-    setTimeout(()=>vsShowTurnScreen(), 50);
+    vsShowTurnScreen();
   } else {
     VS.currentPlayer = 0;
     document.getElementById('overlay').classList.remove('show');
@@ -10332,7 +10340,9 @@ function vsCompleteHole(){
 
     try{ setMainAppConcealed(true); }catch{}
     try{ hideMainAppImmediate(); }catch{}
-    setTimeout(()=>vsShowHoleComparison(), 50);
+    const tvBarVs = document.getElementById('tvBar');
+    if(tvBarVs) tvBarVs.classList.remove('show');
+    vsShowHoleComparison();
   }
 }
 
@@ -10722,24 +10732,40 @@ function vsShowFinal(){
     document.querySelector('.hc-card').appendChild(vsContainer);
   }
   vsContainer.style.display = 'block';
+  const p1BoxColor = VS.format==='match'?(VS.matchScore[0]>VS.matchScore[1]?'var(--gold)':'var(--text)'):getColor(d1);
+  const p2BoxColor = VS.format==='match'?(VS.matchScore[1]>VS.matchScore[0]?'var(--gold)':'var(--text)'):getColor(d2);
+  let totalBoxVal, totalBoxColor;
+  if(p1Color==='var(--gold)'){totalBoxVal=p1TotalLabel;totalBoxColor=p1BoxColor;}
+  else if(p2Color==='var(--gold)'){totalBoxVal=p2TotalLabel;totalBoxColor=p2BoxColor;}
+  else{totalBoxVal='TIE';totalBoxColor='var(--text)';}
+  const matchNote = VS.format==='match'?` · ${VS.matchScore[0]}–${VS.matchScore[1]}`:'';
   vsContainer.innerHTML = `
-    <div style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--gold);letter-spacing:3px;margin-bottom:22px;text-align:center;">${winnerText}</div>
-    <div style="display:flex;justify-content:space-around;align-items:flex-start;gap:14px;">
-      <div style="flex:1;text-align:center;">
-        <div style="font-size:34px;margin-bottom:8px;">${p1.icon}</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1px;color:${p1Color};white-space:nowrap;">${p1.name}</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:34px;line-height:1;color:${VS.format==='match'?(VS.matchScore[0] > VS.matchScore[1] ? 'var(--gold)' : 'var(--text)'):getColor(d1)};margin-top:6px;">${p1TotalLabel}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:6px;">${t1} strokes</div>
+    <div style="display:flex;align-items:flex-start;gap:14px;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:2px;color:var(--text);line-height:1;">FINAL RESULT</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;color:var(--gold);margin-bottom:10px;">${winnerText}</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:24px;flex-shrink:0;">${p1.icon}</span>
+            <span style="flex:1;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:${p1Color};min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p1.name}</span>
+            <span style="font-family:'Bebas Neue',cursive;font-size:20px;color:${p1BoxColor};flex-shrink:0;">${p1TotalLabel}</span>
+            <span style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);flex-shrink:0;">${t1} strokes</span>
+          </div>
+          <div style="height:1px;background:var(--border);"></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:24px;flex-shrink:0;">${p2.icon}</span>
+            <span style="flex:1;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:${p2Color};min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p2.name}</span>
+            <span style="font-family:'Bebas Neue',cursive;font-size:20px;color:${p2BoxColor};flex-shrink:0;">${p2TotalLabel}</span>
+            <span style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);flex-shrink:0;">${t2} strokes</span>
+          </div>
+        </div>
+        <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:8px;text-transform:uppercase;letter-spacing:1px;">Difficulty: ${diffLabel}${matchNote}</div>
       </div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--border);padding-top:18px;">VS</div>
-      <div style="flex:1;text-align:center;">
-        <div style="font-size:34px;margin-bottom:8px;">${p2.icon}</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1px;color:${p2Color};white-space:nowrap;">${p2.name}</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:34px;line-height:1;color:${VS.format==='match'?(VS.matchScore[1] > VS.matchScore[0] ? 'var(--gold)' : 'var(--text)'):getColor(d2)};margin-top:6px;">${p2TotalLabel}</div>
-        <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:6px;">${t2} strokes</div>
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;gap:4px;">
+        <span style="font-family:'Sen',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">TOTAL</span>
+        <div style="background:#0d1117;border:1px solid var(--border);border-radius:14px;padding:10px 14px;min-width:58px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:1px;line-height:1;color:${totalBoxColor};">${totalBoxVal}</div>
       </div>
     </div>
-    <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:12px;text-align:center;text-transform:uppercase;">DIFFICULTY: ${diffLabel}</div>
   `;
 
   const midSection = document.getElementById('hcMidSection');
