@@ -350,25 +350,24 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .leg-sw{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
 
 /* MAIN MENU & SCREENS */
-.menu-screen, .setup-screen {
+.menu-screen,
+.setup-screen {
   position: fixed;
   inset: 0;
-  width: auto;
-  height: auto;
-  background: var(--dark);
   z-index: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow-y: auto;
-  padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
+  background: var(--dark);
   opacity: 0;
-  transform: translateY(12px) scale(.985);
-  transition: opacity .28s ease, transform .34s cubic-bezier(0.22,1,0.36,1);
   pointer-events: none;
-  will-change: opacity, transform;
+  transform: none;
+  transition: opacity .22s ease;
+  overflow: hidden;
 }
-.menu-screen.visible, .setup-screen.visible { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+
+.menu-screen.visible,
+.setup-screen.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
 /* Direction-aware iOS-native transitions. `body.nav-forward`/`body.nav-back` is toggled by showScreen(). */
 body.nav-forward .menu-screen:not(.visible),
 body.nav-forward .setup-screen:not(.visible){ transform:translateX(24%) scale(.99); opacity:0; }
@@ -379,24 +378,25 @@ body.nav-back .setup-screen:not(.visible){ transform:translateX(-18%) scale(.985
 body.nav-back .menu-screen.visible,
 body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1; }
 .menu-bg-grass{display:none;}
-#menuScreen{
-  background: transparent !important;
-  position: fixed;
-  inset: 0;
+#menuScreen {
+  background: linear-gradient(180deg, var(--dark) 55%, #0d1f0a 100%) !important;
 }
 
-#menuScreen::before{
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, var(--dark) 55%, #0d1f0a 100%);
-  z-index: 0;
-  pointer-events: none;
-}
-
-#menuScreen .menu-content{
+#menuScreen .menu-content {
   position: relative;
   z-index: 1;
+  width: min(380px, calc(100vw - 48px));
+  margin: 0 auto;
+  min-height: calc(
+    var(--app-vh) 
+    - env(safe-area-inset-top) 
+    - env(safe-area-inset-bottom)
+    - 48px
+  );
+  padding-top: 0;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-rows: 1fr auto 1fr auto;
 }
 /* Stretch menu-content to fill menu-screen's padded area so #menuScreen's
    layout depends on the real visible viewport rather than a fractional
@@ -450,17 +450,15 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
   justify-content:flex-start;
   padding-top:0;
 }
-#menuScreen .menu-logo{
-  position:absolute;
-  left:50%;
-  top:41%;
-  transform:translate(-50%,-50%);
-  width:min(100%, 360px);
-  margin:0;
-  flex-shrink:0;
-}
-#menuScreen #menuBtns{
-  margin-top:auto;
+#menuScreen .menu-logo {
+  position: static;
+  transform: none;
+  width: min(100%, 360px);
+  margin: 0 auto;
+  align-self: center;
+}  
+#menuScreen #menuBtns {
+  margin-top: 0;
 }
 .menu-tagline{font-family:'Sen', sans-serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:20px;}
 .menu-btns{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-bottom:max(8px, env(safe-area-inset-bottom));}
@@ -2374,29 +2372,38 @@ function setCustomDiff(d){
 // math always uses the real visible viewport height.
 (function syncAppVh(){
   function update(){
-    const h = window.innerHeight;
-    if(h > 0) document.documentElement.style.setProperty('--app-vh', h + 'px');
+    const vv = window.visualViewport;
+    const h = vv && vv.height ? vv.height : window.innerHeight;
+    if (h > 0) {
+      document.documentElement.style.setProperty('--app-vh', `${Math.round(h)}px`);
+    }
   }
-  update();
-  window.addEventListener('resize', update);
-  window.addEventListener('orientationchange', () => setTimeout(update, 120));
-  window.addEventListener('pageshow', update);
-  window.addEventListener('load', update);
-  document.addEventListener('visibilitychange', update);
-  if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', update);
-  }
-  // Re-fire a few times early to catch iOS's late viewport adjustment.
-  setTimeout(update, 60);
-  setTimeout(update, 250);
-  setTimeout(update, 800);
-})();
 
-window.addEventListener('DOMContentLoaded', function(){
-  initTheme();
-  _loadShakePermission();
-  applyRollMode(getRollMode());
-  initFloatingEntities();
+  update();
+
+  window.addEventListener('load', update);
+  window.addEventListener('pageshow', update);
+  window.addEventListener('resize', update);
+  window.addEventListener('orientationchange', () => {
+    requestAnimationFrame(update);
+    setTimeout(update, 120);
+    setTimeout(update, 320);
+  });
+
+  document.addEventListener('visibilitychange', update);
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', update);
+    window.visualViewport.addEventListener('scroll', update);
+  }
+
+  requestAnimationFrame(update);
+  setTimeout(update, 60);
+  setTimeout(update, 180);
+  setTimeout(update, 400);
+  setTimeout(update, 900);
+})();
+  
   // Shot-button tap rescue: on iOS Safari a click can be dropped when
   // ROLL ↔ NEXT SHOT swap happens during a touch, leaving a visible button
   // unresponsive. Delegate at the .roll-col level and fire the currently
