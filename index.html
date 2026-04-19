@@ -312,8 +312,8 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .roll-col{flex:1.44 1 0;display:grid;min-width:0;position:relative;}
 /* MORPH: buttons share the same slot; outgoing fades + scales down, incoming fades + scales up with a tiny bounce. */
 #rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:opacity .08s ease,background-color .08s ease,box-shadow .08s ease,color .08s ease,filter .08s ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
-.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:none;display:flex;}
-.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none !important;transform:none;display:none !important;}
+.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:none;}
+.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none !important;transform:none;}
 /* Morph pulse removed to eliminate lag between roll/next-shot/finish-hole */
 .roll-col.morphing{animation:none;}
 #nextShotBtn{letter-spacing:2px;font-size:20px;}
@@ -2319,6 +2319,53 @@ window.addEventListener('DOMContentLoaded', function(){
   _loadShakePermission();
   applyRollMode(getRollMode());
   initFloatingEntities();
+  // Shot-button tap rescue: on iOS Safari a click can be dropped when
+  // ROLL ↔ NEXT SHOT swap happens during a touch, leaving a visible button
+  // unresponsive. Delegate at the .roll-col level and fire the currently
+  // visible + enabled button programmatically. Handlers are idempotent
+  // (guarded by S.rolling / S.holeDone / _rerollChoiceActive).
+  (function initShotBtnTapRescue(){
+    let downX=0, downY=0, downT=0, tracking=false;
+    let lastFire=0;
+    function getVisibleBtn(rc){
+      if(!rc) return null;
+      const btns = rc.querySelectorAll('button');
+      for(const b of btns){
+        if(b.classList.contains('shot-btn-visible') && !b.disabled){
+          const cs = getComputedStyle(b);
+          if(cs.visibility !== 'hidden' && cs.display !== 'none') return b;
+        }
+      }
+      return null;
+    }
+    document.addEventListener('pointerdown', (e) => {
+      const rc = e.target && e.target.closest ? e.target.closest('.roll-col') : null;
+      if(!rc){ tracking=false; return; }
+      downX=e.clientX; downY=e.clientY; downT=Date.now(); tracking=true;
+    }, true);
+    document.addEventListener('pointerup', (e) => {
+      if(!tracking) return;
+      tracking=false;
+      const dt = Date.now() - downT;
+      const dx = Math.abs(e.clientX - downX);
+      const dy = Math.abs(e.clientY - downY);
+      if(dt > 800 || dx > 18 || dy > 18) return;
+      const rc = e.target && e.target.closest ? e.target.closest('.roll-col') : document.querySelector('.roll-col');
+      const btn = getVisibleBtn(rc);
+      if(!btn) return;
+      setTimeout(() => {
+        const now = Date.now();
+        if(now - lastFire < 220) return;
+        lastFire = now;
+        try { btn.click(); } catch(err) {}
+      }, 10);
+    }, true);
+    document.addEventListener('click', (e) => {
+      const rc = e.target && e.target.closest ? e.target.closest('.roll-col') : null;
+      if(!rc) return;
+      lastFire = Date.now();
+    }, true);
+  })();
   // Edge-swipe back gesture (iOS-native feel). Finds the visible back button and taps it.
   (function initEdgeSwipe(){
     let sx=0, sy=0, sT=0, tracking=false;
