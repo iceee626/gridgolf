@@ -4936,40 +4936,41 @@ function showRoundEnd(){
     document.getElementById('hcHoleTitle').textContent = `ROUND ${S.currentRound} COMPLETE`;
     document.getElementById('hcRndBadge').style.display = 'none';
 
-    // Show the score card elements (in case VS hid them)
+    // Hide the classic score card elements; use vsContainer layout for clean rendering
     ['hcIcon', 'hcTitle', 'hcSub', 'hcTot'].forEach(id => {
         const el = document.getElementById(id);
-        if(el) el.style.display = '';
+        if(el) el.style.display = 'none';
     });
-    const vsC = document.getElementById('hcVsContainer');
-    if(vsC) vsC.style.display = 'none';
     const vsT = document.getElementById('vsToggleRow');
     if(vsT) vsT.style.display = 'none';
 
     const rDiffStr = roundDiff===0?'E':roundDiff>0?`+${roundDiff}`:`${roundDiff}`;
-    const rEmoji = roundDiff<0?'🏆':roundDiff===0?'⛳':'🏌️';
     let rColor = roundDiff<0?'var(--gold)':roundDiff===0?'var(--c-fwyl)':'#e05252';
-
-    document.getElementById('hcIcon').textContent = rEmoji;
-    const hcTitle = document.getElementById('hcTitle');
-    hcTitle.textContent = `ROUND ${S.currentRound} COMPLETE`;
-    hcTitle.style.color = rColor;
-    hcTitle.style.fontSize = '36px';
-    document.getElementById('hcSub').textContent = `${roundTotal} STROKES · PAR ${roundPar}`;
-
-    const totSpan = document.getElementById('hcTotSpan');
-    totSpan.textContent = rDiffStr;
-    totSpan.style.color = rColor;
     const diffNames2 = {1:'EASY', 2:'MEDIUM', 3:'HARD'};
-    let hcDiffSub = document.getElementById('hcDiffSub');
-    if (!hcDiffSub) {
-        hcDiffSub = document.createElement('div');
-        hcDiffSub.id = 'hcDiffSub';
-        hcDiffSub.style.cssText = "font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);text-align:center;margin-top:6px;letter-spacing:1px;text-transform:uppercase;";
-        document.getElementById('hcTot').insertAdjacentElement('afterend', hcDiffSub);
+    const roundDiffLabel = diffNames2[GAME_DIFF] || 'MEDIUM';
+
+    let vsContainerR = document.getElementById('hcVsContainer');
+    if (!vsContainerR) {
+        vsContainerR = document.createElement('div');
+        vsContainerR.id = 'hcVsContainer';
+        document.querySelector('.hc-card').appendChild(vsContainerR);
     }
-    hcDiffSub.textContent = `DIFFICULTY: ${diffNames2[GAME_DIFF] || 'MEDIUM'}`;
-    hcDiffSub.style.display = '';
+    vsContainerR.style.display = 'block';
+    vsContainerR.innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:14px;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-family:'Bebas Neue',cursive;font-size:36px;color:var(--text);letter-spacing:2px;line-height:1;margin-bottom:6px;">ROUND ${S.currentRound}</div>
+        <div style="font-family:'Sen',sans-serif;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">${roundTotal} strokes</div>
+        <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Par ${roundPar} · ${roundDiffLabel}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;gap:4px;">
+        <span style="font-family:'Sen',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">TOTAL</span>
+        <div style="background:#0d1117;border:1px solid var(--border);border-radius:14px;padding:10px 16px;min-width:62px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:1px;line-height:1;color:${rColor};">${rDiffStr}</div>
+      </div>
+    </div>`;
+
+    let hcDiffSub = document.getElementById('hcDiffSub');
+    if (hcDiffSub) hcDiffSub.style.display = 'none';
     const roundXpWrap = ensureRoundXpPanel();
     if(roundXpWrap){
       roundXpWrap.innerHTML = xpAward ? renderXpAwardCardHtml(xpAward) : '';
@@ -10708,8 +10709,8 @@ function vsShowFinal(){
   const hcScreen = document.getElementById('hcScreen');
   const hcTitle = document.getElementById('hcHoleTitle');
   if(hcTitle){
-    hcTitle.style.display = '';
-    hcTitle.textContent = 'FINAL RESULT';
+    hcTitle.style.display = 'none';
+    hcTitle.textContent = '';
   }
   document.getElementById('hcRndBadge').style.display = 'none';
   const hcDiffSub = document.getElementById('hcDiffSub');
@@ -10738,36 +10739,28 @@ function vsShowFinal(){
   vsContainer.style.display = 'block';
   const p1BoxColor = VS.format==='match'?(VS.matchScore[0]>VS.matchScore[1]?'var(--gold)':'var(--text)'):getColor(d1);
   const p2BoxColor = VS.format==='match'?(VS.matchScore[1]>VS.matchScore[0]?'var(--gold)':'var(--text)'):getColor(d2);
-  let totalBoxVal, totalBoxColor;
-  if(p1Color==='var(--gold)'){totalBoxVal=p1TotalLabel;totalBoxColor=p1BoxColor;}
-  else if(p2Color==='var(--gold)'){totalBoxVal=p2TotalLabel;totalBoxColor=p2BoxColor;}
-  else{totalBoxVal='TIE';totalBoxColor='var(--text)';}
-  const matchNote = VS.format==='match'?` · ${VS.matchScore[0]}–${VS.matchScore[1]}`:'';
+  const titleColor = (p1Color==='var(--gold)'||p2Color==='var(--gold)') ? 'var(--gold)' : 'var(--text)';
+  const scoreBoxStyle = 'background:#0d1117;border:1px solid var(--border);border-radius:10px;padding:6px 10px;min-width:52px;display:flex;align-items:center;justify-content:center;font-family:\'Bebas Neue\',cursive;font-size:24px;letter-spacing:1px;line-height:1;flex-shrink:0;';
+  const totalHeader = VS.format==='match' ? '' : `
+        <div style="display:flex;justify-content:flex-end;margin-bottom:4px;">
+          <span style="font-family:'Sen',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;min-width:52px;text-align:center;">TOTAL</span>
+        </div>`;
   vsContainer.innerHTML = `
-    <div style="display:flex;align-items:flex-start;gap:14px;">
-      <div style="flex:1;min-width:0;">
-        <div style="font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:2px;color:var(--text);line-height:1;">FINAL RESULT</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;color:var(--gold);margin-bottom:10px;">${winnerText}</div>
-        <div style="display:flex;flex-direction:column;gap:5px;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:24px;flex-shrink:0;">${p1.icon}</span>
-            <span style="flex:1;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:${p1Color};min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p1.name}</span>
-            <span style="font-family:'Bebas Neue',cursive;font-size:20px;color:${p1BoxColor};flex-shrink:0;">${p1TotalLabel}</span>
-            <span style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);flex-shrink:0;">${t1} strokes</span>
-          </div>
-          <div style="height:1px;background:var(--border);"></div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:24px;flex-shrink:0;">${p2.icon}</span>
-            <span style="flex:1;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:${p2Color};min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p2.name}</span>
-            <span style="font-family:'Bebas Neue',cursive;font-size:20px;color:${p2BoxColor};flex-shrink:0;">${p2TotalLabel}</span>
-            <span style="font-family:'Sen',sans-serif;font-size:10px;color:var(--muted);flex-shrink:0;">${t2} strokes</span>
-          </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="font-family:'Bebas Neue',cursive;font-size:30px;letter-spacing:2px;color:${titleColor};line-height:1;text-align:center;">${winnerText}</div>
+      ${totalHeader}
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:24px;flex-shrink:0;">${p1.icon}</span>
+          <span style="flex:1;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:${p1Color};min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p1.name}</span>
+          <div style="${scoreBoxStyle}color:${p1BoxColor};">${p1TotalLabel}</div>
         </div>
-        <div style="font-family:'Sen',sans-serif;font-size:11px;color:var(--muted);margin-top:8px;text-transform:uppercase;letter-spacing:1px;">Difficulty: ${diffLabel}${matchNote}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;gap:4px;">
-        <span style="font-family:'Sen',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">TOTAL</span>
-        <div style="background:#0d1117;border:1px solid var(--border);border-radius:14px;padding:10px 14px;min-width:58px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:1px;line-height:1;color:${totalBoxColor};">${totalBoxVal}</div>
+        <div style="height:1px;background:var(--border);"></div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:24px;flex-shrink:0;">${p2.icon}</span>
+          <span style="flex:1;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:${p2Color};min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p2.name}</span>
+          <div style="${scoreBoxStyle}color:${p2BoxColor};">${p2TotalLabel}</div>
+        </div>
       </div>
     </div>
   `;
