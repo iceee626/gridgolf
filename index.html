@@ -3010,11 +3010,17 @@ function startGame(){
   setMainAppConcealed(true);
   
   if(VS.active){
-    vsStartGame();
+    // Order matters: init() calls loadHole() → updateTVBanner() which
+    // shows the fixed-position tvBar (z-index:50). If that runs AFTER
+    // vsShowTurnScreen, the tvBar becomes visible again underneath the
+    // vs-turn splash during its 300ms opacity fade-in, causing the
+    // gamescreen-glimpse flash. Running init() first lets vsStartGame's
+    // tvBar.remove('show') be the final state before the splash appears.
     init();
+    vsStartGame();
     return;
   }
-  
+
   init();
   showSingleRoundSplash();
 }
