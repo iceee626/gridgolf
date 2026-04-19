@@ -363,7 +363,11 @@ body.nav-back .setup-screen:not(.visible){ transform:translateX(-18%) scale(.985
 body.nav-back .menu-screen.visible,
 body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1; }
 .menu-bg-grass{display:none;}
-#menuScreen{background:linear-gradient(180deg,var(--dark) 55%,#0d1f0a 100%) !important;}
+#menuScreen{
+  background-color: #0d1f0a !important;
+  background-image: linear-gradient(180deg,var(--dark) 55%,#0d1f0a 100%) !important;
+  background-repeat: no-repeat !important;
+}
 /* Stretch menu-content to fill menu-screen's padded area so #menuScreen's
    layout depends on the real visible viewport rather than a fractional
    `dvh` unit. Fixes the first-launch top-gap on iOS Safari standalone
@@ -734,9 +738,9 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
   padding:4px 12px;
   text-align:center;
   min-height:21px;
-  visibility:hidden;
+  display:none;
 }
-.tv-row2.show{visibility:visible;}
+.tv-row2.show{display:block;}
 .tv-putt-status{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;color:#fff;}
 .tv-putt-status.eagle-c{color:var(--gold);}
 .tv-putt-status.birdie-c{color:#c8ffd4;}
