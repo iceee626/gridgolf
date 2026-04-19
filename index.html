@@ -312,8 +312,8 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .roll-col{flex:1.44 1 0;display:grid;min-width:0;position:relative;}
 /* MORPH: buttons share the same slot; outgoing fades + scales down, incoming fades + scales up with a tiny bounce. */
 #rollBtn,#nextShotBtn{grid-area:1/1;transform-origin:center;transition:opacity .08s ease,background-color .08s ease,box-shadow .08s ease,color .08s ease,filter .08s ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
-.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:none;}
-.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none !important;transform:none;}
+.shot-btn-visible{opacity:1;visibility:visible;pointer-events:auto;transform:none;display:flex;}
+.shot-btn-hidden{opacity:0;visibility:hidden;pointer-events:none !important;transform:none;display:none !important;}
 /* Morph pulse removed to eliminate lag between roll/next-shot/finish-hole */
 .roll-col.morphing{animation:none;}
 #nextShotBtn{letter-spacing:2px;font-size:20px;}
@@ -4257,8 +4257,10 @@ function _scoreDiffLabel(d){
   if(d===-1) return 'BIRDIE';
   if(d===0) return 'PAR';
   if(d===1) return 'BOGEY';
-  if(d===2) return 'DBL BOGEY';
-  if(d===3) return 'TRIPLE';
+  if(d===2) return 'DOUBLE BOGEY';
+  if(d===3) return 'TRIPLE BOGEY';
+  if(d===4) return 'QUADRUPLE';
+  if(d===5) return 'QUINTUPLE';
   return `+${d}`;
 }
 function _scoreDiffColor(d){
@@ -5199,7 +5201,8 @@ function openSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget
     row.style.background = 'rgba(255,255,255,.07)';
     row.style.position = 'relative';
     const hasWc = hist.wcsUsed && hist.wcsUsed.length > 0;
-    row.innerHTML=`<div class="shp-num" style="color:${numColor};">${absoluteIdx+1}</div>${hasWc?'<div style="position:absolute;top:2px;right:3px;font-size:9px;line-height:1;pointer-events:none;">🃏</div>':''}`;
+    row.style.overflow = 'hidden';
+    row.innerHTML=`<div class="shp-num" style="color:${numColor};">${absoluteIdx+1}</div>${hasWc?'<div style="position:absolute;top:4px;right:4px;font-size:7px;line-height:1;pointer-events:none;opacity:.9;">🃏</div>':''}`;
     row.onclick=()=>openHistInline(absoluteIdx, holeList, row, viewRound);
     holeList.appendChild(row);
   });
@@ -7447,8 +7450,9 @@ function openVersusSummary(viewRound = S.currentRound, backTarget = _summaryBack
     row.dataset.holeIdx=String(absoluteIdx);
     row.style.background = 'rgba(255,255,255,.07)';
     row.style.position = 'relative';
+    row.style.overflow = 'hidden';
     const hasWcVs = hist.wcsUsed && hist.wcsUsed.length > 0;
-    row.innerHTML=`<div class="shp-num" style="color:${numColor};">${absoluteIdx+1}</div>${hasWcVs?'<div style="position:absolute;top:2px;right:3px;font-size:9px;line-height:1;pointer-events:none;">🃏</div>':''}`;
+    row.innerHTML=`<div class="shp-num" style="color:${numColor};">${absoluteIdx+1}</div>${hasWcVs?'<div style="position:absolute;top:4px;right:4px;font-size:7px;line-height:1;pointer-events:none;opacity:.9;">🃏</div>':''}`;
     row.onclick=()=>{
       if(!Array.isArray(S.histories[viewRound - 1])) S.histories[viewRound - 1] = Array(18).fill(null);
       for(let hIdx = S.startIdx; hIdx <= S.endIdx; hIdx++){
@@ -10787,7 +10791,7 @@ function vsShowFinal(){
   btn.onclick = () => {
     _vsSummaryPlayer = 0;
     setSummaryContext({ mode:'versus', playerIdx:0 });
-    openSummaryTransition(S.currentRound, 'game');
+    openSummaryTransition(S.currentRound, 'hcScreen');
   };
 
   setMainAppConcealed(true);
