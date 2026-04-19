@@ -88,7 +88,6 @@ body{
   display:none;
   padding-bottom:env(safe-area-inset-bottom);
   border-radius: 16px 16px 0 0;
-  overflow: hidden;
 }
 /* Full-screen overlays also need top safe area and inherit body safe-area via body padding-top */
 .menu-screen,.diff-screen{
@@ -347,7 +346,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 
 /* MAIN MENU & SCREENS */
 .menu-screen, .setup-screen {
-  position:fixed;inset:0;background:var(--dark);z-index:500;display:flex;align-items:center;justify-content:center;overflow-y:auto;
+  position:fixed;top:0;left:0;width:100vw;height:100dvh;height:var(--app-vh, 100dvh);background:var(--dark);z-index:500;display:flex;align-items:center;justify-content:center;overflow-y:auto;
   padding:calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
   opacity:0;transform:translateY(12px) scale(.985);transition:opacity .28s ease,transform .34s cubic-bezier(0.22,1,0.36,1); pointer-events:none;
   will-change:opacity,transform;
@@ -367,6 +366,7 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
   background-color: #0d1f0a !important;
   background-image: linear-gradient(180deg,var(--dark) 55%,#0d1f0a 100%) !important;
   background-repeat: no-repeat !important;
+  background-size: 100% 100% !important;
 }
 /* Stretch menu-content to fill menu-screen's padded area so #menuScreen's
    layout depends on the real visible viewport rather than a fractional
