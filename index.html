@@ -95,8 +95,12 @@ body{
    keep the panel anchored lower while avoiding a separate dark bottom strip. */
 html.ios-iphone .tv-bar{padding-bottom:0;}
 html.ios-iphone .tv-row2{
-  padding-bottom:calc(4px + env(safe-area-inset-bottom));
-  min-height:calc(21px + env(safe-area-inset-bottom));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 12px;
+  min-height:21px;
+  height:21px;
 }
 /* Full-screen overlays also need top safe area and inherit body safe-area via body padding-top */
 .menu-screen,.diff-screen{
@@ -9683,7 +9687,7 @@ function tutAdvance(){
     if(_tutStep === 6){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#rollBtn', true);
+      _tutHighlight('#rollBtn', false);
       scrollToGrid();
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
