@@ -6307,6 +6307,28 @@ function closeProfileModal(){
 }
 
 function autoLoadProfile(){
+  // Cold launches can restore saved-game UI state before the menu is shown.
+  // Force-hide the in-round chrome so the fixed tv bar never peeks through
+  // beneath the main menu on iOS standalone launch.
+  const tvBar = document.getElementById('tvBar');
+  if(tvBar) tvBar.classList.remove('show');
+  const wcFab = document.getElementById('wcFab');
+  if(wcFab) wcFab.classList.remove('visible');
+  const overlay = document.getElementById('overlay');
+  if(overlay) overlay.classList.remove('show');
+  const summaryModal = document.getElementById('summaryModal');
+  if(summaryModal) summaryModal.classList.remove('show');
+  const hcScreen = document.getElementById('hcScreen');
+  if(hcScreen) hcScreen.classList.remove('show');
+  const vsTurnScreen = document.getElementById('vsTurnScreen');
+  if(vsTurnScreen) vsTurnScreen.classList.remove('show');
+  const roundStartScreen = document.getElementById('roundStartScreen');
+  if(roundStartScreen) roundStartScreen.classList.remove('show');
+  const gameMenuModal = document.getElementById('gameMenuModal');
+  if(gameMenuModal) gameMenuModal.classList.remove('show');
+  setMainAppConcealed(true);
+  hideMainAppImmediate();
+
   const profiles=loadProfiles();
   if(!profiles.length){
     const obs=document.getElementById('onboardScreen');
