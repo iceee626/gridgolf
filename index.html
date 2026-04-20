@@ -92,10 +92,17 @@ body{
   overflow: hidden;
 }
 /* iPhone-only TV bar safe-area tuning:
-   keep the panel stable, but lift it enough to cover the SHOT LOG header. */
+   keep the panel stable, lift it above SHOT LOG, and fill the exposed
+   bottom band with the TV bar blue. */
 html.ios-iphone .tv-bar{
   padding-bottom:0;
   bottom:16px;
+}
+html.ios-iphone .tv-bar::after{
+  content:'';
+  display:block;
+  height:16px;
+  background:#1e3a5f;
 }
 html.ios-iphone .tv-row2{
   display:flex;
@@ -2779,6 +2786,7 @@ let S={
   scorecards: [Array(18).fill(null)], histories: [Array(18).fill(null)],
   currentGrid:null, holeDone:false, rolling:false,
   yrdRemain:0, yrdTotal:0, fwyVisits:0, prevZone:null, shotCount:0,
+  _gameUnderParStreak:0,
   _wcUsedThisRound:0, _skipCelebration:false, _preserveGrid:false, _forceGrid:false,
   _mulliganJustFired:false, _puttWcUsed:false, _pendingPuttResult:null, _pendingHoleFinish:null,
   _eyesClosedArmed:false, _landscaperRoughFixes:0, _rocketApproachPending:false,
@@ -2964,6 +2972,7 @@ function resetGameState(){
   S.histories = [Array(18).fill(null)];
   S.currentGrid=null; S.holeDone=false; S.rolling=false;
   S.yrdRemain=0; S.yrdTotal=0; S.fwyVisits=0; S.prevZone=null; S.shotCount=0;
+  S._gameUnderParStreak=0;
   S._wcUsedThisRound=0;
   S._wcDiscardedThisRound=0;
   S._pendingPuttResult=null; S._pendingHoleFinish=null;
@@ -4642,10 +4651,11 @@ function completeHole(){
       if(d===-1) p.birdies=(p.birdies||0)+1;
       if(isHoleInOne) p.holeInOnes=(p.holeInOnes||0)+1;
       if(d>=3) p.tripleTroubles=(p.tripleTroubles||0)+1;
-      const prevStreak=p._curUnderParStreak||0;
+      const prevStreak=S._gameUnderParStreak||0;
       const newStreak=d<0?prevStreak+1:0;
-      p._curUnderParStreak=newStreak;
+      S._gameUnderParStreak=newStreak;
       p.bestUnderParStreak=Math.max(p.bestUnderParStreak||0,newStreak);
+      if(newStreak>=3) unlockAchievement('on_a_roll');
       profiles[idx]=p;saveProfiles(profiles);
       setTimeout(()=>checkAndAwardAchievements(),300);
     }
@@ -6040,6 +6050,7 @@ function showXpRewardModal(title, award, buttonText = 'CONTINUE', afterClose = n
   if(!modal || !titleEl || !body || !award) return;
   titleEl.textContent = title;
   body.innerHTML = `
+    <div class="xp-modal-note">Progress Updated</div>
     ${renderXpAwardCardHtml(award)}
     <div style="margin-top:12px;">
       <button class="menu-btn-play" style="width:100%;" onclick="xpRewardContinue()">${buttonText}</button>
@@ -6927,7 +6938,7 @@ const ACHIEVEMENT_RULES = {
   first_birdie: p => (p.birdies||0) >= 1,
   eagle: p => (p.eagles||0) >= 1,
   hole_in_one: p => (p.holeInOnes||0) >= 1,
-  on_a_roll: p => (p.bestUnderParStreak||0) >= 3,
+  on_a_roll: () => false,
   birdie_streak: p => (p.bestBirdieStreak||0) >= 5,
   rollercoaster: p => (p.rollercoasterRounds||0) >= 1,
   ice_veins: p => (p.iceVeinsRounds||0) >= 1,
@@ -8941,6 +8952,7 @@ function saveGameState(){
     holeIdx:S.holeIdx, zone:S.zone, strokes:S.strokes, shotNum:S.shotNum, log:S.log,
     scorecards:S.scorecards, histories:S.histories,
     holeDone:S.holeDone, yrdRemain:S.yrdRemain, yrdTotal:S.yrdTotal, fwyVisits:S.fwyVisits, prevZone:S.prevZone, shotCount:S.shotCount,
+    _gameUnderParStreak:S._gameUnderParStreak||0,
     _wcUsedThisRound:S._wcUsedThisRound||0,
     _wcDiscardedThisRound:S._wcDiscardedThisRound||0,
     _wcsUsedThisHole:S._wcsUsedThisHole||[], _wcNextShotNote:S._wcNextShotNote||null,
@@ -9037,6 +9049,7 @@ function continueGame(){
     
     S.holeDone=save.holeDone||false; S.yrdRemain=save.yrdRemain; S.yrdTotal=save.yrdTotal; S.fwyVisits=save.fwyVisits||0;
     S.prevZone=save.prevZone; S.shotCount=save.shotCount||0; 
+    S._gameUnderParStreak=save._gameUnderParStreak||0;
     S._wcUsedThisRound=save._wcUsedThisRound||0;
     S._wcDiscardedThisRound=save._wcDiscardedThisRound||0; 
     S._wcsUsedThisHole=save._wcsUsedThisHole||[]; S._wcNextShotNote=save._wcNextShotNote||null;
