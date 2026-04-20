@@ -11,10 +11,10 @@
 <title>DiceGolf</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sen:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-180.png">
-<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
-<link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png">
-<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+<link rel="apple-touch-icon" href="icons/icon_60pt@3x_180px.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon_76pt@2x_152px.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icons/icon_83pt@2x_167px.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon_60pt@3x_180px.png">
 <style>
 :root{
   --c-tee:#2c5f8a;--c-fwy:#3a7a30;--c-fwyl:#4e9e42;
@@ -348,7 +348,6 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 /* MAIN MENU & SCREENS */
 .menu-screen, .setup-screen {
   position:fixed;inset:0;background:var(--dark);z-index:500;display:flex;align-items:center;justify-content:center;overflow-y:auto;
-  height:var(--app-vh,100dvh);max-height:var(--app-vh,100dvh);box-sizing:border-box;
   padding:calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
   opacity:0;transform:translateY(12px) scale(.985);transition:opacity .28s ease,transform .34s cubic-bezier(0.22,1,0.36,1); pointer-events:none;
   will-change:opacity,transform;
@@ -363,14 +362,9 @@ body.nav-back .menu-screen:not(.visible),
 body.nav-back .setup-screen:not(.visible){ transform:translateX(-18%) scale(.985); opacity:0; }
 body.nav-back .menu-screen.visible,
 body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1; }
-.menu-bg-grass{display:none;}
+.menu-bg-grass{position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(180deg,transparent 0%,#0d1f0a 100%);pointer-events:none;z-index:0;}
 #menuScreen{background:linear-gradient(180deg,var(--dark) 55%,#0d1f0a 100%) !important;}
-/* Stretch menu-content to fill menu-screen's padded area so #menuScreen's
-   layout depends on the real visible viewport rather than a fractional
-   `dvh` unit. Fixes the first-launch top-gap on iOS Safari standalone
-   where `dvh` reports a smaller value before the viewport settles. */
-#menuScreen{align-items:stretch;justify-content:center;}
-.menu-content{position:relative;z-index:10;text-align:center;width:100%;max-width:380px;min-height:min(calc(var(--app-vh,100dvh) * 0.78),720px);display:flex;flex-direction:column;}
+.menu-content{position:relative;z-index:10;text-align:center;width:100%;max-width:380px;min-height:min(78vh,720px);display:flex;flex-direction:column;}
 .onboard-content{max-width:360px;min-height:auto;justify-content:center;}
 .onboard-content .menu-logo{margin-top:0;margin-bottom:18px;}
 .onboard-content.locked-focus{
@@ -2055,8 +2049,6 @@ function _setNavDir(dir){
 function showScreen(id, flexOrBlock='flex'){
   const el=document.getElementById(id);
   if(!el)return;
-  const needsViewportSync = el.classList.contains('menu-screen') || el.classList.contains('setup-screen');
-  if(needsViewportSync) refreshAppVh();
   // Default to forward direction if nothing else set it
   if(!document.body.classList.contains('nav-back') && !document.body.classList.contains('nav-forward')){
     _setNavDir('forward');
@@ -2069,10 +2061,6 @@ function showScreen(id, flexOrBlock='flex'){
   el.style.display=flexOrBlock;
   void el.offsetWidth;
   el.classList.add('visible');
-  if(needsViewportSync){
-    requestAnimationFrame(refreshAppVh);
-    setTimeout(refreshAppVh, 90);
-  }
 }
 function showMainApp(){
   const app=document.getElementById('mainApp');
@@ -6307,14 +6295,7 @@ function autoLoadProfile(){
   const profiles=loadProfiles();
   if(!profiles.length){
     const obs=document.getElementById('onboardScreen');
-    if(obs){
-      refreshAppVh();
-      obs.style.display='flex';
-      void obs.offsetWidth;
-      obs.classList.add('visible');
-      requestAnimationFrame(refreshAppVh);
-      setTimeout(refreshAppVh, 90);
-    }
+    if(obs){obs.style.display='flex';void obs.offsetWidth;obs.classList.add('visible');}
     document.getElementById('menuScreen').style.display='none';
   } else {
     const p=getActiveProfile();
