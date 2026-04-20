@@ -91,6 +91,13 @@ body{
   border-radius: 16px 16px 0 0;
   overflow: hidden;
 }
+/* iPhone-only TV bar safe-area tuning:
+   keep the panel anchored lower while avoiding a separate dark bottom strip. */
+html.ios-iphone .tv-bar{padding-bottom:0;}
+html.ios-iphone .tv-row2{
+  padding-bottom:calc(4px + env(safe-area-inset-bottom));
+  min-height:calc(21px + env(safe-area-inset-bottom));
+}
 /* Full-screen overlays also need top safe area and inherit body safe-area via body padding-top */
 .menu-screen,.diff-screen{
   padding-top:env(safe-area-inset-top);
@@ -1363,7 +1370,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 
 /* VERSUS MODE */
 .vs-turn-screen{position:fixed;inset:0;background:var(--dark);z-index:545;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;}
-.vs-turn-screen.show{display:flex;animation:fadeInOverlay .3s ease;}
+.vs-turn-screen.show{display:flex;animation:none;opacity:1;transform:none;}
 .vs-turn-screen.single-round-start.show{display:flex;animation:none;opacity:1;transform:none;}
 .vs-turn-screen.fade-out{display:flex;animation:fadeOutOverlay .24s ease forwards;}
 .vs-turn-screen.single-round-start.fade-out{display:flex;animation:fadeOutOverlay .24s ease forwards;}
@@ -2309,6 +2316,8 @@ window.addEventListener('DOMContentLoaded', function(){
   _loadShakePermission();
   applyRollMode(getRollMode());
   initFloatingEntities();
+  const ua = navigator.userAgent || '';
+  if(/iPhone/i.test(ua)) document.documentElement.classList.add('ios-iphone');
   // Shot-button tap rescue: on iOS Safari a click can be dropped when
   // ROLL ↔ NEXT SHOT swap happens during a touch, leaving a visible button
   // unresponsive. Delegate at the .roll-col level and fire the currently
@@ -9459,6 +9468,7 @@ function clearTutorialUiState(){
   _tutHoleKey = 'h1';
   _tutWaitEvent = null;
   _tutWaitCallback = null;
+  _tutPendingEvents = Object.create(null);
   _holdFinishBtn = false;
   window._disableTutScroll = false;
 
@@ -9499,6 +9509,9 @@ function startTutorial(){
   TUT.blocked = true;
   _tutStep = -1;
   _tutHoleKey = 'h1';
+  _tutWaitEvent = null;
+  _tutWaitCallback = null;
+  _tutPendingEvents = Object.create(null);
   VS.active = false;
   _courseScreenFlow = 'single';
   if(VS.setup){
@@ -9647,7 +9660,8 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('SCORECARD', 'This is your scorecard. It shows how many strokes you used on each hole compared to Par (the expected number of shots). "E" means Even — you matched Par exactly. Fewer strokes is great (Birdie = -1, Eagle = -2, Albatross = -3). More strokes adds to your score (Bogey = +1, Double Bogey = +2, etc.).', 'GOT IT', '.sc-wrap', true);
+      // Scorecard popup intentionally removed to keep the tutorial tighter.
+      tutAdvance();
       return;
     }
     if(_tutStep === 2){
@@ -9669,7 +9683,7 @@ function tutAdvance(){
     if(_tutStep === 6){
       _tutHideTip();
       _tutBlockInput(false);
-      _tutHighlight('#rollBtn', false); 
+      _tutHighlight('#rollBtn', true);
       scrollToGrid();
       _tutWaitFor('after_shot', ()=>{ tutAdvance(); });
       return;
@@ -9910,20 +9924,33 @@ function tutAdvance(){
 
 let _tutWaitCallback = null;
 let _tutWaitEvent = null;
+let _tutPendingEvents = Object.create(null);
+const _TUT_PENDING_EVENT_MAX_AGE_MS = 1500;
 
 function _tutWaitFor(event, cb){
+  const queuedAt = _tutPendingEvents[event];
+  if(queuedAt && (Date.now() - queuedAt) <= _TUT_PENDING_EVENT_MAX_AGE_MS){
+    delete _tutPendingEvents[event];
+    _tutWaitEvent = null;
+    _tutWaitCallback = null;
+    cb();
+    return;
+  }
   _tutWaitEvent = event;
   _tutWaitCallback = cb;
 }
 
 function _tutFire(event){
-  if(!TUT.active || !_tutWaitEvent) return;
+  if(!TUT.active) return;
   if(_tutWaitEvent === event && _tutWaitCallback){
     const cb = _tutWaitCallback;
     _tutWaitEvent = null;
     _tutWaitCallback = null;
+    delete _tutPendingEvents[event];
     cb();
+    return;
   }
+  _tutPendingEvents[event] = Date.now();
 }
 
 function tutAfterShot(outcome){
