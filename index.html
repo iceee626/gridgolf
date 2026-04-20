@@ -92,8 +92,11 @@ body{
   overflow: hidden;
 }
 /* iPhone-only TV bar safe-area tuning:
-   keep the panel anchored lower while avoiding a separate dark bottom strip. */
-html.ios-iphone .tv-bar{padding-bottom:0;}
+   keep the panel stable, but lift it enough to cover the SHOT LOG header. */
+html.ios-iphone .tv-bar{
+  padding-bottom:0;
+  bottom:22px;
+}
 html.ios-iphone .tv-row2{
   display:flex;
   align-items:center;
@@ -6037,7 +6040,6 @@ function showXpRewardModal(title, award, buttonText = 'CONTINUE', afterClose = n
   if(!modal || !titleEl || !body || !award) return;
   titleEl.textContent = title;
   body.innerHTML = `
-    <div class="xp-modal-note">Progress Updated</div>
     ${renderXpAwardCardHtml(award)}
     <div style="margin-top:12px;">
       <button class="menu-btn-play" style="width:100%;" onclick="xpRewardContinue()">${buttonText}</button>
