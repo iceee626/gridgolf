@@ -1,9 +1,9 @@
 {
   "name": "DiceGolf",
   "short_name": "DiceGolf",
-  "id": "./",
-  "start_url": "./",
-  "scope": "./",
+  "id": "/gridgolf/",
+  "start_url": "/gridgolf/",
+  "scope": "/gridgolf/",
   "display": "standalone",
   "background_color": "#0d1117",
   "theme_color": "#0d1117",
