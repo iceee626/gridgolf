@@ -818,7 +818,8 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
 .celebration-badge{font-family:'Bebas Neue',cursive;font-size:48px;letter-spacing:4px;text-align:center;padding:18px 32px;border-radius:16px;animation:celebIn .5s cubic-bezier(.34,1.56,.64,1) forwards, celebOut .3s ease .9s forwards;}@keyframes celebIn{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 @keyframes celebOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(1.1)}}
 .celeb-eagle{background:rgba(240,192,64,.95);color:#3a2800;}
-.celeb-birdie{background:rgba(255,107,157,.95);color:#3a0020;}
+.celeb-albatross{background:rgba(255,107,157,.95);color:#3a0020;}
+.celeb-birdie{background:rgba(46,146,78,.95);color:#fff;}
 .celeb-par{background:rgba(30,122,48,.95);color:#fff;}
 .celeb-bogey{background:rgba(224,82,82,.95);color:#fff;}
 .celeb-double{background:rgba(224,82,82,.95);color:#fff;}
@@ -1498,7 +1499,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .wc-front-name{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#f0c040;text-align:center;line-height:1.1;}
 .wc-front-type{display:none;}
 .wc-front-desc{font-family:'Sen',sans-serif;font-size:12px;color:rgba(255,255,255,.75);text-align:center;line-height:1.4;}
-.wc-reveal-hint{font-family:'Sen', sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);animation:wc-blink 1.2s ease infinite;}
+.wc-reveal-hint{font-family:'Sen', sans-serif;font-size:12px;letter-spacing:2px;color:rgba(255,255,255,.4);animation:wc-blink 1.2s ease infinite;}
 @keyframes wc-blink{0%,100%{opacity:.4}50%{opacity:.9}}
 .wc-reveal-actions{display:flex;flex-direction:column;gap:10px;width:220px;align-items:stretch;}
 .wc-reveal-action-zone{height:126px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;margin-top:10px;}
@@ -1541,6 +1542,33 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .btn-roll.wc-active{
   box-shadow:0 0 0 3px #f0c040, 0 0 16px rgba(240,192,64,.5);
   background:#5a6a20;
+}
+.gg-wc-toast{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%) scale(.96);
+  background:rgba(123,47,158,.95);
+  color:#fff;
+  font-family:'Sen',sans-serif;
+  font-size:12px;
+  letter-spacing:1px;
+  padding:8px 16px;
+  border-radius:8px;
+  z-index:220;
+  box-shadow:0 4px 12px rgba(0,0,0,.4);
+  max-width:85vw;
+  text-align:center;
+  line-height:1.4;
+  opacity:0;
+  transition:opacity .18s ease,transform .22s cubic-bezier(.22,1,.36,1),bottom .22s ease;
+}
+.gg-wc-toast.show{
+  opacity:1;
+  transform:translateX(-50%) scale(1);
+}
+.gg-wc-toast.hide{
+  opacity:0;
+  transform:translateX(-50%) scale(.96);
 }
 
 /* Scorecard score symbols */
@@ -1728,7 +1756,8 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .vs-turn-screen.single-round-start .vs-turn-sub{font-family:'Bebas Neue',cursive;font-size:38px;letter-spacing:3px;color:var(--c-fwyl);line-height:1;}
 .vs-turn-screen.single-round-start .vs-turn-meta{margin-top:-2px;}
 body[data-course-theme='septembra-national'] #roundStartScreen .vs-turn-name{
-  font-size: 28px;
+  font-family:'Fraunces',serif !important;
+  font-size:28px;
 }
 body[data-course-theme='septembra-national'] #roundStartScreen .vs-turn-sub,
 body[data-course-theme='septembra-national'] #roundStartScreen .vs-turn-meta,
@@ -3991,6 +4020,7 @@ function updateTVBanner(){
       bar.classList.remove('putt-row-active');
     }
   }
+  syncWcToastStackPosition();
 }
 
 // ═══════════════════════════════════════
@@ -4951,10 +4981,15 @@ function _scoreDiffLabel(d){
 }
 function _scoreDiffColor(d){
   if(d==null) return 'var(--muted)';
+  if(d<=-3) return '#ff6b9d';
   if(d<=-2) return 'var(--gold)';
   if(d===-1) return '#52c87a';
   if(d===0) return 'var(--c-fwyl)';
   return '#e05252';
+}
+function _scoreOutcomeColor(d, isHoleInOne=false){
+  if(isHoleInOne) return 'var(--gold)';
+  return _scoreDiffColor(d);
 }
 function _renderShotReplay(log, holeDone, scoreDiff){
   const trail = document.getElementById('hcShotTrail');
@@ -5057,7 +5092,7 @@ function updateFloat(){updateTVBanner();}
 function showCelebration(d, onDone){
   let txt, cls;
   if(d===-99)    {txt='HOLE IN ONE! ⛳'; cls='celeb-eagle';}
-  else if(d<=-3) {txt='ALBATROSS 🪶'; cls='celeb-eagle';}
+  else if(d<=-3) {txt='ALBATROSS 🪶'; cls='celeb-albatross';}
   else if(d<=-2) {txt='EAGLE 🦅'; cls='celeb-eagle';}
   else if(d===-1){txt='BIRDIE 🐤';  cls='celeb-birdie';}
   else if(d===0) {txt='PAR ⛳';     cls='celeb-par';}
@@ -5114,7 +5149,9 @@ function completeHole(){
     else if(d>=2){ _doHaptic('HEAVY'); }
     document.getElementById('ovEmoji').textContent=emoji;
     document.getElementById('ovEmoji').style.display='block';
-    document.getElementById('ovTitle').textContent=title;
+    const ovTitle=document.getElementById('ovTitle');
+    ovTitle.textContent=title;
+    ovTitle.style.color=_scoreOutcomeColor(d, isHoleInOne);
 
     let pTotal = 0, pPar = 0;
     for(let i=S.startIdx; i<=S.holeIdx; i++){
@@ -5185,7 +5222,9 @@ function completeHole(){
 
     document.getElementById('ovEmoji').textContent=emoji;
     document.getElementById('ovEmoji').style.display='block';
-    document.getElementById('ovTitle').textContent=title;
+    const ovTitle=document.getElementById('ovTitle');
+    ovTitle.textContent=title;
+    ovTitle.style.color=_scoreOutcomeColor(d, isHoleInOne);
     document.getElementById('ovNameRow').textContent=`TOTAL SCORE: ${tutDiffStr}`;
     document.getElementById('ovStatsRow').innerHTML= score === 1 ? `Hole in One! · par ${h.par} &nbsp; ${starsHTML(h.baseDiff)}` : `${score} strokes · par ${h.par} &nbsp; ${starsHTML(h.baseDiff)}`;
     
@@ -5323,10 +5362,7 @@ function completeHole(){
   else if(d===-1){ _doHaptic('MEDIUM'); }
   else if(d>=2){ _doHaptic('HEAVY'); }
 
-  if(d<=-2) hcTitle.style.color='var(--gold)';
-  else if(d===-1) hcTitle.style.color='#ff6b9d';
-  else if(d===0) hcTitle.style.color='var(--c-fwyl)';
-  else hcTitle.style.color='#e05252';
+  hcTitle.style.color=_scoreOutcomeColor(d, isHoleInOne);
 
   document.getElementById('hcSub').innerHTML = score === 1 ? `HOLE IN ONE · PAR ${h.par} · ${starsHTML(h.baseDiff)}` : `${score} STROKES · PAR ${h.par} · ${starsHTML(h.baseDiff)}`;
   
@@ -9229,12 +9265,69 @@ function applyWildcardEffect(wc){
   return applied;
 }
 
-function showWcToast(msg, bottom=115){
+const _wcToastStack = [];
+let _wcToastLayoutRaf = null;
+let _wcToastResizeBound = false;
+
+function _wcToastBaseBottom(){
+  const tvBar = document.getElementById('tvBar');
+  if(tvBar){
+    const rect = tvBar.getBoundingClientRect();
+    if(rect && rect.top < window.innerHeight){
+      return Math.max(4, Math.round(window.innerHeight - rect.top + 4));
+    }
+  }
+  return 24;
+}
+function _layoutWcToasts(){
+  let bottom = _wcToastBaseBottom();
+  _wcToastStack.forEach(item=>{
+    if(!item.el || !item.el.isConnected) return;
+    item.el.style.bottom = `${bottom}px`;
+    bottom += item.el.offsetHeight + 8;
+  });
+}
+function _queueWcToastLayout(){
+  if(_wcToastLayoutRaf) cancelAnimationFrame(_wcToastLayoutRaf);
+  _wcToastLayoutRaf = requestAnimationFrame(()=>{
+    _wcToastLayoutRaf = null;
+    _layoutWcToasts();
+  });
+}
+function syncWcToastStackPosition(){
+  if(!_wcToastStack.length) return;
+  _queueWcToastLayout();
+}
+function _removeWcToast(item){
+  const idx = _wcToastStack.indexOf(item);
+  if(idx >= 0) _wcToastStack.splice(idx, 1);
+  if(item.timeout) clearTimeout(item.timeout);
+  const el = item.el;
+  if(el){
+    el.classList.remove('show');
+    el.classList.add('hide');
+    setTimeout(()=>{ if(el.parentNode) el.remove(); }, 220);
+  }
+  _queueWcToastLayout();
+}
+function showWcToast(msg, _legacyBottom){
+  if(!msg) return;
+  if(!_wcToastResizeBound){
+    _wcToastResizeBound = true;
+    window.addEventListener('resize', syncWcToastStackPosition);
+  }
   const t=document.createElement('div');
-  t.style.cssText=`position:fixed;bottom:${bottom}px;left:50%;transform:translateX(-50%);background:rgba(123,47,158,.95);color:#fff;font-family:"Sen",sans-serif;font-size:12px;letter-spacing:1px;padding:8px 16px;border-radius:8px;z-index:200;animation:fadein .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.4);max-width:85vw;text-align:center;line-height:1.4;`;
+  t.className='gg-wc-toast';
   t.textContent=msg;
   document.body.appendChild(t);
-  setTimeout(()=>t.remove(),2200);
+  const item={el:t,timeout:null};
+  _wcToastStack.push(item);
+  _queueWcToastLayout();
+  requestAnimationFrame(()=>{
+    t.classList.add('show');
+    _queueWcToastLayout();
+  });
+  item.timeout=setTimeout(()=>_removeWcToast(item),2200);
 }
 
 function appendWcNote(noteStr) {
@@ -9313,6 +9406,24 @@ function applyWcGridMods(grid){
 
 // ── WILDCARD REVEAL FLOW ──────────────────────────────
 let _pendingWc=null;
+function _resetWcRevealState(){
+  const card = document.getElementById('wcCard');
+  const rarityEl = document.getElementById('wcRevealRarity');
+  const hintEl = document.getElementById('wcRevealHint');
+  const actionsEl = document.getElementById('wcRevealActions');
+  if(card){
+    card.style.transition = 'none';
+    card.classList.remove('revealed');
+    void card.offsetHeight;
+    card.style.transition = '';
+  }
+  if(rarityEl) rarityEl.classList.remove('revealed');
+  if(hintEl) hintEl.style.display='block';
+  if(actionsEl){
+    actionsEl.style.display='none';
+    actionsEl.innerHTML='';
+  }
+}
 
 function triggerWcReveal(row, col){
   _pendingWc=randWildcard();
@@ -9357,10 +9468,7 @@ function triggerWcReveal(row, col){
     }
   }
 
-  document.getElementById('wcCard').classList.remove('revealed');
-  if(rarityEl) rarityEl.classList.remove('revealed');
-  document.getElementById('wcRevealHint').style.display='block';
-  document.getElementById('wcRevealActions').style.display='none';
+  _resetWcRevealState();
   document.getElementById('wcReveal').classList.add('show');
   document.body.style.overflow = 'hidden'; // Lock background scroll
   playSound('wildcard', 0.85);
@@ -9481,8 +9589,7 @@ function showDiscardChoice(){
 function closeWcReveal(){
   document.getElementById('wcReveal').classList.remove('show');
   document.body.style.overflow = ''; // Restore scroll
-  const rarityEl=document.getElementById('wcRevealRarity');
-  if(rarityEl) rarityEl.classList.remove('revealed');
+  _resetWcRevealState();
   renderWcFab();
   renderWcDrawer();
   if(WCS.pendingRow!==null){
@@ -9826,6 +9933,7 @@ function continueGame(){
         } else {
             document.getElementById('ovEmoji').textContent='⛳';
             document.getElementById('ovTitle').textContent='HOLE COMPLETE';
+            document.getElementById('ovTitle').style.color='var(--c-fwyl)';
             document.getElementById('ovNameRow').textContent='';
             document.getElementById('ovStatsRow').textContent=`${S.strokes} strokes · par ${HOLES[S.holeIdx].par}`;
             document.getElementById('ovBtn').style.display='block';
