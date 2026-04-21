@@ -75,7 +75,7 @@ body[data-course-theme='little-pines']{
   --course-panel:rgba(16,25,21,.84);--course-panel-strong:rgba(9,15,12,.94);--course-panel-border:rgba(150,190,162,.22);
   --course-text:#e6edf3;--course-muted:#8ea49a;--course-accent:#5cae6c;--course-accent-soft:#95d7a4;
   --course-header-chip:rgba(6,10,8,.16);
-  --tv-bar-bg:#10283f;--tv-row1-bg:#111C27;--tv-row2-bg:#1A252F;--tv-icon-bg:#c4a75d;
+  --tv-bar-bg:#111C27;--tv-row1-bg:#111C27;--tv-row2-bg:#1A252F;--tv-icon-bg:#c4a75d;
   --tv-total-bg:#d3b168;--tv-total-fg:#1c2330;--tv-active-bg:#f2f6f9;--tv-active-fg:#10283f;
   --tv-status-fg:#d9be73;
   --tv-total-good:#1d3f24;--tv-total-bad:#5a1a1a;--tv-total-even:#1b1b1b;
@@ -225,7 +225,7 @@ body.theme-swapping *{
    bottom band with the TV bar blue. */
 html.ios-iphone .tv-bar{
   padding-bottom:0;
-  bottom:0px;
+  bottom:-4px;
 }
 html.ios-iphone .tv-bar::after{
   content:'';
@@ -371,7 +371,7 @@ body[data-course-theme] #mainApp #gameSettingsBtn{
   text-overflow:ellipsis;
   color:var(--course-heading);
   font-family:var(--display-font);
-  font-size:20px;
+  font-size:24px;
   letter-spacing:1px;
   text-transform:uppercase;
   line-height:1;
@@ -411,7 +411,7 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .sc-cell-btn:hover{opacity:.7;background:rgba(255,255,255,.08);}
 
 /* HOLE HERO */
-.hole-hero{margin:2px 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:6px 14px 7px;display:flex;flex-direction:column;gap:4px;}
+.hole-hero{margin:4px 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:6px 14px 7px;display:flex;flex-direction:column;gap:4px;}
 .hole-hero-top{display:flex;flex-direction:column;gap:4px;}
 .hole-hero-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;}
 .hole-meta-row{display:flex;align-items:center;gap:7px;min-width:0;color:var(--muted);}
@@ -553,8 +553,8 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 #nextShotBtn{letter-spacing:2px;font-size:20px;}
 body[data-course-theme='septembra-national'] .btn-roll,
 body[data-course-theme='septembra-national'] #nextShotBtn{
-  font-size:16px;
-  letter-spacing:.3px;
+  font-size:20px;
+  letter-spacing:.2px;
   line-height:1;
 }
 
