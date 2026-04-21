@@ -1827,7 +1827,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <button class="course-btn" id="coursePacificBeachBtn" data-course-id="pacific-beach" onclick="selectCourse('pacific-beach')">
       <div>
         <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;">PACIFIC BEACH</div>
-        <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 71 · COASTAL</div>
+        <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 72 · COASTAL</div>
       </div>
       <div style="font-size:24px;">🌊</div>
     </button>
@@ -2768,7 +2768,8 @@ function cells(...pairs){const c=[];pairs.forEach(([k,n])=>c.push(...rep(k,n)));
 // ═══════════════════════════════════════
 // GRID TEMPLATES
 // ═══════════════════════════════════════
-// Layout families: open | doglegs | bunkerFwy | bunkerGreen | waterCross | waterApproach | cathedral
+// Layout families: open | doglegs | bunkerFwy | bunkerGreen | waterCross | waterApproach
+//                  cathedral | coastal | desertWash | waterTee | stadium(par3 only)
 // Each template = exactly 36 cells (6×6 grid)
 
 // ── TEE SHOTS (par 4/5) ─────────────────────────────────────
@@ -2792,6 +2793,21 @@ const T_TEE_WCRS_E  = ()=>cells(['fwy',29],['rgh',4],['h2o',3]);
 const T_TEE_WCRS_M  = ()=>cells(['fwy',25],['rgh',7],['h2o',4]);
 const T_TEE_WCRS_H  = ()=>cells(['fwy',21],['rgh',9],['h2o',6]);
 
+// coastal — exposed ocean-edge tee shots with cliff/water pressure
+const T_TEE_COAST_E = ()=>cells(['fwy',24],['rgh',6],['h2o',4],['sand',2]);
+const T_TEE_COAST_M = ()=>cells(['fwy',20],['rgh',7],['h2o',6],['sand',3]);
+const T_TEE_COAST_H = ()=>cells(['fwy',16],['rgh',8],['h2o',8],['sand',4]);
+
+// desertWash — sandy corridors and harder recovery
+const T_TEE_DSRT_E  = ()=>cells(['fwy',25],['rgh',6],['sand',5]);
+const T_TEE_DSRT_M  = ()=>cells(['fwy',20],['rgh',8],['sand',8]);
+const T_TEE_DSRT_H  = ()=>cells(['fwy',16],['rgh',9],['sand',11]);
+
+// waterTee — water is in play immediately from the tee
+const T_TEE_WTEE_E  = ()=>cells(['fwy',24],['rgh',4],['h2o',8]);
+const T_TEE_WTEE_M  = ()=>cells(['fwy',20],['rgh',5],['h2o',11]);
+const T_TEE_WTEE_H  = ()=>cells(['fwy',16],['rgh',6],['h2o',14]);
+
 // cathedral — tight trees, OB both sides
 const T_TEE_CATH_E  = ()=>cells(['fwy',26],['rgh',10]);
 const T_TEE_CATH_M  = ()=>cells(['fwy',21],['rgh',14],['ob',1]);
@@ -2808,10 +2824,20 @@ const T_P3_WCRS_E   = ()=>cells(['grn',29],['chip',3],['h2o',2],['sand',1],['hol
 const T_P3_WCRS_M   = ()=>cells(['grn',25],['chip',4],['h2o',4],['sand',2],['hole',1]);
 const T_P3_WCRS_H   = ()=>cells(['grn',21],['chip',5],['h2o',6],['sand',3],['hole',1]);
 
+// waterTee par 3 — Augusta-style forced tee carry over water
+const T_P3_WTEE_E   = ()=>cells(['grn',24],['chip',3],['h2o',7],['sand',1],['hole',1]);
+const T_P3_WTEE_M   = ()=>cells(['grn',20],['chip',4],['h2o',9],['sand',2],['hole',1]);
+const T_P3_WTEE_H   = ()=>cells(['grn',17],['chip',4],['h2o',11],['sand',3],['hole',1]);
+
 // bunkerGreen par 3 — bunkers all around green
 const T_P3_BGRN_E   = ()=>cells(['grn',27],['chip',3],['sand',5],['hole',1]);
 const T_P3_BGRN_M   = ()=>cells(['grn',23],['chip',4],['sand',8],['hole',1]);
 const T_P3_BGRN_H   = ()=>cells(['grn',20],['chip',5],['sand',10],['hole',1]);
+
+// stadium par 3 — larger target but deep bunker punishment
+const T_P3_STAD_E   = ()=>cells(['grn',28],['chip',3],['sand',4],['hole',1]);
+const T_P3_STAD_M   = ()=>cells(['grn',24],['chip',4],['sand',7],['hole',1]);
+const T_P3_STAD_H   = ()=>cells(['grn',20],['chip',5],['sand',10],['hole',1]);
 
 // ── FAIRWAY FAR (>200 yds) ─────────────────────────────────
 const T_FAR_OPEN_E  = ()=>cells(['fwy',30],['rgh',6]);
@@ -2832,6 +2858,16 @@ const T_FAR_BFWY_H  = ()=>cells(['fwy',18],['rgh',10],['sand',8]);
 const T_FAR_WCRS_E  = ()=>cells(['fwy',28],['rgh',6],['h2o',2]);
 const T_FAR_WCRS_M  = ()=>cells(['fwy',23],['rgh',8],['h2o',4],['sand',1]);
 const T_FAR_WCRS_H  = ()=>cells(['fwy',18],['rgh',10],['h2o',6],['sand',2]);
+
+// coastal fairway — ocean/OB pressure with narrow safe lanes
+const T_FAR_COAST_E = ()=>cells(['fwy',22],['rgh',6],['h2o',4],['ob',2],['sand',2]);
+const T_FAR_COAST_M = ()=>cells(['fwy',18],['rgh',7],['h2o',6],['ob',2],['sand',3]);
+const T_FAR_COAST_H = ()=>cells(['fwy',14],['rgh',8],['h2o',8],['ob',3],['sand',3]);
+
+// desert fairway — sand and rough dominate misses
+const T_FAR_DSRT_E  = ()=>cells(['fwy',22],['rgh',8],['sand',6]);
+const T_FAR_DSRT_M  = ()=>cells(['fwy',18],['rgh',9],['sand',9]);
+const T_FAR_DSRT_H  = ()=>cells(['fwy',14],['rgh',10],['sand',12]);
 
 // ── APPROACH (80-200 yds from green) ──────────────────────
 const T_APP_OPEN_E  = ()=>cells(['grn',32],['chip',2],['rgh',2]);
@@ -2859,6 +2895,16 @@ const T_APP_WCRS_H  = ()=>cells(['grn',25],['chip',4],['rgh',3],['sand',4]);
 const T_APP_WAPR_E  = ()=>cells(['grn',32],['chip',2],['h2o',2]);
 const T_APP_WAPR_M  = ()=>cells(['grn',27],['chip',3],['h2o',4],['sand',2]);
 const T_APP_WAPR_H  = ()=>cells(['grn',22],['chip',4],['h2o',6],['sand',4]);
+
+// coastal approach — ocean edge and bunker pressure near the green
+const T_APP_COAST_E = ()=>cells(['grn',24],['chip',3],['h2o',5],['sand',4]);
+const T_APP_COAST_M = ()=>cells(['grn',20],['chip',4],['h2o',6],['sand',6]);
+const T_APP_COAST_H = ()=>cells(['grn',16],['chip',5],['h2o',8],['sand',7]);
+
+// desert approach — fewer water penalties, more sand and rough
+const T_APP_DSRT_E  = ()=>cells(['grn',24],['chip',3],['rgh',4],['sand',5]);
+const T_APP_DSRT_M  = ()=>cells(['grn',20],['chip',4],['rgh',5],['sand',7]);
+const T_APP_DSRT_H  = ()=>cells(['grn',16],['chip',5],['rgh',6],['sand',9]);
 
 const T_APP_CATH_E  = ()=>cells(['grn',28],['chip',2],['rgh',4],['sand',2]);
 const T_APP_CATH_M  = ()=>cells(['grn',23],['chip',3],['rgh',6],['sand',4]);
@@ -2940,44 +2986,44 @@ const COURSES={
     id:'pacific-beach', name:'PACIFIC BEACH', shortName:'PACIFIC BEACH',
     holes:[
       {name:'HOLE 1', yards:378,par:4,baseDiff:1,diff:1,layout:'open'},
-      {name:'HOLE 2', yards:509,par:5,baseDiff:3,diff:3,layout:'waterApproach'},
+      {name:'HOLE 2', yards:509,par:5,baseDiff:3,diff:3,layout:'waterApproach',appLayout:'coastal'},
       {name:'HOLE 3', yards:397,par:4,baseDiff:2,diff:2,layout:'doglegs'},
-      {name:'HOLE 4', yards:333,par:4,baseDiff:2,diff:2,layout:'bunkerGreen'},
+      {name:'HOLE 4', yards:333,par:4,baseDiff:2,diff:2,layout:'bunkerGreen',appLayout:'coastal'},
       {name:'HOLE 5', yards:189,par:3,baseDiff:3,diff:3,layout:'waterCross'},
       {name:'HOLE 6', yards:498,par:5,baseDiff:3,diff:3,layout:'doglegs'},
       {name:'HOLE 7', yards:107,par:3,baseDiff:2,diff:2,layout:'open'},
-      {name:'HOLE 8', yards:416,par:4,baseDiff:3,diff:3,layout:'waterCross'},
-      {name:'HOLE 9', yards:483,par:4,baseDiff:3,diff:3,layout:'doglegs'},
-      {name:'HOLE 10',yards:444,par:4,baseDiff:2,diff:2,layout:'doglegs'},
+      {name:'HOLE 8', yards:416,par:4,baseDiff:3,diff:3,layout:'coastal'},
+      {name:'HOLE 9', yards:483,par:4,baseDiff:3,diff:3,layout:'coastal'},
+      {name:'HOLE 10',yards:444,par:4,baseDiff:3,diff:3,layout:'coastal'},
       {name:'HOLE 11',yards:370,par:4,baseDiff:2,diff:2,layout:'cathedral'},
       {name:'HOLE 12',yards:202,par:3,baseDiff:3,diff:3,layout:'waterCross'},
       {name:'HOLE 13',yards:401,par:4,baseDiff:2,diff:2,layout:'doglegs'},
       {name:'HOLE 14',yards:559,par:5,baseDiff:2,diff:2,layout:'bunkerFwy'},
       {name:'HOLE 15',yards:393,par:4,baseDiff:2,diff:2,layout:'bunkerGreen'},
-      {name:'HOLE 16',yards:400,par:4,baseDiff:2,diff:2,layout:'waterApproach'},
-      {name:'HOLE 17',yards:182,par:3,baseDiff:3,diff:3,layout:'waterCross'},
-      {name:'HOLE 18',yards:541,par:5,baseDiff:3,diff:3,layout:'waterCross'},
+      {name:'HOLE 16',yards:400,par:4,baseDiff:2,diff:2,layout:'waterApproach',appLayout:'coastal'},
+      {name:'HOLE 17',yards:182,par:3,baseDiff:3,diff:3,layout:'waterCross',par3Layout:'waterTee'},
+      {name:'HOLE 18',yards:541,par:5,baseDiff:3,diff:3,layout:'coastal'},
     ]
   },
   'desert-golf-links':{
     id:'desert-golf-links', name:'DESERT GOLF LINKS', shortName:'DESERT LINKS',
     holes:[
-      {name:'HOLE 1', yards:403,par:4,baseDiff:1,diff:1,layout:'open'},
-      {name:'HOLE 2', yards:442,par:4,baseDiff:2,diff:2,layout:'doglegs'},
-      {name:'HOLE 3', yards:558,par:5,baseDiff:2,diff:2,layout:'bunkerFwy'},
+      {name:'HOLE 1', yards:403,par:4,baseDiff:1,diff:1,layout:'desertWash'},
+      {name:'HOLE 2', yards:442,par:4,baseDiff:2,diff:2,layout:'desertWash'},
+      {name:'HOLE 3', yards:558,par:5,baseDiff:2,diff:2,layout:'desertWash'},
       {name:'HOLE 4', yards:183,par:3,baseDiff:2,diff:2,layout:'bunkerGreen'},
-      {name:'HOLE 5', yards:470,par:4,baseDiff:2,diff:2,layout:'doglegs'},
-      {name:'HOLE 6', yards:432,par:4,baseDiff:2,diff:2,layout:'bunkerFwy'},
+      {name:'HOLE 5', yards:470,par:4,baseDiff:2,diff:2,layout:'desertWash'},
+      {name:'HOLE 6', yards:432,par:4,baseDiff:2,diff:2,layout:'desertWash'},
       {name:'HOLE 7', yards:215,par:3,baseDiff:3,diff:3,layout:'bunkerGreen'},
-      {name:'HOLE 8', yards:475,par:4,baseDiff:3,diff:3,layout:'bunkerFwy'},
-      {name:'HOLE 9', yards:453,par:4,baseDiff:3,diff:3,layout:'doglegs'},
-      {name:'HOLE 10',yards:428,par:4,baseDiff:1,diff:1,layout:'open'},
+      {name:'HOLE 8', yards:475,par:4,baseDiff:3,diff:3,layout:'desertWash'},
+      {name:'HOLE 9', yards:453,par:4,baseDiff:3,diff:3,layout:'desertWash'},
+      {name:'HOLE 10',yards:428,par:4,baseDiff:1,diff:1,layout:'desertWash'},
       {name:'HOLE 11',yards:472,par:4,baseDiff:3,diff:3,layout:'waterApproach'},
       {name:'HOLE 12',yards:192,par:3,baseDiff:3,diff:3,layout:'waterCross'},
       {name:'HOLE 13',yards:558,par:5,baseDiff:2,diff:2,layout:'waterApproach'},
-      {name:'HOLE 14',yards:490,par:4,baseDiff:3,diff:3,layout:'doglegs'},
+      {name:'HOLE 14',yards:490,par:4,baseDiff:3,diff:3,layout:'desertWash'},
       {name:'HOLE 15',yards:553,par:5,baseDiff:3,diff:3,layout:'waterCross'},
-      {name:'HOLE 16',yards:163,par:3,baseDiff:2,diff:2,layout:'bunkerGreen'},
+      {name:'HOLE 16',yards:163,par:3,baseDiff:2,diff:2,layout:'bunkerGreen',par3Layout:'stadium'},
       {name:'HOLE 17',yards:332,par:4,baseDiff:2,diff:2,layout:'waterCross'},
       {name:'HOLE 18',yards:442,par:4,baseDiff:3,diff:3,layout:'waterApproach'},
     ]
@@ -2985,8 +3031,8 @@ const COURSES={
   'septembra-national':{
     id:'septembra-national', name:'SEPTEMBRA NATIONAL', shortName:'SEPTEMBRA',
     holes:[
-      {name:'HOLE 1', yards:445,par:4,baseDiff:2,diff:2,layout:'doglegs'},
-      {name:'HOLE 2', yards:585,par:5,baseDiff:2,diff:2,layout:'open'},
+      {name:'HOLE 1', yards:445,par:4,baseDiff:2,diff:2,layout:'cathedral'},
+      {name:'HOLE 2', yards:585,par:5,baseDiff:2,diff:2,layout:'doglegs'},
       {name:'HOLE 3', yards:350,par:4,baseDiff:1,diff:1,layout:'bunkerFwy'},
       {name:'HOLE 4', yards:240,par:3,baseDiff:3,diff:3,layout:'bunkerGreen'},
       {name:'HOLE 5', yards:495,par:4,baseDiff:3,diff:3,layout:'cathedral'},
@@ -2994,13 +3040,13 @@ const COURSES={
       {name:'HOLE 7', yards:450,par:4,baseDiff:2,diff:2,layout:'cathedral'},
       {name:'HOLE 8', yards:570,par:5,baseDiff:2,diff:2,layout:'doglegs'},
       {name:'HOLE 9', yards:460,par:4,baseDiff:2,diff:2,layout:'doglegs'},
-      {name:'HOLE 10',yards:495,par:4,baseDiff:3,diff:3,layout:'doglegs'},
-      {name:'HOLE 11',yards:520,par:4,baseDiff:3,diff:3,layout:'waterApproach'},
-      {name:'HOLE 12',yards:155,par:3,baseDiff:3,diff:3,layout:'waterCross'},
-      {name:'HOLE 13',yards:545,par:5,baseDiff:3,diff:3,layout:'waterApproach'},
+      {name:'HOLE 10',yards:495,par:4,baseDiff:3,diff:3,layout:'cathedral'},
+      {name:'HOLE 11',yards:520,par:4,baseDiff:3,diff:3,layout:'waterApproach',teeLayout:'cathedral',farLayout:'cathedral'},
+      {name:'HOLE 12',yards:155,par:3,baseDiff:3,diff:3,layout:'waterTee',par3Layout:'waterTee'},
+      {name:'HOLE 13',yards:545,par:5,baseDiff:3,diff:3,layout:'doglegs',appLayout:'waterApproach'},
       {name:'HOLE 14',yards:440,par:4,baseDiff:2,diff:2,layout:'bunkerGreen'},
-      {name:'HOLE 15',yards:550,par:5,baseDiff:3,diff:3,layout:'waterCross'},
-      {name:'HOLE 16',yards:170,par:3,baseDiff:2,diff:2,layout:'waterApproach'},
+      {name:'HOLE 15',yards:550,par:5,baseDiff:3,diff:3,layout:'doglegs',appLayout:'waterApproach'},
+      {name:'HOLE 16',yards:170,par:3,baseDiff:3,diff:3,layout:'waterTee',par3Layout:'waterTee'},
       {name:'HOLE 17',yards:440,par:4,baseDiff:2,diff:2,layout:'cathedral'},
       {name:'HOLE 18',yards:465,par:4,baseDiff:3,diff:3,layout:'cathedral'},
     ]
@@ -3696,43 +3742,60 @@ function updateTVBanner(){
 // ═══════════════════════════════════════
 
 // Layout → template selectors
+function _layoutForStage(h, stage){
+  const key = stage === 'par3' ? 'par3Layout' : `${stage}Layout`;
+  return h[key] || h.layout;
+}
 function _teeTmpl(h){
   const d=h.diff;
-  switch(h.layout){
+  const layout=_layoutForStage(h,'tee');
+  switch(layout){
     case 'doglegs':      return d===1?T_TEE_DOG_E(): d===2?T_TEE_DOG_M(): T_TEE_DOG_H();
     case 'bunkerFwy':    return d===1?T_TEE_BFWY_E():d===2?T_TEE_BFWY_M():T_TEE_BFWY_H();
     case 'waterCross':   return d===1?T_TEE_WCRS_E():d===2?T_TEE_WCRS_M():T_TEE_WCRS_H();
+    case 'waterTee':     return d===1?T_TEE_WTEE_E():d===2?T_TEE_WTEE_M():T_TEE_WTEE_H();
+    case 'coastal':      return d===1?T_TEE_COAST_E():d===2?T_TEE_COAST_M():T_TEE_COAST_H();
+    case 'desertWash':   return d===1?T_TEE_DSRT_E():d===2?T_TEE_DSRT_M():T_TEE_DSRT_H();
     case 'cathedral':    return d===1?T_TEE_CATH_E():d===2?T_TEE_CATH_M():T_TEE_CATH_H();
     default:             return d===1?T_TEE_OPEN_E():d===2?T_TEE_OPEN_M():T_TEE_OPEN_H();
   }
 }
 function _par3Tmpl(h){
   const d=h.diff;
-  switch(h.layout){
+  const layout=_layoutForStage(h,'par3');
+  switch(layout){
     case 'waterCross':   return d===1?T_P3_WCRS_E():d===2?T_P3_WCRS_M():T_P3_WCRS_H();
+    case 'waterTee':     return d===1?T_P3_WTEE_E():d===2?T_P3_WTEE_M():T_P3_WTEE_H();
     case 'bunkerGreen':  return d===1?T_P3_BGRN_E():d===2?T_P3_BGRN_M():T_P3_BGRN_H();
+    case 'stadium':      return d===1?T_P3_STAD_E():d===2?T_P3_STAD_M():T_P3_STAD_H();
     default:             return d===1?T_P3_OPEN_E():d===2?T_P3_OPEN_M():T_P3_OPEN_H();
   }
 }
 function _appTmpl(h){
   const d=h.diff;
-  switch(h.layout){
+  const layout=_layoutForStage(h,'app');
+  switch(layout){
     case 'doglegs':      return d===1?T_APP_DOG_E(): d===2?T_APP_DOG_M(): T_APP_DOG_H();
     case 'bunkerFwy':    return d===1?T_APP_BFWY_E():d===2?T_APP_BFWY_M():T_APP_BFWY_H();
     case 'bunkerGreen':  return d===1?T_APP_BGRN_E():d===2?T_APP_BGRN_M():T_APP_BGRN_H();
     case 'waterCross':   return d===1?T_APP_WCRS_E():d===2?T_APP_WCRS_M():T_APP_WCRS_H();
     case 'waterApproach':return d===1?T_APP_WAPR_E():d===2?T_APP_WAPR_M():T_APP_WAPR_H();
+    case 'coastal':      return d===1?T_APP_COAST_E():d===2?T_APP_COAST_M():T_APP_COAST_H();
+    case 'desertWash':   return d===1?T_APP_DSRT_E():d===2?T_APP_DSRT_M():T_APP_DSRT_H();
     case 'cathedral':    return d===1?T_APP_CATH_E():d===2?T_APP_CATH_M():T_APP_CATH_H();
     default:             return d===1?T_APP_OPEN_E():d===2?T_APP_OPEN_M():T_APP_OPEN_H();
   }
 }
 function _farTmpl(h){
   const d=h.diff;
-  switch(h.layout){
+  const layout=_layoutForStage(h,'far');
+  switch(layout){
     case 'doglegs':
     case 'cathedral':    return d===1?T_FAR_TGHT_E():d===2?T_FAR_TGHT_M():T_FAR_TGHT_H();
     case 'bunkerFwy':    return d===1?T_FAR_BFWY_E():d===2?T_FAR_BFWY_M():T_FAR_BFWY_H();
     case 'waterCross':   return d===1?T_FAR_WCRS_E():d===2?T_FAR_WCRS_M():T_FAR_WCRS_H();
+    case 'coastal':      return d===1?T_FAR_COAST_E():d===2?T_FAR_COAST_M():T_FAR_COAST_H();
+    case 'desertWash':   return d===1?T_FAR_DSRT_E():d===2?T_FAR_DSRT_M():T_FAR_DSRT_H();
     default:             return d===1?T_FAR_OPEN_E():d===2?T_FAR_OPEN_M():T_FAR_OPEN_H();
   }
 }
