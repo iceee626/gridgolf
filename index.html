@@ -70,6 +70,34 @@ body.theme-light .overlay .ov{background:var(--card);}
 body.theme-light .hist-modal{background:rgba(240,244,248,.97);}
 body.theme-light .profile-modal{background:rgba(240,244,248,.97);}
 body.theme-light .summary-modal{background:linear-gradient(180deg,var(--course-bg-top) 0%,var(--course-bg-bottom) 100%);}
+body.theme-light .menu-settings-icon{background-image:url('./settings-light.svg');}
+body.theme-light .setup-back-btn,
+body.theme-light .profile-hub-back{background-image:url('./back-light.svg');}
+body.theme-light .sum-hole-close,
+body.theme-light .profile-close,
+body.theme-light .profile-hub-close,
+body.theme-light .mode-info-close{background-image:url('./close-light.svg');}
+body.theme-light .mode-info-btn{background-image:url('./info-light.svg');}
+body.theme-light #gameSettingsBtn{background-image:url('./settings-light.svg');}
+body.theme-light .onboard-input{background:rgba(0,0,0,.04);}
+body.theme-light .onboard-input::placeholder{color:rgba(28,33,40,.45);}
+body.theme-light #menuSettingsBtn{color:#fff!important;}
+body.theme-light #profileHubModal{background:rgba(240,244,248,.95);}
+body.theme-light #profileHubModal .profile-hub{
+  background:
+  radial-gradient(120% 100% at 0% 0%, rgba(78,158,66,.12), transparent 55%),
+  radial-gradient(120% 120% at 100% 0%, rgba(240,192,64,.12), transparent 50%),
+  linear-gradient(180deg,#f7fbff 0%, #edf3f8 100%);
+}
+body.theme-light .profile-hub-head{
+  border-bottom:1px solid rgba(0,0,0,.08);
+  background:rgba(255,255,255,.86);
+}
+body.theme-light .ph-main-card{
+  background:rgba(255,255,255,.76);
+  border-color:rgba(0,0,0,.12);
+  box-shadow:0 14px 30px rgba(0,0,0,.12);
+}
 body[data-course-theme='little-pines']{
   --course-bg-top:#102116;--course-bg-bottom:#0b1319;--course-bg-glow:rgba(110,168,92,.14);
   --course-panel:rgba(16,25,21,.84);--course-panel-strong:rgba(9,15,12,.94);--course-panel-border:rgba(150,190,162,.22);
@@ -1811,7 +1839,7 @@ body[data-course-theme='septembra-national'] #roundStartScreen .vs-turn-sub{
     <button class="menu-btn-play" id="menuPlayBtn" onclick="navToPlayMode()" style="padding:20px 16px; font-size:28px; min-height:84px;">⛳ PLAY</button>
     <div style="display:flex; gap:10px;">
       <button class="menu-btn-play" id="menuVersusBtn" onclick="navToVersusSetup()" style="flex:1; background:linear-gradient(135deg,#1a5f8a,#2a3a6e);box-shadow:0 4px 20px rgba(30,95,138,.4); font-size:20px; padding:20px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;"><span style="font-size:24px;line-height:1;">🆚</span> VERSUS</button>
-      <button class="menu-btn-sec" onclick="openSettings()" style="flex:1; font-size:20px; letter-spacing:2px; padding:20px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; background:rgba(255,255,255,0.05); border-radius:18px;"><span class="menu-settings-icon" aria-hidden="true"></span> SETTINGS</button>
+      <button class="menu-btn-sec" id="menuSettingsBtn" onclick="openSettings()" style="flex:1; font-size:20px; letter-spacing:2px; padding:20px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; background:rgba(255,255,255,0.05); border-radius:18px;"><span class="menu-settings-icon" aria-hidden="true"></span> SETTINGS</button>
     </div>
   </div>
 </div>
@@ -2031,7 +2059,7 @@ body[data-course-theme='septembra-national'] #roundStartScreen .vs-turn-sub{
     
     <button class="course-btn" id="courseLittlePinesBtn" data-course-id="little-pines" onclick="selectCourse('little-pines')">
       <div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;">LITTLE PINES GC</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:var(--text);">LITTLE PINES GC</div>
         <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 72 · WOODLAND</div>
       </div>
       <div style="font-size:24px;">🌲</div>
@@ -2039,7 +2067,7 @@ body[data-course-theme='septembra-national'] #roundStartScreen .vs-turn-sub{
     
     <button class="course-btn" id="coursePacificBeachBtn" data-course-id="pacific-beach" onclick="selectCourse('pacific-beach')">
       <div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;">PACIFIC BEACH</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:var(--text);">PACIFIC BEACH</div>
         <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 71 · COASTAL</div>
       </div>
       <div style="font-size:24px;">🌊</div>
@@ -2047,7 +2075,7 @@ body[data-course-theme='septembra-national'] #roundStartScreen .vs-turn-sub{
 
     <button class="course-btn" id="courseDesertLinksBtn" data-course-id="desert-golf-links" onclick="selectCourse('desert-golf-links')">
       <div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;">DESERT GOLF LINKS</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:var(--text);">DESERT GOLF LINKS</div>
         <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 71 · DESERT</div>
       </div>
       <div style="font-size:24px;">🌵</div>
@@ -2055,7 +2083,7 @@ body[data-course-theme='septembra-national'] #roundStartScreen .vs-turn-sub{
 
     <button class="course-btn" id="courseSeptembraNationalBtn" data-course-id="septembra-national" onclick="selectCourse('septembra-national')">
       <div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;">SEPTEMBRA NATIONAL</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:var(--text);">SEPTEMBRA NATIONAL</div>
         <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 72 · MAJOR VENUE</div>
       </div>
       <div style="font-size:24px;">🌺</div>
@@ -2168,7 +2196,7 @@ body[data-course-theme='septembra-national'] #roundStartScreen .vs-turn-sub{
 <div class="profile-modal" id="gameMenuModal" style="z-index:700;">
   <div class="profile-card" style="max-width:320px;">
     <div class="profile-body" style="padding:20px;">
-      <div style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:1px;color:#fff;text-align:center;margin-bottom:14px;white-space:nowrap;">What would you like to do?</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:1px;color:var(--text);text-align:center;margin-bottom:14px;white-space:nowrap;">What would you like to do?</div>
       <div style="display:flex;flex-direction:column;gap:8px;">
         <button onclick="resumeGameScreenMenu()" style="width:100%;background:#1a5f8a;color:#fff;border:1px solid rgba(30,95,138,.7);border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 14px rgba(30,95,138,.35), inset 0 1px 0 rgba(255,255,255,.06);">RESUME</button>
         <button onclick="saveAndMenuFromGameScreen()" style="width:100%;background:var(--c-fwy);color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;">SAVE &amp; MENU</button>
@@ -8289,6 +8317,13 @@ function getThemeSetting(){
 function setThemeSetting(v){
   try{localStorage.setItem('gg_theme',v);}catch{}
 }
+function syncThemeAssets(){
+  const isLight = document.body.classList.contains('theme-light');
+  const menuLogoSrc = isLight ? 'dice-light-logo.png' : 'dicegolf-logo.png';
+  document.querySelectorAll('#menuScreen .menu-logo .brand-logo-img').forEach(img=>{
+    if(img.getAttribute('src') !== menuLogoSrc) img.setAttribute('src', menuLogoSrc);
+  });
+}
 function applyTheme(setting){
   const body=document.body;
   body.classList.remove('theme-light','theme-dark');
@@ -8300,6 +8335,7 @@ function applyTheme(setting){
     const prefersDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
     if(!prefersDark) body.classList.add('theme-light');
   }
+  syncThemeAssets();
 }
 function _applyThemeWithCrossfade(setting){
   const body=document.body;
