@@ -5,6 +5,7 @@
   "start_url": "/gridgolf/",
   "scope": "/gridgolf/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0d1117",
   "theme_color": "#0d1117",
   "description": "DiceGolf - mobile golf dice game.",
