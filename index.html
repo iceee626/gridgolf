@@ -2116,16 +2116,23 @@ function showScreen(id, flexOrBlock='flex'){
     _setNavDir('forward');
   }
   if(!window._screenHideTimers) window._screenHideTimers = {};
+  if(!window._screenShowFrames) window._screenShowFrames = {};
   if(window._screenHideTimers[id]){
     clearTimeout(window._screenHideTimers[id]);
     delete window._screenHideTimers[id];
+  }
+  if(window._screenShowFrames[id]){
+    cancelAnimationFrame(window._screenShowFrames[id]);
+    delete window._screenShowFrames[id];
   }
   // If this screen was previously in a leaving state, clear it before showing
   // to avoid a one-frame hold/jump on quick back/forward navigation.
   el.classList.remove('leaving-forward','leaving-back');
   el.style.display=flexOrBlock;
-  void el.offsetWidth;
-  el.classList.add('visible');
+  window._screenShowFrames[id] = requestAnimationFrame(()=>{
+    delete window._screenShowFrames[id];
+    el.classList.add('visible');
+  });
 }
 function showMainApp(){
   const app=document.getElementById('mainApp');
@@ -2214,6 +2221,11 @@ function hideScreen(id){
   const el=document.getElementById(id);
   if(!el)return;
   if(!window._screenHideTimers) window._screenHideTimers = {};
+  if(!window._screenShowFrames) window._screenShowFrames = {};
+  if(window._screenShowFrames[id]){
+    cancelAnimationFrame(window._screenShowFrames[id]);
+    delete window._screenShowFrames[id];
+  }
   if(el.style.display==='none' && !el.classList.contains('visible')){
     el.classList.remove('leaving-forward','leaving-back');
     return;
@@ -2890,8 +2902,13 @@ let _lastMenuScreen = 'menuScreen';
 let _courseScreenFlow = 'single';
 
 function forceHideGame() {
-  setMainAppConcealed(true);
-  hideMainApp(); // Use your smooth CSS fade function instead of a hard snap
+  const app = document.getElementById('mainApp');
+  if (app?.classList.contains('visible')) {
+    setMainAppConcealed(true);
+    hideMainApp();
+  } else {
+    hideMainAppImmediate();
+  }
   const tv = document.getElementById('tvBar');
   if (tv) tv.classList.remove('show');
   const fab = document.getElementById('wcFab');
