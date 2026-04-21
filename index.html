@@ -78,6 +78,15 @@ body{
   /* Push all content below the iOS status bar */
   padding-top:env(safe-area-inset-top);
 }
+/* One-time startup guard: prevent abrupt first paint in standalone launch. */
+body.boot-loading{
+  pointer-events:none;
+}
+body.boot-loading .menu-screen.visible,
+body.boot-loading .setup-screen.visible,
+body.boot-loading .app.visible{
+  opacity:0 !important;
+}
 /* Theme transitions should only animate colors during an explicit theme swap. */
 body.theme-swapping,
 body.theme-swapping *{
@@ -147,6 +156,25 @@ html.ios-iphone .tv-row2{
 }
 .wc-drawer.open{right:0;}
 .app::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(90deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px),repeating-linear-gradient(0deg,transparent,transparent 16px,rgba(58,122,48,.02) 16px,rgba(58,122,48,.02) 32px);pointer-events:none;z-index:-1;}
+/* Portrait-only guard: keep gameplay locked to portrait orientation. */
+.orientation-lock{
+  position:fixed;inset:0;z-index:20000;
+  display:none;align-items:center;justify-content:center;
+  padding:24px;background:rgba(13,17,23,.96);
+  text-align:center;
+}
+body.landscape-block .orientation-lock{display:flex;}
+.orientation-lock-card{
+  width:min(320px,92vw);
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:20px 16px;
+}
+.orientation-lock-title{
+  font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;color:var(--c-fwyl);
+}
+.orientation-lock-sub{
+  margin-top:8px;font-family:'Sen',sans-serif;font-size:12px;line-height:1.5;color:var(--muted);
+}
 
 /* HEADER */
 header {
@@ -1423,8 +1451,8 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .vs-turn-screen{position:fixed;inset:0;background:var(--dark);z-index:545;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;}
 .vs-turn-screen.show{display:flex;animation:none;opacity:1;transform:none;}
 .vs-turn-screen.single-round-start.show{display:flex;animation:none;opacity:1;transform:none;}
-.vs-turn-screen.fade-out{display:flex;animation:fadeOutOverlay .24s ease forwards;}
-.vs-turn-screen.single-round-start.fade-out{display:flex;animation:fadeOutOverlay .24s ease forwards;}
+.vs-turn-screen.fade-out{display:flex;animation:fadeOutOverlay .24s ease forwards;pointer-events:none;}
+.vs-turn-screen.single-round-start.fade-out{display:flex;animation:fadeOutOverlay .24s ease forwards;pointer-events:none;}
 @keyframes fadeOutOverlay{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.985)}}
 .vs-turn-icon{font-size:56px;animation:celebIn .5s cubic-bezier(.34,1.56,.64,1);}
 .vs-turn-name{font-family:'Bebas Neue',cursive;font-size:38px;letter-spacing:4px;color:var(--c-fwyl);animation:celebIn .5s cubic-bezier(.34,1.56,.64,1) .1s both;}
@@ -1526,7 +1554,13 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .mode-info-tag.locked{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);}
 </style>
 </head>
-<body>
+<body class="boot-loading">
+<div class="orientation-lock" id="orientationLockOverlay" aria-live="polite">
+  <div class="orientation-lock-card">
+    <div class="orientation-lock-title">PORTRAIT ONLY</div>
+    <div class="orientation-lock-sub">Rotate your device back to portrait to keep playing.</div>
+  </div>
+</div>
 <div class="menu-screen" id="onboardScreen" style="display:none;">
   <div class="menu-content onboard-content">
     <div class="menu-logo"><img class="brand-logo-img" src="dicegolf-logo.png" alt="Dice Golf"></div>
@@ -2388,6 +2422,30 @@ function setCustomDiff(d){
   setTimeout(update, 800);
 })();
 
+let _initialBootRevealDone = false;
+function revealInitialBootUI(){
+  if(_initialBootRevealDone) return;
+  _initialBootRevealDone = true;
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      if(document.body) document.body.classList.remove('boot-loading');
+    });
+  });
+}
+
+function tryLockPortraitOrientation(){
+  const so = screen && screen.orientation;
+  if(!so || typeof so.lock !== 'function') return;
+  so.lock('portrait').catch(()=>{});
+}
+
+function updateOrientationLockState(){
+  if(!document.body) return;
+  const mobileLike = window.matchMedia('(pointer: coarse)').matches || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '');
+  const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+  document.body.classList.toggle('landscape-block', mobileLike && isLandscape);
+}
+
 window.addEventListener('DOMContentLoaded', function(){
   initTheme();
   _loadShakePermission();
@@ -2395,6 +2453,19 @@ window.addEventListener('DOMContentLoaded', function(){
   initFloatingEntities();
   const ua = navigator.userAgent || '';
   if(/iPhone/i.test(ua)) document.documentElement.classList.add('ios-iphone');
+  updateOrientationLockState();
+  tryLockPortraitOrientation();
+  window.addEventListener('resize', updateOrientationLockState);
+  window.addEventListener('orientationchange', () => setTimeout(updateOrientationLockState, 80));
+  window.addEventListener('pageshow', updateOrientationLockState);
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.visibilityState === 'visible'){
+      updateOrientationLockState();
+      tryLockPortraitOrientation();
+    }
+  });
+  document.addEventListener('touchstart', tryLockPortraitOrientation, { passive:true, once:true });
+  document.addEventListener('click', tryLockPortraitOrientation, { passive:true, once:true });
   // Shot-button tap rescue: on iOS Safari a click can be dropped when
   // ROLL ↔ NEXT SHOT swap happens during a touch, leaving a visible button
   // unresponsive. Delegate at the .roll-col level and fire the currently
@@ -2532,6 +2603,8 @@ window.addEventListener('DOMContentLoaded', function(){
   bindNameSanitizer('vs1Name',10);
   bindNameSanitizer('vs2Name',10);
   autoLoadProfile();
+  setTimeout(revealInitialBootUI, 120);
+  setTimeout(revealInitialBootUI, 280);
 });
 
 function stripEmojiChars(text){
@@ -3052,6 +3125,24 @@ function resetGameState(){
   if(typeof wcReset==='function')wcReset();
 }
 
+let _roundStartFadeTimer = null;
+let _roundStartFadeHandler = null;
+function clearRoundStartSplash(){
+  const screen = document.getElementById('roundStartScreen');
+  if(!screen) return;
+  if(_roundStartFadeTimer){
+    clearTimeout(_roundStartFadeTimer);
+    _roundStartFadeTimer = null;
+  }
+  if(_roundStartFadeHandler){
+    screen.removeEventListener('animationend', _roundStartFadeHandler);
+    _roundStartFadeHandler = null;
+  }
+  screen.classList.remove('show');
+  screen.classList.remove('single-round-start');
+  screen.classList.remove('fade-out');
+}
+
 function returnToMenu(opts={}){
   const preserveSummary = !!opts.preserveSummary;
   VS.active = false;
@@ -3063,7 +3154,7 @@ function returnToMenu(opts={}){
   setMainAppConcealed(true);
   hideMainApp();
   document.getElementById('vsTurnScreen').classList.remove('show');
-  document.getElementById('roundStartScreen').classList.remove('show');
+  clearRoundStartSplash();
   document.getElementById('gameMenuModal').classList.remove('show');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
   const ovBtn = document.getElementById('ovBtn');
@@ -3120,10 +3211,8 @@ function showSingleRoundSplash(){
   const rsSub = document.getElementById('rsTurnSub');
   const rsMeta = document.getElementById('rsTurnMeta');
   if(rsIcon) rsIcon.textContent = icon;
-  if(screen){
-    screen.classList.remove('fade-out');
-    screen.classList.add('single-round-start');
-  }
+  clearRoundStartSplash();
+  if(screen) screen.classList.add('single-round-start');
   if(rsName){
     const splashLines = ['PLEASE WELCOME...', 'NOW, ON THE TEE...', 'DRIVING FROM THE TEE...'];
     rsName.textContent = splashLines[Math.floor(Math.random() * splashLines.length)];
@@ -3132,20 +3221,26 @@ function showSingleRoundSplash(){
   if(rsMeta) rsMeta.textContent = `${roundPrefix}HOLE ${S.holeIdx + 1} · PAR ${h.par}`;
   setMainAppConcealed(true);
   hideMainAppImmediate();
-  document.getElementById('roundStartScreen').classList.add('show');
+  if(screen) screen.classList.add('show');
 }
 
 function startSingleRoundFromSplash(){
   const screen=document.getElementById('roundStartScreen');
-  if(screen){
-    const onFadeOutEnd=(evt)=>{
+  if(screen && screen.classList.contains('show')){
+    clearRoundStartSplash();
+    const finalize = ()=>clearRoundStartSplash();
+    _roundStartFadeHandler=(evt)=>{
       if(evt.target!==screen) return;
-      screen.classList.remove('show');
-      screen.classList.remove('single-round-start');
-      screen.classList.remove('fade-out');
+      finalize();
     };
-    screen.addEventListener('animationend', onFadeOutEnd, { once:true });
+    screen.addEventListener('animationend', _roundStartFadeHandler);
+    screen.classList.add('show');
+    screen.classList.add('single-round-start');
     screen.classList.add('fade-out');
+    // Safari standalone can occasionally miss animationend on app-state transitions.
+    _roundStartFadeTimer = setTimeout(finalize, 340);
+  } else {
+    clearRoundStartSplash();
   }
   revealMainApp();
   maybeShowShakeBanner();
@@ -5453,12 +5548,7 @@ function summaryPlayAgain(){
   _summaryBackTarget = null;
   const hc = document.getElementById('hcScreen');
   if(hc) hc.classList.remove('show');
-  const roundStartScreen = document.getElementById('roundStartScreen');
-  if(roundStartScreen){
-    roundStartScreen.classList.remove('show');
-    roundStartScreen.classList.remove('single-round-start');
-    roundStartScreen.classList.remove('fade-out');
-  }
+  clearRoundStartSplash();
   const versusReplay = !!(_summaryContext && _summaryContext.mode === 'versus');
   setSummaryContext(null);
   if(versusReplay){
@@ -9309,7 +9399,7 @@ function returnToMenuSave(opts={}){
   setMainAppConcealed(true);
   hideMainApp();
   document.getElementById('vsTurnScreen').classList.remove('show');
-  document.getElementById('roundStartScreen').classList.remove('show');
+  clearRoundStartSplash();
   document.getElementById('gameMenuModal').classList.remove('show');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
   const ovBtn = document.getElementById('ovBtn');
