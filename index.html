@@ -1816,7 +1816,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
       <span class="setup-head-spacer"></span>
     </div>
     
-    <button class="course-btn" id="courseLittlePinesBtn" onclick="selectCourse('little-pines')">
+    <button class="course-btn" id="courseLittlePinesBtn" data-course-id="little-pines" onclick="selectCourse('little-pines')">
       <div>
         <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;">LITTLE PINES GC</div>
         <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 72 · WOODLAND</div>
@@ -1824,12 +1824,28 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
       <div style="font-size:24px;">🌲</div>
     </button>
     
-    <button class="course-btn locked">
+    <button class="course-btn" id="coursePacificBeachBtn" data-course-id="pacific-beach" onclick="selectCourse('pacific-beach')">
       <div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:var(--muted);">OCEAN BREEZE LINKS</div>
-        <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">UNLOCK SOON</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;">PACIFIC BEACH</div>
+        <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 71 · COASTAL</div>
       </div>
       <div style="font-size:24px;">🌊</div>
+    </button>
+
+    <button class="course-btn" id="courseDesertLinksBtn" data-course-id="desert-golf-links" onclick="selectCourse('desert-golf-links')">
+      <div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;">DESERT GOLF LINKS</div>
+        <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 71 · DESERT</div>
+      </div>
+      <div style="font-size:24px;">🌵</div>
+    </button>
+
+    <button class="course-btn" id="courseSeptembraNationalBtn" data-course-id="septembra-national" onclick="selectCourse('septembra-national')">
+      <div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;">SEPTEMBRA NATIONAL</div>
+        <div style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">PAR 72 · MAJOR VENUE</div>
+      </div>
+      <div style="font-size:24px;">🌺</div>
     </button>
     <button class="menu-btn-play" id="vsCourseTeeOffBtn" onclick="teeOffFromCourse()" style="display:none;width:100%;font-size:20px;margin-top:12px;">TEE OFF</button>
   </div>
@@ -2891,42 +2907,145 @@ const T_PUTT_3N = ()=>cells(['p1',20],['p2',13],['p3',3]);// ★★★ hole, nor
 const T_PUTT_3H = ()=>cells(['p1',16], ['p2',14],['p3',6]);// ★★★ hole, hard
 
 // ═══════════════════════════════════════
-// HOLES (Expanded to 18)
+// COURSES & HOLES
 // ═══════════════════════════════════════
-const HOLES=[
-  // layout: open|doglegs|bunkerFwy|bunkerGreen|waterCross|waterApproach|cathedral
-  {name:'HOLE 1', yards:387,par:4,baseDiff:1,diff:1,layout:'open'},          // Wide opener, gentle introduction
-  {name:'HOLE 2', yards:512,par:5,baseDiff:3,diff:3,layout:'waterApproach'}, // Water guards the green on this long par 5
-  {name:'HOLE 3', yards:178,par:3,baseDiff:1,diff:1,layout:'open'},          // Short open par 3, birdie opportunity
-  {name:'HOLE 4', yards:432,par:4,baseDiff:2,diff:2,layout:'bunkerFwy'},     // Fairway bunker at 200 yds forces decision
-  {name:'HOLE 5', yards:603,par:5,baseDiff:2,diff:2,layout:'waterCross'},    // Must carry water in the fairway corridor
-  {name:'HOLE 6', yards:405,par:4,baseDiff:2,diff:2,layout:'doglegs'},       // Dogleg right, OB punishes big drives
-  {name:'HOLE 7', yards:195,par:3,baseDiff:2,diff:2,layout:'bunkerGreen'},   // Bunkers wrap the green on all sides
-  {name:'HOLE 8', yards:545,par:5,baseDiff:2,diff:2,layout:'waterApproach'}, // Long par 5, water right of the green
-  {name:'HOLE 9', yards:418,par:4,baseDiff:2,diff:2,layout:'cathedral'},     // Tree-lined finish to the front 9
-  // BACK 9
-  {name:'HOLE 10',yards:380,par:4,baseDiff:1,diff:1,layout:'open'},          // Gentle re-entry after the turn
-  {name:'HOLE 11',yards:410,par:4,baseDiff:2,diff:2,layout:'doglegs'},       // Dogleg left, OB left side
-  {name:'HOLE 12',yards:175,par:3,baseDiff:2,diff:2,layout:'waterCross'},    // Full carry over water — no bail out
-  {name:'HOLE 13',yards:520,par:5,baseDiff:2,diff:2,layout:'bunkerFwy'},     // Two fairway bunkers test placement
-  {name:'HOLE 14',yards:430,par:4,baseDiff:2,diff:3,layout:'cathedral'},     // Tightest hole on the course
-  {name:'HOLE 15',yards:395,par:4,baseDiff:2,diff:2,layout:'bunkerGreen'},   // Greenside bunkers make the approach hard
-  {name:'HOLE 16',yards:155,par:3,baseDiff:1,diff:1,layout:'open'},          // Shortest hole, easy scoring opportunity
-  {name:'HOLE 17',yards:405,par:4,baseDiff:2,diff:2,layout:'waterApproach'}, // Water right of green, risk/reward approach
-  {name:'HOLE 18',yards:460,par:4,baseDiff:3,diff:3,layout:'waterCross'},    // Dramatic finale, carry water off the tee
-];
-const BASE_HOLES=HOLES.map(h=>({...h}));
+const DEFAULT_COURSE_ID='little-pines';
+const COURSE_ORDER=['little-pines','pacific-beach','desert-golf-links','septembra-national'];
+const COURSES={
+  'little-pines':{
+    id:'little-pines', name:'LITTLE PINES', shortName:'LITTLE PINES',
+    holes:[
+      // layout: open|doglegs|bunkerFwy|bunkerGreen|waterCross|waterApproach|cathedral
+      {name:'HOLE 1', yards:387,par:4,baseDiff:1,diff:1,layout:'open'},          // Wide opener, gentle introduction
+      {name:'HOLE 2', yards:512,par:5,baseDiff:3,diff:3,layout:'waterApproach'}, // Water guards the green on this long par 5
+      {name:'HOLE 3', yards:178,par:3,baseDiff:1,diff:1,layout:'open'},          // Short open par 3, birdie opportunity
+      {name:'HOLE 4', yards:432,par:4,baseDiff:2,diff:2,layout:'bunkerFwy'},     // Fairway bunker at 200 yds forces decision
+      {name:'HOLE 5', yards:603,par:5,baseDiff:2,diff:2,layout:'waterCross'},    // Must carry water in the fairway corridor
+      {name:'HOLE 6', yards:405,par:4,baseDiff:2,diff:2,layout:'doglegs'},       // Dogleg right, OB punishes big drives
+      {name:'HOLE 7', yards:195,par:3,baseDiff:2,diff:2,layout:'bunkerGreen'},   // Bunkers wrap the green on all sides
+      {name:'HOLE 8', yards:545,par:5,baseDiff:2,diff:2,layout:'waterApproach'}, // Long par 5, water right of the green
+      {name:'HOLE 9', yards:418,par:4,baseDiff:2,diff:2,layout:'cathedral'},     // Tree-lined finish to the front 9
+      // BACK 9
+      {name:'HOLE 10',yards:380,par:4,baseDiff:1,diff:1,layout:'open'},          // Gentle re-entry after the turn
+      {name:'HOLE 11',yards:410,par:4,baseDiff:2,diff:2,layout:'doglegs'},       // Dogleg left, OB left side
+      {name:'HOLE 12',yards:175,par:3,baseDiff:2,diff:2,layout:'waterCross'},    // Full carry over water — no bail out
+      {name:'HOLE 13',yards:520,par:5,baseDiff:2,diff:2,layout:'bunkerFwy'},     // Two fairway bunkers test placement
+      {name:'HOLE 14',yards:430,par:4,baseDiff:2,diff:3,layout:'cathedral'},     // Tightest hole on the course
+      {name:'HOLE 15',yards:395,par:4,baseDiff:2,diff:2,layout:'bunkerGreen'},   // Greenside bunkers make the approach hard
+      {name:'HOLE 16',yards:155,par:3,baseDiff:1,diff:1,layout:'open'},          // Shortest hole, easy scoring opportunity
+      {name:'HOLE 17',yards:405,par:4,baseDiff:2,diff:2,layout:'waterApproach'}, // Water right of green, risk/reward approach
+      {name:'HOLE 18',yards:460,par:4,baseDiff:3,diff:3,layout:'waterCross'},    // Dramatic finale, carry water off the tee
+    ]
+  },
+  'pacific-beach':{
+    id:'pacific-beach', name:'PACIFIC BEACH', shortName:'PACIFIC BEACH',
+    holes:[
+      {name:'HOLE 1', yards:380,par:4,baseDiff:1,diff:1,layout:'open'},
+      {name:'HOLE 2', yards:516,par:4,baseDiff:3,diff:3,layout:'waterApproach'},
+      {name:'HOLE 3', yards:404,par:4,baseDiff:2,diff:2,layout:'doglegs'},
+      {name:'HOLE 4', yards:331,par:4,baseDiff:2,diff:2,layout:'bunkerGreen'},
+      {name:'HOLE 5', yards:195,par:3,baseDiff:3,diff:3,layout:'waterCross'},
+      {name:'HOLE 6', yards:523,par:5,baseDiff:3,diff:3,layout:'doglegs'},
+      {name:'HOLE 7', yards:106,par:3,baseDiff:2,diff:2,layout:'open'},
+      {name:'HOLE 8', yards:428,par:4,baseDiff:3,diff:3,layout:'waterCross'},
+      {name:'HOLE 9', yards:526,par:4,baseDiff:3,diff:3,layout:'doglegs'},
+      {name:'HOLE 10',yards:446,par:4,baseDiff:2,diff:2,layout:'doglegs'},
+      {name:'HOLE 11',yards:390,par:4,baseDiff:2,diff:2,layout:'cathedral'},
+      {name:'HOLE 12',yards:202,par:3,baseDiff:3,diff:3,layout:'waterCross'},
+      {name:'HOLE 13',yards:403,par:4,baseDiff:2,diff:2,layout:'doglegs'},
+      {name:'HOLE 14',yards:580,par:5,baseDiff:2,diff:2,layout:'bunkerFwy'},
+      {name:'HOLE 15',yards:397,par:4,baseDiff:2,diff:2,layout:'bunkerGreen'},
+      {name:'HOLE 16',yards:403,par:4,baseDiff:2,diff:2,layout:'waterApproach'},
+      {name:'HOLE 17',yards:208,par:3,baseDiff:3,diff:3,layout:'waterCross'},
+      {name:'HOLE 18',yards:543,par:5,baseDiff:3,diff:3,layout:'waterCross'},
+    ]
+  },
+  'desert-golf-links':{
+    id:'desert-golf-links', name:'DESERT GOLF LINKS', shortName:'DESERT LINKS',
+    holes:[
+      {name:'HOLE 1', yards:403,par:4,baseDiff:1,diff:1,layout:'open'},
+      {name:'HOLE 2', yards:442,par:4,baseDiff:2,diff:2,layout:'doglegs'},
+      {name:'HOLE 3', yards:558,par:5,baseDiff:2,diff:2,layout:'bunkerFwy'},
+      {name:'HOLE 4', yards:183,par:3,baseDiff:2,diff:2,layout:'bunkerGreen'},
+      {name:'HOLE 5', yards:470,par:4,baseDiff:2,diff:2,layout:'doglegs'},
+      {name:'HOLE 6', yards:432,par:4,baseDiff:2,diff:2,layout:'bunkerFwy'},
+      {name:'HOLE 7', yards:215,par:3,baseDiff:3,diff:3,layout:'bunkerGreen'},
+      {name:'HOLE 8', yards:475,par:4,baseDiff:3,diff:3,layout:'bunkerFwy'},
+      {name:'HOLE 9', yards:453,par:4,baseDiff:3,diff:3,layout:'doglegs'},
+      {name:'HOLE 10',yards:428,par:4,baseDiff:1,diff:1,layout:'open'},
+      {name:'HOLE 11',yards:472,par:4,baseDiff:3,diff:3,layout:'waterApproach'},
+      {name:'HOLE 12',yards:192,par:3,baseDiff:3,diff:3,layout:'waterCross'},
+      {name:'HOLE 13',yards:558,par:5,baseDiff:2,diff:2,layout:'waterApproach'},
+      {name:'HOLE 14',yards:490,par:4,baseDiff:3,diff:3,layout:'doglegs'},
+      {name:'HOLE 15',yards:553,par:5,baseDiff:3,diff:3,layout:'waterCross'},
+      {name:'HOLE 16',yards:163,par:3,baseDiff:2,diff:2,layout:'bunkerGreen'},
+      {name:'HOLE 17',yards:332,par:4,baseDiff:2,diff:2,layout:'waterCross'},
+      {name:'HOLE 18',yards:442,par:4,baseDiff:3,diff:3,layout:'waterApproach'},
+    ]
+  },
+  'septembra-national':{
+    id:'septembra-national', name:'SEPTEMBRA NATIONAL', shortName:'SEPTEMBRA',
+    holes:[
+      {name:'HOLE 1', yards:445,par:4,baseDiff:2,diff:2,layout:'doglegs'},
+      {name:'HOLE 2', yards:585,par:5,baseDiff:2,diff:2,layout:'open'},
+      {name:'HOLE 3', yards:350,par:4,baseDiff:1,diff:1,layout:'bunkerFwy'},
+      {name:'HOLE 4', yards:240,par:3,baseDiff:3,diff:3,layout:'bunkerGreen'},
+      {name:'HOLE 5', yards:495,par:4,baseDiff:3,diff:3,layout:'cathedral'},
+      {name:'HOLE 6', yards:180,par:3,baseDiff:2,diff:2,layout:'open'},
+      {name:'HOLE 7', yards:450,par:4,baseDiff:2,diff:2,layout:'cathedral'},
+      {name:'HOLE 8', yards:570,par:5,baseDiff:2,diff:2,layout:'doglegs'},
+      {name:'HOLE 9', yards:460,par:4,baseDiff:2,diff:2,layout:'doglegs'},
+      {name:'HOLE 10',yards:495,par:4,baseDiff:3,diff:3,layout:'doglegs'},
+      {name:'HOLE 11',yards:520,par:4,baseDiff:3,diff:3,layout:'waterApproach'},
+      {name:'HOLE 12',yards:155,par:3,baseDiff:3,diff:3,layout:'waterCross'},
+      {name:'HOLE 13',yards:545,par:5,baseDiff:3,diff:3,layout:'waterApproach'},
+      {name:'HOLE 14',yards:440,par:4,baseDiff:2,diff:2,layout:'bunkerGreen'},
+      {name:'HOLE 15',yards:550,par:5,baseDiff:3,diff:3,layout:'waterCross'},
+      {name:'HOLE 16',yards:170,par:3,baseDiff:2,diff:2,layout:'waterApproach'},
+      {name:'HOLE 17',yards:440,par:4,baseDiff:2,diff:2,layout:'cathedral'},
+      {name:'HOLE 18',yards:465,par:4,baseDiff:3,diff:3,layout:'cathedral'},
+    ]
+  }
+};
+
+function normalizeCourseId(courseId){
+  return COURSE_ORDER.includes(courseId) ? courseId : DEFAULT_COURSE_ID;
+}
+function getCourseConfig(courseId){
+  return COURSES[normalizeCourseId(courseId)];
+}
+function getCourseHoles(courseId){
+  return getCourseConfig(courseId).holes;
+}
+function getCourseName(courseId){
+  return getCourseConfig(courseId).name;
+}
+
+const HOLES=[];
+let BASE_HOLES=[];
+let ACTIVE_COURSE_ID=DEFAULT_COURSE_ID;
+function applyCourse(courseId){
+  const cfg=getCourseConfig(courseId);
+  ACTIVE_COURSE_ID=cfg.id;
+  BASE_HOLES=cfg.holes.map(h=>({...h}));
+  HOLES.length=0;
+  BASE_HOLES.forEach(h=>HOLES.push({...h}));
+  return cfg;
+}
+applyCourse(DEFAULT_COURSE_ID);
 function restoreBaseHoles(){
+  HOLES.length=BASE_HOLES.length;
   BASE_HOLES.forEach((h,i)=>{ HOLES[i]={...h}; });
 }
 
 // ═══════════════════════════════════════
 // STATE & CONFIG
 // ═══════════════════════════════════════
-let SETUP={ mode:'single', rounds:1, holesConfig:'18' };
+let SETUP={ mode:'single', rounds:1, holesConfig:'18', course:null, courseSelected:false };
 
 let S={
   mode: 'single', totalRounds: 1, currentRound: 1, holesConfig: '18', startIdx: 0, endIdx: 17,
+  courseId: DEFAULT_COURSE_ID,
   holeIdx:0, zone:'tee', strokes:0, shotNum:1, log:[], 
   scorecards: [Array(18).fill(null)], histories: [Array(18).fill(null)],
   currentGrid:null, holeDone:false, rolling:false,
@@ -3039,8 +3158,6 @@ function navToDiff() {
   forceHideGame();
   const vsCourseFlow = _courseScreenFlow === 'versus';
   if (vsCourseFlow) {
-    VS.setup.course = 'little-pines';
-    VS.setup.courseSelected = true;
     updateCourseScreenModeUI();
     return;
   }
@@ -3058,28 +3175,29 @@ function showCourseAfterDiff(){
 
 function updateCourseScreenModeUI(){
   const tee=document.getElementById('vsCourseTeeOffBtn');
-  const littlePines=document.getElementById('courseLittlePinesBtn');
+  const selectedCourseId = _courseScreenFlow === 'versus'
+    ? (VS.setup && VS.setup.courseSelected ? normalizeCourseId(VS.setup.course) : null)
+    : (SETUP.courseSelected ? normalizeCourseId(SETUP.course) : null);
   const courseFlowActive = ['versus','custom','single','tournament'].includes(_courseScreenFlow);
-  const selected = _courseScreenFlow === 'versus'
-    ? !!(VS.setup && VS.setup.courseSelected)
-    : !!SETUP.courseSelected;
+  const selected = !!selectedCourseId;
   if(tee) tee.style.display = courseFlowActive ? 'block' : 'none';
   if(tee) tee.disabled = !selected;
   if(tee) tee.style.opacity = selected ? '1' : '.45';
   if(tee) tee.style.pointerEvents = selected ? 'auto' : 'none';
-  if(littlePines){
-    littlePines.classList.toggle('selected', selected);
-  }
+  document.querySelectorAll('#courseScreen .course-btn[data-course-id]').forEach(btn=>{
+    btn.classList.toggle('selected', btn.dataset.courseId === selectedCourseId);
+  });
 }
 
 function selectCourse(courseId){
+  const normalizedCourse = normalizeCourseId(courseId);
   if(_courseScreenFlow === 'versus'){
     if(VS.setup){
-      VS.setup.course = courseId;
+      VS.setup.course = normalizedCourse;
       VS.setup.courseSelected = true;
     }
   } else {
-    SETUP.course = courseId;
+    SETUP.course = normalizedCourse;
     SETUP.courseSelected = true;
   }
   updateCourseScreenModeUI();
@@ -3174,6 +3292,13 @@ function returnToMenu(opts={}){
 
 let _skipGridScrollOnce = false;
 
+function selectedCourseIdForFlow(){
+  if(VS.active){
+    return normalizeCourseId(VS.setup?.course || DEFAULT_COURSE_ID);
+  }
+  return normalizeCourseId(SETUP.course || DEFAULT_COURSE_ID);
+}
+
 function startGame(){
   setMainAppConcealed(true);
   hideMainAppImmediate();
@@ -3181,6 +3306,9 @@ function startGame(){
   _skipGridScrollOnce = true;
   clearSavedGame();
   resetGameState();
+  const courseId = selectedCourseIdForFlow();
+  applyCourse(courseId);
+  S.courseId = courseId;
   setSummaryContext(null);
   restoreBaseHoles();
   const p=getActiveProfile();
@@ -9127,6 +9255,7 @@ function saveGameState(){
   const vsTurnPending = !!(VS.active && document.getElementById('vsTurnScreen')?.classList.contains('show'));
   const save={
     mode:S.mode, totalRounds:S.totalRounds, currentRound:S.currentRound, holesConfig:S.holesConfig,
+    courseId: normalizeCourseId(S.courseId || selectedCourseIdForFlow()),
     startIdx:S.startIdx, endIdx:S.endIdx,
     holeIdx:S.holeIdx, zone:S.zone, strokes:S.strokes, shotNum:S.shotNum, log:S.log,
     scorecards:S.scorecards, histories:S.histories,
@@ -9199,8 +9328,12 @@ function continueGame(){
   try{
     const save = getSavedGameForActiveProfile();
     if(!save)return;
+    const savedCourseId = normalizeCourseId(
+      save.courseId || save.vsState?.setup?.course || DEFAULT_COURSE_ID
+    );
     _skipGridScrollOnce = true;
     clearTutorialUiState();
+    applyCourse(savedCourseId);
     restoreBaseHoles();
     resetResult();
     document.getElementById('overlay').classList.remove('show');
@@ -9213,6 +9346,7 @@ function continueGame(){
     HOLES.forEach(h=>{ h.diff=diffMap[h.baseDiff][GAME_DIFF-1]; });
     
     S.mode=save.mode||'single'; S.totalRounds=save.totalRounds||1; S.currentRound=save.currentRound||1;
+    S.courseId=savedCourseId;
     S.holesConfig=save.holesConfig||'18'; S.startIdx=save.startIdx||0; S.endIdx=save.endIdx||17;
     S.holeIdx=save.holeIdx; S.zone=save.zone; S.strokes=save.strokes; S.shotNum=save.shotNum; S.log=save.log||[];
     S.currentGrid=save.currentGrid||null;
@@ -9271,6 +9405,8 @@ function continueGame(){
         VS.setup = {
           ...VS.setup,
           ...(save.vsState.setup || {}),
+          course: normalizeCourseId(save.vsState?.setup?.course || savedCourseId),
+          courseSelected: true,
           rounds: (save.vsState.setup && save.vsState.setup.rounds) ? save.vsState.setup.rounds : 1
         };
         VS.lastStrokeRounds = (save.vsState.format === 'stroke' && VS.setup.rounds > 1) ? VS.setup.rounds : (VS.lastStrokeRounds || 1);
@@ -9438,17 +9574,30 @@ function updateMenuContinueBtn(){
         btn.style.display='flex';
         btn.classList.add('menu-glow');
     } else {
+        const courseId = normalizeCourseId(save.courseId || save.vsState?.setup?.course || DEFAULT_COURSE_ID);
+        const courseCfg = getCourseConfig(courseId);
+        const courseHoles = courseCfg.holes;
         let totalScore = 0; let totalPar = 0;
         if (save.scorecards) {
-           save.scorecards.forEach(sc => sc.forEach((s, i) => { if(s!==null){ totalScore+=s; totalPar+=HOLES[i].par; } }));
+           save.scorecards.forEach(sc => sc.forEach((s, i) => {
+             if(s!==null){
+               totalScore+=s;
+               totalPar += (courseHoles[i]?.par ?? HOLES[i]?.par ?? 4);
+             }
+           }));
         } else if (save.scorecard) {
-           save.scorecard.forEach((s, i) => { if(s!==null){ totalScore+=s; totalPar+=HOLES[i].par; } });
+           save.scorecard.forEach((s, i) => {
+             if(s!==null){
+               totalScore+=s;
+               totalPar += (courseHoles[i]?.par ?? HOLES[i]?.par ?? 4);
+             }
+           });
         }
         
         const diff = totalScore - totalPar;
         const diffStr = diff > 0 ? `+${diff}` : diff === 0 ? 'E' : `${diff}`;
         const rnd = save.currentRound || 1;
-        const cName = 'LITTLE PINES';
+        const cName = courseCfg.shortName || courseCfg.name;
         const holeDisplay = save.holeIdx + 1;
         
         btn.innerHTML=`<div>▶ CONTINUE</div><div style="font-family:'Sen', sans-serif;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:1px;font-weight:normal;margin-top:4px;">${cName} · R${rnd} · H${holeDisplay} · ${diffStr}</div>`;
@@ -10281,7 +10430,7 @@ let VS = {
   histories: [[], []],
   matchScore: [0, 0], // holes won for match play
   sharedGrids: {},
-  setup: { rounds:1, holesConfig:'18', diff:1 },
+  setup: { rounds:1, holesConfig:'18', diff:1, course:null, courseSelected:false },
   lastStrokeRounds: 1,
   completionRecorded: false,
   wcs: [null, null],
