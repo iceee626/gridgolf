@@ -87,44 +87,6 @@ body.boot-loading .setup-screen.visible,
 body.boot-loading .app.visible{
   opacity:0 !important;
 }
-.launch-splash{
-  position:fixed;inset:0;z-index:19000;
-  display:flex;align-items:stretch;justify-content:center;
-  padding:calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
-  background:var(--dark);
-  opacity:1;
-  transition:opacity .28s ease;
-}
-.launch-splash::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:40%;
-  background:linear-gradient(180deg,transparent 0%,#0d1f0a 100%);
-  pointer-events:none;
-}
-.launch-splash.fade-out{
-  opacity:0;
-  pointer-events:none;
-}
-.launch-splash.hidden{
-  display:none;
-}
-.launch-splash-content{
-  position:relative;z-index:1;text-align:center;width:100%;max-width:380px;
-  min-height:min(calc(var(--app-vh,100dvh) * 0.78),720px);
-}
-.launch-splash-logo{
-  position:absolute;
-  left:50%;
-  top:41%;
-  transform:translate(-50%,-50%);
-  width:min(100%, 360px);
-  margin:0;
-  flex-shrink:0;
-}
-.launch-splash-logo .brand-logo-img{
-  width:min(100%, 360px);
-  height:auto;
-  max-height:104px;
-}
 /* Theme transitions should only animate colors during an explicit theme swap. */
 body.theme-swapping,
 body.theme-swapping *{
@@ -1599,11 +1561,6 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
     <div class="orientation-lock-sub">Rotate your device back to portrait to keep playing.</div>
   </div>
 </div>
-<div class="launch-splash" id="launchSplash" aria-hidden="true">
-  <div class="launch-splash-content">
-    <div class="menu-logo launch-splash-logo"><img class="brand-logo-img" src="dicegolf-logo.png" alt="Dice Golf"></div>
-  </div>
-</div>
 <div class="menu-screen" id="onboardScreen" style="display:none;">
   <div class="menu-content onboard-content">
     <div class="menu-logo"><img class="brand-logo-img" src="dicegolf-logo.png" alt="Dice Golf"></div>
@@ -2475,38 +2432,6 @@ function revealInitialBootUI(){
     });
   });
 }
-let _launchSplashStartedAt = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-let _launchSplashHideStarted = false;
-function hideLaunchSplash(){
-  if(_launchSplashHideStarted) return;
-  _launchSplashHideStarted = true;
-  const splash = document.getElementById('launchSplash');
-  if(!splash){
-    revealInitialBootUI();
-    return;
-  }
-  const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-  const elapsed = now - _launchSplashStartedAt;
-  const minVisibleMs = 380;
-  const waitMs = Math.max(0, minVisibleMs - elapsed);
-  let done = false;
-  const finalize = ()=>{
-    if(done) return;
-    done = true;
-    splash.classList.add('hidden');
-    revealInitialBootUI();
-  };
-  setTimeout(()=>{
-    splash.classList.add('fade-out');
-    const onEnd=(evt)=>{
-      if(evt.target!==splash) return;
-      splash.removeEventListener('transitionend', onEnd);
-      finalize();
-    };
-    splash.addEventListener('transitionend', onEnd);
-    setTimeout(finalize, 420);
-  }, waitMs);
-}
 
 function tryLockPortraitOrientation(){
   const so = screen && screen.orientation;
@@ -2678,8 +2603,8 @@ window.addEventListener('DOMContentLoaded', function(){
   bindNameSanitizer('vs1Name',10);
   bindNameSanitizer('vs2Name',10);
   autoLoadProfile();
-  hideLaunchSplash();
-  setTimeout(hideLaunchSplash, 1200);
+  setTimeout(revealInitialBootUI, 120);
+  setTimeout(revealInitialBootUI, 280);
 });
 
 function stripEmojiChars(text){
