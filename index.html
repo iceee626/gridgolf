@@ -382,11 +382,11 @@ html, body, .sc-wrap, .sum-tabs, .sc-table-wrapper { -ms-overflow-style: none; s
 .menu-screen, .setup-screen {
   position:fixed;inset:0;background:var(--dark);z-index:500;display:flex;align-items:center;justify-content:center;overflow-y:auto;
   padding:calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
-  opacity:0;transform:translateX(24%) scale(.992);transition:opacity .26s ease,transform .34s cubic-bezier(0.22,1,0.36,1); pointer-events:none;
+  opacity:0;transform:translateY(12px) scale(.985);transition:opacity .28s ease,transform .34s cubic-bezier(0.22,1,0.36,1); pointer-events:none;
   will-change:opacity,transform;
 }
-.menu-screen.visible, .setup-screen.visible { opacity:1; transform:translateX(0) scale(1); pointer-events:auto; }
-/* Direction-aware iOS-native transitions. */
+.menu-screen.visible, .setup-screen.visible { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+/* Direction-aware iOS-native transitions. `body.nav-forward`/`body.nav-back` is toggled by showScreen(). */
 body.nav-forward .menu-screen:not(.visible),
 body.nav-forward .setup-screen:not(.visible){ transform:translateX(24%) scale(.99); opacity:0; }
 body.nav-forward .menu-screen.visible,
@@ -2098,13 +2098,8 @@ function _setNavDir(dir){
 function showScreen(id, flexOrBlock='flex'){
   const el=document.getElementById(id);
   if(!el)return;
-  // Default to forward navigation for setup/menu transitions unless caller
-  // already set an explicit direction (for example `_setNavDir('back')`).
-  if(
-    (el.classList.contains('menu-screen') || el.classList.contains('setup-screen')) &&
-    !document.body.classList.contains('nav-back') &&
-    !document.body.classList.contains('nav-forward')
-  ){
+  // Default to forward direction if nothing else set it
+  if(!document.body.classList.contains('nav-back') && !document.body.classList.contains('nav-forward')){
     _setNavDir('forward');
   }
   if(!window._screenHideTimers) window._screenHideTimers = {};
@@ -2113,6 +2108,7 @@ function showScreen(id, flexOrBlock='flex'){
     delete window._screenHideTimers[id];
   }
   el.style.display=flexOrBlock;
+  void el.offsetWidth;
   el.classList.add('visible');
 }
 function showMainApp(){
