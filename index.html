@@ -9,6 +9,15 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0d1117">
 <title>DiceGolf</title>
+<script>
+// Seed the real viewport height before first paint so iOS standalone
+// does not start from a too-short 100dvh fallback and then stretch.
+(function(){
+  var h = window.innerHeight || document.documentElement.clientHeight;
+  if(h > 0) document.documentElement.style.setProperty('--app-vh', h + 'px');
+  document.documentElement.style.background = '#0d1117';
+})();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sen:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon_60pt@3x_180px.png">
@@ -68,6 +77,7 @@ body.theme-light .summary-modal{background:var(--dark);}
 body.theme-light .toggle-switch{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,.1);}
 body.theme-light .toggle-switch.on{background:var(--c-fwy);border-color:var(--c-fwyl);}
 html{
+  background:#0d1117;
   overscroll-behavior:none;
   -webkit-tap-highlight-color:transparent;
 }
@@ -78,14 +88,13 @@ body{
   /* Push all content below the iOS status bar */
   padding-top:env(safe-area-inset-top);
 }
-/* One-time startup guard: prevent abrupt first paint in standalone launch. */
-body.boot-loading{
-  pointer-events:none;
-}
-body.boot-loading .menu-screen.visible,
-body.boot-loading .setup-screen.visible,
-body.boot-loading .app.visible{
-  opacity:0 !important;
+/* Disable first-route animation so home-screen launch paints immediately. */
+body.startup-no-anim .menu-screen,
+body.startup-no-anim .setup-screen,
+body.startup-no-anim #onboardScreen,
+body.startup-no-anim .app{
+  transition:none !important;
+  animation:none !important;
 }
 /* Theme transitions should only animate colors during an explicit theme swap. */
 body.theme-swapping,
@@ -1554,7 +1563,7 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .mode-info-tag.locked{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);}
 </style>
 </head>
-<body class="boot-loading">
+<body class="startup-no-anim">
 <div class="orientation-lock" id="orientationLockOverlay" aria-live="polite">
   <div class="orientation-lock-card">
     <div class="orientation-lock-title">PORTRAIT ONLY</div>
@@ -2428,7 +2437,7 @@ function revealInitialBootUI(){
   _initialBootRevealDone = true;
   requestAnimationFrame(()=>{
     requestAnimationFrame(()=>{
-      if(document.body) document.body.classList.remove('boot-loading');
+      if(document.body) document.body.classList.remove('startup-no-anim');
     });
   });
 }
