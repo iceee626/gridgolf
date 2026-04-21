@@ -70,24 +70,31 @@ body.theme-light .overlay .ov{background:var(--card);}
 body.theme-light .hist-modal{background:rgba(240,244,248,.97);}
 body.theme-light .profile-modal{background:rgba(240,244,248,.97);}
 body.theme-light .summary-modal{background:linear-gradient(180deg,var(--course-bg-top) 0%,var(--course-bg-bottom) 100%);}
-body.theme-light .menu-settings-icon{background-image:url('./settings-light.svg');}
 body.theme-light .setup-back-btn,
 body.theme-light .profile-hub-back{background-image:url('./back-light.svg');}
-body.theme-light .sum-hole-close,
-body.theme-light .profile-close,
-body.theme-light .profile-hub-close,
-body.theme-light .mode-info-close{background-image:url('./close-light.svg');}
 body.theme-light .mode-info-btn{background-image:url('./info-light.svg');}
-body.theme-light #gameSettingsBtn{background-image:url('./settings-light.svg');}
+body.theme-light #gameBackBtn{background-image:url('./back.svg');}
 body.theme-light .onboard-input{background:rgba(0,0,0,.04);}
 body.theme-light .onboard-input::placeholder{color:rgba(28,33,40,.45);}
 body.theme-light #menuSettingsBtn{color:#fff!important;}
+body.theme-light .vs-turn-screen.single-round-start .vs-turn-name{color:#1c2128;}
 body.theme-light #profileHubModal{background:rgba(240,244,248,.95);}
 body.theme-light #profileHubModal .profile-hub{
   background:
   radial-gradient(120% 100% at 0% 0%, rgba(78,158,66,.12), transparent 55%),
   radial-gradient(120% 120% at 100% 0%, rgba(240,192,64,.12), transparent 50%),
   linear-gradient(180deg,#f7fbff 0%, #edf3f8 100%);
+}
+body.theme-light #profileHubModal .ph-stat-tile,
+body.theme-light #profileHubModal .ph-mini-card,
+body.theme-light #profileHubModal .ph-section,
+body.theme-light #profileHubModal .ph-ach-item{
+  background:rgba(0,0,0,.045);
+  border-color:rgba(0,0,0,.14);
+}
+body.theme-light #profileHubModal .ph-dist-track{
+  background:rgba(0,0,0,.09);
+  border-color:rgba(0,0,0,.16);
 }
 body.theme-light .profile-hub-head{
   border-bottom:1px solid rgba(0,0,0,.08);
@@ -6455,13 +6462,13 @@ function getXpSnapshot(xpTotal){
 }
 
 function getRankLabelForLevel(level){
-  if(level >= 40) return 'Grid Legend';
-  if(level >= 35) return 'Tour Pro';
-  if(level >= 30) return 'Major Contender';
-  if(level >= 25) return 'Course Tactician';
-  if(level >= 20) return 'Birdie Hunter';
-  if(level >= 15) return 'Fairway Specialist';
-  if(level >= 10) return 'Club Veteran';
+  if(level >= 40) return 'Golf Legend';
+  if(level >= 35) return 'Major Champion';
+  if(level >= 30) return 'Tournament Winner';
+  if(level >= 25) return 'Tour Pro';
+  if(level >= 20) return 'Journeyman';
+  if(level >= 15) return 'Local Star';
+  if(level >= 10) return 'Rising Talent';
   if(level >= 5) return 'Sunday Golfer';
   return 'Rookie';
 }
