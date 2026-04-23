@@ -2579,6 +2579,25 @@ function swapHcScreenContent(updateFn){
     },240);
   },180);
 }
+function swapHcScreenContentForward(updateFn){
+  const hc=document.getElementById('hcScreen');
+  if(!hc || typeof updateFn !== 'function'){
+    if(typeof updateFn === 'function') updateFn();
+    return;
+  }
+  if(_hcPanelSwapTimer){
+    clearTimeout(_hcPanelSwapTimer);
+    _hcPanelSwapTimer = null;
+  }
+  hc.classList.remove('panel-swap-in','panel-swap-out');
+  updateFn();
+  void hc.offsetWidth;
+  hc.classList.add('panel-swap-in');
+  _hcPanelSwapTimer = setTimeout(()=>{
+    hc.classList.remove('panel-swap-in');
+    _hcPanelSwapTimer = null;
+  },240);
+}
 let _summaryBackTarget = null;
 let _summaryContext = null;
 let _vsSummaryPlayer = 0;
@@ -11700,7 +11719,9 @@ function vsShowHoleComparison(){
 
   const openVsFinalResults = () => {
       _setNavDir('forward');
-      swapHcScreenContent(()=>vsShowFinal());
+      setMainAppConcealed(true);
+      hideMainAppImmediate();
+      swapHcScreenContentForward(()=>vsShowFinal());
   };
 
   const btn = document.getElementById('hcBtn');
