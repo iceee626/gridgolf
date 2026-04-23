@@ -1597,13 +1597,14 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
   letter-spacing:1px;
   padding:8px 16px;
   border-radius:8px;
-  z-index:220;
+  z-index:1200;
   box-shadow:0 4px 12px rgba(0,0,0,.4);
   max-width:85vw;
   text-align:center;
   line-height:1.4;
   opacity:0;
   transition:opacity .18s ease,transform .22s cubic-bezier(.22,1,.36,1),bottom .22s ease;
+  will-change:opacity,transform,bottom;
 }
 .gg-wc-toast.show{
   opacity:1;
@@ -2516,7 +2517,11 @@ function openSummaryTransition(viewRound = S.currentRound, backTarget = null){
 }
 function openSummaryFromRoundComplete(viewRound = S.currentRound){
   _setNavDir('forward');
-  closeHcScreenThen(()=>openSummaryTransition(viewRound, 'hcScreen'));
+  _summaryBackTarget = 'hcScreen';
+  concealMainApp();
+  openSummary(viewRound, 'hcScreen');
+  const hc = document.getElementById('hcScreen');
+  requestAnimationFrame(()=>{ if(hc) hc.classList.remove('show'); });
 }
 function setSummaryContext(ctx = null){
   _summaryContext = ctx ? { ...ctx } : null;
@@ -4564,6 +4569,18 @@ function processShot(row,col){
         wcPuttNote = S._wcNextShotNote;
         S._wcNextShotNote = null;
     }
+    if (WCS.greenReadQueued && !WCS.greenReadActive) {
+        WCS.greenReadQueued = false;
+        WCS.greenReadActive = true;
+    }
+    if (WCS.greenReadActive) {
+        WCS.greenReadActive = false;
+        showWcToast('🌱 Green Read activated!');
+        if (putts === 3) {
+            finalPutts = 2;
+            wcPuttNote += ' (🌱 Green Read)';
+        }
+    }
     if (WCS.cupMagnetActive && ['p2','p3'].includes(outcome) && cupMagnetCanPull(row,col)) {
         finalPutts = 1;
         WCS.cupMagnetActive = false;
@@ -4583,7 +4600,8 @@ function processShot(row,col){
 
     {
       const h_putt=HOLES[S.holeIdx];
-      const d_putt=S.strokes-h_putt.par;
+      const previewScore = (WCS.bogeyShieldActive && (S.strokes - h_putt.par) >= 1) ? h_putt.par : S.strokes;
+      const d_putt=previewScore-h_putt.par;
       const isHio_putt=(h_putt.par===3&&S.strokes===1);
       showCelebration(isHio_putt?-99:d_putt, ()=>{});
       S._skipCelebration=true;
@@ -5532,7 +5550,6 @@ function completeHole(){
 function nextHole(){
   const nr=document.getElementById('ovNameRow');
   if(nr){nr.style.fontSize='';nr.style.fontFamily='';nr.style.letterSpacing='';nr.style.color='';}
-  revealMainApp();
   document.getElementById('overlay').classList.remove('show');
   const pbRow = document.getElementById('ovPbRow'); if(pbRow) pbRow.remove();
   const ovBtn = document.getElementById('ovBtn');
@@ -5541,6 +5558,7 @@ function nextHole(){
   if(S.holeIdx >= S.endIdx){
     const hc = document.getElementById('hcScreen');
     _setNavDir('forward');
+    concealMainApp();
     if(hc && hc.classList.contains('show')){
       hc.classList.remove('show');
       setTimeout(()=>showRoundEnd(), 230);
@@ -5549,6 +5567,7 @@ function nextHole(){
     }
     return;
   }
+  revealMainApp();
   
   // Instantly load the next hole in the DOM in the background
   S.holeIdx++;
@@ -6070,8 +6089,10 @@ function summaryGoBack(){
   if(target === 'hcScreen'){
     _setNavDir('back');
     const hc = document.getElementById('hcScreen');
-    requestAnimationFrame(()=>document.getElementById('summaryModal').classList.remove('show'));
-    requestAnimationFrame(()=>{ if(hc) hc.classList.add('show'); });
+    const summaryModal = document.getElementById('summaryModal');
+    concealMainApp();
+    if(hc) hc.classList.add('show');
+    requestAnimationFrame(()=>{ if(summaryModal) summaryModal.classList.remove('show'); });
     return;
   }
   if(target === 'overlay'){
@@ -8869,12 +8890,12 @@ function swapWcInfoContent(renderFn){
     return;
   }
   list.classList.add('swap-out');
-  setTimeout(()=>{
+  requestAnimationFrame(()=>{
     renderFn(list);
     list.classList.remove('swap-out');
     list.classList.add('swap-in');
     requestAnimationFrame(()=>list.classList.remove('swap-in'));
-  },110);
+  });
 }
 
 function wcReset(){
@@ -9065,7 +9086,7 @@ function renderWcDrawer(){
       if (wc.id === 'mowers_revenge') statusText = 'Active for the entire hole';
       if (wc.id === 'lucky_bounce') statusText = 'Saves next OB/Water';
       if (wc.id === 'iron_will') statusText = 'Saves next Rough';
-      if (wc.id === 'green_read') statusText = WCS.greenReadQueued ? 'Queued for next putting attempt' : 'Ready for putting grid';
+      if (wc.id === 'green_read') statusText = WCS.greenReadQueued ? 'Queued for next putting attempt' : 'Armed for next putting attempt';
       if (wc.id === 'bounce_back') statusText = WCS.bounceBackReady ? 'Ready for next tee shot' : 'Waiting for bogey+ result';
       if (wc.id === 'bogey_shield') statusText = 'Waiting for bogey+ result';
       if (wc.id === 'cup_magnet') statusText = 'Waiting for Green...';
@@ -9293,8 +9314,7 @@ function applyWildcardEffect(wc){
       if(S.zone === 'grn' && !S._pendingPuttResult && !S.holeDone){
         WCS.greenReadActive = true;
         WCS.greenReadQueued = false;
-        toastMsg = null;
-        buildGrid();
+        toastMsg = `🌱 ${wc.name} armed for your next putt.`;
       } else {
         WCS.greenReadActive = false;
         WCS.greenReadQueued = true;
@@ -9421,13 +9441,7 @@ function appendWcNote(noteStr) {
   
 function applyWcGridMods(grid){
   const h=HOLES[S.holeIdx];
-  
-  if ((WCS.greenReadActive || WCS.greenReadQueued) && S.zone === 'grn' && !S._pendingPuttResult) {
-    WCS.greenReadActive = false;
-    WCS.greenReadQueued = false;
-    showWcToast('🌱 Green Read activated!'); appendWcNote('🌱 Green Read');
-    grid = grid.map(r=>r.map(c=>c === 'p3' ? 'p2' : c));
-  }
+
   if (WCS.ferrettActive && S.zone === 'sand' && S.yrdRemain <= 87) {
     WCS.ferrettActive = false; 
     S._ferrettArmedShot = true;
