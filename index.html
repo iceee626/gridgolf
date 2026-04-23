@@ -1875,6 +1875,15 @@ body[data-course-theme='septembra-national'] #vsTurnScreen .vs-turn-sub,
 body[data-course-theme='septembra-national'] #vsTurnScreen .vs-turn-btn{
   font-family:'Fraunces',serif !important;
 }
+body[data-course-theme='septembra-national'] #vsTurnScreen .vs-turn-name{
+  font-size:36px;
+  letter-spacing:3px;
+  line-height:1.05;
+  text-align:center;
+  max-width:min(92vw,560px);
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
 .mode-info-tag{
   display:inline-block;font-family:'Sen',sans-serif;font-size:8px;letter-spacing:1px;
   padding:2px 6px;border-radius:20px;margin-top:4px;
@@ -4449,12 +4458,34 @@ function getOverallScoreDiff(){
   return total - par;
 }
 
+function appendWcNoteToLastLog(noteStr){
+  if(!noteStr || !Array.isArray(S.log) || S.log.length === 0) return;
+  const last = S.log[S.log.length - 1];
+  if(!last || typeof last.desc !== 'string') return;
+  if(last.desc.includes(noteStr)) return;
+  if(/\)\s*$/.test(last.desc) && last.desc.includes('(')){
+    last.desc = last.desc.replace(/\)\s*$/, `, ${noteStr})`);
+  } else {
+    last.desc += ` (${noteStr})`;
+  }
+}
+
+function activateGreenReadOnGrid(grid){
+  if(!Array.isArray(grid)) return grid;
+  if(!(WCS.greenReadQueued || WCS.greenReadActive)) return grid;
+  WCS.greenReadQueued = false;
+  WCS.greenReadActive = false;
+  const nextGrid = grid.map(row => row.map(cell => (cell === 'p3' ? 'p2' : cell)));
+  showWcToast('🌱 Green Read activated!');
+  appendWcNote('🌱 Green Read');
+  return nextGrid;
+}
+
 function maybeArmBounceBackFromHoleResult(diff){
   if(!WCS.bounceBackPending) return;
   if(diff >= 1){
     WCS.bounceBackPending = false;
     WCS.bounceBackReady = true;
-    showWcToast('🪃 Bounce Back armed for your next tee shot!');
   }
 }
 
@@ -4463,7 +4494,8 @@ function applyBogeyShieldToScore(rawScore, par){
   if((rawScore - par) < 1) return rawScore;
   WCS.bogeyShieldActive = false;
   showWcToast('🛡️ Bogey Shield activated!');
-  appendWcNote('🛡️ Bogey Shield');
+  appendWcNoteToLastLog('🛡️ Bogey Shield');
+  renderLog();
   return par;
 }
 
@@ -4648,21 +4680,18 @@ function processShot(row,col){
     const putts=outcome==='p1'?1:outcome==='p2'?2:3;
     let finalPutts=putts;
     let wcPuttNote = '';
-    if (S._wcNextShotNote) {
-        wcPuttNote = S._wcNextShotNote;
-        S._wcNextShotNote = null;
-    }
-    if (WCS.greenReadQueued && !WCS.greenReadActive) {
-        WCS.greenReadQueued = false;
-        WCS.greenReadActive = true;
-    }
+    // Legacy save fallback: if Green Read survived without grid conversion, apply once here.
     if (WCS.greenReadActive) {
         WCS.greenReadActive = false;
         showWcToast('🌱 Green Read activated!');
+        appendWcNote('🌱 Green Read');
         if (putts === 3) {
             finalPutts = 2;
-            wcPuttNote += ' (🌱 Green Read)';
         }
+    }
+    if (S._wcNextShotNote) {
+        wcPuttNote = S._wcNextShotNote;
+        S._wcNextShotNote = null;
     }
     if (WCS.cupMagnetActive && ['p2','p3'].includes(outcome) && cupMagnetCanPull(row,col)) {
         finalPutts = 1;
@@ -8169,7 +8198,12 @@ function setVsSummaryPlayer(playerIdx, viewRound = S.currentRound, backTarget = 
 let _vsSummaryPreserveScroll = false;
 function openVersusSummary(viewRound = S.currentRound, backTarget = _summaryBackTarget){
   document.getElementById('overlay').classList.remove('show');
-  concealMainApp();
+  if(backTarget === 'hcScreen'){
+    setMainAppConcealed(true);
+    hideMainAppImmediate();
+  } else {
+    concealMainApp();
+  }
   _summaryBackTarget = backTarget || null;
   closeSummaryHoleModal();
   const body=document.getElementById('sumBody');
@@ -9359,6 +9393,7 @@ function applyWildcardEffect(wc){
   const h=HOLES[S.holeIdx];
   let applied = true;
   let toastMsg = `${wc.icon} ${wc.name} applied!`;
+  let afterApply = null;
 
   // Par 3 Wildcard Logic: Hole In One overrides lesser cards.
   const isPar3Wc = ['eagle_eye', 'hole_wall', 'hole_in_one'].includes(wc.id);
@@ -9422,16 +9457,22 @@ function applyWildcardEffect(wc){
       }
       break;
     case 'green_read':
+      toastMsg = `🌱 ${wc.name} applied!`;
       if(S.zone === 'grn' && !S._pendingPuttResult && !S.holeDone){
-        WCS.greenReadActive = true;
-        WCS.greenReadQueued = false;
-        toastMsg = `🌱 ${wc.name} armed for your next putt.`;
+        if(isShotBtnShown('rollBtn') && Array.isArray(S.currentGrid) && S.currentGrid.length){
+          WCS.greenReadActive = true;
+          WCS.greenReadQueued = false;
+          afterApply = () => {
+            S.currentGrid = activateGreenReadOnGrid(S.currentGrid);
+            renderGrid();
+          };
+        } else {
+          WCS.greenReadActive = false;
+          WCS.greenReadQueued = true;
+        }
       } else {
         WCS.greenReadActive = false;
         WCS.greenReadQueued = true;
-        toastMsg = S.zone === 'grn'
-          ? `🌱 ${wc.name} queued for next hole.`
-          : `🌱 ${wc.name} queued for next putting attempt.`;
       }
       break;
     case 'bounce_back':
@@ -9471,6 +9512,7 @@ function applyWildcardEffect(wc){
   }
   
   if(toastMsg) showWcToast(toastMsg);
+  if(typeof afterApply === 'function') afterApply();
   renderWcFab();
   if(TUT.active && typeof tutAfterWcUse === 'function') tutAfterWcUse();
   return applied;
@@ -9552,6 +9594,10 @@ function appendWcNote(noteStr) {
   
 function applyWcGridMods(grid){
   const h=HOLES[S.holeIdx];
+
+  if (S.zone === 'grn' && !S._pendingPuttResult && (WCS.greenReadQueued || WCS.greenReadActive)) {
+    grid = activateGreenReadOnGrid(grid);
+  }
 
   if (WCS.ferrettActive && S.zone === 'sand' && S.yrdRemain <= 87) {
     WCS.ferrettActive = false; 
@@ -11652,12 +11698,15 @@ function vsShowHoleComparison(){
 
   try { renderVsReplayAndScoreboard(0); } catch(_){}
 
+  const openVsFinalResults = () => {
+      _setNavDir('forward');
+      swapHcScreenContent(()=>vsShowFinal());
+  };
+
   const btn = document.getElementById('hcBtn');
   if (matchClinched) {
       btn.textContent = 'FINAL RESULTS';
-      btn.onclick = () => {
-          vsShowFinal();
-      };
+      btn.onclick = openVsFinalResults;
   } else if (S.holeIdx >= S.endIdx && S.currentRound < S.totalRounds) {
       btn.textContent = `START ROUND ${S.currentRound + 1}`;
       btn.onclick = () => {
@@ -11665,9 +11714,7 @@ function vsShowHoleComparison(){
       };
   } else if (S.holeIdx >= S.endIdx) {
       btn.textContent = 'FINAL RESULTS';
-      btn.onclick = () => {
-          vsShowFinal();
-      };
+      btn.onclick = openVsFinalResults;
   } else {
       btn.textContent = 'NEXT HOLE';
       btn.onclick = () => {
