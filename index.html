@@ -1197,6 +1197,8 @@ body.theme-light .txt-toggle{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,
 .profile-close{background-color:rgba(224,82,82,.24);border:1px solid rgba(255,82,82,.55);color:transparent;width:28px;height:28px;border-radius:7px;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
 .profile-close:hover{background-color:rgba(224,82,82,.36);border-color:rgba(255,82,82,.8);}
 .profile-close:active{transform:translateY(1px) scale(.95);}
+#xpRewardModal .profile-head{justify-content:center;}
+#xpRewardModal .profile-head-title{text-align:center;}
 .profile-body{padding:14px;}
 .profile-slots{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
 .profile-slot{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;}
@@ -6939,7 +6941,6 @@ function showXpRewardModal(title, award, buttonText = 'CONTINUE', afterClose = n
   if(!modal || !titleEl || !body || !award) return;
   titleEl.textContent = title;
   body.innerHTML = `
-    <div class="xp-modal-note">Progress Updated</div>
     ${renderXpAwardCardHtml(award)}
     <div style="margin-top:12px;">
       <button class="menu-btn-play" style="width:100%;" onclick="xpRewardContinue()">${buttonText}</button>
@@ -12103,7 +12104,6 @@ function closeModeInfo(type){
   <div class="profile-card" style="max-width:390px;">
     <div class="profile-head">
       <div class="profile-head-title" id="xpRewardTitle">GAINED XP</div>
-      <button class="profile-close" onclick="closeXpRewardModal()">✕</button>
     </div>
     <div class="xp-modal-body" id="xpRewardBody"></div>
   </div>
