@@ -1940,10 +1940,10 @@ body[data-course-theme='septembra-national'] #vsTurnScreen .vs-turn-name{
   <div class="tut-prompt-card">
     <div style="font-size:48px;margin-bottom:12px;">⛳</div>
     <div class="tut-prompt-title">PLAY TUTORIAL?</div>
-    <div class="tut-prompt-desc">New to DiceGolf? We recommend playing a short 3-hole tutorial to learn the basics — zones, dice rolls, penalties, wildcards, and putting. It only takes a few minutes!</div>
+    <div class="tut-prompt-desc">New to DiceGolf? Start with the short 3-hole tutorial to learn the basics of zones, dice rolls, penalties, wildcards, and putting. It only takes a few minutes.</div>
     <div class="tut-prompt-btns">
-      <button style="background:var(--c-fwy);color:#fff;" onclick="startTutorial()">YES, LET'S GO</button>
-      <button style="background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--border);" onclick="skipTutorial()">NO THANKS</button>
+      <button style="background:var(--c-fwy);color:#fff;" onclick="startTutorial()">PLAY TUTORIAL</button>
+      <button style="background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--border);" onclick="skipTutorial()">SKIP</button>
     </div>
   </div>
 </div>
@@ -2228,6 +2228,7 @@ body[data-course-theme='septembra-national'] #vsTurnScreen .vs-turn-name{
       <div class="hole-meta-row">
         <div class="hole-title" id="holeName">HOLE 1</div>
         <div class="hole-meta">
+          <span class="hole-yards" style="color:var(--muted);margin:0 2px;">•</span>
           <span class="hole-yards" id="holeYards">387 yds</span>
           <span class="hole-yards" style="color:var(--muted);margin:0 2px;">•</span>
           <span style="font-family:'Sen', sans-serif;font-size:10px;color:var(--muted);">Difficulty</span>
@@ -10726,7 +10727,7 @@ function tutAdvance(){
   
   if(hi === 0){
     if(_tutStep === 0){
-      _tutShowTip('WELCOME TO DICEGOLF!', 'The goal of golf is simple: finish each hole in as few strokes as possible. Every shot you take counts as 1 stroke. Each hole has a target called "Par" — the number of shots a good player is expected to need. This first hole is a Par 4, meaning reaching the hole in 4 strokes is the goal. In the game you will have a chance to play on par 3 (short) and par 5 (long) holes as well.', 'GOT IT', null);
+      _tutShowTip('WELCOME TO DICEGOLF!', 'The goal of golf is simple: finish each hole in as **few strokes as possible**. Every shot counts as **1 stroke**. Each hole also has a target called **"Par"** — the number of strokes a good player is expected to need. This first hole is a **Par 4**, so the goal is to finish it in **4 strokes**. Later, you will also play Par 3 and Par 5 holes.', 'GOT IT', null);
       return;
     }
     if(_tutStep === 1){
@@ -10735,19 +10736,19 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 2){
-      _tutShowTip('TV SCOREBOARD', 'At the bottom, this TV banner tracks your shots and total running score for the round.', 'GOT IT', '#tvBar', true);
+      _tutShowTip('TV SCOREBOARD', 'At the bottom, this TV scoreboard tracks your **shots** and your **running score** for the round.', 'GOT IT', '#tvBar', true);
       return;
     }
     if(_tutStep === 3){
-      _tutShowTip('ZONE LEGEND', 'Each color represents a different area of the course: Green = Fairway (safe), Brown = Rough (harder shot), Light Green = Chip (short shot near the green), Yellow = Sand bunker (tricky), Blue = Water (penalty), Red = Out of Bounds (penalty). The Putting Green is where you finish the hole. Tap on ZONE LEGEND if you want to hide it or turn it of completely in Settings.', 'GOT IT', '.legend', true, 'middle');
+      _tutShowTip('ZONE LEGEND', 'Each color represents a different area of the course: **Green = Fairway** (safe), **Brown = Rough** (harder shot), **Light Green = Chip** (short shot near the green), **Yellow = Sand** (tricky), **Blue = Water** (penalty), and **Red = Out of Bounds** (penalty). The **Putting Green** is where you finish the hole. Tap **ZONE LEGEND** to hide it, or turn it off completely in Settings.', 'GOT IT', '.legend', true, 'middle');
       return;
     }
     if(_tutStep === 4){
-      _tutShowTip('THE GRID', 'The grid represents all the possible landing spots for your shot. When you roll the dice, one die selects the Row and the other selects the Column. Where they intersect is where your ball lands.', 'GOT IT', '.grid-wrap, .dice-row', true);
+      _tutShowTip('THE GRID', 'The grid represents all the possible landing spots for your shot. When you roll the dice, one die selects the **Row** and the other selects the **Column**. Where they intersect is where your ball lands.', 'GOT IT', '.grid-wrap, .dice-row', true);
       return;
     }
     if(_tutStep === 5){
-      _tutShowTip('ROLL THE DICE!', 'Time to shine! Tap the ROLL button to hit your tee shot. The dices determine where your ball lands.', 'SWING!', '#rollBtn', true);
+      _tutShowTip('ROLL THE DICE!', 'Time for your first shot. Tap the **ROLL** button to hit your tee shot. The dice determine where your ball lands.', 'SWING!', '#rollBtn', true);
       return;
     }
     if(_tutStep === 6){
@@ -10759,12 +10760,12 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 7){
-      _tutShowTip('SHOT LOG', 'Nice! You landed on the Fairway. The Shot Log right here tracks every shot you take.', 'GOT IT', '.log-section', true);
+      _tutShowTip('SHOT LOG', 'Nice! You landed on the **Fairway**. The **Shot Log** right here tracks every shot you take.', 'GOT IT', '.log-section', true);
       return;
     }
     if(_tutStep === 8){
       S.yrdRemain = 150; updateYrd(); 
-      _tutShowTip('PERFECT TEE SHOT!', 'Now that you’ve cleared the tee, check this panel. At the top, you’ll see the hole’s total length and its **Difficulty** (1-star is a breeze, while 3-stars signal hazards and tricky terrain). The **Par** shows your target score, and the large readout on the right displays your **remaining distance**, mirrored by the progress bar. The closer you get to the hole, the better your grid becomes. Tap NEXT SHOT to continue.', 'GOT IT', '.hole-hero, #nextShotBtn', true);
+      _tutShowTip('PERFECT TEE SHOT!', 'Now that you’ve cleared the tee, check this panel. At the top, you’ll see the hole’s total length and its **Difficulty** — 1 star is easier, while 3 stars signal more hazards and trickier terrain. **Par** shows your target score, and the large readout on the right displays your **remaining distance**, mirrored by the progress bar. The closer you get to the hole, the better your grid becomes. Tap **NEXT SHOT** to continue.', 'GOT IT', '.hole-hero, #nextShotBtn', true);
       return;
     }
     if(_tutStep === 9){
@@ -10776,7 +10777,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 10){
-      _tutShowTip('GETTING CLOSER', 'Notice the grid changed. Because you are closer to the hole, you have more Green (Fairway) cells. Let\'s roll your approach shot!', 'PROCEED', '.grid-wrap', true);
+      _tutShowTip('GETTING CLOSER', 'Notice how the grid changed. Because you are closer to the hole, you now have more **Fairway** cells and a better chance of a good result. Let\'s roll your **approach shot**!', 'PROCEED', '.grid-wrap', true);
       scrollToGrid();
       return;
     }
@@ -10789,7 +10790,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 12){
-      _tutShowTip('GREAT APPROACH!', 'You landed on the green — the smooth area around the hole used for putting. Harder holes include more challenging zones like Rough, Sand, Chip areas, and sometimes Water hazards that can make your next shot harder. Tap NEXT SHOT to load the putting grid so you can finish the hole.', 'GOT IT', '#nextShotBtn', true);
+      _tutShowTip('GREAT APPROACH!', 'You landed on the **Green** — the smooth surface around the hole where putting happens. On harder holes you will see more challenging zones like **Rough**, **Sand**, **Chip**, and sometimes **Water**, all of which can make your next shot more difficult. Tap **NEXT SHOT** to load the putting grid and finish the hole.', 'GOT IT', '#nextShotBtn', true);
       scrollToGrid();
       return;
     }
@@ -10802,7 +10803,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 14){
-      _tutShowTip('PUTTING TIME!', 'The green is the smooth grass around the hole. The grid now has 1-Putt (green, 1 stroke to finish), 2-Putt (yellow, 2 strokes), and 3-Putt (red, 3 strokes). Aim always for 1P!', 'PUTT FOR BIRDIE', '.grid-wrap', true);
+      _tutShowTip('PUTTING TIME!', 'Now it’s all about **putting**. The grid shows **1-Putt** (green, 1 stroke to finish), **2-Putt** (yellow, 2 strokes), and **3-Putt** (red, 3 strokes) cells. Aim always for **1-Putt**!', 'PUTT FOR BIRDIE', '.grid-wrap', true);
       scrollToGrid();
       return;
     }
@@ -10823,7 +10824,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 17){
-      _tutShowTip('HOLE 1 COMPLETE!', 'Nice shot! You finished one stroke under Par — that’s called a Birdie. The goal is always to beat Par whenever you can! Let’s move to Hole 2 to learn about hazards and special abilities.', 'NEXT HOLE →', '.overlay .ov', true);
+      _tutShowTip('HOLE 1 COMPLETE!', 'Nice shot! You finished one stroke under Par — that’s called a **Birdie**. The goal is always to beat Par when you can! Let’s move to **Hole 2** to learn about hazards and special abilities.', 'NEXT HOLE', '.overlay .ov', true);
       return;
     }
     if(_tutStep === 18){
@@ -10837,11 +10838,11 @@ function tutAdvance(){
   
   if(hi === 1){
     if(_tutStep === 0){
-      _tutShowTip('HOLE 2 — PAR 5', 'This par 5 hole has hazards! 💧 Water and 🚫 Out of Bounds (OB) add a +2 penalty to your score, and you replay from the same spot. Let\'s see what happens.', 'GOT IT', '.grid-wrap', true);
+      _tutShowTip('HOLE 2 — PAR 5', 'This par 5 hole introduces hazards! 💧 **Water** and 🚫 **Out of Bounds (OB)** each add a **+2 penalty** to your score, and you replay from the same spot. Let\'s see how that works.', 'GOT IT', '.grid-wrap', true);
       return;
     }
     if(_tutStep === 1){
-      _tutShowTip('WILDCARDS!', 'If you roll doubles (e.g., two 3s), you earn a Wildcard! These give you special abilities. There are several wildcards available in the game. To see them all, open Wildcard drawer on the right, and click on "i" at the top. Click on roll to proceed.', 'PROCEED', '#rollBtn', true);
+      _tutShowTip('WILDCARDS!', 'If you roll doubles, such as two 3s, you earn a **Wildcard**! Wildcards give you special abilities and can change the outcome of a hole. To see the full list, open the **Wildcard drawer** on the right, and tap the **"i"** at the top. Tap **ROLL** to continue.', 'PROCEED', '#rollBtn', true);
       return;
     }
     if(_tutStep === 2){
@@ -10853,7 +10854,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 3){
-      _tutShowTip('WILDCARD EARNED!', 'You rolled doubles and found a Wildcard! Tap the card to reveal it, then tap EQUIP to save it in your drawer.', 'GOT IT', '#wcReveal', false);
+      _tutShowTip('WILDCARD EARNED!', 'You rolled doubles and found a **Wildcard**! Tap the card to reveal it, then tap **EQUIP** to store it in your drawer.', 'GOT IT', '#wcReveal', false);
       return;
     }
     if(_tutStep === 4){
@@ -10864,7 +10865,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 5){
-      _tutShowTip('NEXT SHOT', 'Your Phantom Stroke is saved in your drawer on the right. You can have up to 3 wildcards stored at the same time. When you are ready, tap NEXT SHOT to continue playing.', 'PROCEED', '#nextShotBtn', true);
+      _tutShowTip('NEXT SHOT', 'Your **Phantom Stroke** is now stored in the drawer on the right. You can keep up to **3 wildcards** at the same time. When you are ready, tap **NEXT SHOT** to continue playing.', 'PROCEED', '#nextShotBtn', true);
       return;
     }
     if(_tutStep === 6){
@@ -10876,7 +10877,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 7){
-      _tutShowTip('WATCH OUT!', 'First hazards avoided. Now, roll your approach shot to try and reach the green. Keep away from the water!', 'PROCEED', '#rollBtn', true);
+      _tutShowTip('WATCH OUT!', 'You avoided the first hazards. Now, roll your approach shot to try and reach the green. Keep clear of the **water**!', 'PROCEED', '#rollBtn', true);
       scrollToGrid();
       return;
     }
@@ -10889,7 +10890,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 9){
-      _tutShowTip('💧 WATER HAZARD!', 'Oh no! That adds +2 penalty strokes. But wait... tap the purple Wildcard drawer and tap USE on the Phantom Stroke to remove 1 penalty!', 'PROCEED', null, true);
+      _tutShowTip('💧 WATER HAZARD!', 'Oh no! That adds **+2 penalty strokes**. But wait... open the purple Wildcard drawer and tap **USE** on **Phantom Stroke** to remove **1 penalty stroke**!', 'PROCEED', null, true);
       return;
     }
     if(_tutStep === 10){
@@ -10900,7 +10901,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 11){
-      _tutShowTip('PENALTY REMOVED!', 'Thanks to the Wildcard, you saved a stroke! Now tap NEXT SHOT to continue.', 'THANKS!', '#nextShotBtn', true);
+      _tutShowTip('PENALTY REMOVED!', 'Your **Wildcard** saved you a stroke! Now tap **NEXT SHOT** to continue.', 'THANKS!', '#nextShotBtn', true);
       scrollToGrid();
       return;
     }
@@ -10913,7 +10914,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 13){
-      _tutShowTip('RECOVERY SHOT', 'Your wildcard saved you from the penalty stroke! But you still have to replay the shot from the same spot — like getting a second chance. Roll again to try landing on the green.', 'GOT IT', '#rollBtn', true);
+      _tutShowTip('RECOVERY SHOT', 'You still have to replay the shot from the same spot, so this is your recovery chance. Roll again to try landing on the **Green**.', 'GOT IT', '#rollBtn', true);
       scrollToGrid();
       return;
     }
@@ -10934,7 +10935,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 16){
-      _tutShowTip('FINISH THE HOLE', 'Great, you have a chance for birdie now! Roll to putt.', 'PROCEED', '#rollBtn', true);
+      _tutShowTip('FINISH THE HOLE', 'Great, you have a chance for **Birdie** now! **ROLL** to putt.', 'PROCEED', '#rollBtn', true);
       scrollToGrid();
       return;
     }
@@ -10955,7 +10956,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 19){
-      _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round, use them wisely! Final hole coming up!', 'NEXT HOLE →', '.overlay .ov', true);
+      _tutShowTip('HOLE 2 DONE!', 'Wildcards can save your round, so use them wisely! The final hole coming up!', 'NEXT HOLE', '.overlay .ov', true);
       return;
     }
     if(_tutStep === 20){
@@ -10969,7 +10970,7 @@ function tutAdvance(){
   
   if(hi === 2){
     if(_tutStep === 0){
-      _tutShowTip('HOLE 3 — PAR 3', 'Par 3 holes are very short. You tee off directly at the green. This grid has a special ⛳ "Hole In!" cell. Land on it for a chance at a hole-in-one! Click on roll to proceed.', 'ROLL', '#rollBtn', true);
+      _tutShowTip('HOLE 3 — PAR 3', 'Par 3 holes are shorter and more direct. You tee off straight at the **Green**. This grid includes a special ⛳ **"Hole In!"** cell. Land on it for a chance at a **hole-in-one**! Tap **ROLL** to proceed.', 'ROLL', '#rollBtn', true);
       scrollToGrid();
       return;
     }
@@ -10982,7 +10983,7 @@ function tutAdvance(){
       return;
     }
     if(_tutStep === 2){
-      _tutShowTip('🏆 TUTORIAL COMPLETE!', 'WOW! A hole-in-one! You\'ve learned zones, dice, penalties, wildcards, and putting. Now go explore the whole game! 🏌️', 'FINISH TUTORIAL', '.overlay .ov', true);
+      _tutShowTip('🏆 TUTORIAL COMPLETE!', 'WOW! A **hole-in-one**, what a finish! You\'ve learned the basics of **zones**, **dice**, **penalties**, **wildcards**, and **putting**. Now it\'s time to explore the full game. Enjoy! 🏌️', 'FINISH TUTORIAL', '.overlay .ov', true);
       return;
     }
     if(_tutStep === 3){
@@ -11990,7 +11991,7 @@ function closeModeInfo(type){
 <div class="profile-modal" id="settingsModal">
   <div class="profile-card">
     <div class="profile-head">
-      <div class="profile-head-title">⚙️ SETTINGS</div>
+      <div class="profile-head-title">SETTINGS</div>
       <button class="profile-close" onclick="closeSettings()">✕</button>
     </div>
     <div class="profile-body">
@@ -12017,7 +12018,7 @@ function closeModeInfo(type){
       </div>
       <div class="settings-row">
         <div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">📳 SHAKE TO ROLL</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🪇 SHAKE TO ROLL</div>
           <div class="settings-row-desc">Shake your phone to roll the dice</div>
         </div>
         <div class="toggle-switch" id="shakeToggle" onclick="setRollMode(getRollMode()==='haptic'?'classic':'haptic')"><div class="toggle-knob"></div></div>
@@ -12050,7 +12051,7 @@ function closeModeInfo(type){
       <div class="settings-row no-divider">
         <div>
           <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;color:var(--text);">🏷️ CELL LABELS</div>
-          <div class="settings-row-desc">Show zone name always</div>
+          <div class="settings-row-desc">Show zone name on the grid always</div>
         </div>
         <div class="txt-toggle" id="labelsToggle" onclick="setCellLabelModeDirect(getCellLabelMode()==='tap'?'always':'tap')">
           <div class="txt-toggle-knob"></div>
@@ -12263,23 +12264,23 @@ if ('serviceWorker' in navigator) {
 <div class="mode-info-overlay" id="playModeInfoOverlay" onclick="closeModeInfo('play')">
   <div class="mode-info-card" onclick="event.stopPropagation()">
     <div class="mode-info-head">
-      <div class="mode-info-head-title">⛳ GAME MODES</div>
+      <div class="mode-info-head-title">GAME MODES</div>
       <button class="mode-info-close" onclick="closeModeInfo('play')">✕</button>
     </div>
     <div class="mode-info-body compact-top">
       <div class="mode-info-section">
         <div class="mode-info-row">
-          <div class="mode-info-icon">⛳</div>
+          <div class="mode-info-icon">🏌️</div>
           <div class="mode-info-text">
             <div class="mode-info-name">SINGLE ROUND</div>
-            <div class="mode-info-desc">A classic 18-hole round of golf. Your score is recorded against par. Perfect for a quick session.</div>
+            <div class="mode-info-desc">A classic 18-hole round of golf. Your score is recorded against par. A straightforward way to enjoy a full round without committing to a longer event.</div>
           </div>
         </div>
         <div class="mode-info-row">
           <div class="mode-info-icon">🏆</div>
           <div class="mode-info-text">
             <div class="mode-info-name">TOURNAMENT</div>
-            <div class="mode-info-desc">Compete across 4 rounds on the same course. Every stroke counts. Battle for the lowest cumulative score in a full-length golf event.</div>
+            <div class="mode-info-desc">Compete across 4 rounds on the same course in a full-length golf event. Every stroke counts, and the lowest cumulative score at the end takes the title.</div>
           </div>
         </div>
         <div class="mode-info-row">
@@ -12293,7 +12294,7 @@ if ('serviceWorker' in navigator) {
           <div class="mode-info-icon">⚙️</div>
           <div class="mode-info-text">
             <div class="mode-info-name">CUSTOM GAME</div>
-            <div class="mode-info-desc">Build your own round your way. Mix and match number of rounds (1, 2, 3, or 4), holes (18, Front 9, Back 9), and difficulty (Easy / Medium / Hard). Ideal if you want precise control over your experience.</div>
+            <div class="mode-info-desc">Build your own setup. Mix and match number of rounds (1, 2, 3, or 4), holes (18, Front 9, Back 9), and difficulty (Easy / Medium / Hard). Ideal if you want full control over your experience.</div>
           </div>
         </div>
       </div>
@@ -12303,24 +12304,55 @@ if ('serviceWorker' in navigator) {
           <div class="mode-info-icon"><span class="mode-info-diff-dot easy"></span></div>
           <div class="mode-info-text">
             <div class="mode-info-name">EASY</div>
-            <div class="mode-info-desc">Generous grids with more fairway and green cells. Fewer hazards and even fewer bogeys. Great for learning the game and achieving the lowest scores.</div>
+            <div class="mode-info-desc">Generous grids with more fairway and green cells, plus fewer hazards overall. Great for learning the game and achieving the lowest scores.</div>
           </div>
         </div>
         <div class="mode-info-row">
           <div class="mode-info-icon"><span class="mode-info-diff-dot medium"></span></div>
           <div class="mode-info-text">
             <div class="mode-info-name">MEDIUM</div>
-            <div class="mode-info-desc">Balanced grids with a mix of zones. Water, sand, and rough appear more often. The standard challenge.</div>
+            <div class="mode-info-desc">Balanced grids with a healthy mix of fairway, rough, sand, and water. This is the standard challenge, offering a fair test without being overly punishing.</div>
           </div>
         </div>
         <div class="mode-info-row">
           <div class="mode-info-icon"><span class="mode-info-diff-dot hard"></span></div>
           <div class="mode-info-text">
             <div class="mode-info-name">HARD</div>
-            <div class="mode-info-desc">Tight grids packed with hazards and OB cells. Every roll matters here. Strategic use of Wildcards is essential to navigate the danger and secure a low score. For seasoned players only.</div>
+            <div class="mode-info-desc">Tight grids packed with hazards and OB cells. Every roll matters, and smart Wildcard use can be the difference between surviving a hole and dropping shots. Best suited for experienced players.</div>
           </div>
         </div>
       </div>
+      <div class="mode-info-section">
+    <div class="mode-info-section-title">⛳ COURSES</div>
+    <div class="mode-info-row">
+      <div class="mode-info-icon">🌲</div>
+      <div class="mode-info-text">
+        <div class="mode-info-name">LITTLE PINES GC</div>
+        <div class="mode-info-desc">A friendly woodland course and the easiest place to begin. Tree-lined holes shape many tee shots, but the layout is generally forgiving. It still has a few demanding holes that can catch you out.</div>
+      </div>
+    </div>
+    <div class="mode-info-row">
+      <div class="mode-info-icon">🌊</div>
+      <div class="mode-info-text">
+        <div class="mode-info-name">PACIFIC BEACH</div>
+        <div class="mode-info-desc">A coastal course where water is never far away. Expect more water hazards, exposed holes, and constant pressure to manage risk. It rewards controlled play, but one loose shot can change a round quickly.</div>
+      </div>
+    </div>
+    <div class="mode-info-row">
+      <div class="mode-info-icon">🌵</div>
+      <div class="mode-info-text">
+        <div class="mode-info-name">DESERT GOLF LINKS</div>
+        <div class="mode-info-desc">Set in the desert, this course features wider fairways and a more open look from the tee. That extra space comes with a tradeoff: sand bunkers appear often, and recovery play can become a major part of the challenge.</div>
+      </div>
+    </div>
+    <div class="mode-info-row">
+      <div class="mode-info-icon">🌺</div>
+      <div class="mode-info-text">
+        <div class="mode-info-name">SEPTEMBRA NATIONAL</div>
+        <div class="mode-info-desc">A classic championship-style course inspired by the famous layouts of Georgia. Many holes demand thoughtful positioning, with tricky approaches and demanding greens that put a premium on control and nerve.</div>
+      </div>
+    </div>
+  </div>
     </div>
   </div>
 </div>
@@ -12329,14 +12361,14 @@ if ('serviceWorker' in navigator) {
 <div class="mode-info-overlay" id="versusModeInfoOverlay" onclick="closeModeInfo('versus')">
   <div class="mode-info-card" onclick="event.stopPropagation()">
     <div class="mode-info-head" style="background:linear-gradient(135deg,#1a5f8a,#2a3a6e);">
-      <div class="mode-info-head-title">🆚 VERSUS MODE</div>
+      <div class="mode-info-head-title">VERSUS MODE</div>
       <button class="mode-info-close" onclick="closeModeInfo('versus')">✕</button>
     </div>
     <div class="mode-info-body compact-top">
       <div class="mode-info-section">
         <div class="mode-info-row" style="border-bottom:1px solid var(--border);padding:0 0 12px;margin-bottom:4px;">
           <div class="mode-info-text">
-            <div class="mode-info-desc" style="font-size:12px;line-height:1.6;">Versus Mode lets two players compete head-to-head on the same device, taking turns hole by hole. Both players roll on the same shared grids, keeping things fair. Set your names, icons, and game options — then tee off!</div>
+            <div class="mode-info-desc" style="font-size:12px;line-height:1.6;">Versus Mode lets two players compete head-to-head on the same device, taking turns hole by hole. Both players play on the same grid layouts for a fair match. Choose your names, icons, and game options, then tee off!</div>
           </div>
         </div>
       </div>
@@ -12346,7 +12378,7 @@ if ('serviceWorker' in navigator) {
           <div class="mode-info-icon">🔄</div>
           <div class="mode-info-text">
             <div class="mode-info-name">TURN-BASED PLAY</div>
-            <div class="mode-info-desc">Players alternate on each hole: Player 1 plays the full hole, then Player 2 plays the same hole on the same grid layout.</div>
+            <div class="mode-info-desc">Players alternate by hole. Player 1 plays the full hole first, then Player 2 plays the same hole on the same grid layout.</div>
           </div>
         </div>
         <div class="mode-info-row">
@@ -12360,7 +12392,7 @@ if ('serviceWorker' in navigator) {
           <div class="mode-info-icon">🃏</div>
           <div class="mode-info-text">
             <div class="mode-info-name">WILDCARDS</div>
-            <div class="mode-info-desc">Each player has their own independent wildcard hand. Rolling doubles earns a wildcard just for you. Use them strategically to gain the edge over your opponent. Of course, unless you want to turn it off in the Settings!</div>
+            <div class="mode-info-desc">Each player has their own wildcard hand. Roll doubles to earn a wildcard for yourself. Use them strategically to gain an edge. Wildcards can be turned off in Settings.</div>
           </div>
         </div>
       </div>
@@ -12370,31 +12402,38 @@ if ('serviceWorker' in navigator) {
           <div class="mode-info-icon">🏆</div>
           <div class="mode-info-text">
             <div class="mode-info-name">STROKE PLAY</div>
-            <div class="mode-info-desc">The classic format. Both players count every stroke across all holes. Lowest total score at the end wins. A single bad hole won't end the match, keep fighting back!</div>
+            <div class="mode-info-desc">The classic format. Count every stroke across all selected holes and rounds. The lowest total score wins. A single bad hole won't end the match, keep fighting back!</div>
           </div>
         </div>
         <div class="mode-info-row">
           <div class="mode-info-icon">⚔️</div>
           <div class="mode-info-text">
             <div class="mode-info-name">MATCH PLAY</div>
-            <div class="mode-info-desc">Quadruple bogey on a hole won't end your dream of winning! Each hole is its own contest — lowest score wins that hole. Lead is tracked as "X Up." A player wins when they lead by more holes than remain. Dramatic comebacks happen.</div>
+            <div class="mode-info-desc">Quadruple bogey on a hole will not end your chances. Each hole is its own contest: the lower score wins the hole, and the lead is shown as ‘X Up.’ The match ends when one side is ahead by more holes than remain. One round only.</div>
           </div>
         </div>
       </div>
       <div class="mode-info-section">
-        <div class="mode-info-section-title">📋 HOLES & DIFFICULTY</div>
+        <div class="mode-info-section-title">📋 MATCH SETTINGS</div>
+         <div class="mode-info-row">
+          <div class="mode-info-icon">🥊</div>
+          <div class="mode-info-text">
+            <div class="mode-info-name">ROUNDS</div>
+            <div class="mode-info-desc">In Stroke Play, choose between 1 and 4 rounds. More rounds mean a longer competition and a bigger test of consistency.</div>
+          </div>
+        </div>
         <div class="mode-info-row">
           <div class="mode-info-icon">⛳</div>
           <div class="mode-info-text">
             <div class="mode-info-name">HOLE SELECTION</div>
-            <div class="mode-info-desc">Choose from a full 18 holes, Front 9 (holes 1–9), or Back 9 (holes 10–18) on a particular course. Then? Tee off!</div>
+            <div class="mode-info-desc">Choose 18 holes, the Front 9 (holes 1–9), or the Back 9 (holes 10–18) on a selected course. Then? Tee off!</div>
           </div>
         </div>
         <div class="mode-info-row">
           <div class="mode-info-icon">⚙️</div>
           <div class="mode-info-text">
             <div class="mode-info-name">DIFFICULTY</div>
-            <div class="mode-info-desc">Easy, Medium, or Hard affects the grid hazard distribution for both players equally. The harder the setting, the tighter and more punishing the grids.</div>
+            <div class="mode-info-desc">Easy, Medium, and Hard change hazard distribution equally for both players. Higher difficulty means tighter, more punishing grids.</div>
           </div>
         </div>
       </div>
