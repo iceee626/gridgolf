@@ -1091,7 +1091,7 @@ body.nav-back .setup-screen.visible{ transform:translateX(0) scale(1); opacity:1
   font-size:0;
 }
 .sum-hole-body{padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.sum-btn-row{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:16px;padding-bottom:calc(env(safe-area-inset-bottom) + 16px);background:linear-gradient(180deg,var(--summary-fade-from) 0%,var(--summary-fade-mid) 34%,var(--summary-fade-to) 100%);}
+.sum-btn-row{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:16px;padding-bottom:calc(env(safe-area-inset-bottom) + 16px);background:linear-gradient(180deg,rgba(0,0,0,0) 0%,var(--course-panel-strong) 38%,var(--course-panel-strong) 100%);}
 .sum-detail-hint{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-shrink:0;font-family:'Sen',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
 .sum-detail-hint::after{content:'';flex:1;height:1px;background:var(--border);}
 .sum-vs-stats-row{display:grid;grid-template-columns:56px minmax(0,1fr) 56px;align-items:center;column-gap:10px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);font-family:'Sen',sans-serif;font-size:11px;}
@@ -1802,6 +1802,11 @@ body[data-course-theme='septembra-national'] #roundStartScreen .vs-turn-btn{
 body[data-course-theme='septembra-national'] #roundStartScreen .vs-turn-sub{
   font-size:34px;
   letter-spacing:1.4px;
+}
+body[data-course-theme='septembra-national'] #vsTurnScreen .vs-turn-name,
+body[data-course-theme='septembra-national'] #vsTurnScreen .vs-turn-sub,
+body[data-course-theme='septembra-national'] #vsTurnScreen .vs-turn-btn{
+  font-family:'Fraunces',serif !important;
 }
 .mode-info-tag{
   display:inline-block;font-family:'Sen',sans-serif;font-size:8px;letter-spacing:1px;
@@ -3971,6 +3976,13 @@ function updateTVBanner(){
   const bar=document.getElementById('tvBar');
   if(!bar)return;
   bar.classList.add('show');
+  // Keep current putt strip visible while FINISH HOLE is transitioning
+  // into the hole-complete screen.
+  const preservePuttStrip = !!(S.holeDone && _holdFinishBtn);
+  if(preservePuttStrip){
+    syncWcToastStackPosition();
+    return;
+  }
   bar.classList.remove('putt-row-active');
   const row2=document.getElementById('tvRow2');
   if(row2) row2.classList.remove('show');
