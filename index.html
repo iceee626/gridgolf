@@ -5354,7 +5354,14 @@ function showCelebration(d, onDone){
 
 function completeHole(){
   const h=HOLES[S.holeIdx];
-  let score=applyBogeyShieldToScore(S.strokes, h.par);
+  const restoringCompletedHole = !!S._resumeCompletedHolePanel;
+  const savedScore = S.scorecards?.[S.currentRound - 1]?.[S.holeIdx];
+  const savedHistScore = S.histories?.[S.currentRound - 1]?.[S.holeIdx]?.strokes;
+  let score = restoringCompletedHole && savedScore != null
+    ? savedScore
+    : restoringCompletedHole && savedHistScore != null
+      ? savedHistScore
+      : applyBogeyShieldToScore(S.strokes, h.par);
   S.strokes = score;
   const roundXpWrap = document.getElementById('hcRoundXpWrap');
   if(roundXpWrap) roundXpWrap.style.display = 'none';
@@ -5530,18 +5537,18 @@ function completeHole(){
   updateTVBanner();
   
   const d=score-h.par;
-  maybeArmBounceBackFromHoleResult(d);
+  if(!restoringCompletedHole) maybeArmBounceBackFromHoleResult(d);
   const isHoleInOne=(h.par===3&&score===1);
-  if(S._roundPrevWasDoubleOrWorse && d <= -1){
+  if(!restoringCompletedHole && S._roundPrevWasDoubleOrWorse && d <= -1){
     unlockAchievement('ice_veins');
     S._roundIceTriggered = true;
   }
-  S._roundPrevWasDoubleOrWorse = d >= 2;
-  if(S._eyesClosedArmed && d <= -1){
+  if(!restoringCompletedHole) S._roundPrevWasDoubleOrWorse = d >= 2;
+  if(!restoringCompletedHole && S._eyesClosedArmed && d <= -1){
     unlockAchievement('eyes_closed');
   }
 
-  if(!TUT.active){
+  if(!TUT.active && !restoringCompletedHole){
     const profiles=loadProfiles();
     const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
     const p=profiles[idx];
@@ -5593,9 +5600,11 @@ function completeHole(){
   hcTitle.style.display = '';
 
   // Outcome haptic
-  if(isHoleInOne || d<=-2){ vibHoleInOne(); }
-  else if(d===-1){ _doHaptic('MEDIUM'); }
-  else if(d>=2){ _doHaptic('HEAVY'); }
+  if(!restoringCompletedHole){
+    if(isHoleInOne || d<=-2){ vibHoleInOne(); }
+    else if(d===-1){ _doHaptic('MEDIUM'); }
+    else if(d>=2){ _doHaptic('HEAVY'); }
+  }
 
   hcTitle.style.color=_scoreOutcomeColor(d, isHoleInOne);
 
@@ -10221,16 +10230,10 @@ function continueGame(){
         } else if (S.holeIdx >= S.endIdx) {
             showRoundEnd();
         } else {
-            document.getElementById('ovEmoji').textContent='⛳';
-            document.getElementById('ovTitle').textContent='HOLE COMPLETE';
-            document.getElementById('ovTitle').style.color='var(--c-fwyl)';
-            document.getElementById('ovNameRow').textContent='';
-            document.getElementById('ovStatsRow').textContent=`${S.strokes} strokes · par ${HOLES[S.holeIdx].par}`;
-            document.getElementById('ovBtn').style.display='block';
-            document.getElementById('ovBtn').textContent = 'NEXT HOLE';
-            document.getElementById('ovSummaryBtn').style.display='none';
-            document.getElementById('ovPlayAgainBtn').style.display='none';
-            document.getElementById('overlay').classList.add('show');
+            S._skipCelebration = true;
+            S._resumeCompletedHolePanel = true;
+            try{ completeHole(); }catch(e){ console.error('completed-hole resume failed', e); }
+            finally{ S._resumeCompletedHolePanel = false; }
         }
     } else {
         renderWcFab();
@@ -10591,9 +10594,13 @@ function startTutorial(){
   }
   _holdFinishBtn = false;
 
+  applyCourse(DEFAULT_COURSE_ID);
+  applyCourseVisualTheme(DEFAULT_COURSE_ID);
   SETUP.mode = 'custom'; SETUP.rounds = 1; SETUP.holesConfig = '18';
+  SETUP.course = DEFAULT_COURSE_ID; SETUP.courseSelected = true;
   GAME_DIFF = 1;
   resetGameState();
+  S.courseId = DEFAULT_COURSE_ID;
   S.startIdx = 0; S.endIdx = 2; S.holeIdx = 0;
   for(let i=0;i<3;i++) HOLES[i] = {...TUT_HOLES_DATA[i]};
   S.holesConfig = '18';
@@ -10623,6 +10630,19 @@ function _tutBlockInput(block){
   if(rollBtn) rollBtn.disabled = block;
   if(nextBtn) nextBtn.style.pointerEvents = block ? 'none' : '';
   if(wcFab) wcFab.style.pointerEvents = block ? 'none' : '';
+}
+
+function _tutScrollHighlightedElement(el, attempt = 0){
+  if(!el) return;
+  setTimeout(() => {
+    if(window._disableTutScroll && attempt < 8){
+      _tutScrollHighlightedElement(el, attempt + 1);
+      return;
+    }
+    const rect = el.getBoundingClientRect();
+    const y = rect.top + window.scrollY - (window.innerHeight / 2) + (rect.height / 2);
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+  }, attempt === 0 ? 60 : 120);
 }
 
 function _tutHighlight(sel, darken = true){
@@ -10664,12 +10684,7 @@ function _tutHighlight(sel, darken = true){
      
      // Robust scrolling calculation for iOS Safari compatibility
      if (!scrolled) {
-         setTimeout(() => {
-             if (window._disableTutScroll) return; // Yield to scrollToGrid() if active
-             const rect = el.getBoundingClientRect();
-             const y = rect.top + window.scrollY - (window.innerHeight / 2) + (rect.height / 2);
-             window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
-         }, 60);
+         _tutScrollHighlightedElement(el);
          scrolled = true;
      }
   });
@@ -11095,36 +11110,40 @@ function tutComplete(isAbandon = false){
   if (!isAbandon) {
       const profiles=loadProfiles();
       const idx=Math.min(getActiveProfileIdx(),profiles.length-1);
+      let firstTutorialCompletion = true;
       if(profiles[idx]){
+         firstTutorialCompletion = (profiles[idx].tutorialCompleted||0) === 0;
          profiles[idx].tutorialCompleted = (profiles[idx].tutorialCompleted||0)+1;
          saveProfiles(profiles);
-         checkAndAwardAchievements({silent:true});
+         if(firstTutorialCompletion) checkAndAwardAchievements({silent:true});
       }
-      const tutScoreRow = S.scorecards[0] || [];
-      const holesPlayed = 3;
-      let roundTotal = 0;
-      let roundPar = 0;
-      for(let i = 0; i < 3; i++){
-        const v = tutScoreRow[i];
-        if(v !== null && v !== undefined){
-          roundTotal += v;
-          roundPar += HOLES[i].par;
+      if(firstTutorialCompletion){
+        const tutScoreRow = S.scorecards[0] || [];
+        const holesPlayed = 3;
+        let roundTotal = 0;
+        let roundPar = 0;
+        for(let i = 0; i < 3; i++){
+          const v = tutScoreRow[i];
+          if(v !== null && v !== undefined){
+            roundTotal += v;
+            roundPar += HOLES[i].par;
+          }
         }
+        const roundDiff = roundTotal - roundPar;
+        tutorialAward = awardRoundExperience({
+          source: 'tutorial',
+          title: 'GAINED XP',
+          roundNumber: 1,
+          roundIdx: 0,
+          holesPlayed,
+          roundDiff,
+          roundTotal,
+          roundPar,
+          gameDiff: 1,
+          tutorialBonus: 40,
+          ensureLevel2: true
+        });
       }
-      const roundDiff = roundTotal - roundPar;
-      tutorialAward = awardRoundExperience({
-        source: 'tutorial',
-        title: 'GAINED XP',
-        roundNumber: 1,
-        roundIdx: 0,
-        holesPlayed,
-        roundDiff,
-        roundTotal,
-        roundPar,
-        gameDiff: 1,
-        tutorialBonus: 40,
-        ensureLevel2: true
-      });
   }
 
   restoreBaseHoles();
